@@ -7,4 +7,5 @@ $MESS["TN_DOCS_PARTNER_URI"] = "http://www.digt.ru";
 
 $MESS["TN_DOCS_INSTALL_TITLE"] = "Установка модуля TrustedNet Documents";
 $MESS["TN_DOCS_UNINSTALL_TITLE"] = "Удаления модуля TrustedNet Documents";
+$MESS["TN_DOCS_CANCEL_INSTALL"] = "Отменить установку";
 
