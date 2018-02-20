@@ -1,10 +1,10 @@
 <?php
-require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
+require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 CUtil::InitJSCore(array("jquery2"));
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.sign/sign.js");
+$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/sign.js");
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
-$module_id = 'trustednet.sign';
+$module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
 IncludeModuleLangFile(__FILE__);
 

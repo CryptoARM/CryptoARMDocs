@@ -70,6 +70,11 @@ Class trustednet_docs extends CModule
             true, false
         );
         CopyDirFiles(
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/js/",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/js/",
+            true, true
+        );
+        CopyDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes",
             true, true
@@ -168,12 +173,13 @@ Class trustednet_docs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin"
         );
-        return true;
+        DeleteDirFilesEx("/bitrix/js/" . $this->MODULE_ID);
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes/.default/",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default/"
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
+        return true;
     }
 
     function UnInstallDB()
