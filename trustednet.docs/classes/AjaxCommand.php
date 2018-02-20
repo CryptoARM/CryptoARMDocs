@@ -1,0 +1,323 @@
+<?php
+
+class AjaxCommand
+{
+    static function updateStatus($params, $cb = updateDocumentStatus)
+    {
+        $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
+        $id = $params["id"];
+        $doc = TDataBaseDocument::getDocumentById($id);
+        if (!$doc) {
+            $res['message'] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+            return $res;
+        }
+        $status = $_GET["status"];
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
+            echo "update status  " . $status . ' DOCUMENT_STATUS_CANCEL ' . DOCUMENT_STATUS_CANCEL . '      ' . DOCUMENT_STATUS_ERROR;
+            switch ($status) {
+                case DOCUMENT_STATUS_CANCEL:
+                    if (!$doc->getSigners()) {
+                        TDataBaseDocument::removeStatus($doc->getStatus());
+                    } else {
+                        $doc->getStatus()->setValue(DOCUMENT_STATUS_DONE);
+                        $doc->getStatus()->save();
+                    }
+                    AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
+                    $res['success'] = true;
+                    break;
+                case DOCUMENT_STATUS_ERROR:
+                    $doc->getStatus()->setValue($status);
+                    $doc->getStatus()->save();
+                    AjaxSign::sendSetStatus($params["operationId"], -1, "Error");
+                    $res['success'] = true;
+                    break;
+                default:
+                    $res['message'] = GetMessage('TRUSTEDNET_DOC_STATUNKNWN');
+            }
+        } else {
+            echo 'condition false';
+            $res['message'] = GetMessage('TRUSTEDNET_DOC_STATCHG');
+        }
+        die();
+        return $res;
+    }
+
+    /**
+     *
+     * @param mixed $params {id: Array(Number), logo: String, extra: String}
+     * @param function $cb
+     * @return mixed {success: Boolean; message: String}
+     */
+    static function sign($params)
+    {
+        $res = array(
+            "success" => false,
+            "message" => null,
+            "code" => null,
+        );
+        $docsId = $params["id"];
+        if (!isset($docsId)) {
+            // No ids were given
+            return $res;
+        }
+        $docsSent = new DocumentCollection();
+        $docsNotFound = array();
+        $docsFileNotFound = new DocumentCollection();
+        $docsBlocked = new DocumentCollection();
+        $docsSigned = new DocumentCollection();
+        foreach ($docsId as &$id) {
+            $doc = TDataBaseDocument::getDocumentById($id);
+            if (!$doc) {
+                // No doc with that id is found
+                $docsNotFound[] = $id;
+            } else {
+                $doc = $doc->getLastDocument();
+                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
+                    // Doc is blocked by previous operation
+                    $docsBlocked->add($doc);
+                } elseif (!$doc->checkFile()) {
+                    // Associated file was not found on the disk
+                    $docsFileNotFound->add($doc);
+                } elseif (!checkDocByExtra($doc, $params["extra"])) {
+                    // No need to sign doc based on it STATUS property
+                    $docsSigned->add($doc);
+                } else {
+                    // Doc is ready to be sent
+                    $docsSent->add($doc);
+                }
+            }
+        }
+        if ($docsSent->count()) {
+            $res["docsSent"] = array();
+            foreach($docsSent->getList() as $doc) {
+                $res["docsSent"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId()
+                );
+            }
+        }
+        if ($docsNotFound) {
+            $res["docsNotFound"] = $docsNotFound;
+        }
+        if ($docsFileNotFound->count()) {
+            foreach($docsFileNotFound->getList() as $doc) {
+                $res["docsFileNotFound"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId()
+                );
+            }
+        }
+        if ($docsBlocked->count()) {
+            foreach($docsBlocked->getList() as $doc) {
+                $res["docsBlocked"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId()
+                );
+            }
+        }
+        if ($docsSigned->count()) {
+            foreach($docsSigned->getList() as $doc) {
+                $res["docsSigned"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId()
+                );
+            }
+        }
+        if ($docsSent->count()) {
+            $ajaxParams = AjaxParams::fromArray($params);
+            $resp = json_decode(AjaxSign::sendSignRequest($docsSent, $ajaxParams), true);
+            if ($resp["success"] == true) {
+                $res["success"] = true;
+                $res["code"] = $resp["code"];
+                $res["message"] = $resp['message'];
+                $list = $docsSent->getList();
+                foreach ($list as $item) {
+                    // Set doc status to block it
+                    DocumentStatus::create($item, DOCUMENT_STATUS_PROCESSING);
+                }
+            } else {
+                $res["message"] = getErrorMessageFromResponse($resp);
+                $res["code"] = $resp["code"];
+            }
+        }
+
+        return $res;
+    }
+
+    static function upload($params, $cb = uploadSignature)
+    {
+        $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
+        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        if (beforeUploadSignature($doc, $params["token"]) !== false) {
+            if ($doc) {
+                $newDoc = $doc->copy();
+                $signers = urldecode($params["signers"]);
+                $newDoc->setSigners($signers);
+                $newDoc->setType(DOCUMENT_TYPE_SIGNATURE);
+                $newDoc->setParent($doc);
+                $signature = $_FILES["signature"];
+                if ($cb) $cb($newDoc, $signature, $params["extra"]);
+                $newDoc->save();
+                if ($doc->getStatus()) {
+                    TDataBaseDocument::removeStatus($doc->getStatus());
+                }
+                DocumentStatus::create($newDoc, DOCUMENT_STATUS_DONE);
+                AjaxSign::sendSetStatus($params["operationId"]);
+                $res["success"] = true;
+                $res["message"] = "File uploaded";
+            } else $res["message"] = "Document is not found";
+        } else $res["message"] = "Canceled in beforeUploadSignature function";
+        return $res;
+    }
+
+    function unblock($params)
+    {
+        $res = array("success" => true, "message" => GetMessage('TRUSTEDNET_DOC_UNBLOCK_NOT_REQUIRED'));
+        $docsId = $params["id"];
+        if (isset($docsId)) {
+            foreach ($docsId as &$id) {
+                $doc = TDataBaseDocument::getDocumentById($id);
+                if ($doc) {
+                    $lastDoc = $doc->getLastDocument();
+                    if ($lastDoc) {
+                        $status = $lastDoc->getStatus();
+                        if ($status) {
+                            if ($status->getValue() == DOCUMENT_STATUS_PROCESSING) {
+                                if (!$doc->getSigners()) {
+                                    TDataBaseDocument::removeStatus($doc->getStatus());
+                                } else {
+                                    $doc->getStatus()->setValue(DOCUMENT_STATUS_DONE);
+                                    $doc->getStatus()->save();
+                                }
+                                $res["message"] = GetMessage('TRUSTEDNET_DOC_UNBLOCK_SUCCESS');
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["success"] = false;
+        }
+        return $res;
+    }
+
+    function remove($params)
+    {
+        $res = array("success" => false, "message" => "Unknown error in Ajax.remove");
+        $docsId = $params["id"];
+        if (isset($docsId)) {
+            // Try to find all docs in DB
+            foreach ($docsId as &$id) {
+                $doc = TDataBaseDocument::getDocumentById($id);
+                if ($doc) {
+                    $lastDoc = $doc->getLastDocument();
+                    if (!$lastDoc) {
+                        $res["message"] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+                        $res["success"] = false;
+                        return $res;
+                    }
+                } else {
+                    $res["message"] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+                    $res["success"] = false;
+                    return $res;
+                }
+            }
+            foreach ($docsId as &$id) {
+                $doc = TDataBaseDocument::getDocumentById($id);
+                $lastDoc = $doc->getLastDocument();
+                $lastDoc->removeRecursively();
+            }
+            $res["message"] = GetMessage('TRUSTEDNET_DOC_REMOVE_SUCCESS');
+            $res["success"] = true;
+        } else {
+            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["success"] = false;
+        }
+        return $res;
+    }
+
+    static function view($params, $cb = viewSignature)
+    {
+        $res = array("success" => false, "message" => "Unknown error in Ajax.view");
+        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        if ($doc) {
+            $last = $doc->getLastDocument();
+            $ajaxParams = AjaxParams::fromArray($params);
+            $cb($last, $ajaxParams);
+            $res = AjaxSign::sendViewRequest($last, $ajaxParams);
+        } else $res["message"] = "Document is not found";
+        return $res;
+    }
+
+    static function download($params)
+    {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.download",
+            "filename" => ""
+        );
+        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        if ($doc) {
+            $last = $doc->getLastDocument();
+            $res["filename"] = $last->getName();
+            if ($last->checkFile()) {
+                $res["success"] = true;
+                $res["message"] = "File found";
+                return $res;
+            } else {
+                $res["message"] = "File not found";
+
+            }
+        } else {
+            $res["message"] = "Document no found";
+        }
+        return $res;
+    }
+
+    static function content($params, $cb = getContent)
+    {
+        $res = array("success" => false, "message" => "Unknown error in Ajax.content");
+        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        if ($doc) {
+            $last = $doc->getLastDocument();
+            getContent($last, $params['token']);
+            $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
+            if (file_exists($file)) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . $doc->getSysName() . '"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($file));
+                readfile($file);
+            }
+        } else {
+            echo 'file not exist';
+            header("HTTP/1.1 500 Internal Server Error");
+            $res["message"] = "Document is not found";
+            echo json_encode($res);
+            die();
+        }
+    }
+
+    static function token($params)
+    {
+        $res = array("success" => true, "message" => "");
+        try {
+            $token = OAuth2::getFromSession();
+            //$refreshToken = $token->getRefreshToken();
+            //$token->refresh();
+            $accessToken = $token->getAccessToken();
+            $res["message"] = $accessToken;
+        } catch (OAuth2Exception $ex) {
+            header("HTTP/1.1 500 Internal Server Error");
+            $res["message"] = $ex->message;
+            echo json_encode($res);
+            die();
+        }
+        return $res;
+    }
+}
+

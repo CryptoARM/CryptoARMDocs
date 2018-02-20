@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . "/classes/config.php";
+include __DIR__ . "/config.php";
 $module_id = TN_DOCS_MODULE_ID;
 CModule::IncludeModule($module_id);
 
