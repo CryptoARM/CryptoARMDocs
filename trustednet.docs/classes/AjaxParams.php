@@ -29,26 +29,6 @@ class AjaxParams implements IEntity
         return $res;
     }
 
-    function getLogo()
-    {
-        return $this->logo;
-    }
-
-    function setLogo($logo)
-    {
-        $this->logo = $logo;
-    }
-
-    function getCss()
-    {
-        return $this->css;
-    }
-
-    function setCss($css)
-    {
-        $this->css = $css;
-    }
-
     function getExtra()
     {
         return $this->extra;

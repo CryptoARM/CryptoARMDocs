@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 CUtil::InitJSCore(array("jquery2"));
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/sign.js");
+$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/docs.js");
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
 $module_id = "trustednet.docs";
@@ -81,30 +81,30 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 $docs = TDataBaseDocument::getIdDocumentsByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
-$lAdmin->NavText($rsData->GetNavPrint(GetMessage("TRUSTEDNETSIGNER_DOC_NAVY")));
+$lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));
 
 $lAdmin->AddHeaders(array(
     array(
         "id" => "DOC",
-        "content" => GetMessage("TRUSTEDNETSIGNER_DOC"),
+        "content" => GetMessage("TN_DOCS_COL_ID"),
         "sort" => "DOC",
         "default" => true
     ),
     array(
         "id" => "FILE_NAME",
-        "content" => GetMessage("TRUSTEDNETSIGNER_FILE_NAME"),
+        "content" => GetMessage("TN_DOCS_COL_FILENAME"),
         "sort" => "FILE_NAME",
         "default" => true
     ),
     array(
         "id" => "SIGN",
-        "content" => GetMessage('TRUSTEDNETSIGNER_SIGN'),
+        "content" => GetMessage("TN_DOCS_COL_SIGN"),
         "sort" => "SIGN",
         "default" => true
     ),
     array(
         "id" => "STATUS",
-        "content" => GetMessage('TRUSTEDNETSIGNER_STATUS'),
+        "content" => GetMessage("TN_DOCS_COL_STATUS"),
         "sort" => "STATUS",
         "default" => true
     )
@@ -126,15 +126,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
 
     foreach ($signers as $key => $signer) {
 
-        $signingTime = GetMessage("TRUSTEDNETSIGNER_TABLE_TIME")
+        $signingTime = GetMessage("TN_DOCS_SIGN_TIME")
             . date("d:m:o H:i", round($signer[signingTime] / 1000));
 
-        $subjectName = GetMessage("TRUSTEDNETSIGNER_TABLE_NAME");
+        $subjectName = GetMessage("TN_DOCS_SIGN_NAME");
         if ($signer[subject_name]) $subjectName .= $signer[subject_name];
         else $subjectName .= $signer[subjectFriendlyName];
 
         if ($signer[subjectName][O])
-            $subjectCompany = GetMessage("TRUSTEDNETSIGNER_TABLE_ORG") . $signer[subjectName][O];
+            $subjectCompany = GetMessage("TN_DOCS_SIGN_ORG") . $signer[subjectName][O];
 
         $signersString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectCompany . "</td></tr>";
     }
@@ -151,7 +151,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
         "DOC" => $doc->getId(),
         "FILE_NAME" => $docName,
         "SIGN" => $signersString,
-        "STATUS" => GetMessage("TRUSTEDNETSIGNER_STATUS_" . $docStatus)
+        "STATUS" => GetMessage("TN_DOCS_STATUS_" . $docStatus)
     );
 
     $row = &$lAdmin->AddRow($f_ID, $arRes);
@@ -159,7 +159,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     $row->AddViewField("DOC", $doc->getId());
     $row->AddViewField("FILE_NAME", $docName);
     $row->AddViewField("SIGN", $signersString);
-    $row->AddViewField("STATUS", GetMessage("TRUSTEDNETSIGNER_STATUS_" . $docStatus));
+    $row->AddViewField("STATUS", GetMessage("TN_DOCS_STATUS_" . $docStatus));
 
     // context menu
     $arActions = Array();
@@ -167,7 +167,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     $arActions[] = array(
         "ICON" => "edit",
         "DEFAULT" => true,
-        "TEXT" => GetMessage("TRUSTEDNETSIGNER_SIGN_ACTION"),
+        "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
         "ACTION" => "signOrAlert(" . json_encode($ids) . ", null, true)"
     );
 
@@ -178,7 +178,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
         $arActions[] = array(
             "ICON" => "access",
             "DEFAULT" => false,
-            "TEXT" => GetMessage("TRUSTEDNETSIGNER_UNBLOCK_ACTION"),
+            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
             "ACTION" => "unblock(" . json_encode($ids) . ")"
         );
 
@@ -188,7 +188,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
-        "TEXT" => GetMessage("TRUSTEDNETSIGNER_REMOVE_ACTION"),
+        "TEXT" => GetMessage("TN_DOCS_ACT_REMOVE"),
         "ACTION" => "remove(" . json_encode($ids) . ")"
     );
 
@@ -225,9 +225,9 @@ $lAdmin->AddGroupActionTable(Array(
 $contextMenu = array(
     array(
         "ICON" => "btn_new",
-        "TEXT" => GetMessage("TRUSTEDNETSIGNER_FILE_ADD"),
-        "TITLE" => GetMessage("TRUSTEDNETSIGNER_FILE_ADD"),
-        "LINK" => "trustednet_docs_loading.php?lang=ru"
+        "TEXT" => GetMessage("TN_DOCS_ADD_DOC"),
+        "TITLE" => GetMessage("TN_DOCS_ADD_DOC"),
+        "LINK" => "trustednet_documents_upload.php?lang=ru"
     )
 );
 $lAdmin->AddAdminContextMenu($contextMenu);
@@ -235,16 +235,16 @@ $lAdmin->AddAdminContextMenu($contextMenu);
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(GetMessage("TRUSTEDNETSIGNER_TITLE"));
+$APPLICATION->SetTitle(GetMessage("TN_DOCS_TITLE"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 $oFilter = new CAdminFilter($sTableID . "_filter", array(
-    GetMessage("TRUSTEDNETSIGNER_FIND_DOC"),
-    GetMessage("TRUSTEDNETSIGNER_FIND_FILE_NAME"),
-    GetMessage("TRUSTEDNETSIGNER_FIND_SIGN"),
-    GetMessage("TRUSTEDNETSIGNER_FIND_STATUS")
+    GetMessage("TN_DOCS_COL_ID"),
+    GetMessage("TN_DOCS_COL_FILENAME"),
+    GetMessage("TN_DOCS_COL_SIGN"),
+    GetMessage("TN_DOCS_COL_STATUS")
 ));
 ?>
 
@@ -253,30 +253,30 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
     <?php $oFilter->Begin(); ?>
 
     <tr>
-        <td> <?= GetMessage("TRUSTEDNETSIGNER_FIND_DOC") . ":" ?></td>
+        <td> <?= GetMessage("TN_DOCS_COL_ID") . ":" ?></td>
         <td><input type="text" name="find_docId" size="47" value="<?= htmlspecialchars($find_docId) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TRUSTEDNETSIGNER_FIND_FILE_NAME") . ":" ?></td>
+        <td> <?= GetMessage("TN_DOCS_COL_FILENAME") . ":" ?></td>
         <td><input type="text" name="find_fileName" size="47" value="<?= htmlspecialchars($find_fileName) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TRUSTEDNETSIGNER_FIND_SIGN") . ":" ?></td>
+        <td> <?= GetMessage("TN_DOCS_COL_SIGN") . ":" ?></td>
         <td><input type="text" name="find_signInfo" size="47" value="<?= htmlspecialchars($find_signInfo) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TRUSTEDNETSIGNER_FIND_STATUS") . ":" ?> </td>
+        <td> <?= GetMessage("TN_DOCS_COL_STATUS") . ":" ?> </td>
         <td>
             <?php
             $arr = array(
                 "reference_id" => array("", "1", "2", "3"),
                 "reference" => array("",
-                    GetMessage("TRUSTEDNETSIGNER_STATUS_1"),
-                    GetMessage("TRUSTEDNETSIGNER_STATUS_2"),
-                    GetMessage("TRUSTEDNETSIGNER_STATUS_3")
+                    GetMessage("TN_DOCS_STATUS_1"),
+                    GetMessage("TN_DOCS_STATUS_2"),
+                    GetMessage("TN_DOCS_STATUS_3")
                 )
             );
             echo SelectBoxFromArray("find_status", $arr, $find_status, GetMessage("POST_ALL"), "");
@@ -291,34 +291,19 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
 
 </form>
 
-<?
-$token = OAuth2::getFromSession();
-if ($token) {
-?>
+<?php $lAdmin->DisplayList(); ?>
 
-    <?php $lAdmin->DisplayList(); ?>
-
-    <script>
-        // send php variables to the js
-        var TRUSTED_URI_COMPONENT_SIGN_AJAX = "<?= TRUSTED_URI_COMPONENT_SIGN_AJAX ?>";
-        var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_NOT_FOUND') ?>";
-        var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_BLOCKED') ?>";
-        var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM') ?>";
-        var TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_ALERT') ?>";
-    </script>
-
-<?
-} else {
-    $APPLICATION->IncludeComponent(
-        "trustednet:trustednet.auth", "",
-        Array()
-    );
-}
-?>
-
+<script>
+    // send php variables to the js
+    var TRUSTED_URI_COMPONENT_SIGN_AJAX = "<?= TRUSTED_URI_COMPONENT_SIGN_AJAX ?>";
+    var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_NOT_FOUND') ?>";
+    var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_BLOCKED') ?>";
+    var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM') ?>";
+    var TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_ALERT') ?>";
+</script>
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
 

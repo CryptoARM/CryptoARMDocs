@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/../config.php";
+
 /**
  * DB interaction class
  */
@@ -15,7 +17,7 @@ class TDataBaseDocument
     static function getDocuments()
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . TRUSTED_DB_TABLE_DOCUMENTS . ' WHERE CHILD_ID is null';
+        $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE CHILD_ID is null';
         $rows = $DB->Query($sql);
         $res = new DocumentCollection();
         while ($array = $rows->Fetch()) {
@@ -58,8 +60,8 @@ class TDataBaseDocument
             SELECT
                 TD.ID, TDS.STATUS
             FROM
-                trn_documents TD LEFT JOIN
-                trn_documents_status TDS
+                " . DB_TABLE_DOCUMENTS . " TD LEFT JOIN
+                " . DB_TABLE_STATUS . " TDS
             ON
                 TD.ID = TDS.DOCUMENT_ID
             WHERE
@@ -108,7 +110,7 @@ class TDataBaseDocument
             TDataBaseDocument::insertStatus($status);
         } else {
             global $DB;
-            $sql = 'UPDATE ' . TRUSTED_DB_TABLE_DOCUMENTS_STATUS . ' SET '
+            $sql = 'UPDATE ' . DB_TABLE_STATUS . ' SET '
                 . 'STATUS = ' . $status->getValue() . ', '
                 . 'CREATED = CURRENT_TIMESTAMP '
                 . 'WHERE DOCUMENT_ID = ' . $status->getDocumentId();
@@ -136,7 +138,7 @@ class TDataBaseDocument
     static function getStatusById($docId)
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . TRUSTED_DB_TABLE_DOCUMENTS_STATUS . ' WHERE DOCUMENT_ID = ' . $docId;
+        $sql = 'SELECT * FROM ' . DB_TABLE_STATUS . ' WHERE DOCUMENT_ID = ' . $docId;
         $rows = $DB->Query($sql);
         $array = $rows->Fetch();
         $res = null;
@@ -155,7 +157,7 @@ class TDataBaseDocument
     static function insertStatus($status)
     {
         global $DB;
-        $sql = 'INSERT INTO ' . TRUSTED_DB_TABLE_DOCUMENTS_STATUS . '  '
+        $sql = 'INSERT INTO ' . DB_TABLE_STATUS . '  '
             . '(DOCUMENT_ID, STATUS) VALUES ('
             . $status->getDocumentId() . ', '
             . $status->getValue()
@@ -166,7 +168,7 @@ class TDataBaseDocument
     static function removeStatus($status)
     {
         global $DB;
-        $sql = 'DELETE FROM ' . TRUSTED_DB_TABLE_DOCUMENTS_STATUS
+        $sql = 'DELETE FROM ' . DB_TABLE_STATUS
             . ' WHERE DOCUMENT_ID = ' . $status->getDocumentId();
         $DB->Query($sql);
     }
@@ -191,7 +193,7 @@ class TDataBaseDocument
             if (is_null($childId)) {
                 $childId = 'NULL';
             }
-            $sql = 'UPDATE ' . TRUSTED_DB_TABLE_DOCUMENTS . ' SET '
+            $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
                 . 'ORIGINAL_NAME = "' . CDatabase::ForSql($doc->getName()) . '", '
                 . 'SYS_NAME = "' . CDatabase::ForSql($doc->getSysName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
@@ -221,7 +223,7 @@ class TDataBaseDocument
         if (is_null($childId)) {
             $childId = 'NULL';
         }
-        $sql = 'INSERT INTO ' . TRUSTED_DB_TABLE_DOCUMENTS . '  '
+        $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
             . '(ORIGINAL_NAME, SYS_NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID)'
             . 'VALUES ('
             . '"' . CDatabase::ForSql($doc->getName()) . '", '
@@ -259,13 +261,13 @@ class TDataBaseDocument
     static function removeDocument(&$doc)
     {
         global $DB;
-        $sql = 'DELETE FROM ' . TRUSTED_DB_TABLE_DOCUMENTS . '  '
+        $sql = 'DELETE FROM ' . DB_TABLE_DOCUMENTS . '  '
             . 'WHERE ID = ' . $doc->getId();
         $DB->Query($sql);
-        $sql = 'DELETE FROM ' . TRUSTED_DB_TABLE_DOCUMENTS_PROPERTY . ' '
+        $sql = 'DELETE FROM ' . DB_TABLE_PROPERTY . ' '
             . 'WHERE PARENT_ID = ' . $doc->getId();
         $DB->Query($sql);
-        $sql = 'DELETE FROM ' . TRUSTED_DB_TABLE_DOCUMENTS_STATUS . ' '
+        $sql = 'DELETE FROM ' . DB_TABLE_STATUS . ' '
             . 'WHERE DOCUMENT_ID = ' . $doc->getId();
         $DB->Query($sql);
         // Removes childId from parent document
@@ -298,7 +300,7 @@ class TDataBaseDocument
     static function getDocumentById($id)
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . TRUSTED_DB_TABLE_DOCUMENTS . ' WHERE ID = ' . $id;
+        $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE ID = ' . $id;
         /*
                 if(!is_object($DB)) {
                 $DB = new TDataBase();
@@ -320,7 +322,7 @@ class TDataBaseDocument
     static function getDocumentsByName($name)
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . TRUSTED_DB_TABLE_DOCUMENTS
+        $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
             . ' WHERE ORIGINAL_NAME = "' . CDatabase::ForSql($name) . '"'
             . ' AND CHILD_ID is null';
         $rows = $DB->Query($sql);

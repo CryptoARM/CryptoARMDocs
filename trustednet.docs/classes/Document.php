@@ -270,7 +270,7 @@ class Document implements IEntity, ISave
 
     public function getHtmlPath()
     {
-        return str_replace(TRUSTED_PROJECT_ROOT, "", $this->path);
+        return str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->path);
     }
 
     /**
@@ -336,7 +336,7 @@ class Document implements IEntity, ISave
         $props = &$this->properties;
         if (!$props) {
             if ($this->getId()) {
-                $props = TDataBaseDocument::getPropertiesByParentId(TRUSTED_DB_TABLE_DOCUMENTS_PROPERTY, $this->getId());
+                $props = TDataBaseDocument::getPropertiesByParentId(DB_TABLE_PROPERTY, $this->getId());
             } else {
                 $props = new PropertyCollection();
             }

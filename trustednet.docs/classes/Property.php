@@ -126,7 +126,7 @@ class Property implements IEntity, ISave
      */
     public function save()
     {
-        TDataBaseDocument::saveProperty($this, TRUSTED_DB_TABLE_DOCUMENTS_PROPERTY);
+        TDataBaseDocument::saveProperty($this, DB_TABLE_PROPERTY);
     }
 
 }
