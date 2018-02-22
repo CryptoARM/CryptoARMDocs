@@ -65,6 +65,11 @@ Class trustednet_docs extends CModule
     function InstallFiles()
     {
         CopyDirFiles(
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/components/",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components/",
+            true, true
+        );
+        CopyDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin",
             true, false
@@ -169,6 +174,7 @@ Class trustednet_docs extends CModule
 
     function UnInstallFiles()
     {
+        DeleteDirFilesEx("/bitrix/components/trustednet/" . $this->MODULE_ID);
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin"

@@ -36,13 +36,17 @@ class AjaxSign
         return AjaxSign::sendRequestClient("client/sign", $json);
     }
 
+    // TODO: MARKED FOR DELETE
     static protected function getRefreshToken()
     {
+        return true;
         return AjaxSign::getToken()->getRefreshToken();
     }
 
+    // TODO: MARKED FOR DELETE
     static protected function getToken()
     {
+        return true;
         try {
             $token = OAuth2::getFromSession();
             if (!$token) {
@@ -84,8 +88,10 @@ class AjaxSign
         return $result;
     }
 
+    // TODO: MARKED FOR DELETE
     static protected function getAccessToken()
     {
+        return true;
         return AjaxSign::getToken()->getAccessToken();
     }
 

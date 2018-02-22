@@ -2,9 +2,10 @@
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 CUtil::InitJSCore(array("jquery2"));
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.sign/sign.js");
-$module_id = 'trustednet.sign';
+$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/docs.js");
+$module_id = 'trustednet.docs';
 CModule::IncludeModule($module_id);
+CModule::IncludeModule("sale");
 
 IncludeModuleLangFile(__FILE__);
 
@@ -114,10 +115,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                     $e++;
                 };
             }
-            $message = GetMessage("TRUSTEDNETSIGNER_MAIL_SENT_PRE") . $i . GetMessage("TRUSTEDNETSIGNER_MAIL_SENT_POST");
+            $message = GetMessage("TN_DOCS_MAIL_SENT_PRE") . $i . GetMessage("TN_DOCS_MAIL_SENT_POST");
             echo "<script>alert('" . $message . "')</script>";
             if ($e > 0) {
-                $message = GetMessage("TRUSTEDNETSIGNER_MAIL_ERROR_PRE") . $e . GetMessage("TRUSTEDNETSIGNER_MAIL_SENT_POST");
+                $message = GetMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . GetMessage("TN_DOCS_MAIL_ERROR_POST");
                 echo "<script>alert('" . $message . "')</script>}}";
             }
             break;
@@ -133,14 +134,14 @@ $rsData = new CAdminResult($orders, $sTableID);
 $rsData->NavStart();
 
 // send page selector to the main object $lAdmin
-$lAdmin->NavText("<p class='nav_print' style='text-align: center;'>" . $rsData->GetNavPrint(GetMessage("TRUSTEDNETSIGNER_ORDER")) . "</p>");
+$lAdmin->NavText("<p class='nav_print' style='text-align: center;'>" . $rsData->GetNavPrint(GetMessage("TN_DOCS_NAV_TEXT")) . "</p>");
 
 $lAdmin->AddHeaders(array(
-    array("id" => "ORDER", "content" => GetMessage("TRUSTEDNETSIGNER_DOCS_ORDER"), "sort" => "ORDER", "default" => true),
-    array("id" => "ORDER_STATUS", "content" => GetMessage("TRUSTEDNETSIGNER_DOCS_ORDER_STATUS"), "sort" => "ORDER_STATUS", "default" => true),
-    array("id" => "BUYER", "content" => GetMessage("TRUSTEDNETSIGNER_DOCS_BUYER"), "sort" => "CLIENT_NAME", "default" => true),
-    array("id" => "DOCS", "content" => GetMessage('TRUSTEDNETSIGNER_DOCS_GEN'), "sort" => "DOCS", "default" => true),
-    array("id" => "SIGN", "content" => GetMessage('TRUSTEDNETSIGNER_DOCS_STATUS'), "sort" => "DOC_STATE", "default" => true),
+    array("id" => "ORDER", "content" => GetMessage("TN_DOCS_COL_ORDER"), "sort" => "ORDER", "default" => true),
+    array("id" => "ORDER_STATUS", "content" => GetMessage("TN_DOCS_COL_ORDER_STATUS"), "sort" => "ORDER_STATUS", "default" => true),
+    array("id" => "BUYER", "content" => GetMessage("TN_DOCS_COL_BUYER"), "sort" => "CLIENT_NAME", "default" => true),
+    array("id" => "DOCS", "content" => GetMessage("TN_DOCS_COL_DOCS"), "sort" => "DOCS", "default" => true),
+    array("id" => "SIGN", "content" => GetMessage("TN_DOCS_COL_STATUS"), "sort" => "DOC_STATE", "default" => true),
 ));
 
 while ($arRes = $rsData->NavNext(true, "f_")):
@@ -174,10 +175,10 @@ while ($arRes = $rsData->NavNext(true, "f_")):
 
     // order
     $arActions = Array();
-    $fieldOrder = "[<a href=\"/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TRUSTEDNETSIGNER_USER_PROFILE") . "\">" . $order_id . "</a>] ";
+    $fieldOrder = "[<a href=\"/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TN_DOCS_BUYER_PROFILE") . "\">" . $order_id . "</a>] ";
 
     // client
-    $fieldValue = "[<a href=\"/bitrix/admin/user_edit.php?ID=" . $user_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TRUSTEDNETSIGNER_USER_PROFILE") . "\">" . $user_name . "</a>] ";
+    $fieldValue = "[<a href=\"/bitrix/admin/user_edit.php?ID=" . $user_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TN_DOCS_BUYER_PROFILE") . "\">" . $user_name . "</a>] ";
     $fieldValue .= htmlspecialcharsEx($user_name . ((strlen($user_name) <= 0 || strlen($user_last_name) <= 0) ? "" : " ") . $user_last_name) . "<br/>";
     $fieldValue .= htmlspecialcharsEx($user_login) . "<br/>";
     $fieldValue .= "<small><a href=\"mailto:" . htmlspecialcharsEx($user_email) . "\" title=\"" . GetMessage("STA_MAILTO") . "\">" . htmlspecialcharsEx($user_email) . "</a></small>";
@@ -193,7 +194,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
         $status = $doc->getStatus();
         $str = "";
         if ($status && $status->getValue() == DOCUMENT_STATUS_PROCESSING) {
-            $str = GetMessage("TRUSTEDNETSIGNER_DOC_BLOCKED");
+            $str = GetMessage("TN_DOCS_DOC_BLOCKED");
         } else {
             $str = getStateString($doc);
         }
@@ -212,7 +213,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
     $arActions[] = array(
         "ICON" => "edit",
         "DEFAULT" => true,
-        "TEXT" => GetMessage("TRUSTEDNETSIGNER_SIGN_ACTION"),
+        "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
         //"ACTION" => "sign(" . json_encode($ids) . ")"
         "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
     );
@@ -230,7 +231,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
         $arActions[] = array(
             "ICON" => "access",
             "DEFAULT" => false,
-            "TEXT" => GetMessage("TRUSTEDNETSIGNER_UNBLOCK_ACTION"),
+            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
             "ACTION" => $lAdmin->ActionDoGroup($f_ID, "unblock"),
         );
 
@@ -240,7 +241,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
     $arActions[] = array(
         "ICON" => "move",
         "DEFAULT" => false,
-        "TEXT" => GetMessage("TRUSTEDNETSIGNER_SEND_MAIL_ACTION"),
+        "TEXT" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
         "ACTION" => $lAdmin->ActionDoGroup($f_ID, "send_mail"),
     );
 
@@ -264,9 +265,9 @@ $lAdmin->AddFooter(
 );
 
 $lAdmin->AddGroupActionTable(Array(
-    "sign" => GetMessage("MAIN_ADMIN_LIST_SIGN"),
-    "unblock" => GetMessage("MAIN_ADMIN_LIST_UNBLOCK"),
-    "send_mail" => GetMessage("MAIN_ADMIN_LIST_SEND_MAIL"),
+    "sign" => GetMessage("TN_DOCS_ACT_SIGN"),
+    "unblock" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+    "send_mail" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
 ));
 
 $lAdmin->AddAdminContextMenu();
@@ -274,19 +275,19 @@ $lAdmin->AddAdminContextMenu();
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(GetMessage("TRUSTEDNETSIGNER_TITLE"));
+$APPLICATION->SetTitle(GetMessage("TN_DOCS_TITLE"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 $oFilter = new CAdminFilter(
     $sTableID . "_filter", array(
-        GetMessage("find_order"),
-        GetMessage("find_order_status"),
-        GetMessage("find_clientEmail"),
-        GetMessage("find_clientName"),
-        GetMessage("find_clientLastName"),
-        GetMessage("find_docState")
+        GetMessage("TN_DOCS_COL_ORDER"),
+        GetMessage("TN_DOCS_COL_ORDER_STATUS"),
+        GetMessage("TN_DOCS_FILTER_BUYER_EMAIL"),
+        GetMessage("TN_DOCS_FILTER_BUYER_NAME"),
+        GetMessage("TN_DOCS_FILTER_BUYER_LAST_NAME"),
+        GetMessage("TN_DOCS_COL_STATUS")
     )
 );
 ?>
@@ -294,13 +295,13 @@ $oFilter = new CAdminFilter(
 <form name="find_form" method="get" action="<?= $APPLICATION->GetCurPage() ?>">
     <?php $oFilter->Begin(); ?>
     <tr>
-        <td><?= GetMessage("find_order") . ":" ?></td>
+        <td><?= GetMessage("TN_DOCS_COL_ORDER") . ":" ?></td>
         <td>
             <input type="text" name="find_order" size="47" value="<?= htmlspecialchars($find_order) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("find_order_status") . ":" ?>  </td>
+        <td><?= GetMessage("TN_DOCS_COL_ORDER_STATUS") . ":" ?>  </td>
         <td>
             <?php
             $res = CSaleStatus::GetList(array("SORT" => "ASC"), array("LID" => LANGUAGE_ID), false, false, array('ID', 'NAME'));
@@ -322,35 +323,35 @@ $oFilter = new CAdminFilter(
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("find_clientEmail") . ":" ?></td>
+        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_EMAIL") . ":" ?></td>
         <td>
             <input type="text" name="find_clientEmail" size="47" value="<?= htmlspecialchars($find_clientEmail) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("find_clientName") . ":" ?></td>
+        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_NAME") . ":" ?></td>
         <td>
             <input type="text" name="find_clientName" size="47" value="<?= htmlspecialchars($find_clientName) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("find_clientLastName") . ":" ?></td>
+        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_LAST_NAME") . ":" ?></td>
         <td>
             <input type="text" name="find_clientLastName" size="47"
                    value="<?= htmlspecialchars($find_clientLastName) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("find_docState") . ":" ?>  </td>
+        <td><?= GetMessage("TN_DOCS_COL_STATUS") . ":" ?>  </td>
         <td>
             <?php
             $arr = array(
                 "reference" => array(
                     "",
-                    GetMessage("STATE_CLIENT"),
-                    GetMessage("STATE_SELLER"),
-                    GetMessage("STATE_BOTH"),
-                    GetMessage("STATE_NONE"),
+                    GetMessage("TN_DOCS_STATE_CLIENT"),
+                    GetMessage("TN_DOCS_STATE_SELLER"),
+                    GetMessage("TN_DOCS_STATE_BOTH"),
+                    GetMessage("TN_DOCS_STATE_NONE"),
                 ),
                 "reference_id" => array(
                     "",
@@ -373,33 +374,20 @@ $oFilter = new CAdminFilter(
 </form>
 
 <?
-CModule::IncludeModule("trustednet.auth");
-$token = OAuth2::getFromSession();
-if ($token) {
-    ?>
+$lAdmin->DisplayList();
+?>
 
-    <?php
-    $lAdmin->DisplayList();
-    ?>
-
-    <script>
-        // send php variables to the js
-        var TRUSTED_URI_COMPONENT_SIGN_AJAX = "<?= TRUSTED_URI_COMPONENT_SIGN_AJAX ?>";
-        var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_NOT_FOUND') ?>";
-        var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_BLOCKED') ?>";
-        var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM') ?>";
-        var TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
-        var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_ALERT') ?>";
-    </script>
-
-<? } else {
-    $APPLICATION->IncludeComponent(
-        "trustednet:trustednet.auth", "",
-        Array()
-    );
-} ?>
+<script>
+    // send php variables to the js
+    var TRUSTED_URI_COMPONENT_SIGN_AJAX = "<?= TRUSTED_URI_COMPONENT_SIGN_AJAX ?>";
+    var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_NOT_FOUND') ?>";
+    var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_BLOCKED') ?>";
+    var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM') ?>";
+    var TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
+    var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_ALERT') ?>";
+</script>
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
 

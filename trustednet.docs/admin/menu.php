@@ -19,7 +19,7 @@ if ($APPLICATION->GetGroupRight("trustednet.docs") >= "R") {
 
         $Menu[] = array("text" => GetMessage("TN_DOCS_MENU_DOCUMENTS"),
             "url" => "trustednet_documents.php?lang=" . LANGUAGE_ID,
-            "more_url" => array("trustednet_documents_loading.php"),
+            "more_url" => array("trustednet_documents_upload.php"),
             "title" => GetMessage("TN_DOCS_MENU_DOCUMENTS")
         );
         if (CModule::IncludeModule("sale"))
