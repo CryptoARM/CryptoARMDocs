@@ -294,13 +294,13 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
 
 <script>
     // send php variables to the js
-    var TRUSTED_URI_COMPONENT_SIGN_AJAX = "<?= TN_DOCS_AJAX_CONTROLLER ?>";
-    var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TN_ALERT_DOC_NOT_FOUND') ?>";
-    var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TN_ALERT_DOC_BLOCKED') ?>";
-    var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TN_ALERT_REMOVE_ACTION_CONFIRM') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TN_ALERT_LOST_DOC_ALERT') ?>";
+    var TN_DOCS_AJAX_CONTROLLER = "<?= TN_DOCS_AJAX_CONTROLLER ?>";
+    var TN_ALERT_DOC_NOT_FOUND = "<?= GetMessage('TN_ALERT_DOC_NOT_FOUND') ?>";
+    var TN_ALERT_DOC_BLOCKED = "<?= GetMessage('TN_ALERT_DOC_BLOCKED') ?>";
+    var TN_ALERT_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TN_ALERT_REMOVE_ACTION_CONFIRM') ?>";
+    var TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
+    var TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
+    var TN_ALERT_LOST_DOC = "<?= GetMessage('TN_ALERT_LOST_DOC') ?>";
 </script>
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>

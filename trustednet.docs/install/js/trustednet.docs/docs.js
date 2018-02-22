@@ -1,6 +1,6 @@
 function sign(ids, extra = null, cb = null) {
     $.ajax({
-        url: TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=sign',
+        url: TN_DOCS_AJAX_CONTROLLER + '?command=sign',
         type: 'post',
         data: {id: ids, extra: extra},
         success: function (d) {
@@ -38,25 +38,25 @@ function signOrAlert(ids, extra = null, del = false) {
                 res.docsFileNotFound.forEach(function (elem) {
                     docsFileNotFoundIds.push(elem.id);
                 });
-                var removeMessage = TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE;
+                var removeMessage = TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE;
                 removeMessage += docsFileNotFoundFilenames;
-                removeMessage += '\n' + TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST;
+                removeMessage += '\n' + TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST;
                 remove(docsFileNotFoundIds, removeMessage)
             } else {
-                var alertMessage = TRUSTEDNETSIGNER_LOST_DOC_ALERT;
+                var alertMessage = TN_ALERT_LOST_DOC;
                 alertMessage += docsFileNotFoundFilenames;
                 alert(alertMessage);
             }
         }
         if (res.docsNotFound) {
-            message = TRUSTEDNETSIGNER_DOC_NOT_FOUND;
+            message = TN_ALERT_DOC_NOT_FOUND;
             res.docsNotFound.forEach(function (elem) {
                 message += elem + '\n';
             });
             alert(message);
         }
         if (res.docsBlocked) {
-            message = TRUSTEDNETSIGNER_DOC_BLOCKED;
+            message = TN_ALERT_DOC_BLOCKED;
             res.docsBlocked.forEach(function (elem) {
                 message += '\n' + elem.id + ': ' + elem.filename;
             });
@@ -79,7 +79,7 @@ function signOrAlert(ids, extra = null, del = false) {
 
 function unblock(ids) {
     $.ajax({
-        url: TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=unblock',
+        url: TN_DOCS_AJAX_CONTROLLER + '?command=unblock',
         type: 'post',
         data: {id: ids},
         success: function (d) {
@@ -104,11 +104,11 @@ function unblock(ids) {
     });
 }
 
-function remove(ids, message = TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM) {
+function remove(ids, message = TN_ALERT_REMOVE_ACTION_CONFIRM) {
     var conf = confirm(message);
     if (conf == true) {
         $.ajax({
-            url: TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=remove',
+            url: TN_DOCS_AJAX_CONTROLLER + '?command=remove',
             type: 'post',
             data: {id: ids},
             success: function (d) {
@@ -136,21 +136,21 @@ function remove(ids, message = TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM) {
 
 function downloadOrAlert(id, del = false) {
     $.ajax({
-        url: TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=download',
+        url: TN_DOCS_AJAX_CONTROLLER + '?command=download',
         type: 'post',
         data: {id: id},
         success: function(d) {
             console.log(d);
             if (d.success === true) {
-                window.location.href = TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=content&id=' + id;
+                window.location.href = TN_DOCS_AJAX_CONTROLLER + '?command=content&id=' + id;
             } else {
                 if (del) {
-                    var removeMessage = TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE;
+                    var removeMessage = TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE;
                     removeMessage += '\n' + d.filename + '\n';
-                    removeMessage += TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST;
+                    removeMessage += TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST;
                     remove({id}, removeMessage);
                 } else {
-                    var alertMessage = TRUSTEDNETSIGNER_LOST_DOC_ALERT;
+                    var alertMessage = TN_ALERT_LOST_DOC;
                     alertMessage += '\n' + d.filename;
                     alert(alertMessage);
                 }
@@ -164,7 +164,7 @@ function downloadOrAlert(id, del = false) {
 
 function view(id) {
     $.ajax({
-        url: TRUSTED_URI_COMPONENT_SIGN_AJAX + '?command=view',
+        url: TN_DOCS_AJAX_CONTROLLER + '?command=view',
         type: 'post',
         data: {id: id},
         success: function (d) {

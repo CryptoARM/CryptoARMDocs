@@ -16,14 +16,14 @@ class AjaxSign
 
         foreach ($docsList as &$doc) {
             $file = array("file" => $doc->jsonSerialize());
-            $file["file"]["url"] = TRUSTED_URI_COMPONENT_SIGN_AJAX . '?command=content&id=' . $doc->getId() . '&token=' . $rToken;
+            $file["file"]["url"] = TN_DOCS_AJAX_CONTROLLER . '?command=content&id=' . $doc->getId() . '&token=' . $rToken;
             $files[] = $file;
         }
         $data = array(
             "files" => $files,
-            "uploader" => TRUSTED_URI_COMPONENT_SIGN_AJAX . "?command=upload",
-            "cancel" => TRUSTED_URI_COMPONENT_SIGN_AJAX . "?command=updateStatus&status=2",
-            "error" => TRUSTED_URI_COMPONENT_SIGN_AJAX . "?command=updateStatus&status=3",
+            "uploader" => TN_DOCS_AJAX_CONTROLLER . "?command=upload",
+            "cancel" => TN_DOCS_AJAX_CONTROLLER . "?command=updateStatus&status=2",
+            "error" => TN_DOCS_AJAX_CONTROLLER . "?command=updateStatus&status=3",
             "token" => $rToken
         );
         if ($params) {
@@ -99,7 +99,7 @@ class AjaxSign
     {
         $file = $doc->jsonSerialize();
         $rToken = AjaxSign::getRefreshToken();
-        $file["url"] = $file["file"]["url"] = TRUSTED_URI_COMPONENT_SIGN_AJAX . '?command=content&id=' . $doc->getId() . '&token=' . $rToken;
+        $file["url"] = $file["file"]["url"] = TN_DOCS_AJAX_CONTROLLER . '?command=content&id=' . $doc->getId() . '&token=' . $rToken;
         $data = array(
             "file" => $file,
             "token" => AjaxSign::getRefreshToken()

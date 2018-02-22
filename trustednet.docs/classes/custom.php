@@ -16,12 +16,12 @@ function getErrorMessageFromResponse($response, $errCode, $errMessage)
         switch ($respCode) {
             // Unauthorized
             case 1: {
-                $message = GetMessage('TRUSTEDNET_SIGN_STAT_NOAUTH1');
+                $message = GetMessage("TN_DOCS_RESP_NO_AUTH");
                 break;
             }
             // Client not connected
             case 100: {
-                $message = GetMessage('TRUSTEDNET_SIGN_STAT_NOCONNECT');
+                $message = GetMessage("TN_DOCS_RESP_NO_CONNECTION");
                 break;
             }
             case 101: {
@@ -31,8 +31,8 @@ function getErrorMessageFromResponse($response, $errCode, $errMessage)
                 break;
         }
     }
-    if (stristr($message, "Service balance exhausted")) $message = GetMessage('TRUSTEDNET_SIGN_STAT_NOSIGN');
-    if (stristr($message, "Unknown client:")) $message = GetMessage('TRUSTEDNET_SIGN_STAT_NOAPP');
+    if (stristr($message, "Service balance exhausted")) $message = GetMessage("TN_DOCS_RESP_LIMIT_EXHAUSTED");
+    if (stristr($message, "Unknown client:")) $message = GetMessage("TN_DOCS_RESP_NO_APP");
     return $message;
 }
 
@@ -117,6 +117,8 @@ function checkUser($doc, $USER)
  */
 function getPermision($doc, $refreshToken = null)
 {
+    // TODO: NO CHECK
+    return true;
     global $USER;
 
     if ($USER->IsAuthorized()) {
@@ -158,8 +160,6 @@ function getPermision($doc, $refreshToken = null)
  */
 function getContent($doc, $token)
 {
-    // TODO: SKIPS TOKEN CHECKING. TEMPORARY
-    return true;
     $res = getPermision($doc, $token);
     return $res;
 }
