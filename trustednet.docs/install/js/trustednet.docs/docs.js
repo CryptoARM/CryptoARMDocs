@@ -1,4 +1,60 @@
-function sign(ids, extra = null, cb = null) {
+var socket = io('https://localhost:4040');
+
+socket.on('files signed', function (data) {
+	console.log('файл подписан', data);
+});
+
+socket.on('file saved', function () {
+	console.log("file saved");
+});
+
+socket.on('signature verified', function (data) {
+	console.log('информация о подписи', data);
+});
+
+function sign(docs, extra = {}) {
+    req = {};
+    req.jsonrpc = '2.0';
+    req.method = 'sign';
+    req.params = {};
+    req.params.token = '';
+    req.params.files = docs;
+    req.params.extra = extra;
+    req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
+    socket.emit('sign', req);
+}
+
+////configure
+//var jrpc = new simple_jsonrpc();
+//jrpc.toStream = function(_msg){
+//    var xhr = new XMLHttpRequest();
+//    xhr.onreadystatechange = function() {
+//        if (this.readyState != 4) return;
+//        try {
+//            JSON.parse(this.responseText);
+//            jrpc.messageHandler(this.responseText);
+//        }
+//        catch (e){
+//            console.error(e);
+//        }
+//    };
+//    xhr.open("POST", "https://localhost:8088/", true);
+//    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+//    xhr.send(_msg);
+//};
+//
+////calls
+//jrpc.call('add', [2, 3]).then(function (result) {
+//    document.getElementsByClassName('adm-title')[0].innerHTML += 'add(2, 3) result: ' + result + '<br>';
+//});
+//jrpc.call('mul', {y: 3, x: 2}).then(function (result) {
+//    document.getElementsByClassName('adm-title')[0].innerHTML += 'mul(2, 3) result: ' + result + '<br>';
+//});
+//jrpc.call('view.getTitle').then(function (result) {
+//    document.getElementsByClassName('title')[0].innerHTML = result;
+//});
+
+function sign_old(ids, extra = null, cb = null) {
     $.ajax({
         url: TN_DOCS_AJAX_CONTROLLER + '?command=sign',
         type: 'post',

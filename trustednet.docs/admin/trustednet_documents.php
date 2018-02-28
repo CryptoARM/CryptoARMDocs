@@ -58,10 +58,17 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             $ids[] = $ID;
         }
     }
+
+    $docs = new DocumentCollection();
+    foreach($ids as $id) {
+        $doc = TDataBaseDocument::getDocumentById($id);
+        $docs->add($doc);
+    }
+
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.signOrAlert(' . json_encode($ids) . ', null, true)';
+            echo 'window.parent.sign(' . $docs->toJSON() . ', null, true)';
             echo '</script>';
             break;
         case "unblock":
@@ -160,6 +167,12 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     $row->AddViewField("SIGN", $signersString);
     $row->AddViewField("STATUS", GetMessage("TN_DOCS_STATUS_" . $docStatus));
 
+    $docs = new DocumentCollection();
+    foreach($ids as $id) {
+        $doc = TDataBaseDocument::getDocumentById($id);
+        $docs->add($doc);
+    }
+
     // context menu
     $arActions = Array();
 
@@ -167,7 +180,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
         "ICON" => "edit",
         "DEFAULT" => true,
         "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
-        "ACTION" => "signOrAlert(" . json_encode($ids) . ", null, true)"
+        "ACTION" => "sign(" . $docs->toJSON() . ", null, true)"
     );
 
     $arActions[] = array("SEPARATOR" => true);

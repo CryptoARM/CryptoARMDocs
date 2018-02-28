@@ -261,7 +261,7 @@ class Document implements IEntity, ISave
     {
         $a = array(
             "name" => $this->name,
-            "url" => $this->getHtmlPath(),
+            "url" => $this->getUrl(),
             "id" => $this->getId(),
             "sys_name" => $this->sysName
         );
@@ -271,6 +271,11 @@ class Document implements IEntity, ISave
     public function getHtmlPath()
     {
         return str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->path);
+    }
+
+    public function getUrl()
+    {
+        return TN_DOCS_AJAX_CONTROLLER . "?command=content&id=" . $this->getId();
     }
 
     /**
