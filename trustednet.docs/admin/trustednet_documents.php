@@ -308,6 +308,7 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
 <script>
     // send php variables to the js
     var TN_DOCS_AJAX_CONTROLLER = "<?= TN_DOCS_AJAX_CONTROLLER ?>";
+    var TN_ALERT_NO_CLIENT = "<?= GetMessage('TN_ALERT_NO_CLIENT') ?>";
     var TN_ALERT_DOC_NOT_FOUND = "<?= GetMessage('TN_ALERT_DOC_NOT_FOUND') ?>";
     var TN_ALERT_DOC_BLOCKED = "<?= GetMessage('TN_ALERT_DOC_BLOCKED') ?>";
     var TN_ALERT_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TN_ALERT_REMOVE_ACTION_CONFIRM') ?>";

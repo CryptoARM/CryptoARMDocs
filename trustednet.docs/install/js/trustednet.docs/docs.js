@@ -12,6 +12,10 @@ socket.on('signature verified', function (data) {
 	console.log('информация о подписи', data);
 });
 
+socket.on('error', function (data) {
+    alert('Нет');
+});
+
 function sign(docs, extra = {}) {
     req = {};
     req.jsonrpc = '2.0';
@@ -21,7 +25,12 @@ function sign(docs, extra = {}) {
     req.params.files = docs;
     req.params.extra = extra;
     req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
-    socket.emit('sign', req);
+    if (socket.connected) {
+        console.log(req);
+        socket.emit('sign', req);
+    } else {
+        alert(TN_ALERT_NO_CLIENT);
+    }
 }
 
 ////configure

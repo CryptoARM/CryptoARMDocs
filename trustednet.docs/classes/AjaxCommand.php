@@ -153,6 +153,9 @@ class AjaxCommand
             if ($doc) {
                 $newDoc = $doc->copy();
                 $signers = urldecode($params["signers"]);
+                if ($doc->getSigners()) {
+                    $signers = substr($doc->getSigners(), 0 , -1) .','. substr($signers, 1);
+                }
                 $newDoc->setSigners($signers);
                 $newDoc->setType(DOCUMENT_TYPE_SIGNATURE);
                 $newDoc->setParent($doc);
@@ -170,33 +173,6 @@ class AjaxCommand
         } else $res["message"] = "Canceled in beforeUploadSignature function";
         return $res;
     }
-
-//    static function upload($params, $cb = uploadSignature)
-//    {
-//        $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
-//        $doc = TDataBaseDocument::getDocumentById($params['id']);
-//        //if (beforeUploadSignature($doc, $params["token"]) !== false) {
-//        if (true) {
-//            if ($doc) {
-//                $newDoc = $doc->copy();
-//                $signers = urldecode($params["signers"]);
-//                $newDoc->setSigners($signers);
-//                $newDoc->setType(DOCUMENT_TYPE_SIGNATURE);
-//                $newDoc->setParent($doc);
-//                $file = $_FILES["file"];
-//                if ($cb) $cb($newDoc, $file, $params["extra"]);
-//                $newDoc->save();
-//                if ($doc->getStatus()) {
-//                    TDataBaseDocument::removeStatus($doc->getStatus());
-//                }
-//                DocumentStatus::create($newDoc, DOCUMENT_STATUS_DONE);
-//                AjaxSign::sendSetStatus($params["operationId"]);
-//                $res["success"] = true;
-//                $res["message"] = "File uploaded";
-//            } else $res["message"] = "Document is not found";
-//        } else $res["message"] = "Canceled in beforeUploadSignature function";
-//        return $res;
-//    }
 
     function unblock($params)
     {

@@ -2,7 +2,6 @@
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 CUtil::InitJSCore(array("jquery2"));
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/docs.js");
 $module_id = 'trustednet.docs';
 CModule::IncludeModule($module_id);
 CModule::IncludeModule("sale");
@@ -77,10 +76,17 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         }
     }
 
+    $docs = new DocumentCollection();
+    foreach($ids as $id) {
+        $doc = TDataBaseDocument::getDocumentById($id);
+        $docs->add($doc);
+    }
+
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.signOrAlert(' . json_encode($ids) . ', "SELLER")';
+            echo 'window.parent.sign(' . $docs->toJSON() . ', "SELLER")';
+            //echo 'window.parent.sign(' . $docs->toJSON() . ', {"role": "SELLER"}';
             echo '</script>';
             break;
         case "unblock":

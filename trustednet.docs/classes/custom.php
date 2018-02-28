@@ -184,7 +184,8 @@ function beforeUploadSignature($doc, $token)
 function uploadSignature($doc, $file, $extra = null)
 {
     if ($doc->getParent()->getType() == DOCUMENT_TYPE_FILE) {
-        $doc->setSysName($doc->getSysName() . '.sig');
+        $doc->setSysName($doc->getName() . '.sig');
+        $doc->setName($doc->getName() . '.sig');
         $doc->setPath($doc->getPath() . '.sig');
     }
     $props = $doc->getProperties();

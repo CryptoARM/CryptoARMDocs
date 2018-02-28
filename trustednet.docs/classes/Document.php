@@ -39,7 +39,7 @@ class Document implements IEntity, ISave
             $doc->setId($array["ID"]);
             $doc->setCreated($array["TIMESTAMP_X"]);
             $doc->setName($array["ORIGINAL_NAME"]);
-            $doc->setSysName($array["SYS_NAME"]);
+            $doc->setSysName($array["ORIGINAL_NAME"]);
             $doc->setPath($array["PATH"]);
             $doc->setSigners($array["SIGNERS"]);
             $doc->setType($array["TYPE"]);
@@ -260,10 +260,10 @@ class Document implements IEntity, ISave
     public function jsonSerialize()
     {
         $a = array(
-            "name" => $this->name,
+            "name" => $this->sysName,
             "url" => $this->getUrl(),
             "id" => $this->getId(),
-            "sys_name" => $this->sysName
+            //"sys_name" => $this->sysName
         );
         return $a;
     }
@@ -440,7 +440,7 @@ class Document implements IEntity, ISave
      */
     function getSysName()
     {
-        return $this->sysName;
+        return $this->name;
     }
 
     /**
