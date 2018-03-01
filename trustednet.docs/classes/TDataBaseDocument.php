@@ -40,7 +40,7 @@ class TDataBaseDocument
                 'FIELD_NAME' => 'TD.ID',
             ),
             'FILE_NAME' => array(
-                'FIELD_NAME' => 'TD.ORIGINAL_NAME',
+                'FIELD_NAME' => 'TD.NAME',
             ),
             'SIGN' => array(
                 'FIELD_NAME' => 'TD.SIGNERS',
@@ -69,7 +69,7 @@ class TDataBaseDocument
         if ($find_docId)
             $sql .= " AND TD.ID = " . $find_docId;
         if ($find_fileName)
-            $sql .= " AND TD.ORIGINAL_NAME LIKE '%" . $find_fileName . "%'";
+            $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
         if ($find_signInfo)
             $sql .= " AND TD.SIGNERS LIKE '%" . CDatabase::ForSql($find_signInfo) . "%'";
         if ($find_status != "")
@@ -194,8 +194,7 @@ class TDataBaseDocument
                 $childId = 'NULL';
             }
             $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
-                . 'ORIGINAL_NAME = "' . CDatabase::ForSql($doc->getName()) . '", '
-                . 'SYS_NAME = "' . CDatabase::ForSql($doc->getSysName()) . '", '
+                . 'NAME = "' . CDatabase::ForSql($doc->getName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
                 . "SIGNERS = '" . CDatabase::ForSql($doc->getSigners()) . "', "
@@ -224,10 +223,9 @@ class TDataBaseDocument
             $childId = 'NULL';
         }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(ORIGINAL_NAME, SYS_NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID)'
+            . '(NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID)'
             . 'VALUES ('
             . '"' . CDatabase::ForSql($doc->getName()) . '", '
-            . '"' . CDatabase::ForSql($doc->getSysName()) . '", '
             . '"' . $doc->getPath() . '", '
             . "'" . CDatabase::ForSql($doc->getSigners()) . "', "
             . $doc->getType() . ', '
@@ -323,7 +321,7 @@ class TDataBaseDocument
     {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
-            . ' WHERE ORIGINAL_NAME = "' . CDatabase::ForSql($name) . '"'
+            . ' WHERE NAME = "' . CDatabase::ForSql($name) . '"'
             . ' AND CHILD_ID is null';
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection();
@@ -347,7 +345,11 @@ class TDataBaseDocument
             TDataBaseDocument::insertProperty($property, $tableName);
         } else {
             global $DB;
-            $sql = 'UPDATE ' . $tableName . ' SET PARENT_ID = ' . $property->getParentId() . ', TYPE="' . CDatabase::ForSql($property->getType()) . '", VALUE="' . CDatabase::ForSql($property->getValue()) . '" WHERE ID = ' . $property->getId();
+            $sql = 'UPDATE ' . $tableName .
+                ' SET PARENT_ID = ' . $property->getParentId() . ',
+                      TYPE="' . CDatabase::ForSql($property->getType()) . '",
+                      VALUE="' . CDatabase::ForSql($property->getValue()) . '"
+                WHERE ID = ' . $property->getId();
             $DB->Query($sql);
         }
     }
@@ -361,7 +363,12 @@ class TDataBaseDocument
     static function insertProperty($property, $tableName)
     {
         global $DB;
-        $sql = 'INSERT INTO ' . $tableName . ' (PARENT_ID, TYPE, VALUE) VALUES (' . $property->getParentId() . ', "' . CDatabase::ForSql($property->getType()) . '", "' . CDatabase::ForSql($property->getValue()) . '")';
+        $sql = 'INSERT INTO ' . $tableName .
+              ' (PARENT_ID, TYPE, VALUE)
+                VALUES (' .
+                    $property->getParentId() . ', "' .
+                    CDatabase::ForSql($property->getType()) . '", "' .
+                    CDatabase::ForSql($property->getValue()) . '")';
         $DB->Query($sql);
         $property->setId($DB->LastID());
     }
@@ -377,7 +384,9 @@ class TDataBaseDocument
     static function getPropertiesByType($tableName, $type, $value)
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . $tableName . ' WHERE TYPE="' . CDatabase::ForSql($type) . '" AND VALUE = "' . CDatabase::ForSql($value) . '"';
+        $sql = 'SELECT * FROM ' . $tableName .
+            ' WHERE TYPE="' . CDatabase::ForSql($type) .
+            '" AND VALUE = "' . CDatabase::ForSql($value) . '"';
         $rows = $DB->Query($sql);
         $res = new PropertyCollection();
         while ($array = $rows->Fetch()) {

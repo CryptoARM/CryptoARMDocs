@@ -10,9 +10,8 @@ class Document implements IEntity, ISave
     protected $id = null;
     protected $created;
     protected $name = '';
-    protected $sysName = '';
     protected $path = '';
-    protected $type = DOCUMENT_TYPE_FILE;
+    protected $type = DOC_TYPE_FILE;
     protected $signers = '';
     protected $properties = null;
     protected $parent = null;
@@ -38,8 +37,7 @@ class Document implements IEntity, ISave
             $doc = new Document();
             $doc->setId($array["ID"]);
             $doc->setCreated($array["TIMESTAMP_X"]);
-            $doc->setName($array["ORIGINAL_NAME"]);
-            $doc->setSysName($array["ORIGINAL_NAME"]);
+            $doc->setName($array["NAME"]);
             $doc->setPath($array["PATH"]);
             $doc->setSigners($array["SIGNERS"]);
             $doc->setType($array["TYPE"]);
@@ -260,10 +258,9 @@ class Document implements IEntity, ISave
     public function jsonSerialize()
     {
         $a = array(
-            "name" => $this->sysName,
+            "name" => $this->name,
             "url" => $this->getUrl(),
             "id" => $this->getId(),
-            //"sys_name" => $this->sysName
         );
         return $a;
     }
@@ -363,7 +360,6 @@ class Document implements IEntity, ISave
         $new->setName($this->getName());
         $new->setPath($this->getPath());
         $new->setSigners($this->getSigners());
-        $new->setSysName($this->getSysName());
         $new->setType($this->getType());
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {
@@ -375,7 +371,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns document name
-     * ORIGINAL_NAME field in DB
+     * NAME field in DB
      * @return string
      */
     function getName()
@@ -385,7 +381,7 @@ class Document implements IEntity, ISave
 
     /**
      * Sets document name
-     * ORIGINAL_NAME field in DB
+     * NAME field in DB
      * @param string $name
      */
     function setName($name)
@@ -434,28 +430,8 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Returns systme name of the document
-     * SYS_NAME field in DB
-     * @return string
-     */
-    function getSysName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Sets systme name of the document
-     * SYS_NAME field in DB
-     * @param string $desc
-     */
-    function setSysName($desc)
-    {
-        $this->sysName = $desc;
-    }
-
-    /**
      * Returns document type
-     * DOCUMENT_TYPE field
+     * TYPE field
      * @return number
      */
     function getType()
@@ -465,7 +441,7 @@ class Document implements IEntity, ISave
 
     /**
      * Sets document type
-     * DOCUMENT_TYPE field
+     * TYPE field
      * @param number $type
      */
     function setType($type)

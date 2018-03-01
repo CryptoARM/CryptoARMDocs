@@ -12,20 +12,20 @@ class AjaxCommand
             return $res;
         }
         $status = $_GET["status"];
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
-            echo "update status  " . $status . ' DOCUMENT_STATUS_CANCEL ' . DOCUMENT_STATUS_CANCEL . '      ' . DOCUMENT_STATUS_ERROR;
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
+            echo "update status  " . $status . ' DOC_STATUS_CANCEL ' . DOC_STATUS_CANCEL . '      ' . DOC_STATUS_ERROR;
             switch ($status) {
-                case DOCUMENT_STATUS_CANCEL:
+                case DOC_STATUS_CANCEL:
                     if (!$doc->getSigners()) {
                         TDataBaseDocument::removeStatus($doc->getStatus());
                     } else {
-                        $doc->getStatus()->setValue(DOCUMENT_STATUS_DONE);
+                        $doc->getStatus()->setValue(DOC_STATUS_DONE);
                         $doc->getStatus()->save();
                     }
                     AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
                     $res['success'] = true;
                     break;
-                case DOCUMENT_STATUS_ERROR:
+                case DOC_STATUS_ERROR:
                     $doc->getStatus()->setValue($status);
                     $doc->getStatus()->save();
                     AjaxSign::sendSetStatus($params["operationId"], -1, "Error");
@@ -72,7 +72,7 @@ class AjaxCommand
                 $docsNotFound[] = $id;
             } else {
                 $doc = $doc->getLastDocument();
-                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
+                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
                     // Doc is blocked by previous operation
                     $docsBlocked->add($doc);
                 } elseif (!$doc->checkFile()) {
@@ -133,7 +133,7 @@ class AjaxCommand
                 $list = $docsSent->getList();
                 foreach ($list as $item) {
                     // Set doc status to block it
-                    DocumentStatus::create($item, DOCUMENT_STATUS_PROCESSING);
+                    DocumentStatus::create($item, DOC_STATUS_PROCESSING);
                 }
             } else {
                 $res["message"] = getErrorMessageFromResponse($resp);
@@ -157,7 +157,7 @@ class AjaxCommand
                     $signers = substr($doc->getSigners(), 0 , -1) .','. substr($signers, 1);
                 }
                 $newDoc->setSigners($signers);
-                $newDoc->setType(DOCUMENT_TYPE_SIGNATURE);
+                $newDoc->setType(DOC_TYPE_SIGNED_FILE);
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
                 if ($cb) $cb($newDoc, $file, $params["extra"]);
@@ -165,12 +165,25 @@ class AjaxCommand
                 if ($doc->getStatus()) {
                     TDataBaseDocument::removeStatus($doc->getStatus());
                 }
-                DocumentStatus::create($newDoc, DOCUMENT_STATUS_DONE);
-                AjaxSign::sendSetStatus($params["operationId"]);
+                DocumentStatus::create($newDoc, DOC_STATUS_DONE);
+                //AjaxSign::sendSetStatus($params["operationId"]);
                 $res["success"] = true;
                 $res["message"] = "File uploaded";
             } else $res["message"] = "Document is not found";
         } else $res["message"] = "Canceled in beforeUploadSignature function";
+        return $res;
+    }
+
+    function block($params)
+    {
+        $res = array("success" => true, "message" => "");
+        $docsId = $params["id"];
+        if (isset($docsId)) {
+            foreach ($docsId as &$id) {
+                $doc = TDataBaseDocument::getDocumentById($id);
+                DocumentStatus::create($doc, DOC_STATUS_PROCESSING);
+            }
+        }
         return $res;
     }
 
@@ -186,11 +199,11 @@ class AjaxCommand
                     if ($lastDoc) {
                         $status = $lastDoc->getStatus();
                         if ($status) {
-                            if ($status->getValue() == DOCUMENT_STATUS_PROCESSING) {
+                            if ($status->getValue() == DOC_STATUS_PROCESSING) {
                                 if (!$doc->getSigners()) {
                                     TDataBaseDocument::removeStatus($doc->getStatus());
                                 } else {
-                                    $doc->getStatus()->setValue(DOCUMENT_STATUS_DONE);
+                                    $doc->getStatus()->setValue(DOC_STATUS_DONE);
                                     $doc->getStatus()->save();
                                 }
                                 $res["message"] = GetMessage('TRUSTEDNET_DOC_UNBLOCK_SUCCESS');
@@ -290,7 +303,7 @@ class AjaxCommand
             if (file_exists($file)) {
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . $doc->getSysName() . '"');
+                header('Content-Disposition: attachment; filename="' . $doc->getName() . '"');
                 header('Expires: 0');
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');

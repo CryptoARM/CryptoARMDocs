@@ -199,7 +199,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
         $html_docs .= '<a class="tn-document" style="cursor: pointer;" onclick="downloadOrAlert(' . $doc->getId() . ')" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a> <br/><br/>';
         $status = $doc->getStatus();
         $str = "";
-        if ($status && $status->getValue() == DOCUMENT_STATUS_PROCESSING) {
+        if ($status && $status->getValue() == DOC_STATUS_PROCESSING) {
             $str = GetMessage("TN_DOCS_DOC_BLOCKED");
         } else {
             $str = getStateString($doc);
@@ -229,7 +229,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
     // Add unblock action for docs with status PROCESSING
     $blockedDocs = false;
     foreach ($array as &$doc) {
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
             $blockedDocs = true;
         }
     }

@@ -27,6 +27,9 @@ if (isset($command)) {
         case "updateStatus":
             $res = AjaxCommand::updateStatus($params, updateDocumentStatus);
             break;
+        case "block":
+            $res = AjaxCommand::block($params);
+            break;
         case "unblock":
             $res = AjaxCommand::unblock($params);
             break;

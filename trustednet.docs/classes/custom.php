@@ -183,8 +183,7 @@ function beforeUploadSignature($doc, $token)
  */
 function uploadSignature($doc, $file, $extra = null)
 {
-    if ($doc->getParent()->getType() == DOCUMENT_TYPE_FILE) {
-        $doc->setSysName($doc->getName() . '.sig');
+    if ($doc->getParent()->getType() == DOC_TYPE_FILE) {
         $doc->setName($doc->getName() . '.sig');
         $doc->setPath($doc->getPath() . '.sig');
     }
@@ -215,28 +214,27 @@ class TSignUtils
      * @param boolean $copy If true copies the document into module folder
      * @param string $propertyType User-set property (ORDER)
      * @param string $propertyValue User-set property value (order number)
-     * @param string $type File type. By default DOCUMENT_TYPE_DOCUMENT
+     * @param string $type File type. By default DOC_TYPE_FILE
      * @return \Document
      */
-    public static function createDocument($file, $copy, $propertyType = null, $propertyValue = null, $type = DOCUMENT_TYPE_FILE)
+    public static function createDocument($file, $copy, $propertyType = null, $propertyValue = null, $type = DOC_TYPE_FILE)
     {
-        $sysName = TrustedDirectory::getFileName($file);
+        $name = TrustedDirectory::getFileName($file);
         if ($copy && TrustedDirectory::exists($file) && !is_dir($file)) {
             $order_folder = TRUSTED_PROJECT_UPLOAD . '/' . $propertyType;
             $order_local_folder = $_SERVER['DOCUMENT_ROOT']. '/' . $order_folder;
             if (!TrustedDirectory::exists($order_local_folder)) {
                 TrustedDirectory::create($order_folder);
             }
-            $new_path = $order_local_folder . '/' . $sysName;
+            $new_path = $order_local_folder . '/' . $name;
 
             copy($file, $new_path);
             unlink($file);
             $file = $new_path;
         }
         $doc = new Document();
-        $doc->setPath(str_replace($sysName, rawurlencode($sysName), $file));
-        $doc->setName($sysName);
-        $doc->setSysName($sysName);
+        $doc->setPath(str_replace($name, rawurlencode($name), $file));
+        $doc->setName($name);
         $doc->setType($type);
         $docId = $doc->getId();
         $props = $doc->getProperties();
@@ -542,7 +540,7 @@ function checkStatus($oid)
     $res = false;
     foreach ($list as &$doc) {
         $res = true;
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
             $res = false;
             break;
         }

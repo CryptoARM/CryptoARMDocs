@@ -28,54 +28,29 @@ function sign(docs, extra = {}) {
     if (socket.connected) {
         console.log(req);
         socket.emit('sign', req);
+        ids = [];
+        docs.forEach(function(elem) {
+            ids.push(elem.id);
+        });
+        block(ids, location.reload());
     } else {
         alert(TN_ALERT_NO_CLIENT);
     }
 }
 
-////configure
-//var jrpc = new simple_jsonrpc();
-//jrpc.toStream = function(_msg){
-//    var xhr = new XMLHttpRequest();
-//    xhr.onreadystatechange = function() {
-//        if (this.readyState != 4) return;
-//        try {
-//            JSON.parse(this.responseText);
-//            jrpc.messageHandler(this.responseText);
-//        }
-//        catch (e){
-//            console.error(e);
-//        }
-//    };
-//    xhr.open("POST", "https://localhost:8088/", true);
-//    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
-//    xhr.send(_msg);
-//};
-//
-////calls
-//jrpc.call('add', [2, 3]).then(function (result) {
-//    document.getElementsByClassName('adm-title')[0].innerHTML += 'add(2, 3) result: ' + result + '<br>';
-//});
-//jrpc.call('mul', {y: 3, x: 2}).then(function (result) {
-//    document.getElementsByClassName('adm-title')[0].innerHTML += 'mul(2, 3) result: ' + result + '<br>';
-//});
-//jrpc.call('view.getTitle').then(function (result) {
-//    document.getElementsByClassName('title')[0].innerHTML = result;
-//});
-
-function sign_old(ids, extra = null, cb = null) {
+function block(ids, cb = null) {
     $.ajax({
-        url: TN_DOCS_AJAX_CONTROLLER + '?command=sign',
+        url: TN_DOCS_AJAX_CONTROLLER + '?command=block',
         type: 'post',
-        data: {id: ids, extra: extra},
+        data: {id: ids},
         success: function (d) {
-            console.log(d);
-            if (cb){
-                cb(d);
+            if (d.success === false) {
+                console.log(d);
+                alert(d.message);
             }
-            //window.drawStatus ? drawStatus() : console.log("drawStatus not implemented");
-            //window.getStatus ? getStatus() : console.log("getStatus not implemented");
-            return d;
+            if (cb) {
+                cd(d);
+            }
         },
         error: function (e) {
             console.error(e);
@@ -86,57 +61,6 @@ function sign_old(ids, extra = null, cb = null) {
                 }
             } catch (e) {
                 console.error(e);
-            }
-        }
-    });
-}
-
-function signOrAlert(ids, extra = null, del = false) {
-    var res = sign(ids, extra, function (res) {
-        if (res.docsFileNotFound) {
-            var docsFileNotFoundFilenames = '';
-            res.docsFileNotFound.forEach(function (elem) {
-                docsFileNotFoundFilenames += '\n' + elem.id + ': ' + elem.filename;
-            });
-            if (del) {
-                var docsFileNotFoundIds = [];
-                res.docsFileNotFound.forEach(function (elem) {
-                    docsFileNotFoundIds.push(elem.id);
-                });
-                var removeMessage = TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE;
-                removeMessage += docsFileNotFoundFilenames;
-                removeMessage += '\n' + TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST;
-                remove(docsFileNotFoundIds, removeMessage)
-            } else {
-                var alertMessage = TN_ALERT_LOST_DOC;
-                alertMessage += docsFileNotFoundFilenames;
-                alert(alertMessage);
-            }
-        }
-        if (res.docsNotFound) {
-            message = TN_ALERT_DOC_NOT_FOUND;
-            res.docsNotFound.forEach(function (elem) {
-                message += elem + '\n';
-            });
-            alert(message);
-        }
-        if (res.docsBlocked) {
-            message = TN_ALERT_DOC_BLOCKED;
-            res.docsBlocked.forEach(function (elem) {
-                message += '\n' + elem.id + ': ' + elem.filename;
-            });
-            alert(message);
-        }
-        if (res.docsSigned) {
-            message = TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED;
-            res.docsSigned.forEach(function (elem) {
-                message += '\n' + elem.id + ': ' + elem.filename;
-            });
-            alert(message);
-        }
-        if (!res.success) {
-            if (res.message) {
-                alert(res.message);
             }
         }
     });

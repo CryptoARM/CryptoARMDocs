@@ -17,7 +17,7 @@ $MESS["TN_DOCS_STATUS_0"] = "Документ подписан";
 $MESS["TN_DOCS_STATUS_1"] = "Документ на подписи";
 $MESS["TN_DOCS_STATUS_2"] = "Подпись отменена";
 $MESS["TN_DOCS_STATUS_3"] = "Ошибка подписи";
-$MESS["TN_DOCS_STATUS_10"] = "Документ";
+$MESS["TN_DOCS_STATUS_NONE"] = "Документ";
 
 // Actions
 $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";

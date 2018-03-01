@@ -116,7 +116,7 @@ $lAdmin->AddHeaders(array(
     )
 ));
 
-while ($arRes = $rsData->NavNext(true, "f_")) :
+while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $doc = TDataBaseDocument::getDocumentById($f_ID);
 
@@ -146,18 +146,22 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     }
     $signersString .= '</table>';
 
-    $docStatus = TDataBaseDocument::getStatus($doc);
-    if ($docStatus) $docStatus = ($docStatus->getValue());
-    else $docStatus = 10;
+    $arId = array();
+    $arId[] = $doc->getId();
 
-    $ids = array();
-    $ids[] = $doc->getId();
+    $docStatus = $doc->getStatus($doc);
+    if ($docStatus) {
+        $docStatus = $docStatus->getValue();
+        $docStatusString = GetMessage("TN_DOCS_STATUS_" . $docStatus);
+    } else {
+        $docStatusString = GetMessage("TN_DOCS_STATUS_NONE");
+    }
 
     $arRes = array(
         "DOC" => $doc->getId(),
         "FILE_NAME" => $docName,
         "SIGN" => $signersString,
-        "STATUS" => GetMessage("TN_DOCS_STATUS_" . $docStatus)
+        "STATUS" => $docStatusString,
     );
 
     $row = &$lAdmin->AddRow($f_ID, $arRes);
@@ -165,43 +169,41 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
     $row->AddViewField("DOC", $doc->getId());
     $row->AddViewField("FILE_NAME", $docName);
     $row->AddViewField("SIGN", $signersString);
-    $row->AddViewField("STATUS", GetMessage("TN_DOCS_STATUS_" . $docStatus));
+    $row->AddViewField("STATUS", $docStatusString);
 
-    $docs = new DocumentCollection();
-    foreach($ids as $id) {
-        $doc = TDataBaseDocument::getDocumentById($id);
-        $docs->add($doc);
-    }
+    $docColl = new DocumentCollection();
+    $docColl->add($doc);
 
     // context menu
     $arActions = Array();
 
-    $arActions[] = array(
-        "ICON" => "edit",
-        "DEFAULT" => true,
-        "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
-        "ACTION" => "sign(" . $docs->toJSON() . ", null, true)"
-    );
+    // add sign action for docs without status
+    if (!$docStatus) {
+        $arActions[] = array(
+            "ICON" => "edit",
+            "DEFAULT" => true,
+            "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
+            "ACTION" => "sign(" . $docColl->toJSON() . ", null)"
+        );
+    } else {
+        // add unblock action for docs with status PROCESSING
+        if ($docStatus == DOC_STATUS_PROCESSING) {
+            $arActions[] = array(
+                "ICON" => "access",
+                "DEFAULT" => false,
+                "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+                "ACTION" => "unblock(" . json_encode($arId) . ")"
+            );
+        }
+    }
 
     $arActions[] = array("SEPARATOR" => true);
-
-    // add unblock action for docs with status PROCESSING
-    if ($doc->getStatus() && $doc->getStatus()->getValue() == DOCUMENT_STATUS_PROCESSING) {
-        $arActions[] = array(
-            "ICON" => "access",
-            "DEFAULT" => false,
-            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
-            "ACTION" => "unblock(" . json_encode($ids) . ")"
-        );
-
-        $arActions[] = array("SEPARATOR" => true);
-    }
 
     $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
         "TEXT" => GetMessage("TN_DOCS_ACT_REMOVE"),
-        "ACTION" => "remove(" . json_encode($ids) . ")"
+        "ACTION" => "remove(" . json_encode($arId) . ")"
     );
 
     $arActions[] = array("SEPARATOR" => true);
@@ -212,7 +214,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) :
 
     // apply context menu to the row
     $row->AddActions($arActions);
-endwhile;
+}
 
 $lAdmin->AddFooter(array(
     array(
