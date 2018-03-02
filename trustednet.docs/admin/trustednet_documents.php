@@ -29,6 +29,7 @@ $FilterArr = Array(
     "find_docId",
     "find_fileName",
     "find_signInfo",
+    "find_type",
     "find_status"
 );
 
@@ -40,6 +41,7 @@ if (CheckFilter()) {
         "DOC" => $find_docId,
         "FILE_NAME" => $find_fileName,
         "SIGN" => $find_signInfo,
+        "TYPE" => $find_type,
         "STATUS" => $find_status
     );
 }
@@ -109,11 +111,11 @@ $lAdmin->AddHeaders(array(
         "default" => true
     ),
     array(
-        "id" => "STATUS",
-        "content" => GetMessage("TN_DOCS_COL_STATUS"),
-        "sort" => "STATUS",
+        "id" => "TYPE",
+        "content" => GetMessage("TN_DOCS_COL_TYPE"),
+        "sort" => "TYPE",
         "default" => true
-    )
+    ),
 ));
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
@@ -149,19 +151,23 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
+    $docType = $doc->getType();
+    $docTypeString = GetMessage("TN_DOCS_TYPE_" . $docType);
+
     $docStatus = $doc->getStatus($doc);
     if ($docStatus) {
-        $docStatus = $docStatus->getValue();
-        $docStatusString = GetMessage("TN_DOCS_STATUS_" . $docStatus);
-    } else {
-        $docStatusString = GetMessage("TN_DOCS_STATUS_NONE");
+        $docStatus = (int)$docStatus->getValue();
+        $docTypeString .=
+            "<br>" .
+            GetMessage("TN_DOCS_STATUS") .
+            GetMessage("TN_DOCS_STATUS_" . $docStatus);
     }
 
     $arRes = array(
         "DOC" => $doc->getId(),
         "FILE_NAME" => $docName,
         "SIGN" => $signersString,
-        "STATUS" => $docStatusString,
+        "TYPE" => $docType,
     );
 
     $row = &$lAdmin->AddRow($f_ID, $arRes);
@@ -169,7 +175,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("DOC", $doc->getId());
     $row->AddViewField("FILE_NAME", $docName);
     $row->AddViewField("SIGN", $signersString);
-    $row->AddViewField("STATUS", $docStatusString);
+    $row->AddViewField("TYPE", $docTypeString);
 
     $docColl = new DocumentCollection();
     $docColl->add($doc);
@@ -177,27 +183,27 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     // context menu
     $arActions = Array();
 
-    // add sign action for docs without status
-    if (!$docStatus) {
+    // add sign action for unsigned docs without "blocked" status
+    if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
         $arActions[] = array(
             "ICON" => "edit",
             "DEFAULT" => true,
             "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
             "ACTION" => "sign(" . $docColl->toJSON() . ", null)"
         );
-    } else {
-        // add unblock action for docs with status PROCESSING
-        if ($docStatus == DOC_STATUS_PROCESSING) {
-            $arActions[] = array(
-                "ICON" => "access",
-                "DEFAULT" => false,
-                "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
-                "ACTION" => "unblock(" . json_encode($arId) . ")"
-            );
-        }
+        $arActions[] = array("SEPARATOR" => true);
     }
 
-    $arActions[] = array("SEPARATOR" => true);
+    // add unblock action for docs with status PROCESSING
+    if ($docStatus === DOC_STATUS_BLOCKED) {
+        $arActions[] = array(
+            "ICON" => "access",
+            "DEFAULT" => false,
+            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+            "ACTION" => "unblock(" . json_encode($arId) . ")"
+        );
+        $arActions[] = array("SEPARATOR" => true);
+    }
 
     $arActions[] = array(
         "ICON" => "delete",
@@ -258,6 +264,7 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
     GetMessage("TN_DOCS_COL_ID"),
     GetMessage("TN_DOCS_COL_FILENAME"),
     GetMessage("TN_DOCS_COL_SIGN"),
+    GetMessage("TN_DOCS_COL_TYPE"),
     GetMessage("TN_DOCS_COL_STATUS")
 ));
 ?>
@@ -282,15 +289,32 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
     </tr>
 
     <tr>
+        <td> <?= GetMessage("TN_DOCS_COL_TYPE") . ":" ?> </td>
+        <td>
+            <?php
+            $arr = array(
+                "reference_id" => array("", "0", "1"),
+                "reference" => array(
+                    "",
+                    GetMessage("TN_DOCS_TYPE_0"),
+                    GetMessage("TN_DOCS_TYPE_1"),
+                )
+            );
+            echo SelectBoxFromArray("find_type", $arr, $find_type, GetMessage("POST_ALL"), "");
+            ?>
+        </td>
+
+    <tr>
         <td> <?= GetMessage("TN_DOCS_COL_STATUS") . ":" ?> </td>
         <td>
             <?php
             $arr = array(
-                "reference_id" => array("", "1", "2", "3"),
-                "reference" => array("",
+                "reference_id" => array("", "0", "1", "2"),
+                "reference" => array(
+                    "",
+                    GetMessage("TN_DOCS_STATUS_0"),
                     GetMessage("TN_DOCS_STATUS_1"),
-                    GetMessage("TN_DOCS_STATUS_2"),
-                    GetMessage("TN_DOCS_STATUS_3")
+                    GetMessage("TN_DOCS_STATUS_2")
                 )
             );
             echo SelectBoxFromArray("find_status", $arr, $find_status, GetMessage("POST_ALL"), "");

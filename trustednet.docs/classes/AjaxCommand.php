@@ -12,7 +12,7 @@ class AjaxCommand
             return $res;
         }
         $status = $_GET["status"];
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
             echo "update status  " . $status . ' DOC_STATUS_CANCEL ' . DOC_STATUS_CANCEL . '      ' . DOC_STATUS_ERROR;
             switch ($status) {
                 case DOC_STATUS_CANCEL:
@@ -72,7 +72,7 @@ class AjaxCommand
                 $docsNotFound[] = $id;
             } else {
                 $doc = $doc->getLastDocument();
-                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
+                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
                     // Doc is blocked by previous operation
                     $docsBlocked->add($doc);
                 } elseif (!$doc->checkFile()) {
@@ -133,7 +133,7 @@ class AjaxCommand
                 $list = $docsSent->getList();
                 foreach ($list as $item) {
                     // Set doc status to block it
-                    DocumentStatus::create($item, DOC_STATUS_PROCESSING);
+                    DocumentStatus::create($item, DOC_STATUS_BLOCKED);
                 }
             } else {
                 $res["message"] = getErrorMessageFromResponse($resp);
@@ -165,7 +165,7 @@ class AjaxCommand
                 if ($doc->getStatus()) {
                     TDataBaseDocument::removeStatus($doc->getStatus());
                 }
-                DocumentStatus::create($newDoc, DOC_STATUS_DONE);
+                //DocumentStatus::create($newDoc, DOC_STATUS_DONE);
                 //AjaxSign::sendSetStatus($params["operationId"]);
                 $res["success"] = true;
                 $res["message"] = "File uploaded";
@@ -181,36 +181,23 @@ class AjaxCommand
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
-                DocumentStatus::create($doc, DOC_STATUS_PROCESSING);
+                DocumentStatus::create($doc, DOC_STATUS_BLOCKED);
             }
+        } else {
+            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["success"] = false;
         }
         return $res;
     }
 
     function unblock($params)
     {
-        $res = array("success" => true, "message" => GetMessage('TRUSTEDNET_DOC_UNBLOCK_NOT_REQUIRED'));
+        $res = array("success" => true, "message" => "");
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
-                if ($doc) {
-                    $lastDoc = $doc->getLastDocument();
-                    if ($lastDoc) {
-                        $status = $lastDoc->getStatus();
-                        if ($status) {
-                            if ($status->getValue() == DOC_STATUS_PROCESSING) {
-                                if (!$doc->getSigners()) {
-                                    TDataBaseDocument::removeStatus($doc->getStatus());
-                                } else {
-                                    $doc->getStatus()->setValue(DOC_STATUS_DONE);
-                                    $doc->getStatus()->save();
-                                }
-                                $res["message"] = GetMessage('TRUSTEDNET_DOC_UNBLOCK_SUCCESS');
-                            }
-                        }
-                    }
-                }
+                TDataBaseDocument::removeStatus($doc->getStatus());
             }
         } else {
             $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
@@ -243,7 +230,7 @@ class AjaxCommand
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
                 $lastDoc = $doc->getLastDocument();
-                $lastDoc->removeRecursively();
+                $lastDoc->remove();
             }
             $res["message"] = GetMessage('TRUSTEDNET_DOC_REMOVE_SUCCESS');
             $res["success"] = true;

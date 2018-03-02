@@ -45,6 +45,9 @@ class TDataBaseDocument
             'SIGN' => array(
                 'FIELD_NAME' => 'TD.SIGNERS',
             ),
+            'TYPE' => array(
+                'FIELD_NAME' => 'TD.TYPE',
+            ),
             'STATUS' => array(
                 'FIELD_NAME' => 'TDS.STATUS',
             ),
@@ -53,6 +56,7 @@ class TDataBaseDocument
         $find_docId = $filter['DOC'];
         $find_fileName = $filter['FILE_NAME'];
         $find_signInfo = $filter['SIGN'];
+        $find_type = $filter['TYPE'];
         $find_status = $filter['STATUS'];
 
         global $DB;
@@ -72,6 +76,8 @@ class TDataBaseDocument
             $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
         if ($find_signInfo)
             $sql .= " AND TD.SIGNERS LIKE '%" . CDatabase::ForSql($find_signInfo) . "%'";
+        if ($find_type != "")
+            $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status != "")
             $sql .= " AND TDS.STATUS = " . $find_status;
 

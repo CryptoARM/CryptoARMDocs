@@ -540,7 +540,7 @@ function checkStatus($oid)
     $res = false;
     foreach ($list as &$doc) {
         $res = true;
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_PROCESSING) {
+        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
             $res = false;
             break;
         }

@@ -26,13 +26,14 @@ function sign(docs, extra = {}) {
     req.params.extra = extra;
     req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
     if (socket.connected) {
-        console.log(req);
         socket.emit('sign', req);
         ids = [];
         docs.forEach(function(elem) {
             ids.push(elem.id);
         });
-        block(ids, location.reload());
+        block(ids, function(){
+            location.reload();
+        });
     } else {
         alert(TN_ALERT_NO_CLIENT);
     }
@@ -49,7 +50,7 @@ function block(ids, cb = null) {
                 alert(d.message);
             }
             if (cb) {
-                cd(d);
+                cb(d);
             }
         },
         error: function (e) {

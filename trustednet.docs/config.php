@@ -19,8 +19,7 @@ define("DOC_TYPE_FILE", 0);
 define("DOC_TYPE_SIGNED_FILE", 1);
 
 // Document statuses
-define("DOC_STATUS_DONE", 0);
-define("DOC_STATUS_PROCESSING", 1);
-define("DOC_STATUS_CANCEL", 2);
-define("DOC_STATUS_ERROR", 3);
+define("DOC_STATUS_BLOCKED", 0);
+define("DOC_STATUS_CANCEL", 1);
+define("DOC_STATUS_ERROR", 2);
 

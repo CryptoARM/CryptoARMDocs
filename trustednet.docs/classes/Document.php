@@ -295,19 +295,10 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Removes document
-     * @return boolean
-     */
-    public function remove()
-    {
-        TDataBaseDocument::removeDocument($this);
-    }
-
-    /**
      * Removes document and all its parents
      * @return boolean
      */
-    public function removeRecursively()
+    public function remove()
     {
         TDataBaseDocument::removeDocumentRecursively($this);
     }
