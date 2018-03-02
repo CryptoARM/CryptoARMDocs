@@ -162,11 +162,7 @@ class AjaxCommand
                 $file = $_FILES["file"];
                 if ($cb) $cb($newDoc, $file, $params["extra"]);
                 $newDoc->save();
-                if ($doc->getStatus()) {
-                    TDataBaseDocument::removeStatus($doc->getStatus());
-                }
-                //DocumentStatus::create($newDoc, DOC_STATUS_DONE);
-                //AjaxSign::sendSetStatus($params["operationId"]);
+                unblock($params);
                 $res["success"] = true;
                 $res["message"] = "File uploaded";
             } else $res["message"] = "Document is not found";
@@ -197,7 +193,10 @@ class AjaxCommand
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
-                TDataBaseDocument::removeStatus($doc->getStatus());
+                $docStatus = $doc->getStatus();
+                if ($docStatus){
+                    TDataBaseDocument::removeStatus($doc->getStatus());
+                }
             }
         } else {
             $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');

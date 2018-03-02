@@ -64,7 +64,14 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     $docs = new DocumentCollection();
     foreach($ids as $id) {
         $doc = TDataBaseDocument::getDocumentById($id);
-        $docs->add($doc);
+        $docType = $doc->getType();
+        $docStatus = $doc->getStatus();
+        if ($docStatus) {
+            $docStatus = (int)$docStatus->getValue();
+        }
+        if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
+            $docs->add($doc);
+        }
     }
 
     switch ($_REQUEST['action']) {
@@ -154,7 +161,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docType = $doc->getType();
     $docTypeString = GetMessage("TN_DOCS_TYPE_" . $docType);
 
-    $docStatus = $doc->getStatus($doc);
+    $docStatus = $doc->getStatus();
     if ($docStatus) {
         $docStatus = (int)$docStatus->getValue();
         $docTypeString .=

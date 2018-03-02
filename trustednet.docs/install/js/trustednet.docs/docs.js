@@ -17,25 +17,27 @@ socket.on('error', function (data) {
 });
 
 function sign(docs, extra = {}) {
-    req = {};
-    req.jsonrpc = '2.0';
-    req.method = 'sign';
-    req.params = {};
-    req.params.token = '';
-    req.params.files = docs;
-    req.params.extra = extra;
-    req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
-    if (socket.connected) {
-        socket.emit('sign', req);
-        ids = [];
-        docs.forEach(function(elem) {
-            ids.push(elem.id);
-        });
-        block(ids, function(){
-            location.reload();
-        });
-    } else {
-        alert(TN_ALERT_NO_CLIENT);
+    if (docs.length > 0) {
+        req = {};
+        req.jsonrpc = '2.0';
+        req.method = 'sign';
+        req.params = {};
+        req.params.token = '';
+        req.params.files = docs;
+        req.params.extra = extra;
+        req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
+        if (socket.connected) {
+            socket.emit('sign', req);
+            ids = [];
+            docs.forEach(function(elem) {
+                ids.push(elem.id);
+            });
+            block(ids, function(){
+                location.reload();
+            });
+        } else {
+            alert(TN_ALERT_NO_CLIENT);
+        }
     }
 }
 
@@ -47,7 +49,6 @@ function block(ids, cb = null) {
         success: function (d) {
             if (d.success === false) {
                 console.log(d);
-                alert(d.message);
             }
             if (cb) {
                 cb(d);
@@ -58,7 +59,7 @@ function block(ids, cb = null) {
             try {
                 var d = JSON.parse(e.responseText);
                 if (d.success === false) {
-                    alert(d.message);
+                    console.log(d);
                 }
             } catch (e) {
                 console.error(e);
