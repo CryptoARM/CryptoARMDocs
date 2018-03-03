@@ -49,7 +49,7 @@ class TDataBaseDocument
                 'FIELD_NAME' => 'TD.TYPE',
             ),
             'STATUS' => array(
-                'FIELD_NAME' => 'TDS.STATUS',
+                'FIELD_NAME' => 'TD.STATUS',
             ),
         );
 
@@ -62,12 +62,9 @@ class TDataBaseDocument
         global $DB;
         $sql = "
             SELECT
-                TD.ID, TDS.STATUS
+                TD.ID
             FROM
-                " . DB_TABLE_DOCUMENTS . " TD LEFT JOIN
-                " . DB_TABLE_STATUS . " TDS
-            ON
-                TD.ID = TDS.DOCUMENT_ID
+                " . DB_TABLE_DOCUMENTS . " TD
             WHERE
                 isnull(TD.CHILD_ID)";
         if ($find_docId)
@@ -79,7 +76,7 @@ class TDataBaseDocument
         if ($find_type != "")
             $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status != "")
-            $sql .= " AND TDS.STATUS = " . $find_status;
+            $sql .= " AND TD.STATUS = " . $find_status;
 
         $sOrder = '';
         if (is_array($arOrder)) {
@@ -106,80 +103,6 @@ class TDataBaseDocument
     }
 
     /**
-     *
-     * @global type $DB
-     * @param \DocumentStatus $status
-     */
-    static function saveStatus($status)
-    {
-        if (!TDataBaseDocument::getStatus($status->getDocument())) {
-            TDataBaseDocument::insertStatus($status);
-        } else {
-            global $DB;
-            $sql = 'UPDATE ' . DB_TABLE_STATUS . ' SET '
-                . 'STATUS = ' . $status->getValue() . ', '
-                . 'CREATED = CURRENT_TIMESTAMP '
-                . 'WHERE DOCUMENT_ID = ' . $status->getDocumentId();
-            $DB->Query($sql);
-        }
-    }
-
-    /**
-     *
-     * @global type $DB
-     * @param \Document $doc
-     * @return \DocumentStatus
-     */
-    static function getStatus($doc)
-    {
-        return TDataBaseDocument::getStatusById($doc->getId());
-    }
-
-    /**
-     * Returns document status by document id
-     * @global type $DB
-     * @param number $docId
-     * @return \DocumentStatus
-     */
-    static function getStatusById($docId)
-    {
-        global $DB;
-        $sql = 'SELECT * FROM ' . DB_TABLE_STATUS . ' WHERE DOCUMENT_ID = ' . $docId;
-        $rows = $DB->Query($sql);
-        $array = $rows->Fetch();
-        $res = null;
-        if ($array) {
-            $res = DocumentStatus::fromArray($array);
-            $res->setDocumentId($docId);
-        }
-        return $res;
-    }
-
-    /**
-     *
-     * @global type $DB
-     * @param \DocumentStatus $status
-     */
-    static function insertStatus($status)
-    {
-        global $DB;
-        $sql = 'INSERT INTO ' . DB_TABLE_STATUS . '  '
-            . '(DOCUMENT_ID, STATUS) VALUES ('
-            . $status->getDocumentId() . ', '
-            . $status->getValue()
-            . ')';
-        $DB->Query($sql);
-    }
-
-    static function removeStatus($status)
-    {
-        global $DB;
-        $sql = 'DELETE FROM ' . DB_TABLE_STATUS
-            . ' WHERE DOCUMENT_ID = ' . $status->getDocumentId();
-        $DB->Query($sql);
-    }
-
-    /**
      * Saves document in DB. If the document doesn't have an id
      * creates new record for it
      * @global type $DB
@@ -203,6 +126,7 @@ class TDataBaseDocument
                 . 'NAME = "' . CDatabase::ForSql($doc->getName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
+                . 'STATUS = ' . $doc->getStatus() . ', '
                 . "SIGNERS = '" . CDatabase::ForSql($doc->getSigners()) . "', "
                 . 'PARENT_ID = ' . $parentId . ', '
                 . 'CHILD_ID = ' . $childId . ' '
@@ -269,9 +193,6 @@ class TDataBaseDocument
             . 'WHERE ID = ' . $doc->getId();
         $DB->Query($sql);
         $sql = 'DELETE FROM ' . DB_TABLE_PROPERTY . ' '
-            . 'WHERE PARENT_ID = ' . $doc->getId();
-        $DB->Query($sql);
-        $sql = 'DELETE FROM ' . DB_TABLE_STATUS . ' '
             . 'WHERE DOCUMENT_ID = ' . $doc->getId();
         $DB->Query($sql);
         // Removes childId from parent document
@@ -352,7 +273,7 @@ class TDataBaseDocument
         } else {
             global $DB;
             $sql = 'UPDATE ' . $tableName .
-                ' SET PARENT_ID = ' . $property->getParentId() . ',
+                ' SET DOCUMENT_ID = ' . $property->getParentId() . ',
                       TYPE="' . CDatabase::ForSql($property->getType()) . '",
                       VALUE="' . CDatabase::ForSql($property->getValue()) . '"
                 WHERE ID = ' . $property->getId();
@@ -370,7 +291,7 @@ class TDataBaseDocument
     {
         global $DB;
         $sql = 'INSERT INTO ' . $tableName .
-              ' (PARENT_ID, TYPE, VALUE)
+              ' (DOCUMENT_ID, TYPE, VALUE)
                 VALUES (' .
                     $property->getParentId() . ', "' .
                     CDatabase::ForSql($property->getType()) . '", "' .
@@ -444,9 +365,9 @@ class TDataBaseDocument
      * @param number $parentId
      * @return PropertyCollection
      */
-    static function getPropertiesByParentId($tableName, $parentId)
+    static function getPropertiesByDocumentId($tableName, $parentId)
     {
-        return TDataBaseDocument::getPropertiesBy($tableName, 'PARENT_ID', $parentId);
+        return TDataBaseDocument::getPropertiesBy($tableName, 'DOCUMENT_ID', $parentId);
     }
 
 }

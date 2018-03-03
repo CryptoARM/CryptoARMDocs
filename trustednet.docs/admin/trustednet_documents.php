@@ -56,7 +56,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         }
     } else {
         foreach ($arID as $ID) {
-            $ID = IntVal($ID);
+            $ID = (int)$ID;
             $ids[] = $ID;
         }
     }
@@ -66,9 +66,6 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         $doc = TDataBaseDocument::getDocumentById($id);
         $docType = $doc->getType();
         $docStatus = $doc->getStatus();
-        if ($docStatus) {
-            $docStatus = (int)$docStatus->getValue();
-        }
         if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
             $docs->add($doc);
         }
@@ -162,8 +159,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docTypeString = GetMessage("TN_DOCS_TYPE_" . $docType);
 
     $docStatus = $doc->getStatus();
-    if ($docStatus) {
-        $docStatus = (int)$docStatus->getValue();
+    if ($docStatus !== DOC_STATUS_NONE) {
         $docTypeString .=
             "<br>" .
             GetMessage("TN_DOCS_STATUS") .
@@ -300,12 +296,16 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
         <td>
             <?php
             $arr = array(
-                "reference_id" => array("", "0", "1"),
+                "reference_id" => array(
+                    "",
+                    DOC_TYPE_FILE,
+                    DOC_TYPE_SIGNED_FILE,
+                ),
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_TYPE_0"),
-                    GetMessage("TN_DOCS_TYPE_1"),
-                )
+                    GetMessage("TN_DOCS_TYPE_" . DOC_TYPE_FILE),
+                    GetMessage("TN_DOCS_TYPE_" . DOC_TYPE_SIGNED_FILE),
+                ),
             );
             echo SelectBoxFromArray("find_type", $arr, $find_type, GetMessage("POST_ALL"), "");
             ?>
@@ -316,13 +316,18 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
         <td>
             <?php
             $arr = array(
-                "reference_id" => array("", "0", "1", "2"),
+                "reference_id" => array(
+                    "",
+                    DOC_STATUS_BLOCKED,
+                    DOC_STATUS_CANCEL,
+                    DOC_STATUS_ERROR,
+                ),
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_STATUS_0"),
-                    GetMessage("TN_DOCS_STATUS_1"),
-                    GetMessage("TN_DOCS_STATUS_2")
-                )
+                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_BLOCKED),
+                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_CANCEL),
+                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_ERROR),
+                ),
             );
             echo SelectBoxFromArray("find_status", $arr, $find_status, GetMessage("POST_ALL"), "");
             ?>

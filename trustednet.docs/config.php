@@ -12,14 +12,14 @@ define("TN_DOCS_AJAX_CONTROLLER", "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/c
 // DB tables
 define("DB_TABLE_DOCUMENTS", "trn_docs");
 define("DB_TABLE_PROPERTY", "trn_docs_property");
-define("DB_TABLE_STATUS", "trn_docs_status");
 
 // Document types
 define("DOC_TYPE_FILE", 0);
 define("DOC_TYPE_SIGNED_FILE", 1);
 
 // Document statuses
-define("DOC_STATUS_BLOCKED", 0);
-define("DOC_STATUS_CANCEL", 1);
-define("DOC_STATUS_ERROR", 2);
+define("DOC_STATUS_NONE", 0);
+define("DOC_STATUS_BLOCKED", 1);
+define("DOC_STATUS_CANCEL", 2);
+define("DOC_STATUS_ERROR", 3);
 

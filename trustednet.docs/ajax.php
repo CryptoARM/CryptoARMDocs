@@ -5,16 +5,11 @@ define("BX_STATISTIC_BUFFER_USED", false);
 define("NO_LANG_FILES", true);
 define("NOT_CHECK_PERMISSIONS", true);
 
-//import trustednet.auth
-//require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/components/bitrix/trustednet.auth/functions.php");
 header('Content-Type: application/json; charset=' . LANG_CHARSET);
 
-// ============================== AJAX Controller
+// AJAX Controller
 
 $command = $_GET['command'];
-//echo '========================== ';print_r($command);echo '========================== ';
-//$res = array("success" => false, "message" => "Param 'command' is needed");print_r($res);
-//die();
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {

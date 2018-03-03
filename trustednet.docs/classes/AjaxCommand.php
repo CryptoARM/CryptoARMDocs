@@ -19,7 +19,7 @@ class AjaxCommand
                     if (!$doc->getSigners()) {
                         TDataBaseDocument::removeStatus($doc->getStatus());
                     } else {
-                        $doc->getStatus()->setValue(DOC_STATUS_DONE);
+                        $doc->getStatus()->setValue(DOC_STATUS_NONE);
                         $doc->getStatus()->save();
                     }
                     AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
@@ -177,7 +177,8 @@ class AjaxCommand
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
-                DocumentStatus::create($doc, DOC_STATUS_BLOCKED);
+                $doc->setStatus(DOC_STATUS_BLOCKED);
+                $doc->save();
             }
         } else {
             $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
@@ -193,10 +194,8 @@ class AjaxCommand
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
                 $doc = TDataBaseDocument::getDocumentById($id);
-                $docStatus = $doc->getStatus();
-                if ($docStatus){
-                    TDataBaseDocument::removeStatus($doc->getStatus());
-                }
+                $doc->setStatus(DOC_STATUS_NONE);
+                $doc->save();
             }
         } else {
             $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');

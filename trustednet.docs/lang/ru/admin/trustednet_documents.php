@@ -14,13 +14,13 @@ $MESS["TN_DOCS_SIGN_TIME"] = "<b>Время: </b> ";
 $MESS["TN_DOCS_SIGN_NAME"] = "<b>Имя: </b> ";
 $MESS["TN_DOCS_SIGN_ORG"] = "<b>Организация: </b> ";
 
-$MESS["TN_DOCS_TYPE_0"] = "Документ";
-$MESS["TN_DOCS_TYPE_1"] = "Подписанный документ";
+$MESS["TN_DOCS_TYPE_" . DOC_TYPE_FILE] = "Документ";
+$MESS["TN_DOCS_TYPE_" . DOC_TYPE_SIGNED_FILE] = "Подписанный документ";
 
 $MESS["TN_DOCS_STATUS"] = "<b>Статус: </b>";
-$MESS["TN_DOCS_STATUS_0"] = "Отправлен на подпись";
-$MESS["TN_DOCS_STATUS_1"] = "Подпись отменена";
-$MESS["TN_DOCS_STATUS_2"] = "Ошибка подписи";
+$MESS["TN_DOCS_STATUS_" . DOC_STATUS_BLOCKED] = "Отправлен на подпись";
+$MESS["TN_DOCS_STATUS_" . DOC_STATUS_CANCEL] = "Подпись отменена";
+$MESS["TN_DOCS_STATUS_" . DOC_STATUS_ERROR] = "Ошибка подписи";
 
 // Actions
 $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";

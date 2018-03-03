@@ -32,7 +32,7 @@ class Property implements IEntity, ISave
     {
         $res = new Property();
         $res->id = $array["ID"];
-        $res->parentId = $array["PARENT_ID"];
+        $res->parentId = $array["DOCUMENT_ID"];
         $res->type = $array["TYPE"];
         $res->value = $array["VALUE"];
         return $res;
@@ -114,7 +114,7 @@ class Property implements IEntity, ISave
     {
         $res = array(
             "ID" => $this->id,
-            "PARENT_ID" => $this->parentId,
+            "DOCUMENT_ID" => $this->parentId,
             "TYPE" => $this->type,
             "VALUE" => $this->value
         );

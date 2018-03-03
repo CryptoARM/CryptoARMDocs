@@ -406,8 +406,8 @@ function getOrdersByFilter($arOrder = array(), $filter)
     WHERE
         BO.USER_ID = BU.ID
         AND BO.ID = OrderList.VALUE
-        AND TD.ID = TDP.PARENT_ID
-        AND TD.ID = OrderList.PARENT_ID
+        AND TD.ID = TDP.DOCUMENT_ID
+        AND TD.ID = OrderList.DOCUMENT_ID
         AND TDP.TYPE = 'STATUS'
         AND isnull(TD.CHILD_ID)";
     if ($find_order)
@@ -478,7 +478,7 @@ function getDocumentsByOrder($order)
     global $DB;
     $sql = 'SELECT ' . DB_TABLE_DOCUMENTS . '.* FROM ' . DB_TABLE_DOCUMENTS . ', ' . DB_TABLE_PROPERTY . ' '
         . 'WHERE isnull(CHILD_ID) AND '
-        . DB_TABLE_DOCUMENTS . '.ID = ' . DB_TABLE_PROPERTY . '.PARENT_ID AND '
+        . DB_TABLE_DOCUMENTS . '.ID = ' . DB_TABLE_PROPERTY . '.DOCUMENT_ID AND '
         . DB_TABLE_PROPERTY . '.TYPE = "ORDER" AND '
         . DB_TABLE_PROPERTY . '.VALUE = "' . $order . '"';
     $rows = $DB->Query($sql);
@@ -499,7 +499,7 @@ function getOrderByDocunent($ids)
     global $DB;
     $sql = 'SELECT VALUE FROM ' . DB_TABLE_PROPERTY . ' '
         . 'WHERE '
-        . 'PARENT_ID = "' . $ids . '" AND '
+        . 'DOCUMENT_ID = "' . $ids . '" AND '
         . 'TYPE = "ORDER"';
     $rows = $DB->Query($sql);
     $orderId = $rows->Fetch();

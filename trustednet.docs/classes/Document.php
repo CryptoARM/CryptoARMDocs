@@ -12,13 +12,13 @@ class Document implements IEntity, ISave
     protected $name = '';
     protected $path = '';
     protected $type = DOC_TYPE_FILE;
+    protected $status = DOC_STATUS_NONE;
     protected $signers = '';
     protected $properties = null;
     protected $parent = null;
     protected $parentId = null;
     protected $child = null;
     protected $childId = null;
-    protected $status = null;
 
     function __construct()
     {
@@ -41,6 +41,7 @@ class Document implements IEntity, ISave
             $doc->setPath($array["PATH"]);
             $doc->setSigners($array["SIGNERS"]);
             $doc->setType($array["TYPE"]);
+            $doc->setStatus($array["STATUS"]);
             $doc->setParentId($array["PARENT_ID"]);
             $doc->setChildId($array["CHILD_ID"]);
         }
@@ -49,19 +50,16 @@ class Document implements IEntity, ISave
 
     /**
      * Returns document status
-     * @return \DocumentStatus
+     * @return
      */
     function getStatus()
     {
-        if (!$this->status) {
-            $this->status = TDataBaseDocument::getStatus($this);
-        }
-        return $this->status;
+        return (int)$this->status;
     }
 
     /**
      * Sets document status
-     * @param \DocumentStatus $status
+     * @param $status
      */
     function setStatus($status)
     {
@@ -329,7 +327,7 @@ class Document implements IEntity, ISave
         $props = &$this->properties;
         if (!$props) {
             if ($this->getId()) {
-                $props = TDataBaseDocument::getPropertiesByParentId(DB_TABLE_PROPERTY, $this->getId());
+                $props = TDataBaseDocument::getPropertiesByDocumentId(DB_TABLE_PROPERTY, $this->getId());
             } else {
                 $props = new PropertyCollection();
             }
@@ -427,7 +425,7 @@ class Document implements IEntity, ISave
      */
     function getType()
     {
-        return $this->type;
+        return (int)$this->type;
     }
 
     /**
