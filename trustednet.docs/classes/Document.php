@@ -2,7 +2,10 @@
 
 
 /**
- * Document class
+ * Class: Document
+ *
+ * @see IEntity
+ * @see ISave
  */
 class Document implements IEntity, ISave
 {
@@ -15,9 +18,7 @@ class Document implements IEntity, ISave
     protected $status = DOC_STATUS_NONE;
     protected $signers = '';
     protected $properties = null;
-    protected $parent = null;
     protected $parentId = null;
-    protected $child = null;
     protected $childId = null;
 
     function __construct()
@@ -27,7 +28,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns new document object from array
-     * @param type $array
+     * @param array $array
      * @return \Document
      */
     static function fromArray($array)
@@ -50,7 +51,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns document status
-     * @return
+     * @return integer
      */
     function getStatus()
     {
@@ -59,28 +60,37 @@ class Document implements IEntity, ISave
 
     /**
      * Sets document status
-     * @param $status
+     * @param integer $status
      */
     function setStatus($status)
     {
-        $this->status = $status;
+        $this->status = (int)$status;
     }
 
     /**
-     * @return type
+     * Returns id of the child of the document
+     * @return integer|null
      */
     function getChildId()
     {
-        return $this->childId;
+        if (is_null($this->childId)) {
+            return null;
+        } else {
+            return (int)$this->childId;
+        }
     }
 
     /**
-     * @param type $childId
+     * Sets id of the child of the document
+     * @param integer|null $childId
      */
     function setChildId($childId)
     {
-        $this->childId = $childId;
-        $this->child = null;
+        if (is_null($childId)) {
+            $this->childId = null;
+        } else {
+            $this->childId = (int)$childId;
+        }
     }
 
     /**
@@ -89,12 +99,19 @@ class Document implements IEntity, ISave
      */
     function getLastDocument()
     {
-        $res = $this;
-        if ($res->hasChild()) {
+        if ($this->hasChild()) {
             $child = $this->getChild();
-            $res = $child->getLastDocument();
+            return $child->getLastDocument();
+        } else {
+            return $this;
         }
-        return $res;
+        // TODO: delete after testing
+        //$res = $this;
+        //if ($res->hasChild()) {
+        //    $child = $this->getChild();
+        //    $res = $child->getLastDocument();
+        //}
+        //return $res;
     }
 
     /**
@@ -103,81 +120,87 @@ class Document implements IEntity, ISave
      */
     function hasChild()
     {
-        $res = false;
-        $child = $this->getChild();
-        if ($child) {
-            $res = true;
+        if ($this->getChildId()) {
+            return true;
+        } else {
+            return false;
         }
-        return $res;
     }
 
     /**
      * Returns child document
-     * @return \Document
+     * @return \Document|null
      */
     function getChild()
     {
-        if (!$this->child && $this->childId) {
-            $this->child = TDataBaseDocument::getDocumentById($this->childId);
+        if ($this->childId) {
+            return TDataBaseDocument::getDocumentById($this->childId);
+        } else {
+            return null;
         }
-        return $this->child;
     }
 
     /**
-     * Sets document child
+     * Sets child id by passed document
      * @param \Document $doc
      */
     function setChild($doc)
     {
-        $this->child = $doc;
         $this->childId = $doc->id;
     }
 
     /**
      * Returns parent document id
-     * @return number
+     * @return integer|null
      */
     function getParentId()
     {
-        return $this->parentId;
+        if (is_null($this->parentId)) {
+            return null;
+        } else {
+            return (int)$this->parentId;
+        }
     }
 
     /**
      * Sets parent document id
-     * @param number $parentId
+     * @param integer|null $parentId
      */
     function setParentId($parentId)
     {
-        $this->parentId = $parentId;
-        $this->parent = null;
+        if (is_null($parentId)) {
+            $this->parentId = null;
+        } else {
+            $this->parentId = (int)$parentId;
+        }
     }
 
     /**
      * Returns parent document
-     * @return \Document
+     * @return \Document|null
      */
     function getParent()
     {
-        if (!$this->parent && $this->parentId) {
-            $this->parent = TDataBaseDocument::getDocumentById($this->parentId);
+        if ($this->parentId) {
+            return TDataBaseDocument::getDocumentById($this->parentId);
+        } else {
+            return null;
         }
-        return $this->parent;
     }
 
     /**
-     * Sets parent document
+     * Sets parent id by passed document
      * @param \Document $parent
      */
     function setParent($parent)
     {
-        $this->parent = $parent;
         $this->parentId = $parent->id;
     }
 
     /**
      * Returns document creation time.
      * TIMESTAMP_X field in DB
-     * @return type Time
+     * @return string "YYYY-MM-DD hh:mm:ss"
      */
     function getCreated()
     {
@@ -187,7 +210,7 @@ class Document implements IEntity, ISave
     /**
      * Sets document creation time.
      * TIMESTAMP_X field in DB
-     * @param type $time
+     * @param string $time
      */
     function setCreated($time)
     {
@@ -196,7 +219,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns document sign info as array
-     * @return Array
+     * @return array
      */
     function getSignersToArray()
     {
@@ -248,53 +271,67 @@ class Document implements IEntity, ISave
 
     }
 
+    /**
+     * Returns document info in JSON format
+     * Used to send document to signing app
+     * @return string
+     */
     public function toJSON()
     {
         return json_encode($this->jsonSerialize());
     }
 
+    /**
+     * Prepares document info for converting to JSON
+     * @return array
+     */
     public function jsonSerialize()
     {
         $a = array(
-            "name" => $this->name,
+            "name" => $this->getName(),
             "url" => $this->getUrl(),
             "id" => $this->getId(),
         );
         return $a;
     }
 
+    // TODO: remove?
     public function getHtmlPath()
     {
         return str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->path);
     }
 
+    /**
+     * Returns url for downloading document file through controller
+     * @return string
+     */
     public function getUrl()
     {
         return TN_DOCS_AJAX_CONTROLLER . "?command=content&id=" . $this->getId();
     }
 
     /**
-     * Returns id
+     * Returns document id
      * ID field in DB
-     * @return type
+     * @return integer
      */
     function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
      * Sets id
      * ID field in DB
+     * @param integer $id
      */
     function setId($id)
     {
-        $this->id = $id;
+        $this->id = (int)$id;
     }
 
     /**
      * Removes document and all its parents
-     * @return boolean
      */
     public function remove()
     {
@@ -302,8 +339,7 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Saves changed document or creates new record if id is null
-     * @return boolean
+     * Saves changed document in DB or creates new record if id is null
      */
     public function save()
     {
@@ -319,10 +355,9 @@ class Document implements IEntity, ISave
 
     /**
      * Return collection of properties of document
-     * @param number $i
-     * @return PropertyCollection | Property
+     * @return \PropertyCollection
      */
-    function getProperties($i = null)
+    function getProperties()
     {
         $props = &$this->properties;
         if (!$props) {
@@ -332,15 +367,12 @@ class Document implements IEntity, ISave
                 $props = new PropertyCollection();
             }
         }
-        $res = $props;
-        if (!is_null($i)) {
-            $res = $props->items($i);
-        }
-        return $res;
+        return $props;
     }
 
     /**
-     *
+     * Creates a copy of the document object
+     * New document has id = null
      * @return \Document
      */
     public function copy()
@@ -420,8 +452,8 @@ class Document implements IEntity, ISave
 
     /**
      * Returns document type
-     * TYPE field
-     * @return number
+     * TYPE field in DB
+     * @return integer
      */
     function getType()
     {
@@ -430,14 +462,15 @@ class Document implements IEntity, ISave
 
     /**
      * Sets document type
-     * TYPE field
+     * TYPE field in DB
      * @param number $type
      */
     function setType($type)
     {
-        $this->type = $type;
+        $this->type = (int)$type;
     }
 
+    //TODO: implement
     public function toArray()
     {
 
@@ -445,6 +478,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns true if associated file exists on disk
+     * @return boolean
      */
     function checkFile()
     {

@@ -154,6 +154,7 @@ class AjaxCommand
                 $newDoc = $doc->copy();
                 $signers = urldecode($params["signers"]);
                 if ($doc->getSigners()) {
+                    // TODO: rewrite
                     $signers = substr($doc->getSigners(), 0 , -1) .','. substr($signers, 1);
                 }
                 $newDoc->setSigners($signers);
@@ -165,11 +166,18 @@ class AjaxCommand
                     $cb($newDoc, $file, $extra);
                 }
                 $newDoc->save();
-                unblock($params);
+                // Drop "blocked" status of original doc
+                AjaxCommand::unblock(
+                    array("id" => array($params["id"]))
+                );
                 $res["success"] = true;
                 $res["message"] = "File uploaded";
-            } else $res["message"] = "Document is not found";
-        } else $res["message"] = "Canceled in beforeUploadSignature function";
+            } else {
+                $res["message"] = "Document is not found";
+            }
+        } else {
+            $res["message"] = "Canceled in beforeUploadSignature function";
+        }
         return $res;
     }
 
