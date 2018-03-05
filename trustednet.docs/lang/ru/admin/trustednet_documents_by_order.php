@@ -30,8 +30,8 @@ $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TN_DOCS_ACT_UNBLOCK"] = "Разблокировать";
 $MESS["TN_DOCS_ACT_SEND_MAIL"] = "Отправить письмо";
 
-$MESS["TN_DOCS_STATE_CLIENT"] = "Подписан клиентом";
-$MESS["TN_DOCS_STATE_SELLER"] = "Подписан продавцом";
-$MESS["TN_DOCS_STATE_BOTH"] = "Подписан обеими сторонами";
-$MESS["TN_DOCS_STATE_NONE"] = "Требуется подпись";
+$MESS["TN_DOCS_ROLES_CLIENT"] = "Подписан клиентом";
+$MESS["TN_DOCS_ROLES_SELLER"] = "Подписан продавцом";
+$MESS["TN_DOCS_ROLES_BOTH"] = "Подписан обеими сторонами";
+$MESS["TN_DOCS_ROLES_NONE"] = "Требуется подпись";
 

@@ -160,7 +160,10 @@ class AjaxCommand
                 $newDoc->setType(DOC_TYPE_SIGNED_FILE);
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
-                if ($cb) $cb($newDoc, $file, $params["extra"]);
+                $extra = json_decode($params["extra"], true);
+                if ($cb) {
+                    $cb($newDoc, $file, $extra);
+                }
                 $newDoc->save();
                 unblock($params);
                 $res["success"] = true;

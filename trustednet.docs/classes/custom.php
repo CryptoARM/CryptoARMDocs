@@ -187,18 +187,19 @@ function uploadSignature($doc, $file, $extra = null)
         $doc->setName($doc->getName() . '.sig');
         $doc->setPath($doc->getPath() . '.sig');
     }
+    $role = $extra["role"];
     $props = $doc->getProperties();
-    $statusProp = $props->getItemByType("STATUS");
+    $statusProp = $props->getItemByType("ROLES");
     if ($statusProp) {
-        if ($statusProp->getValue() == "CLIENT" && $extra == "SELLER") {
+        if ($statusProp->getValue() == "CLIENT" && $role == "SELLER") {
             $statusProp->setValue("BOTH");
         }
-        if ($statusProp->getValue() == "SELLER" && $extra == "CLIENT") {
+        if ($statusProp->getValue() == "SELLER" && $role == "CLIENT") {
             $statusProp->setValue("BOTH");
         }
         if ($statusProp->getValue() == "NONE") {
             if ($extra) {
-                $statusProp->setValue($extra);
+                $statusProp->setValue($role);
             }
         }
     }
@@ -242,7 +243,7 @@ class TSignUtils
             $props->add(new Property($docId, $propertyType, $propertyValue));
             // Documents by order need an additional parameter
             if ($propertyType == "ORDER") {
-                $props->add(new Property($docId, "STATUS", "NONE"));
+                $props->add(new Property($docId, "ROLES", "NONE"));
             }
         }
         $doc->save();
@@ -408,7 +409,7 @@ function getOrdersByFilter($arOrder = array(), $filter)
         AND BO.ID = OrderList.VALUE
         AND TD.ID = TDP.DOCUMENT_ID
         AND TD.ID = OrderList.DOCUMENT_ID
-        AND TDP.TYPE = 'STATUS'
+        AND TDP.TYPE = 'ORDER'
         AND isnull(TD.CHILD_ID)";
     if ($find_order)
         $sql .= " AND OrderList.VALUE = " . $find_order;
@@ -508,27 +509,27 @@ function getOrderByDocunent($ids)
 
 function getStateString($doc)
 {
-    $state = $doc->getProperties()->getItemByType("STATUS");
+    $state = $doc->getProperties()->getItemByType("ROLES");
     $str = "";
     if ($state) {
         $state_value = $state->getValue();
         switch ($state_value) {
             case "CLIENT":
-                $str = GetMessage("STATE_CLIENT");
+                $str = GetMessage("ROLES_CLIENT");
                 break;
             case "SELLER":
-                $str = GetMessage("STATE_SELLER");
+                $str = GetMessage("ROLES_SELLER");
                 break;
             case "BOTH":
-                $str = GetMessage("STATE_BOTH");
+                $str = GetMessage("ROLES_BOTH");
                 break;
             case "NONE":
-                $str = GetMessage("STATE_NONE");
+                $str = GetMessage("ROLES_NONE");
                 break;
             default:
         }
     } else {
-        $str = GetMessage("STATE_NONE");
+        $str = GetMessage("ROLES_NONE");
     }
     return $str;
 }

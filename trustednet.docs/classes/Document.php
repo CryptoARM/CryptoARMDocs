@@ -310,8 +310,8 @@ class Document implements IEntity, ISave
         TDataBaseDocument::saveDocument($this);
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {
-            if (!$prop->getParentId()) {
-                $prop->setParentId($this->id);
+            if (!$prop->getDocumentId()) {
+                $prop->setDocumentId($this->id);
             }
             $prop->save();
         }

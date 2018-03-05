@@ -66,7 +66,6 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             }
         }
     } else {
-        // each list element
         foreach ($arID as $ID) {
             $ID = IntVal($ID);
             $idsOrder = getIdsByOrder($ID);
@@ -85,8 +84,8 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.sign(' . $docs->toJSON() . ', "SELLER")';
-            //echo 'window.parent.sign(' . $docs->toJSON() . ', {"role": "SELLER"}';
+            //echo 'window.parent.sign(' . $docs->toJSON() . ', "SELLER")';
+            echo 'window.parent.sign(' . $docs->toJSON() . ', {"role": "SELLER"})';
             echo '</script>';
             break;
         case "unblock":
@@ -150,7 +149,7 @@ $lAdmin->AddHeaders(array(
     array("id" => "SIGN", "content" => GetMessage("TN_DOCS_COL_STATUS"), "sort" => "DOC_STATE", "default" => true),
 ));
 
-while ($arRes = $rsData->NavNext(true, "f_")):
+while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $f_ID = $f_ORDER;
 
@@ -199,7 +198,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
         $html_docs .= '<a class="tn-document" style="cursor: pointer;" onclick="downloadOrAlert(' . $doc->getId() . ')" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a> <br/><br/>';
         $status = $doc->getStatus();
         $str = "";
-        if ($status && $status->getValue() == DOC_STATUS_BLOCKED) {
+        if ($status  == DOC_STATUS_BLOCKED) {
             $str = GetMessage("TN_DOCS_DOC_BLOCKED");
         } else {
             $str = getStateString($doc);
@@ -229,7 +228,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
     // Add unblock action for docs with status PROCESSING
     $blockedDocs = false;
     foreach ($array as &$doc) {
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
+        if ($doc->getStatus() == DOC_STATUS_BLOCKED) {
             $blockedDocs = true;
         }
     }
@@ -254,7 +253,7 @@ while ($arRes = $rsData->NavNext(true, "f_")):
     // apply context menu to the row
     $row->AddActions($arActions);
 
-endwhile;
+}
 
 $lAdmin->AddFooter(
     array(
@@ -354,10 +353,10 @@ $oFilter = new CAdminFilter(
             $arr = array(
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_STATE_CLIENT"),
-                    GetMessage("TN_DOCS_STATE_SELLER"),
-                    GetMessage("TN_DOCS_STATE_BOTH"),
-                    GetMessage("TN_DOCS_STATE_NONE"),
+                    GetMessage("TN_DOCS_ROLES_CLIENT"),
+                    GetMessage("TN_DOCS_ROLES_SELLER"),
+                    GetMessage("TN_DOCS_ROLES_BOTH"),
+                    GetMessage("TN_DOCS_ROLES_NONE"),
                 ),
                 "reference_id" => array(
                     "",

@@ -6,7 +6,7 @@
 class Property implements IEntity, ISave
 {
 
-    protected $parentId;
+    protected $documentId;
     protected $id;
     protected $type;
     protected $value;
@@ -18,7 +18,7 @@ class Property implements IEntity, ISave
      */
     function __construct($id = null, $type = null, $value = '')
     {
-        $this->parentId = $id;
+        $this->documentId = $id;
         $this->type = $type;
         $this->value = $value;
     }
@@ -32,7 +32,7 @@ class Property implements IEntity, ISave
     {
         $res = new Property();
         $res->id = $array["ID"];
-        $res->parentId = $array["DOCUMENT_ID"];
+        $res->documentId = $array["DOCUMENT_ID"];
         $res->type = $array["TYPE"];
         $res->value = $array["VALUE"];
         return $res;
@@ -57,17 +57,17 @@ class Property implements IEntity, ISave
     /**
      * @return number
      */
-    function getParentId()
+    function getDocumentId()
     {
-        return $this->parentId;
+        return $this->documentId;
     }
 
     /**
      * @param number $docId
      */
-    function setParentId($docId)
+    function setDocumentId($docId)
     {
-        $this->parentId = $docId;
+        $this->documentId = $docId;
     }
 
     /**
@@ -114,7 +114,7 @@ class Property implements IEntity, ISave
     {
         $res = array(
             "ID" => $this->id,
-            "DOCUMENT_ID" => $this->parentId,
+            "DOCUMENT_ID" => $this->documentId,
             "TYPE" => $this->type,
             "VALUE" => $this->value
         );

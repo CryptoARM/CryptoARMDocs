@@ -273,7 +273,7 @@ class TDataBaseDocument
         } else {
             global $DB;
             $sql = 'UPDATE ' . $tableName .
-                ' SET DOCUMENT_ID = ' . $property->getParentId() . ',
+                ' SET DOCUMENT_ID = ' . $property->getDocumentId() . ',
                       TYPE="' . CDatabase::ForSql($property->getType()) . '",
                       VALUE="' . CDatabase::ForSql($property->getValue()) . '"
                 WHERE ID = ' . $property->getId();
@@ -293,7 +293,7 @@ class TDataBaseDocument
         $sql = 'INSERT INTO ' . $tableName .
               ' (DOCUMENT_ID, TYPE, VALUE)
                 VALUES (' .
-                    $property->getParentId() . ', "' .
+                    $property->getDocumentId() . ', "' .
                     CDatabase::ForSql($property->getType()) . '", "' .
                     CDatabase::ForSql($property->getValue()) . '")';
         $DB->Query($sql);
