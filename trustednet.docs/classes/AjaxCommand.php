@@ -43,127 +43,25 @@ class AjaxCommand
     }
 
     /**
-     *
-     * @param mixed $params {id: Array(Number), logo: String, extra: String}
-     * @param function $cb
-     * @return mixed {success: Boolean; message: String}
-     */
-    static function sign($params)
-    {
-        $res = array(
-            "success" => false,
-            "message" => null,
-            "code" => null,
-        );
-        $docsId = $params["id"];
-        if (!isset($docsId)) {
-            // No ids were given
-            return $res;
-        }
-        $docsSent = new DocumentCollection();
-        $docsNotFound = array();
-        $docsFileNotFound = new DocumentCollection();
-        $docsBlocked = new DocumentCollection();
-        $docsSigned = new DocumentCollection();
-        foreach ($docsId as &$id) {
-            $doc = TDataBaseDocument::getDocumentById($id);
-            if (!$doc) {
-                // No doc with that id is found
-                $docsNotFound[] = $id;
-            } else {
-                $doc = $doc->getLastDocument();
-                if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
-                    // Doc is blocked by previous operation
-                    $docsBlocked->add($doc);
-                } elseif (!$doc->checkFile()) {
-                    // Associated file was not found on the disk
-                    $docsFileNotFound->add($doc);
-                } elseif (!checkDocByExtra($doc, $params["extra"])) {
-                    // No need to sign doc based on it STATUS property
-                    $docsSigned->add($doc);
-                } else {
-                    // Doc is ready to be sent
-                    $docsSent->add($doc);
-                }
-            }
-        }
-        if ($docsSent->count()) {
-            $res["docsSent"] = array();
-            foreach($docsSent->getList() as $doc) {
-                $res["docsSent"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId()
-                );
-            }
-        }
-        if ($docsNotFound) {
-            $res["docsNotFound"] = $docsNotFound;
-        }
-        if ($docsFileNotFound->count()) {
-            foreach($docsFileNotFound->getList() as $doc) {
-                $res["docsFileNotFound"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId()
-                );
-            }
-        }
-        if ($docsBlocked->count()) {
-            foreach($docsBlocked->getList() as $doc) {
-                $res["docsBlocked"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId()
-                );
-            }
-        }
-        if ($docsSigned->count()) {
-            foreach($docsSigned->getList() as $doc) {
-                $res["docsSigned"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId()
-                );
-            }
-        }
-        if ($docsSent->count()) {
-            $ajaxParams = AjaxParams::fromArray($params);
-            $resp = json_decode(AjaxSign::sendSignRequest($docsSent, $ajaxParams), true);
-            if ($resp["success"] == true) {
-                $res["success"] = true;
-                $res["code"] = $resp["code"];
-                $res["message"] = $resp['message'];
-                $list = $docsSent->getList();
-                foreach ($list as $item) {
-                    // Set doc status to block it
-                    DocumentStatus::create($item, DOC_STATUS_BLOCKED);
-                }
-            } else {
-                $res["message"] = getErrorMessageFromResponse($resp);
-                $res["code"] = $resp["code"];
-            }
-        }
-
-        return $res;
-    }
-
-    /**
      * Recieves signed file from signing client,
      * creates new document and updates type and status
      * of other documents accordingly
      *
      * Receives following info:
-     *      id: id of the document that was sent for signing
+     *      params:
+     *          id: id of the document that was sent for signing
+     *          signers: information about signer
+     *          extra: additional information
      *      file: signed file
-     *      signers: information about signer
-     *      extra: additional information
      *
      * @param array $params
-     * @param callable $cb
      * @return array
      */
-    static function upload($params, $cb = uploadSignature)
+    static function upload($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
         $doc = TDataBaseDocument::getDocumentById($params['id']);
-        //if (beforeUploadSignature($doc, $params["token"]) !== false) {
+        // TODO: add security check
         if (true) {
             if ($doc) {
                 $newDoc = $doc->copy();
@@ -177,21 +75,27 @@ class AjaxCommand
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
                 $extra = json_decode($params["extra"], true);
-                if ($cb) {
-                    $cb($newDoc, $file, $extra);
+                TSignUtils::roleHandler($newDoc, $extra);
+                if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
+                    $newDoc->setName($newDoc->getName() . '.sig');
+                    $newDoc->setPath($newDoc->getPath() . '.sig');
                 }
                 $newDoc->save();
-                // Drop "blocked" status of original doc
-                AjaxCommand::unblock(
-                    array("id" => array($params["id"]))
+                move_uploaded_file(
+                    $file['tmp_name'],
+                    $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
                 );
+                // Drop "blocked" status of original doc
+                $doc = TDataBaseDocument::getDocumentById($params['id']);
+                $doc->setStatus(DOC_STATUS_NONE);
+                $doc->save();
                 $res["success"] = true;
                 $res["message"] = "File uploaded";
             } else {
                 $res["message"] = "Document is not found";
             }
         } else {
-            $res["message"] = "Canceled in beforeUploadSignature function";
+            $res["message"] = "Access denied";
         }
         return $res;
     }
@@ -340,15 +244,14 @@ class AjaxCommand
      *      id: document id
      *
      * @param array $params
-     * @param callable $cb
+     * @return void
      */
-    static function content($params, $cb = getContent)
+    static function content($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.content");
         $doc = TDataBaseDocument::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
-            getContent($last, $params['token']);
             $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
             if (file_exists($file)) {
                 header('Content-Description: File Transfer');

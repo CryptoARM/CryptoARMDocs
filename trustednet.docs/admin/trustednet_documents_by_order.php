@@ -54,13 +54,13 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
-        $orders = getOrdersByFilter(array($by => $order), $arFilter);
+        $orders = TDataBaseDocument::getOrdersByFilter(array($by => $order), $arFilter);
         while ($order = $orders->Fetch()) {
             $arOrders[] = $order["ORDER"];
         }
         $ids = array();
         foreach ($arOrders as $order) {
-            $idsOrder = getIdsByOrder($order);
+            $idsOrder = TDataBaseDocument::getIdsByOrder($order);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
@@ -68,7 +68,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     } else {
         foreach ($arID as $ID) {
             $ID = IntVal($ID);
-            $idsOrder = getIdsByOrder($ID);
+            $idsOrder = TDataBaseDocument::getIdsByOrder($ID);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
@@ -99,7 +99,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
             foreach ($ids as $id) {
 
-                $order_ID = getOrderByDocunent($id);
+                $order_ID = TDataBaseDocument::getOrderByDocumentId($id);
                 $order_ID = implode($order_ID);
                 $order = CSaleOrder::GetByID(intval($order_ID));
                 $user_id = $order["USER_ID"];
@@ -130,7 +130,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$orders = getOrdersByFilter(array($by => $order), $arFilter);
+$orders = TDataBaseDocument::getOrdersByFilter(array($by => $order), $arFilter);
 
 // convert list to the CAdminResult class
 $rsData = new CAdminResult($orders, $sTableID);
@@ -176,7 +176,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $user_login = $user["LOGIN"];
 
     // get docs by order
-    $docs = getDocumentsByOrder($order_id);
+    $docs = TDataBaseDocument::getDocumentsByOrder($order_id);
 
     // order
     $arActions = Array();
@@ -201,7 +201,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         if ($status  == DOC_STATUS_BLOCKED) {
             $str = GetMessage("TN_DOCS_DOC_BLOCKED");
         } else {
-            $str = getStateString($doc);
+            $str = TSignUtils::getRoleString($doc);
         }
         $html_signs .= $str . '<br/><br/>';
     }

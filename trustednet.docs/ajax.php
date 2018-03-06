@@ -13,11 +13,8 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
-        case "sign":
-            $res = AjaxCommand::sign($params);
-            break;
         case "upload":
-            $res = AjaxCommand::upload($params, uploadSignature);
+            $res = AjaxCommand::upload($params);
             break;
         case "updateStatus":
             $res = AjaxCommand::updateStatus($params);

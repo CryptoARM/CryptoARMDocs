@@ -50,7 +50,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
         // apply filter
-        $docs = TDataBaseDocument::getIdDocumentsByFilter(array($by => $order), $arFilter);
+        $docs = TDataBaseDocument::getDocumentsIdByFilter(array($by => $order), $arFilter);
         while($arRes = $docs->Fetch()) {
             $ids[] = $arRes['ID'];
         }
@@ -90,7 +90,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$docs = TDataBaseDocument::getIdDocumentsByFilter(array($by => $order), $arFilter);
+$docs = TDataBaseDocument::getDocumentsIdByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));

@@ -34,7 +34,7 @@ class TDataBaseDocument
      * @param array $filter Array with filter keys and values
      * @return object CDBResult
      */
-    static function getIdDocumentsByFilter($arOrder = array(), $filter)
+    static function getDocumentsIdByFilter($arOrder = array(), $filter)
     {
         $arFields = array(
             'DOC' => array(
@@ -372,6 +372,178 @@ class TDataBaseDocument
     static function getPropertiesByDocumentId($tableName, $parentId)
     {
         return TDataBaseDocument::getPropertiesBy($tableName, 'DOCUMENT_ID', $parentId);
+    }
+
+    /**
+     * Returns array of order ids with documents attached to them
+     * Requires 'sale' module
+     * @global object $DB
+     * @return array
+     */
+    static function getOrders()
+    {
+        global $DB;
+        $sql = "    SELECT VALUE
+            FROM " . DB_TABLE_PROPERTY . " TDP, b_sale_order BO
+            WHERE TDP.TYPE = 'ORDER' AND TDP.VALUE = BO.ID
+            GROUP BY TYPE, VALUE";
+        $rows = $DB->Query($sql);
+        $res = array();
+        while ($row = $rows->Fetch()) {
+            $res[] = $row["VALUE"];
+        }
+        return $res;
+    }
+
+    /**
+     * Returns order ids with filter applied
+     * Requires 'sale' module
+     * @global object $DB
+     * @param array $arOrder
+     * @param array $filter
+     * @return object CDBResult
+     */
+    static function getOrdersByFilter($arOrder = array(), $filter)
+    {
+
+        $arFields = array(
+            'ORDER' => array(
+                'FIELD_NAME' => 'OrderList.VALUE',
+            ),
+            'ORDER_STATUS' => array(
+                'FIELD_NAME' => 'BO.STATUS_ID',
+            ),
+            'CLIENT_NAME' => array(
+                'FIELD_NAME' => 'BU.NAME',
+            ),
+            'DOCS' => array(
+                'FIELD_NAME' => 'OrderList.VALUE',
+            ),
+            'DOC_STATE' => array(
+                'FIELD_NAME' => 'TDP.VALUE',
+            ),
+        );
+
+        $find_order = $filter['ORDER'];
+        $find_order_status = $filter['ORDER_STATUS'];
+        $find_clientEmail = $filter['CLIENT_EMAIL'];
+        $find_clientName = $filter['CLIENT_NAME'];
+        $find_clientLastName = $filter['CLIENT_LASTNAME'];
+        $find_docState = $filter['DOC_STATE'];
+
+        global $DB;
+        $sql = "
+    SELECT
+        OrderList.VALUE as `ORDER`
+    FROM
+        " . DB_TABLE_DOCUMENTS . " TD,
+        " . DB_TABLE_PROPERTY . " TDP,
+        (SELECT * FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
+        b_sale_order BO,
+        b_user BU
+    WHERE
+        BO.USER_ID = BU.ID
+        AND BO.ID = OrderList.VALUE
+        AND TD.ID = TDP.DOCUMENT_ID
+        AND TD.ID = OrderList.DOCUMENT_ID
+        AND TDP.TYPE = 'ORDER'
+        AND isnull(TD.CHILD_ID)";
+        if ($find_order)
+            $sql .= " AND OrderList.VALUE = " . $find_order;
+        if ($find_order_status)
+            $sql .= " AND BO.STATUS_ID = '" . $find_order_status . "'";
+        if ($find_clientName)
+            $sql .= " AND BU.NAME LIKE '%" . $find_clientName . "%'";
+        if ($find_clientLastName)
+            $sql .= " AND BU.LAST_NAME LIKE '%" . $find_clientLastName . "%'";
+        if ($find_clientEmail)
+            $sql .= " AND BU.EMAIL LIKE '%" . $find_clientEmail . "%'";
+        if ($find_docState)
+            $sql .= " AND TDP.VALUE ='" . $find_docState . "'";
+
+        $sql .= " GROUP BY OrderList.VALUE";
+
+        $sOrder = '';
+        if (is_array($arOrder)) {
+            foreach ($arOrder as $k => $v) {
+                if (array_key_exists($k, $arFields)) {
+                    $v = strtoupper($v);
+                    if ($v != 'DESC') {
+                        $v = 'ASC';
+                    }
+                    if (strlen($sOrder) > 0) {
+                        $sOrder .= ', ';
+                    }
+                    $k = strtoupper($k);
+                    $sOrder .= $arFields[$k]['FIELD_NAME'] . ' ' . $v;
+                }
+            }
+
+
+            if (strlen($sOrder) > 0) {
+                $sql .= ' ORDER BY ' . $sOrder . ';';
+            }
+        }
+        $rows = $DB->Query($sql);
+
+        return $rows;
+    }
+
+    /**
+     * Returns array of document ids by the order id
+     * Requires 'sale' module
+     * @param string $order
+     * @return array
+     */
+    static function getIdsByOrder($order)
+    {
+        $docs = TDataBaseDocument::getDocumentsByOrder($order);
+        $list = $docs->getList();
+        $ids = array();
+        foreach ($list as &$doc) {
+            $ids[] = $doc->getId();
+        }
+        return $ids;
+    }
+
+    /**
+     * Returns DocumentCollection by order id
+     * @global object $DB
+     * @param string $order
+     * @return object DocumentCollection
+     */
+    static function getDocumentsByOrder($order)
+    {
+        global $DB;
+        $sql = 'SELECT ' . DB_TABLE_DOCUMENTS . '.* FROM ' . DB_TABLE_DOCUMENTS . ', ' . DB_TABLE_PROPERTY . ' '
+            . 'WHERE isnull(CHILD_ID) AND '
+            . DB_TABLE_DOCUMENTS . '.ID = ' . DB_TABLE_PROPERTY . '.DOCUMENT_ID AND '
+            . DB_TABLE_PROPERTY . '.TYPE = "ORDER" AND '
+            . DB_TABLE_PROPERTY . '.VALUE = "' . $order . '"';
+        $rows = $DB->Query($sql);
+        $docs = new DocumentCollection();
+        while ($array = $rows->Fetch()) {
+            $docs->add(Document::fromArray($array));
+        }
+        return $docs;
+    }
+
+    /**
+     * Returns order id of the document by its id
+     * @param integer|string $id
+     * @return array
+     */
+
+    static function getOrderByDocumentId($id)
+    {
+        global $DB;
+        $sql = 'SELECT VALUE FROM ' . DB_TABLE_PROPERTY . ' '
+            . 'WHERE '
+            . 'DOCUMENT_ID = "' . $id . '" AND '
+            . 'TYPE = "ORDER"';
+        $rows = $DB->Query($sql);
+        $orderId = $rows->Fetch();
+        return $orderId;
     }
 
 }
