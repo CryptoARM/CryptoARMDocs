@@ -1,15 +1,18 @@
 <?php
 
 /**
- * Property collection class
+ * Class: PropertyCollection
+ * Represents multiple properties of the document
+ *
+ * @see Collection
  */
 class PropertyCollection extends Collection
 {
 
     /**
      * Returns property from collection by index [0..n]
-     * @param number $i
-     * @return \Property
+     * @param integer $i
+     * @return object Property
      */
     function items($i)
     {
@@ -18,8 +21,8 @@ class PropertyCollection extends Collection
 
     /**
      * Returns property by type
-     * @param type $type
-     * @return \Property
+     * @param string $type
+     * @return object Property|null
      */
     function getItemByType($type)
     {

@@ -3,6 +3,7 @@
 require_once __DIR__ . "/../config.php";
 
 /**
+ * Class: TDataBaseDocument
  * DB interaction class
  */
 class TDataBaseDocument
@@ -10,9 +11,9 @@ class TDataBaseDocument
 
     /**
      * Return collection of all last documents.
-     * Last documents in the chain have empty child_id field.
-     * @global type $DB
-     * @return \DocumentCollection
+     * Last documents in the chain have empty CHILD_ID field.
+     * @global object $DB
+     * @return object DocumentCollection
      */
     static function getDocuments()
     {
@@ -28,10 +29,10 @@ class TDataBaseDocument
 
     /**
      * Returns MySQL object with documents filtered by specified filter
-     * @global type $DB
+     * @global object $DB
      * @param array $arOrder
-     * @param type $filter Array
-     * @return mysqli_result Object
+     * @param array $filter Array with filter keys and values
+     * @return object CDBResult
      */
     static function getIdDocumentsByFilter($arOrder = array(), $filter)
     {
@@ -105,8 +106,9 @@ class TDataBaseDocument
     /**
      * Saves document in DB. If the document doesn't have an id
      * creates new record for it
-     * @global type $DB
-     * @param \Document $doc
+     * @global object $DB
+     * @param object Document
+     * @return void
      */
     static function saveDocument($doc)
     {
@@ -138,8 +140,9 @@ class TDataBaseDocument
 
     /**
      * Adds new document in DB
-     * @global type $DB
-     * @param \Document $doc
+     * @global object $DB
+     * @param object Document
+     * @return void
      */
     static function insertDocument($doc)
     {
@@ -169,8 +172,9 @@ class TDataBaseDocument
 
     /**
      * Updates document parent with child id
-     * @param \Document $doc Parent document
-     * @param number $id Document id. Default NULL
+     * @param object $doc Parent document
+     * @param intger $id Document id. Default NULL
+     * @return void
      */
     protected static function saveDocumentParent($doc, $id = null)
     {
@@ -183,8 +187,9 @@ class TDataBaseDocument
 
     /**
      * Removes document from DB
-     * @global type $DB
-     * @param \Document $doc
+     * @global object $DB
+     * @param object Document $doc
+     * @return void
      */
     static function removeDocument(&$doc)
     {
@@ -201,12 +206,14 @@ class TDataBaseDocument
 
     /**
      * Removes document and all of its parents from DB
-     * @global type $DB
-     * @param \Document $doc
+     * @global object $DB
+     * @param object Document $doc
+     * @return void
      */
     static function removeDocumentRecursively(&$doc)
     {
         global $DB;
+        $parent = null;
         if ($doc->getParent()) {
             $parent = $doc->getParent();
         }
@@ -218,20 +225,14 @@ class TDataBaseDocument
 
     /**
      * Get document from DB by id
-     * @global type $DB
-     * @param number $id Document id
-     * @return \Document
+     * @global object $DB
+     * @param integer $id Document id
+     * @return object Document
      */
     static function getDocumentById($id)
     {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE ID = ' . $id;
-        /*
-                if(!is_object($DB)) {
-                $DB = new TDataBase();
-                $DB->Connect(TRUSTED_DB_HOST, TRUSTED_DB_NAME, TRUSTED_DB_LOGIN, TRUSTED_DB_PASSWORD);
-            }
-        */
         $rows = $DB->Query($sql);
         $array = $rows->Fetch();
         $res = Document::fromArray($array);
@@ -239,10 +240,10 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns collection of last document by name
-     * @global type $DB
+     * Returns collection of last documents by name
+     * @global object $DB
      * @param string $name
-     * @return \DocumentCollection
+     * @return object DocumentCollection
      */
     static function getDocumentsByName($name)
     {
@@ -262,9 +263,10 @@ class TDataBaseDocument
     /**
      * Saves property in DB.
      * If property id is null creates new record
-     * @global type $DB
-     * @param \Property $property
+     * @global object $DB
+     * @param object Property $property
      * @param string $tableName
+     * @return void
      */
     static function saveProperty($property, $tableName)
     {
@@ -282,10 +284,11 @@ class TDataBaseDocument
     }
 
     /**
-     * Adds property to DB
-     * @global type $DB
-     * @param \Property $property
+     * Adds new property to DB
+     * @global object $DB
+     * @param object Property $property
      * @param string $tableName
+     * @return void
      */
     static function insertProperty($property, $tableName)
     {
@@ -302,17 +305,17 @@ class TDataBaseDocument
 
     /**
      * Gets property collection from DB by specified type and value fields
-     * @global type $DB
+     * @global object $DB
      * @param string $tableName
      * @param string $type TYPE field
      * @param string $value VALUE field
-     * @return \PropertyCollection
+     * @return object PropertyCollection
      */
-    static function getPropertiesByType($tableName, $type, $value)
+    static function getPropertiesByTypeAndValue($tableName, $type, $value)
     {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName .
-            ' WHERE TYPE="' . CDatabase::ForSql($type) .
+            ' WHERE TYPE = "' . CDatabase::ForSql($type) .
             '" AND VALUE = "' . CDatabase::ForSql($value) . '"';
         $rows = $DB->Query($sql);
         $res = new PropertyCollection();
@@ -323,12 +326,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Get property from DB by value
-     * @global type $DB
+     * Get single property from DB by specified field
+     * @global object $DB
      * @param string $tableName
      * @param string $fldName
      * @param string $value
-     * @return \Property
+     * @return object Property
      */
     static function getPropertyBy($tableName, $fldName, $value)
     {
@@ -341,12 +344,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Gets property collection from DB by value
-     * @global type $DB
+     * Gets property collection from DB by specified field
+     * @global object $DB
      * @param string $tableName
      * @param string $fldName
      * @param string $value
-     * @return \PropertyCollection
+     * @return object PropertyCollection
      */
     static function getPropertiesBy($tableName, $fldName, $value)
     {
@@ -361,9 +364,10 @@ class TDataBaseDocument
     }
 
     /**
+     * Gets property collection from DB by document id
      * @param string $tableName
-     * @param number $parentId
-     * @return PropertyCollection
+     * @param int $parentId
+     * @return object PropertyCollection
      */
     static function getPropertiesByDocumentId($tableName, $parentId)
     {

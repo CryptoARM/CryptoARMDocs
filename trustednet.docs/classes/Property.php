@@ -1,20 +1,25 @@
 <?php
 
 /**
- * Property class
+ * Class: Property
+ * Represents a property attached to the document
+ *
+ * @see IEntity
+ * @see ISave
  */
 class Property implements IEntity, ISave
 {
 
-    protected $documentId;
     protected $id;
+    protected $documentId;
     protected $type;
     protected $value;
 
     /**
-     * @param number $id Parent id
+     * @param integer $id Document id
      * @param string $type Property type
      * @param string $value Property value
+     * @return void
      */
     function __construct($id = null, $type = null, $value = '')
     {
@@ -25,8 +30,9 @@ class Property implements IEntity, ISave
 
     /**
      * Creates property from array
-     * @param mixed $array
-     * @return \Property
+     * @see toArray
+     * @param array $array
+     * @return object Property
      */
     public static function fromArray($array)
     {
@@ -39,15 +45,22 @@ class Property implements IEntity, ISave
     }
 
     /**
-     * @return type
+     * Returns property id
+     * ID field in DB
+     * Do not confuse with document id!
+     * Property id is just an autoincremented db key
+     * @return integer
      */
     function getId()
     {
-        return $this->id;
+        return (int)$this->id;
     }
 
     /**
+     * Sets property id
+     * ID field in DB
      * @param number $id
+     * @return void
      */
     function setId($id)
     {
@@ -55,15 +68,19 @@ class Property implements IEntity, ISave
     }
 
     /**
-     * @return number
+     * Returns id of the document associated with this property
+     * DOCUMENT_ID field in DB
+     * @return int
      */
     function getDocumentId()
     {
-        return $this->documentId;
+        return (int)$this->documentId;
     }
 
     /**
-     * @param number $docId
+     * Sets id of the document associated with this property
+     * @param integer $docId
+     * @return void
      */
     function setDocumentId($docId)
     {
@@ -72,6 +89,8 @@ class Property implements IEntity, ISave
 
     /**
      * Returns property type
+     * TYPE field in DB
+     * User-defined value
      * @return string
      */
     function getType()
@@ -81,7 +100,10 @@ class Property implements IEntity, ISave
 
     /**
      * Sets property type
+     * TYPE field in DB
+     * User-defined value
      * @param string $type
+     * @return void
      */
     function setType($type)
     {
@@ -90,6 +112,8 @@ class Property implements IEntity, ISave
 
     /**
      * Returns property value
+     * VALUE field in DB
+     * User-defined value
      * @return string
      */
     function getValue()
@@ -99,7 +123,10 @@ class Property implements IEntity, ISave
 
     /**
      * Sets property value
+     * VALUE field in DB
+     * User-defined value
      * @param string $value
+     * @return void
      */
     function setValue($value)
     {
@@ -108,7 +135,8 @@ class Property implements IEntity, ISave
 
     /**
      * Creates array from property
-     * @return type
+     * @see fromArray
+     * @return array
      */
     public function toArray()
     {
@@ -116,13 +144,14 @@ class Property implements IEntity, ISave
             "ID" => $this->id,
             "DOCUMENT_ID" => $this->documentId,
             "TYPE" => $this->type,
-            "VALUE" => $this->value
+            "VALUE" => $this->value,
         );
         return $res;
     }
 
     /**
      * Adds/saves property in DB
+     * @return void
      */
     public function save()
     {

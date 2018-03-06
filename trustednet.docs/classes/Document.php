@@ -3,6 +3,13 @@
 
 /**
  * Class: Document
+ * Documents are stored in DB,
+ * where each row represents single document.
+ *
+ * Documents can have a single child document,
+ * and a single parent document.
+ *
+ * Chain of documents therefore is a doubly-linked list.
  *
  * @see IEntity
  * @see ISave
@@ -29,7 +36,7 @@ class Document implements IEntity, ISave
     /**
      * Returns new document object from array
      * @param array $array
-     * @return \Document
+     * @return object Document
      */
     static function fromArray($array)
     {
@@ -61,6 +68,7 @@ class Document implements IEntity, ISave
     /**
      * Sets document status
      * @param integer $status
+     * @return void
      */
     function setStatus($status)
     {
@@ -83,6 +91,7 @@ class Document implements IEntity, ISave
     /**
      * Sets id of the child of the document
      * @param integer|null $childId
+     * @return void
      */
     function setChildId($childId)
     {
@@ -95,7 +104,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns last document in the chain of signed documents
-     * @return \Document
+     * @return object Document
      */
     function getLastDocument()
     {
@@ -129,7 +138,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns child document
-     * @return \Document|null
+     * @return object Document|null
      */
     function getChild()
     {
@@ -142,7 +151,8 @@ class Document implements IEntity, ISave
 
     /**
      * Sets child id by passed document
-     * @param \Document $doc
+     * @param object Document $doc
+     * @return void
      */
     function setChild($doc)
     {
@@ -165,6 +175,7 @@ class Document implements IEntity, ISave
     /**
      * Sets parent document id
      * @param integer|null $parentId
+     * @return void
      */
     function setParentId($parentId)
     {
@@ -177,7 +188,7 @@ class Document implements IEntity, ISave
 
     /**
      * Returns parent document
-     * @return \Document|null
+     * @return object Document|null
      */
     function getParent()
     {
@@ -190,7 +201,8 @@ class Document implements IEntity, ISave
 
     /**
      * Sets parent id by passed document
-     * @param \Document $parent
+     * @param object Document $parent
+     * @return void
      */
     function setParent($parent)
     {
@@ -211,6 +223,7 @@ class Document implements IEntity, ISave
      * Sets document creation time.
      * TIMESTAMP_X field in DB
      * @param string $time
+     * @return void
      */
     function setCreated($time)
     {
@@ -324,6 +337,7 @@ class Document implements IEntity, ISave
      * Sets id
      * ID field in DB
      * @param integer $id
+     * @return void
      */
     function setId($id)
     {
@@ -332,6 +346,7 @@ class Document implements IEntity, ISave
 
     /**
      * Removes document and all its parents
+     * @return void
      */
     public function remove()
     {
@@ -340,6 +355,7 @@ class Document implements IEntity, ISave
 
     /**
      * Saves changed document in DB or creates new record if id is null
+     * @return void
      */
     public function save()
     {
@@ -355,7 +371,7 @@ class Document implements IEntity, ISave
 
     /**
      * Return collection of properties of document
-     * @return \PropertyCollection
+     * @return object PropertyCollection
      */
     function getProperties()
     {
@@ -373,7 +389,7 @@ class Document implements IEntity, ISave
     /**
      * Creates a copy of the document object
      * New document has id = null
-     * @return \Document
+     * @return object Document
      */
     public function copy()
     {
@@ -404,6 +420,7 @@ class Document implements IEntity, ISave
      * Sets document name
      * NAME field in DB
      * @param string $name
+     * @return void
      */
     function setName($name)
     {
@@ -424,6 +441,7 @@ class Document implements IEntity, ISave
      * Sets path to the document
      * PATH field in DB
      * @param string $path
+     * @return void
      */
     function setPath($path)
     {
@@ -444,6 +462,7 @@ class Document implements IEntity, ISave
      * Sets signers of the document
      * SIGNERS field in DB
      * @param string $signers JSON
+     * @return void
      */
     function setSigners($signers)
     {
@@ -463,7 +482,8 @@ class Document implements IEntity, ISave
     /**
      * Sets document type
      * TYPE field in DB
-     * @param number $type
+     * @param integer $type
+     * @return void
      */
     function setType($type)
     {

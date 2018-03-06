@@ -144,6 +144,21 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Recieves signed file from signing client,
+     * creates new document and updates type and status
+     * of other documents accordingly
+     *
+     * Receives following info:
+     *      id: id of the document that was sent for signing
+     *      file: signed file
+     *      signers: information about signer
+     *      extra: additional information
+     *
+     * @param array $params
+     * @param callable $cb
+     * @return array
+     */
     static function upload($params, $cb = uploadSignature)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
@@ -181,6 +196,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Sets document status to BLOCKED
+     * params:
+     *      id: array of document ids
+     *
+     * @param array $params
+     * @return array
+     */
     function block($params)
     {
         $res = array("success" => true, "message" => "");
@@ -198,6 +221,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Sets document status to NONE
+     * params:
+     *      id: array of document ids
+     *
+     * @param mixed $params
+     * @return array
+     */
     function unblock($params)
     {
         $res = array("success" => true, "message" => "");
@@ -215,6 +246,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Removes documents and their parents from DB
+     * params:
+     *      id: array of document ids
+     *
+     * @param array $params
+     * @return array
+     */
     function remove($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.remove");
@@ -263,6 +302,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Checks if file exists on the disk
+     * params:
+     *      id: document id
+     *
+     * @param array $params
+     * @return array
+     */
     static function download($params)
     {
         $res = array(
@@ -288,6 +335,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Sends raw file in response
+     * params:
+     *      id: document id
+     *
+     * @param array $params
+     * @param callable $cb
+     */
     static function content($params, $cb = getContent)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.content");

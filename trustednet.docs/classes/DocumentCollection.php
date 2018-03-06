@@ -15,7 +15,7 @@ class DocumentCollection extends Collection implements IEntity
      *
      * @param array $array
      * @see toArray
-     * @return \DocumentCollection
+     * @return object DocumentCollection
      */
     static function fromArray($array)
     {
@@ -29,7 +29,7 @@ class DocumentCollection extends Collection implements IEntity
     /**
      * Returns element from collection by id
      * @param integer $i [0..n]
-     * @return \Document
+     * @return object Document
      */
     function items($i)
     {
