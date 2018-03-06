@@ -2,7 +2,7 @@
 
 class AjaxCommand
 {
-    static function updateStatus($params, $cb = updateDocumentStatus)
+    static function updateStatus($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
         $id = $params["id"];
@@ -289,14 +289,13 @@ class AjaxCommand
         return $res;
     }
 
-    static function view($params, $cb = viewSignature)
+    static function view($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.view");
         $doc = TDataBaseDocument::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
             $ajaxParams = AjaxParams::fromArray($params);
-            $cb($last, $ajaxParams);
             $res = AjaxSign::sendViewRequest($last, $ajaxParams);
         } else $res["message"] = "Document is not found";
         return $res;

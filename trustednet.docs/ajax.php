@@ -20,7 +20,7 @@ if (isset($command)) {
             $res = AjaxCommand::upload($params, uploadSignature);
             break;
         case "updateStatus":
-            $res = AjaxCommand::updateStatus($params, updateDocumentStatus);
+            $res = AjaxCommand::updateStatus($params);
             break;
         case "block":
             $res = AjaxCommand::block($params);
@@ -32,7 +32,7 @@ if (isset($command)) {
             $res = AjaxCommand::remove($params);
             break;
         case "view":
-            $res = AjaxCommand::view($params, viewSignature);
+            $res = AjaxCommand::view($params);
             break;
         case "download":
             $res = AjaxCommand::download($params);

@@ -5,15 +5,21 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_be
 
 //CModule::IncludeModule('sale');
 
-function debug($var, $name = "VAR")
-{
+/**
+ * Print debug info to log.txt in site root
+ *
+ * @param mixed $var
+ * @param string $name
+ * @return void
+ */
+function debug($var, $name = "VAR") {
     $myfile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a"); $logtime = date("d-m-Y H:i:s", time());
     fwrite($myfile, "$logtime"."\n" . $name . ":\n_START_\n".print_r($var, true) . "\n_END_\n\n");
     fclose($myfile);
 }
 
-function getErrorMessageFromResponse($response, $errCode, $errMessage)
-{
+// TODO: remove?
+function getErrorMessageFromResponse($response, $errCode, $errMessage) {
     $message = $errMessage;
     if (!is_null($response)) {
         $message = isset($response["message"]) ? $response["message"] : $response["error"];
@@ -43,6 +49,7 @@ function getErrorMessageFromResponse($response, $errCode, $errMessage)
     return $message;
 }
 
+// TODO: remove?
 /**
  * Filter for documents that don't need to be signed.
  * Based on their STATUS property and EXTRA argument
@@ -50,9 +57,8 @@ function getErrorMessageFromResponse($response, $errCode, $errMessage)
  * @param \Document $doc
  * @param $extra
  */
-function checkDocByExtra($doc, $extra)
-{
-    $status = $doc->getProperties()->getItemByType("STATUS");
+function checkDocByExtra($doc, $extra) {
+    $status = $doc->getProperties()->getItemByType("ROLE");
     if (!$status) {
         return true;
     }
@@ -73,20 +79,7 @@ function checkDocByExtra($doc, $extra)
     return true;
 }
 
-function updateDocumentStatus($doc, $params)
-{
-    $params->setLogo($LOGO);
-    $params->setCss($CSS);
-}
-
-function viewSignature($doc, $params)
-{
-    $params->setLogo($LOGO);
-    $params->setCss($CSS);
-}
-
-function throwError($msg)
-{
+function throwError($msg) {
     header("HTTP/1.1 500 Internal Server Error");
     echo json_encode(array("success" => false, "message" => $msg));
     die();
