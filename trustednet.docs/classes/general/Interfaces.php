@@ -1,11 +1,14 @@
 <?php
 
+/**
+ * General object representation
+ */
 interface IEntity
 {
 
     /**
      * Creates object from array
-     * @param type $array
+     * @param array $array
      */
     static function fromArray($array);
 
@@ -15,6 +18,9 @@ interface IEntity
     function toArray();
 }
 
+/**
+ * For objects that are stored in DB
+ */
 interface ISave
 {
 

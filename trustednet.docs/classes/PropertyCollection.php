@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Class: PropertyCollection
- * Represents multiple properties of the document
+ * Represents multiple properties of the document.
  *
  * @see Collection
  */
@@ -10,9 +9,9 @@ class PropertyCollection extends Collection
 {
 
     /**
-     * Returns property from collection by index [0..n]
-     * @param integer $i
-     * @return object Property
+     * Returns property from collection by index.
+     * @param integer $i [0..n]
+     * @return Property
      */
     function items($i)
     {
@@ -20,9 +19,9 @@ class PropertyCollection extends Collection
     }
 
     /**
-     * Returns property by type
+     * Returns property by type.
      * @param string $type
-     * @return object Property|null
+     * @return Property|null
      */
     function getItemByType($type)
     {

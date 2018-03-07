@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Class: AjaxParams
  * Describes AJAX request parameters
  *
  * @see IEntity

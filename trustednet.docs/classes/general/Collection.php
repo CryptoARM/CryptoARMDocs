@@ -1,16 +1,21 @@
 <?php
 
 /**
- * Collection class
+ * Represent multiple instances of object of the same class
  */
 class Collection
 {
 
+    /**
+     * Holds collection items
+     *
+     * @var array
+     */
     protected $items_ = array();
 
     /**
-     * Returns array of elements
-     * @return mixed
+     * Returns array with collection items
+     * @return array
      */
     function getList()
     {
@@ -18,8 +23,8 @@ class Collection
     }
 
     /**
-     * Add element to collection
-     * @param type $item
+     * Add item to collection
+     * @param object $item
      */
     public function add($item)
     {
@@ -29,9 +34,9 @@ class Collection
     }
 
     /**
-     * Returns element fom collection by index [0..n]
-     * @param type $i
-     * @return type
+     * Returns item from collection by index
+     * @param integer $i [0..n]
+     * @return object
      */
     public function items($i)
     {
@@ -39,8 +44,8 @@ class Collection
     }
 
     /**
-     * Returns number of elements in collection
-     * @return number
+     * Returns number of items in collection
+     * @return integer
      */
     public function count()
     {

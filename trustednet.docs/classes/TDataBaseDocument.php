@@ -3,17 +3,17 @@
 require_once __DIR__ . "/../config.php";
 
 /**
- * Class: TDataBaseDocument
- * DB interaction class
+ * DB interaction class.
  */
 class TDataBaseDocument
 {
+    // TODO: get rid of tableName
 
     /**
      * Return collection of all last documents.
      * Last documents in the chain have empty CHILD_ID field.
-     * @global object $DB
-     * @return object DocumentCollection
+     * @global object $DB Bitrix global CDatabase object
+     * @return DocumentCollection
      */
     static function getDocuments()
     {
@@ -28,11 +28,11 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns MySQL object with documents filtered by specified filter
-     * @global object $DB
-     * @param array $arOrder
+     * Returns object with documents filtered by specified filter.
+     * @global object $DB Bitrix global CDatabase object
+     * @param array $arOrder Sort direction
      * @param array $filter Array with filter keys and values
-     * @return object CDBResult
+     * @return CDBResult
      */
     static function getDocumentsIdByFilter($arOrder = array(), $filter)
     {
@@ -104,10 +104,10 @@ class TDataBaseDocument
     }
 
     /**
-     * Saves document in DB. If the document doesn't have an id
-     * creates new record for it
-     * @global object $DB
-     * @param object Document
+     * Saves document in DB.
+     * If the document doesn't have an id creates new record for it.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Document $doc Document to be saved
      * @return void
      */
     static function saveDocument($doc)
@@ -139,9 +139,9 @@ class TDataBaseDocument
     }
 
     /**
-     * Adds new document in DB
-     * @global object $DB
-     * @param object Document
+     * Adds new document in DB.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Document $doc Document to be added
      * @return void
      */
     static function insertDocument($doc)
@@ -171,9 +171,9 @@ class TDataBaseDocument
     }
 
     /**
-     * Updates document parent with child id
+     * Updates document parent with child id.
      * @param object $doc Parent document
-     * @param intger $id Document id. Default NULL
+     * @param integer $id Document id. Default NULL
      * @return void
      */
     protected static function saveDocumentParent($doc, $id = null)
@@ -186,9 +186,9 @@ class TDataBaseDocument
     }
 
     /**
-     * Removes document from DB
-     * @global object $DB
-     * @param object Document $doc
+     * Removes document from DB.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Document $doc Document to be removed
      * @return void
      */
     static function removeDocument(&$doc)
@@ -205,9 +205,9 @@ class TDataBaseDocument
     }
 
     /**
-     * Removes document and all of its parents from DB
-     * @global object $DB
-     * @param object Document $doc
+     * Removes document and all of its parents from DB.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Document $doc Document to be removed
      * @return void
      */
     static function removeDocumentRecursively(&$doc)
@@ -224,10 +224,10 @@ class TDataBaseDocument
     }
 
     /**
-     * Get document from DB by id
-     * @global object $DB
-     * @param integer $id Document id
-     * @return object Document
+     * Get document from DB by ID.
+     * @global object $DB Bitrix global CDatabase object
+     * @param integer $id Document ID
+     * @return Document
      */
     static function getDocumentById($id)
     {
@@ -240,10 +240,11 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns collection of last documents by name
-     * @global object $DB
-     * @param string $name
-     * @return object DocumentCollection
+     * Returns collection of last documents by name.
+     * Multiple documents can have the same name.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $name Name of the document.
+     * @return DocumentCollection
      */
     static function getDocumentsByName($name)
     {
@@ -262,10 +263,10 @@ class TDataBaseDocument
 
     /**
      * Saves property in DB.
-     * If property id is null creates new record
-     * @global object $DB
-     * @param object Property $property
-     * @param string $tableName
+     * If property ID is null creates new record.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Property $property Property to be saved
+     * @param string $tableName DB table name
      * @return void
      */
     static function saveProperty($property, $tableName)
@@ -284,10 +285,10 @@ class TDataBaseDocument
     }
 
     /**
-     * Adds new property to DB
-     * @global object $DB
-     * @param object Property $property
-     * @param string $tableName
+     * Adds new property to DB.
+     * @global object $DB Bitrix global CDatabase object
+     * @param Property $property Property to be added
+     * @param string $tableName DB table name
      * @return void
      */
     static function insertProperty($property, $tableName)
@@ -304,12 +305,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Gets property collection from DB by specified type and value fields
-     * @global object $DB
-     * @param string $tableName
+     * Gets property collection from DB by specified type and value fields.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $tableName DB table name
      * @param string $type TYPE field
      * @param string $value VALUE field
-     * @return object PropertyCollection
+     * @return PropertyCollection
      */
     static function getPropertiesByTypeAndValue($tableName, $type, $value)
     {
@@ -326,12 +327,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Get single property from DB by specified field
-     * @global object $DB
-     * @param string $tableName
-     * @param string $fldName
-     * @param string $value
-     * @return object Property
+     * Get single property from DB by specified field.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $tableName DB table name
+     * @param string $fldName Field in DB table
+     * @param string $value VALUE field
+     * @return Property
      */
     static function getPropertyBy($tableName, $fldName, $value)
     {
@@ -344,12 +345,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Gets property collection from DB by specified field
-     * @global object $DB
-     * @param string $tableName
-     * @param string $fldName
-     * @param string $value
-     * @return object PropertyCollection
+     * Gets property collection from DB by specified field.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $tableName DB table name
+     * @param string $fldName Field in DB
+     * @param string $value VALUE field
+     * @return PropertyCollection
      */
     static function getPropertiesBy($tableName, $fldName, $value)
     {
@@ -364,20 +365,20 @@ class TDataBaseDocument
     }
 
     /**
-     * Gets property collection from DB by document id
-     * @param string $tableName
-     * @param int $parentId
-     * @return object PropertyCollection
+     * Gets property collection from DB by document ID.
+     * @param string $tableName DB table name
+     * @param integer $documentId Documend ID
+     * @return PropertyCollection
      */
-    static function getPropertiesByDocumentId($tableName, $parentId)
+    static function getPropertiesByDocumentId($tableName, $documentId)
     {
-        return TDataBaseDocument::getPropertiesBy($tableName, 'DOCUMENT_ID', $parentId);
+        return TDataBaseDocument::getPropertiesBy($tableName, 'DOCUMENT_ID', $documentId);
     }
 
     /**
-     * Returns array of order ids with documents attached to them
-     * Requires 'sale' module
-     * @global object $DB
+     * Returns array of order IDs with documents attached to them.
+     * Requires 'sale' module.
+     * @global object $DB Bitrix global CDatabase object
      * @return array
      */
     static function getOrders()
@@ -396,12 +397,12 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns order ids with filter applied
-     * Requires 'sale' module
-     * @global object $DB
-     * @param array $arOrder
-     * @param array $filter
-     * @return object CDBResult
+     * Returns order IDs with filter applied.
+     * Requires 'sale' module.
+     * @global object $DB Bitrix global CDatabase object
+     * @param array $arOrder Sort direction
+     * @param array $filter Filter array with keys and values
+     * @return CDBResult
      */
     static function getOrdersByFilter($arOrder = array(), $filter)
     {
@@ -490,9 +491,9 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns array of document ids by the order id
-     * Requires 'sale' module
-     * @param string $order
+     * Returns array of document IDs by the order ID.
+     * Requires 'sale' module.
+     * @param string $order Order ID
      * @return array
      */
     static function getIdsByOrder($order)
@@ -507,10 +508,10 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns DocumentCollection by order id
-     * @global object $DB
-     * @param string $order
-     * @return object DocumentCollection
+     * Returns DocumentCollection by order ID.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $order Order ID
+     * @return DocumentCollection
      */
     static function getDocumentsByOrder($order)
     {
@@ -529,8 +530,8 @@ class TDataBaseDocument
     }
 
     /**
-     * Returns order id of the document by its id
-     * @param integer|string $id
+     * Returns order ID of the document by its ID
+     * @param integer $id Document ID
      * @return array
      */
 

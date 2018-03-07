@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Class: DocumentCollection
- * Represents multiple documents in one object
+ * Represents multiple documents in one object.
  *
  * @see IEntity
  * @see Collection
@@ -11,11 +10,11 @@ class DocumentCollection extends Collection implements IEntity
 {
 
     /**
-     * Generates document collection from array
+     * Generates document collection from array.
      *
      * @param array $array
      * @see toArray
-     * @return object DocumentCollection
+     * @return DocumentCollection
      */
     static function fromArray($array)
     {
@@ -27,7 +26,8 @@ class DocumentCollection extends Collection implements IEntity
     }
 
     /**
-     * Returns element from collection by id
+     * Returns item from collection by id.
+     *
      * @param integer $i [0..n]
      * @return object Document
      */
@@ -37,7 +37,7 @@ class DocumentCollection extends Collection implements IEntity
     }
 
     /**
-     * Converts collection to JSON format
+     * Converts collection to JSON format.
      *
      * @return string JSON
      */
@@ -47,7 +47,7 @@ class DocumentCollection extends Collection implements IEntity
     }
 
     /**
-     * Prepares data for conversion
+     * Prepares collection for conversion to JSON.
      *
      * @return array
      */
@@ -60,9 +60,10 @@ class DocumentCollection extends Collection implements IEntity
         return $a;
     }
 
-    // TODO: implement
     public function toArray()
     {
+        // TODO: implement toArray
+        return;
 
     }
 }

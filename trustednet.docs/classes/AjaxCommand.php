@@ -1,61 +1,62 @@
 <?php
 
+/**
+ * Controllers for AJAX requests.
+ *
+ * Used for interaction of bitrix server with opened pages and signing client.
+ */
 class AjaxCommand
 {
-    static function updateStatus($params)
-    {
-        $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
-        $id = $params["id"];
-        $doc = TDataBaseDocument::getDocumentById($id);
-        if (!$doc) {
-            $res['message'] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
-            return $res;
-        }
-        $status = $_GET["status"];
-        if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
-            echo "update status  " . $status . ' DOC_STATUS_CANCEL ' . DOC_STATUS_CANCEL . '      ' . DOC_STATUS_ERROR;
-            switch ($status) {
-                case DOC_STATUS_CANCEL:
-                    if (!$doc->getSigners()) {
-                        TDataBaseDocument::removeStatus($doc->getStatus());
-                    } else {
-                        $doc->getStatus()->setValue(DOC_STATUS_NONE);
-                        $doc->getStatus()->save();
-                    }
-                    AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
-                    $res['success'] = true;
-                    break;
-                case DOC_STATUS_ERROR:
-                    $doc->getStatus()->setValue($status);
-                    $doc->getStatus()->save();
-                    AjaxSign::sendSetStatus($params["operationId"], -1, "Error");
-                    $res['success'] = true;
-                    break;
-                default:
-                    $res['message'] = GetMessage('TRUSTEDNET_DOC_STATUNKNWN');
-            }
-        } else {
-            echo 'condition false';
-            $res['message'] = GetMessage('TRUSTEDNET_DOC_STATCHG');
-        }
-        die();
-        return $res;
-    }
+    //static function updateStatus($params)
+    //{
+    //    $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
+    //    $id = $params["id"];
+    //    $doc = TDataBaseDocument::getDocumentById($id);
+    //    if (!$doc) {
+    //        $res['message'] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+    //        return $res;
+    //    }
+    //    $status = $_GET["status"];
+    //    if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
+    //        echo "update status  " . $status . ' DOC_STATUS_CANCEL ' . DOC_STATUS_CANCEL . '      ' . DOC_STATUS_ERROR;
+    //        switch ($status) {
+    //            case DOC_STATUS_CANCEL:
+    //                if (!$doc->getSigners()) {
+    //                    TDataBaseDocument::removeStatus($doc->getStatus());
+    //                } else {
+    //                    $doc->getStatus()->setValue(DOC_STATUS_NONE);
+    //                    $doc->getStatus()->save();
+    //                }
+    //                AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
+    //                $res['success'] = true;
+    //                break;
+    //            case DOC_STATUS_ERROR:
+    //                $doc->getStatus()->setValue($status);
+    //                $doc->getStatus()->save();
+    //                AjaxSign::sendSetStatus($params["operationId"], -1, "Error");
+    //                $res['success'] = true;
+    //                break;
+    //            default:
+    //                $res['message'] = GetMessage('TRUSTEDNET_DOC_STATUNKNWN');
+    //        }
+    //    } else {
+    //        echo 'condition false';
+    //        $res['message'] = GetMessage('TRUSTEDNET_DOC_STATCHG');
+    //    }
+    //    die();
+    //    return $res;
+    //}
 
     /**
-     * Recieves signed file from signing client,
-     * creates new document and updates type and status
-     * of other documents accordingly
+     * Recieves signed file from signing client through POST method.
      *
-     * Receives following info:
-     *      params:
-     *          id: id of the document that was sent for signing
-     *          signers: information about signer
-     *          extra: additional information
-     *      file: signed file
+     * Creates new document and updates type and status of other documents accordingly.
      *
-     * @param array $params
-     * @return array
+     * @param array $params [id]: document id,
+     *                      [signers]: information about signer,
+     *                      [extra]: additional information
+     * @return array [success]: operation result status
+     *               [message]: operation result message
      */
     static function upload($params)
     {
@@ -101,12 +102,11 @@ class AjaxCommand
     }
 
     /**
-     * Sets document status to BLOCKED
-     * params:
-     *      id: array of document ids
+     * Sets document status to BLOCKED for one or multiple documents.
      *
-     * @param array $params
-     * @return array
+     * @param array $params [id]: array of document ids
+     * @return array [success]: operation result status
+     *               [message]: operation result message
      */
     function block($params)
     {
@@ -126,12 +126,11 @@ class AjaxCommand
     }
 
     /**
-     * Sets document status to NONE
-     * params:
-     *      id: array of document ids
+     * Sets document status to NONE for one or multiple documents
      *
-     * @param mixed $params
-     * @return array
+     * @param array $params [id]: array of document ids
+     * @return array [success]: operation result status
+     *               [message]: operation result message
      */
     function unblock($params)
     {
@@ -152,11 +151,10 @@ class AjaxCommand
 
     /**
      * Removes documents and their parents from DB
-     * params:
-     *      id: array of document ids
      *
-     * @param array $params
-     * @return array
+     * @param array $params [id]: array of document ids
+     * @return array [success]: operation result status
+     *               [message]: operation result message
      */
     function remove($params)
     {
@@ -193,28 +191,28 @@ class AjaxCommand
         return $res;
     }
 
-    static function view($params)
-    {
-        $res = array("success" => false, "message" => "Unknown error in Ajax.view");
-        $doc = TDataBaseDocument::getDocumentById($params['id']);
-        if ($doc) {
-            $last = $doc->getLastDocument();
-            $ajaxParams = AjaxParams::fromArray($params);
-            $res = AjaxSign::sendViewRequest($last, $ajaxParams);
-        } else $res["message"] = "Document is not found";
-        return $res;
-    }
+    //static function view($params)
+    //{
+    //    $res = array("success" => false, "message" => "Unknown error in Ajax.view");
+    //    $doc = TDataBaseDocument::getDocumentById($params['id']);
+    //    if ($doc) {
+    //        $last = $doc->getLastDocument();
+    //        $ajaxParams = AjaxParams::fromArray($params);
+    //        $res = AjaxSign::sendViewRequest($last, $ajaxParams);
+    //    } else $res["message"] = "Document is not found";
+    //    return $res;
+    //}
 
     /**
      * Checks if file exists on the disk
-     * params:
-     *      id: document id
      *
-     * @param array $params
-     * @return array
+     * @param array $params [id]: document id,
+     * @return array [success]: operation result status
+     *               [message]: operation result message
      */
     static function download($params)
     {
+        // TODO: rename
         $res = array(
             "success" => false,
             "message" => "Unknown error in Ajax.download",
@@ -239,11 +237,9 @@ class AjaxCommand
     }
 
     /**
-     * Sends raw file in response
-     * params:
-     *      id: document id
+     * Initiates file transfer
      *
-     * @param array $params
+     * @param array $params [id]: document id,
      * @return void
      */
     static function content($params)
@@ -272,22 +268,22 @@ class AjaxCommand
         }
     }
 
-    static function token($params)
-    {
-        $res = array("success" => true, "message" => "");
-        try {
-            $token = OAuth2::getFromSession();
-            //$refreshToken = $token->getRefreshToken();
-            //$token->refresh();
-            $accessToken = $token->getAccessToken();
-            $res["message"] = $accessToken;
-        } catch (OAuth2Exception $ex) {
-            header("HTTP/1.1 500 Internal Server Error");
-            $res["message"] = $ex->message;
-            echo json_encode($res);
-            die();
-        }
-        return $res;
-    }
+    //static function token($params)
+    //{
+    //    $res = array("success" => true, "message" => "");
+    //    try {
+    //        $token = OAuth2::getFromSession();
+    //        //$refreshToken = $token->getRefreshToken();
+    //        //$token->refresh();
+    //        $accessToken = $token->getAccessToken();
+    //        $res["message"] = $accessToken;
+    //    } catch (OAuth2Exception $ex) {
+    //        header("HTTP/1.1 500 Internal Server Error");
+    //        $res["message"] = $ex->message;
+    //        echo json_encode($res);
+    //        die();
+    //    }
+    //    return $res;
+    //}
 }
 
