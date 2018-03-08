@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * Represents multiple properties of the document.

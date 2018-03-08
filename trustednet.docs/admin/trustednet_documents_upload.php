@@ -1,7 +1,10 @@
 <?php
+use TrustedNet\Docs;
+
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
+// TODO: move to utils
 function PropertyTypeIsValid($type)
 {
     $res = true;
@@ -16,6 +19,7 @@ function PropertyTypeIsValid($type)
     return $res;
 }
 
+// TODO: move to utils
 function PropertyValueIsValid($value)
 {
     $res = true;
@@ -34,9 +38,8 @@ if (!$USER->CanDoOperation('fileman_upload_files')) {
 }
 
 CModule::IncludeModule("fileman");
-CModule::IncludeModule("trustednet.docs");
 
-$module_id = TN_DOCS_MODULE_ID;
+$module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
 IncludeModuleLangFile(__FILE__);
 
@@ -125,7 +128,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                                 $res_log['path'] = substr($pathto, 1);
                                 CEventLog::Log("content", "FILE_ADD", "main", "", serialize($res_log));
                             }
-                            if (TSignUtils::createDocument($pathto, false, $arType, $arValue));
+                            if (Docs\Utils::createDocument($pathto, false, $arType, $arValue));
                             else $strWarning .= 'Error creating file';
                         }
                     } else $strWarning .= $quota->LAST_ERROR . "\n";

@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * Controllers for AJAX requests.
@@ -11,7 +12,7 @@ class AjaxCommand
     //{
     //    $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
     //    $id = $params["id"];
-    //    $doc = TDataBaseDocument::getDocumentById($id);
+    //    $doc = DataBase::getDocumentById($id);
     //    if (!$doc) {
     //        $res['message'] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
     //        return $res;
@@ -22,7 +23,7 @@ class AjaxCommand
     //        switch ($status) {
     //            case DOC_STATUS_CANCEL:
     //                if (!$doc->getSigners()) {
-    //                    TDataBaseDocument::removeStatus($doc->getStatus());
+    //                    DataBase::removeStatus($doc->getStatus());
     //                } else {
     //                    $doc->getStatus()->setValue(DOC_STATUS_NONE);
     //                    $doc->getStatus()->save();
@@ -61,7 +62,7 @@ class AjaxCommand
     static function upload($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
-        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        $doc = DataBase::getDocumentById($params['id']);
         // TODO: add security check
         if (true) {
             if ($doc) {
@@ -87,7 +88,7 @@ class AjaxCommand
                     $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
                 );
                 // Drop "blocked" status of original doc
-                $doc = TDataBaseDocument::getDocumentById($params['id']);
+                $doc = DataBase::getDocumentById($params['id']);
                 $doc->setStatus(DOC_STATUS_NONE);
                 $doc->save();
                 $res["success"] = true;
@@ -114,7 +115,7 @@ class AjaxCommand
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
-                $doc = TDataBaseDocument::getDocumentById($id);
+                $doc = DataBase::getDocumentById($id);
                 $doc->setStatus(DOC_STATUS_BLOCKED);
                 $doc->save();
             }
@@ -138,7 +139,7 @@ class AjaxCommand
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
-                $doc = TDataBaseDocument::getDocumentById($id);
+                $doc = DataBase::getDocumentById($id);
                 $doc->setStatus(DOC_STATUS_NONE);
                 $doc->save();
             }
@@ -163,7 +164,7 @@ class AjaxCommand
         if (isset($docsId)) {
             // Try to find all docs in DB
             foreach ($docsId as &$id) {
-                $doc = TDataBaseDocument::getDocumentById($id);
+                $doc = DataBase::getDocumentById($id);
                 if ($doc) {
                     $lastDoc = $doc->getLastDocument();
                     if (!$lastDoc) {
@@ -178,7 +179,7 @@ class AjaxCommand
                 }
             }
             foreach ($docsId as &$id) {
-                $doc = TDataBaseDocument::getDocumentById($id);
+                $doc = DataBase::getDocumentById($id);
                 $lastDoc = $doc->getLastDocument();
                 $lastDoc->remove();
             }
@@ -194,7 +195,7 @@ class AjaxCommand
     //static function view($params)
     //{
     //    $res = array("success" => false, "message" => "Unknown error in Ajax.view");
-    //    $doc = TDataBaseDocument::getDocumentById($params['id']);
+    //    $doc = DataBase::getDocumentById($params['id']);
     //    if ($doc) {
     //        $last = $doc->getLastDocument();
     //        $ajaxParams = AjaxParams::fromArray($params);
@@ -218,7 +219,7 @@ class AjaxCommand
             "message" => "Unknown error in Ajax.download",
             "filename" => ""
         );
-        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        $doc = DataBase::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
             $res["filename"] = $last->getName();
@@ -245,7 +246,7 @@ class AjaxCommand
     static function content($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.content");
-        $doc = TDataBaseDocument::getDocumentById($params['id']);
+        $doc = DataBase::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
             $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());

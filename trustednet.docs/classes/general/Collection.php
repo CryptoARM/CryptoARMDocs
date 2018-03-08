@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * Represent multiple instances of object of the same class

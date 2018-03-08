@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * Describes AJAX request parameters

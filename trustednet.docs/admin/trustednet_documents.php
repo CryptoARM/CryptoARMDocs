@@ -1,4 +1,6 @@
 <?php
+use TrustedNet\Docs;
+
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 CUtil::InitJSCore(array("jquery2"));
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
@@ -50,7 +52,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
         // apply filter
-        $docs = TDataBaseDocument::getDocumentsIdByFilter(array($by => $order), $arFilter);
+        $docs = Docs\DataBase::getDocumentsIdByFilter(array($by => $order), $arFilter);
         while($arRes = $docs->Fetch()) {
             $ids[] = $arRes['ID'];
         }
@@ -61,9 +63,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         }
     }
 
-    $docs = new DocumentCollection();
+    $docs = new Docs\DocumentCollection();
     foreach($ids as $id) {
-        $doc = TDataBaseDocument::getDocumentById($id);
+        $doc = Docs\DataBase::getDocumentById($id);
         $docType = $doc->getType();
         $docStatus = $doc->getStatus();
         if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
@@ -90,7 +92,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$docs = TDataBaseDocument::getDocumentsIdByFilter(array($by => $order), $arFilter);
+$docs = Docs\DataBase::getDocumentsIdByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));
@@ -124,7 +126,7 @@ $lAdmin->AddHeaders(array(
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
-    $doc = TDataBaseDocument::getDocumentById($f_ID);
+    $doc = Docs\DataBase::getDocumentById($f_ID);
 
     $docName = '<input type="button" value="i" onclick="view(' . $f_ID . ')" style="float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;"/>';
     $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="downloadOrAlert(' . $doc->getId() . ', true)" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a>';
@@ -180,7 +182,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("SIGN", $signersString);
     $row->AddViewField("TYPE", $docTypeString);
 
-    $docColl = new DocumentCollection();
+    $docColl = new Docs\DocumentCollection();
     $docColl->add($doc);
 
     // context menu

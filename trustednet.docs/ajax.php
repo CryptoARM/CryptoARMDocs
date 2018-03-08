@@ -1,4 +1,5 @@
 <?php
+use TrustedNet\Docs;
 
 define("NO_KEEP_STATISTIC", true);
 define("BX_STATISTIC_BUFFER_USED", false);
@@ -14,32 +15,32 @@ if (isset($command)) {
     $params = $_POST;
     switch ($command) {
         case "upload":
-            $res = AjaxCommand::upload($params);
+            $res = Docs\AjaxCommand::upload($params);
             break;
         case "updateStatus":
-            $res = AjaxCommand::updateStatus($params);
+            $res = Docs\AjaxCommand::updateStatus($params);
             break;
         case "block":
-            $res = AjaxCommand::block($params);
+            $res = Docs\AjaxCommand::block($params);
             break;
         case "unblock":
-            $res = AjaxCommand::unblock($params);
+            $res = Docs\AjaxCommand::unblock($params);
             break;
         case "remove":
-            $res = AjaxCommand::remove($params);
+            $res = Docs\AjaxCommand::remove($params);
             break;
         case "view":
-            $res = AjaxCommand::view($params);
+            $res = Docs\AjaxCommand::view($params);
             break;
         case "download":
-            $res = AjaxCommand::download($params);
+            $res = Docs\AjaxCommand::download($params);
             break;
         case "content":
-            $res = AjaxCommand::content($_GET);
+            $res = Docs\AjaxCommand::content($_GET);
             return $res;
             break;
         case "token":
-            $res = AjaxCommand::token($_GET);
+            $res = Docs\AjaxCommand::token($_GET);
             break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");

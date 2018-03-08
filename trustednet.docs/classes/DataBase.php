@@ -1,11 +1,12 @@
 <?php
+namespace TrustedNet\Docs;
 
 require_once __DIR__ . "/../config.php";
 
 /**
  * DB interaction class.
  */
-class TDataBaseDocument
+class DataBase
 {
     // TODO: get rid of tableName
 
@@ -73,7 +74,7 @@ class TDataBaseDocument
         if ($find_fileName)
             $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
         if ($find_signInfo)
-            $sql .= " AND TD.SIGNERS LIKE '%" . CDatabase::ForSql($find_signInfo) . "%'";
+            $sql .= " AND TD.SIGNERS LIKE '%" . $DB->ForSql($find_signInfo) . "%'";
         if ($find_type != "")
             $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status != "")
@@ -113,7 +114,7 @@ class TDataBaseDocument
     static function saveDocument($doc)
     {
         if ($doc->getId() == null) {
-            TDataBaseDocument::insertDocument($doc);
+            DataBase::insertDocument($doc);
         } else {
             global $DB;
             $parentId = $doc->getParentId();
@@ -125,16 +126,16 @@ class TDataBaseDocument
                 $childId = 'NULL';
             }
             $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
-                . 'NAME = "' . CDatabase::ForSql($doc->getName()) . '", '
+                . 'NAME = "' . $DB->ForSql($doc->getName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
                 . 'STATUS = ' . $doc->getStatus() . ', '
-                . "SIGNERS = '" . CDatabase::ForSql($doc->getSigners()) . "', "
+                . "SIGNERS = '" . $DB->ForSql($doc->getSigners()) . "', "
                 . 'PARENT_ID = ' . $parentId . ', '
                 . 'CHILD_ID = ' . $childId . ' '
                 . 'WHERE ID = ' . $doc->getId();
             $DB->Query($sql);
-            TDataBaseDocument::saveDocumentParent($doc, $doc->getId());
+            DataBase::saveDocumentParent($doc, $doc->getId());
         }
     }
 
@@ -158,16 +159,16 @@ class TDataBaseDocument
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
             . '(NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID)'
             . 'VALUES ('
-            . '"' . CDatabase::ForSql($doc->getName()) . '", '
+            . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
-            . "'" . CDatabase::ForSql($doc->getSigners()) . "', "
+            . "'" . $DB->ForSql($doc->getSigners()) . "', "
             . $doc->getType() . ', '
             . $parentId . ', '
             . $childId
             . ')';
         $DB->Query($sql);
         $doc->setId($DB->LastID());
-        TDataBaseDocument::saveDocumentParent($doc, $doc->getId());
+        DataBase::saveDocumentParent($doc, $doc->getId());
     }
 
     /**
@@ -201,7 +202,7 @@ class TDataBaseDocument
             . 'WHERE DOCUMENT_ID = ' . $doc->getId();
         $DB->Query($sql);
         // Removes childId from parent document
-        TDataBaseDocument::saveDocumentParent($doc);
+        DataBase::saveDocumentParent($doc);
     }
 
     /**
@@ -217,9 +218,9 @@ class TDataBaseDocument
         if ($doc->getParent()) {
             $parent = $doc->getParent();
         }
-        TDataBaseDocument::removeDocument($doc);
+        DataBase::removeDocument($doc);
         if ($parent) {
-            TDataBaseDocument::removeDocumentRecursively($parent);
+            DataBase::removeDocumentRecursively($parent);
         }
     }
 
@@ -250,7 +251,7 @@ class TDataBaseDocument
     {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
-            . ' WHERE NAME = "' . CDatabase::ForSql($name) . '"'
+            . ' WHERE NAME = "' . $DB->ForSql($name) . '"'
             . ' AND CHILD_ID is null';
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection();
@@ -272,13 +273,13 @@ class TDataBaseDocument
     static function saveProperty($property, $tableName)
     {
         if ($property->getId() == null) {
-            TDataBaseDocument::insertProperty($property, $tableName);
+            DataBase::insertProperty($property, $tableName);
         } else {
             global $DB;
             $sql = 'UPDATE ' . $tableName .
                 ' SET DOCUMENT_ID = ' . $property->getDocumentId() . ',
-                      TYPE="' . CDatabase::ForSql($property->getType()) . '",
-                      VALUE="' . CDatabase::ForSql($property->getValue()) . '"
+                      TYPE="' . $DB->ForSql($property->getType()) . '",
+                      VALUE="' . $DB->ForSql($property->getValue()) . '"
                 WHERE ID = ' . $property->getId();
             $DB->Query($sql);
         }
@@ -298,8 +299,8 @@ class TDataBaseDocument
               ' (DOCUMENT_ID, TYPE, VALUE)
                 VALUES (' .
                     $property->getDocumentId() . ', "' .
-                    CDatabase::ForSql($property->getType()) . '", "' .
-                    CDatabase::ForSql($property->getValue()) . '")';
+                    $DB->ForSql($property->getType()) . '", "' .
+                    $DB->ForSql($property->getValue()) . '")';
         $DB->Query($sql);
         $property->setId($DB->LastID());
     }
@@ -316,8 +317,8 @@ class TDataBaseDocument
     {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName .
-            ' WHERE TYPE = "' . CDatabase::ForSql($type) .
-            '" AND VALUE = "' . CDatabase::ForSql($value) . '"';
+            ' WHERE TYPE = "' . $DB->ForSql($type) .
+            '" AND VALUE = "' . $DB->ForSql($value) . '"';
         $rows = $DB->Query($sql);
         $res = new PropertyCollection();
         while ($array = $rows->Fetch()) {
@@ -336,7 +337,7 @@ class TDataBaseDocument
      */
     static function getPropertyBy($tableName, $fldName, $value)
     {
-        $props = TDataBaseDocument::getPropertiesBy($tableName, $fldName, $value);
+        $props = DataBase::getPropertiesBy($tableName, $fldName, $value);
         $res = null;
         if ($props->count()) {
             $res = $props->items(0);
@@ -355,7 +356,7 @@ class TDataBaseDocument
     static function getPropertiesBy($tableName, $fldName, $value)
     {
         global $DB;
-        $sql = 'SELECT * FROM ' . $tableName . ' WHERE  ' . $fldName . ' = "' . CDatabase::ForSql($value) . '"';
+        $sql = 'SELECT * FROM ' . $tableName . ' WHERE  ' . $fldName . ' = "' . $DB->ForSql($value) . '"';
         $rows = $DB->Query($sql);
         $res = new PropertyCollection();
         while ($array = $rows->Fetch()) {
@@ -372,7 +373,7 @@ class TDataBaseDocument
      */
     static function getPropertiesByDocumentId($tableName, $documentId)
     {
-        return TDataBaseDocument::getPropertiesBy($tableName, 'DOCUMENT_ID', $documentId);
+        return DataBase::getPropertiesBy($tableName, 'DOCUMENT_ID', $documentId);
     }
 
     /**
@@ -498,7 +499,7 @@ class TDataBaseDocument
      */
     static function getIdsByOrder($order)
     {
-        $docs = TDataBaseDocument::getDocumentsByOrder($order);
+        $docs = DataBase::getDocumentsByOrder($order);
         $list = $docs->getList();
         $ids = array();
         foreach ($list as &$doc) {

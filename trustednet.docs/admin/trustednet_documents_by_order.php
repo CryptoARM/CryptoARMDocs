@@ -1,4 +1,5 @@
 <?php
+use TrustedNet\Docs;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 CUtil::InitJSCore(array("jquery2"));
@@ -54,13 +55,13 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
-        $orders = TDataBaseDocument::getOrdersByFilter(array($by => $order), $arFilter);
+        $orders = Docs\DataBase::getOrdersByFilter(array($by => $order), $arFilter);
         while ($order = $orders->Fetch()) {
             $arOrders[] = $order["ORDER"];
         }
         $ids = array();
         foreach ($arOrders as $order) {
-            $idsOrder = TDataBaseDocument::getIdsByOrder($order);
+            $idsOrder = Docs\DataBase::getIdsByOrder($order);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
@@ -68,16 +69,16 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     } else {
         foreach ($arID as $ID) {
             $ID = IntVal($ID);
-            $idsOrder = TDataBaseDocument::getIdsByOrder($ID);
+            $idsOrder = Docs\DataBase::getIdsByOrder($ID);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
         }
     }
 
-    $docs = new DocumentCollection();
+    $docs = new Docs\DocumentCollection();
     foreach($ids as $id) {
-        $doc = TDataBaseDocument::getDocumentById($id);
+        $doc = Docs\DataBase::getDocumentById($id);
         $docs->add($doc);
     }
 
@@ -99,7 +100,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
             foreach ($ids as $id) {
 
-                $order_ID = TDataBaseDocument::getOrderByDocumentId($id);
+                $order_ID = Docs\DataBase::getOrderByDocumentId($id);
                 $order_ID = implode($order_ID);
                 $order = CSaleOrder::GetByID(intval($order_ID));
                 $user_id = $order["USER_ID"];
@@ -107,7 +108,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $user_email = $user["EMAIL"];
                 $user_name = $user["NAME"];
 
-                $html = TDataBaseDocument::getDocumentById($id);
+                $html = Docs\DataBase::getDocumentById($id);
                 $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $html->getHtmlPath());
 
                 $arEventFields = array(
@@ -130,7 +131,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$orders = TDataBaseDocument::getOrdersByFilter(array($by => $order), $arFilter);
+$orders = Docs\DataBase::getOrdersByFilter(array($by => $order), $arFilter);
 
 // convert list to the CAdminResult class
 $rsData = new CAdminResult($orders, $sTableID);
@@ -176,7 +177,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $user_login = $user["LOGIN"];
 
     // get docs by order
-    $docs = TDataBaseDocument::getDocumentsByOrder($order_id);
+    $docs = Docs\DataBase::getDocumentsByOrder($order_id);
 
     // order
     $arActions = Array();
@@ -201,7 +202,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         if ($status  == DOC_STATUS_BLOCKED) {
             $str = GetMessage("TN_DOCS_DOC_BLOCKED");
         } else {
-            $str = TSignUtils::getRoleString($doc);
+            $str = Docs\Utils::getRoleString($doc);
         }
         $html_signs .= $str . '<br/><br/>';
     }

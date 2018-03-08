@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * General object representation
@@ -16,17 +17,5 @@ interface IEntity
      * Creates array from object
      */
     function toArray();
-}
-
-/**
- * For objects that are stored in DB
- */
-interface ISave
-{
-
-    /**
-     * Saves object in DB
-     */
-    function save();
 }
 

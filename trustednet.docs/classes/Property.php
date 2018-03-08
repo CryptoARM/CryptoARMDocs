@@ -1,4 +1,5 @@
 <?php
+namespace TrustedNet\Docs;
 
 /**
  * Represents a property attached to the document.
@@ -162,7 +163,7 @@ class Property implements IEntity, ISave
      */
     public function save()
     {
-        TDataBaseDocument::saveProperty($this, DB_TABLE_PROPERTY);
+        DataBase::saveProperty($this, DB_TABLE_PROPERTY);
     }
 
 }
