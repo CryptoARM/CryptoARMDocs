@@ -4,35 +4,6 @@ use TrustedNet\Docs;
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
-// TODO: move to utils
-function PropertyTypeIsValid($type)
-{
-    $res = true;
-    $len = mb_strlen($type, "UTF-8");
-    if ($len = 0 || $len > 50)
-        $res = false;
-    // Latin and cyrillic symbols, ., -, _
-    $cyr = GetMessage("TN_DOCS_UPLOAD_CYR");
-    $pattern = "/^[A-Za-z" . $cyr . "0-9\-\_\.]*$/u";
-    if (!preg_match($pattern, $type))
-        $res = false;
-    return $res;
-}
-
-// TODO: move to utils
-function PropertyValueIsValid($value)
-{
-    $res = true;
-    $len = mb_strlen($value, "UTF-8");
-    if ($len = 0 || $len > 255)
-        $res = false;
-    // No whitespace
-    // Matches space, tab, line feed, carriage return, NUL-byte and vertical tab
-    if (preg_match("[\ \t\n\r\0\x0B]", $value))
-        $res = false;
-    return $res;
-}
-
 if (!$USER->CanDoOperation('fileman_upload_files')) {
     $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
 }
@@ -101,7 +72,10 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_PHPERROR") . " \"" . $pathto . "\".\n";
                 elseif (!$arType && $arValue)
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_VALUE_WITHOUT_PROP_ERROR") . "\n";
-                elseif (!PropertyTypeIsValid($arType) || !PropertyValueIsValid($arValue))
+                elseif (
+                    !Docs\Utils::propertyTypeValidation($arType) ||
+                    !Docs\Utils::propertyValueValidation($arValue)
+                )
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_USER_PROPERTIES") . "\n";
                 elseif (preg_match("/^\/bitrix\/.*/", $pathto))
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_DIR");

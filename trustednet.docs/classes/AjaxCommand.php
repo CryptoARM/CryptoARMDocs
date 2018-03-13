@@ -62,22 +62,18 @@ class AjaxCommand
     static function upload($params)
     {
         $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
-        $doc = DataBase::getDocumentById($params['id']);
+        $doc = DataBase::getDocumentById($params['id'])->getLastDocument();
         // TODO: add security check
         if (true) {
             if ($doc) {
                 $newDoc = $doc->copy();
                 $signers = urldecode($params["signers"]);
-                if ($doc->getSigners()) {
-                    // TODO: rewrite
-                    $signers = substr($doc->getSigners(), 0 , -1) .','. substr($signers, 1);
-                }
                 $newDoc->setSigners($signers);
                 $newDoc->setType(DOC_TYPE_SIGNED_FILE);
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
                 $extra = json_decode($params["extra"], true);
-                TSignUtils::roleHandler($newDoc, $extra);
+                Utils::roleHandler($newDoc, $extra);
                 if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
                     $newDoc->setName($newDoc->getName() . '.sig');
                     $newDoc->setPath($newDoc->getPath() . '.sig');
@@ -85,6 +81,7 @@ class AjaxCommand
                 $newDoc->save();
                 move_uploaded_file(
                     $file['tmp_name'],
+                    // TODO: every file in chain should be in it's own directory
                     $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
                 );
                 // Drop "blocked" status of original doc

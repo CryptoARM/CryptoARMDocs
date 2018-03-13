@@ -68,7 +68,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         $doc = Docs\DataBase::getDocumentById($id);
         $docType = $doc->getType();
         $docStatus = $doc->getStatus();
-        if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
+        if ($docStatus !== DOC_STATUS_BLOCKED) {
             $docs->add($doc);
         }
     }
@@ -76,7 +76,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.sign(' . $docs->toJSON() . ', null, true)';
+            echo 'window.parent.sign(' . $docs->toJSON() . ')';
             echo '</script>';
             break;
         case "unblock":
@@ -129,7 +129,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $doc = Docs\DataBase::getDocumentById($f_ID);
 
     $docName = '<input type="button" value="i" onclick="view(' . $f_ID . ')" style="float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;"/>';
-    $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="downloadOrAlert(' . $doc->getId() . ', true)" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a>';
+    $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $doc->getId() . ', true)" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a>';
 
     if ($doc->getSigners() == "") {
         $signers = array();
@@ -188,8 +188,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     // context menu
     $arActions = Array();
 
-    // add sign action for unsigned docs without "blocked" status
-    if ($docType == DOC_TYPE_FILE && $docStatus !== DOC_STATUS_BLOCKED) {
+    // add sign action for docs without "blocked" status
+    if ($docStatus !== DOC_STATUS_BLOCKED) {
         $arActions[] = array(
             "ICON" => "edit",
             "DEFAULT" => true,

@@ -1,7 +1,4 @@
 <?php
-
-$MESS["TN_DOCS_UPLOAD_CYR"] = "А-Яа-я";
-
 $MESS["TN_DOCS_UPLOAD_TITLE"] = "Загрузка документов";
 
 $MESS["TN_DOCS_UPLOAD_TAB_TITLE"] = "Выберите документы для загрузки";

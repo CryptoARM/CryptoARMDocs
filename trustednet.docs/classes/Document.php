@@ -70,13 +70,6 @@ class Document implements IEntity, ISave
      */
     protected $created = '';
 
-    /**
-     * Collection of document properties. Properties table in DB.
-     * @see config.php
-     * @var DocumentCollection
-     */
-    protected $properties = null;
-
     function __construct()
     {
         $this->id = null;
@@ -315,13 +308,6 @@ class Document implements IEntity, ISave
         } else {
             return $this;
         }
-        // TODO: delete after testing
-        //$res = $this;
-        //if ($res->hasChild()) {
-        //    $child = $this->getChild();
-        //    $res = $child->getLastDocument();
-        //}
-        //return $res;
     }
 
     /**

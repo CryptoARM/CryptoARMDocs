@@ -1,19 +1,28 @@
 var socket = io('https://localhost:4040');
 
-socket.on('files signed', function (data) {
-	console.log('файл подписан', data);
+socket.on('connect', function () {
+	console.log('Event: connect');
 });
 
-socket.on('file saved', function () {
-	console.log("file saved");
+socket.on('disconnect', function (data) {
+	console.log('Event: disconnect, reason: ', data);
 });
 
-socket.on('signature verified', function (data) {
-	console.log('информация о подписи', data);
+socket.on('verified', function (data) {
+	console.log('Event: verified', data);
 });
 
-socket.on('error', function (data) {
-    alert('Нет');
+socket.on('signed', function (data) {
+	console.log('Event: signed, data: ', data);
+});
+
+socket.on('uploaded', function (data) {
+	console.log('Event: uploaded, data: ', data);
+    location.reload()
+});
+
+socket.on('cancelled', function (data) {
+	console.log('Event: cancelled', data);
 });
 
 function sign(docs, extra = {}) {
@@ -125,7 +134,7 @@ function remove(ids, message = TN_ALERT_REMOVE_ACTION_CONFIRM) {
     }
 }
 
-function downloadOrAlert(id, del = false) {
+function download(id, del = false) {
     $.ajax({
         url: TN_DOCS_AJAX_CONTROLLER + '?command=download',
         type: 'post',

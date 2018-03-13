@@ -49,6 +49,7 @@ class Utils
     }
 
     /**
+     * Handles CLIENT and SELLER signing roles.
      *
      * @param object Document $doc
      * @param string JSON $extra
@@ -78,6 +79,7 @@ class Utils
      * Returns textual representation of role property
      *
      * @param object Document $doc
+     * @return string
      */
     public static function getRoleString($doc)
     {
@@ -107,6 +109,49 @@ class Utils
     }
 
     /**
+     * Validation for user-set Property Type field.
+     *
+     * Length between 1 and 50.
+     * Only latin and cyrillic, numbers and three symbols "- _ .".
+     *
+     * @param string $type
+     * @return boolean
+     */
+    public static function propertyTypeValidation($type)
+    {
+        $res = true;
+        $len = mb_strlen($type, "UTF-8");
+        if ($len = 0 || $len > 50)
+            $res = false;
+        $cyr = GetMessage("TN_DOCS_CYR");
+        $pattern = "/^[A-Za-z" . $cyr . "0-9\-\_\.]*$/u";
+        if (!preg_match($pattern, $type))
+            $res = false;
+        return $res;
+    }
+
+    /**
+     * Validation for user-set Property Value field.
+     *
+     * Length between 1 and 255.
+     * Whitespaces not allowed.
+     * Checks for space, tab, line feed, carriage return, NUL-byte and vertical tab.
+     *
+     * @param string $value
+     * @return boolean
+     */
+    public static function propertyValueValidation($value)
+    {
+        $res = true;
+        $len = mb_strlen($value, "UTF-8");
+        if ($len = 0 || $len > 255)
+            $res = false;
+        if (preg_match("[\ \t\n\r\0\x0B]", $value))
+            $res = false;
+        return $res;
+    }
+
+    /**
      * Print debug info to log.txt in site root
      *
      * @param mixed $var
@@ -114,9 +159,14 @@ class Utils
      * @return void
      */
     public static function debug($var, $name = "VAR") {
-        $myfile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a"); $logtime = date("d-m-Y H:i:s", time());
-        fwrite($myfile, "$logtime"."\n" . $name . ":\n_START_\n".print_r($var, true) . "\n_END_\n\n");
-        fclose($myfile);
+        $logFile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a");
+        $logTime = date("d-m-Y H:i:s", time());
+        fwrite($logFile, "##################################\n");
+        fwrite($logFile, $logTime . " - " . $name . "\n");
+        fwrite($logFile, "----------------------------------\n");
+        fwrite($logFile, print_r($var, true) . "\n");
+        fwrite($logFile, "##################################\n\n\n");
+        fclose($logFile);
     }
 
     /**
