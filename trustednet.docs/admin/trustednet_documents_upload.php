@@ -102,7 +102,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                                 $res_log['path'] = substr($pathto, 1);
                                 CEventLog::Log("content", "FILE_ADD", "main", "", serialize($res_log));
                             }
-                            if (Docs\Utils::createDocument($pathto, false, $arType, $arValue));
+                            if (Docs\Utils::createDocument($pathto, $arType, $arValue));
                             else $strWarning .= 'Error creating file';
                         }
                     } else $strWarning .= $quota->LAST_ERROR . "\n";

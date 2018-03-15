@@ -2,7 +2,6 @@
 use TrustedNet\Docs;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
-CUtil::InitJSCore(array("jquery2"));
 $module_id = 'trustednet.docs';
 CModule::IncludeModule($module_id);
 CModule::IncludeModule("sale");
@@ -382,18 +381,6 @@ $oFilter = new CAdminFilter(
 <?
 $lAdmin->DisplayList();
 ?>
-
-<script>
-    // send php variables to the js
-    var TN_DOCS_AJAX_CONTROLLER = "<?= TN_DOCS_AJAX_CONTROLLER ?>";
-    var TRUSTEDNETSIGNER_DOC_NOT_FOUND = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_NOT_FOUND') ?>";
-    var TRUSTEDNETSIGNER_DOC_BLOCKED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_BLOCKED') ?>";
-    var TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TRUSTEDNETSIGNER_REMOVE_ACTION_CONFIRM') ?>";
-    var TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED = "<?= GetMessage('TRUSTEDNETSIGNER_DOC_SIGN_NOT_NEEDED') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
-    var TRUSTEDNETSIGNER_LOST_DOC_ALERT= "<?= GetMessage('TRUSTEDNETSIGNER_LOST_DOC_ALERT') ?>";
-</script>
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
 

@@ -12,15 +12,22 @@ foreach (glob(TN_DOCS_MODULE_DIR_CLASSES . "/*.php") as $filename) {
     require_once $filename;
 }
 
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/socket.io.js");
-$APPLICATION->AddHeadScript("/bitrix/js/trustednet.docs/docs.js");
+CJSCore::RegisterExt(
+    "socketio",
+    array(
+        "js" => "/bitrix/js/trustednet.docs/socket.io.js",
+    )
+);
 
-/* CJSCore::RegisterExt( */
-/*     "trustednet.docs", */
-/*     array( */
-/*         "js" => "/bitrix/js/trustednet.docs/docs.js", */
-/*         "lang" => "/bitrix/modules/trustednet.docs/lang/" . LANGUAGE_ID . "/js.php", */
-/*         // 'rel' => array('popup', 'ajax', 'fx', 'ls', 'date', 'json') */
-/*     ) */
-/* ); */
+CJSCore::RegisterExt(
+    "trustednet_docs",
+    array(
+        "js" => "/bitrix/js/trustednet.docs/docs.js",
+        "lang" => "/bitrix/modules/trustednet.docs/lang/ru/javascript.php",
+    )
+);
+
+CUtil::InitJSCore(array('socketio'));
+CUtil::InitJSCore(array('trustednet_docs'));
+CUtil::InitJSCore(array("jquery2"));
 

@@ -9,14 +9,15 @@ class Utils
 
     /**
      * Creates new document
+     *
      * @param string $file Path to file
-     * @param boolean $copy If true copies the document into module folder
      * @param string $propertyType User-set property (ORDER)
      * @param string $propertyValue User-set property value (order number)
      * @param string $type File type. By default DOC_TYPE_FILE
+     * @param boolean $copy If true copies the document into module folder
      * @return object Document
      */
-    public static function createDocument($file, $copy, $propertyType = null, $propertyValue = null, $type = DOC_TYPE_FILE)
+    public static function createDocument($file, $propertyType = null, $propertyValue = null, $type = DOC_TYPE_FILE, $copy = null)
     {
         $name = Directory::getFileName($file);
         if ($copy && Directory::exists($file) && !is_dir($file)) {

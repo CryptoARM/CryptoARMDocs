@@ -2,8 +2,6 @@
 use TrustedNet\Docs;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
-CUtil::InitJSCore(array("jquery2"));
-//require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
@@ -344,18 +342,6 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
 </form>
 
 <?php $lAdmin->DisplayList(); ?>
-
-<script>
-    // send php variables to the js
-    var TN_DOCS_AJAX_CONTROLLER = "<?= TN_DOCS_AJAX_CONTROLLER ?>";
-    var TN_ALERT_NO_CLIENT = "<?= GetMessage('TN_ALERT_NO_CLIENT') ?>";
-    var TN_ALERT_DOC_NOT_FOUND = "<?= GetMessage('TN_ALERT_DOC_NOT_FOUND') ?>";
-    var TN_ALERT_DOC_BLOCKED = "<?= GetMessage('TN_ALERT_DOC_BLOCKED') ?>";
-    var TN_ALERT_REMOVE_ACTION_CONFIRM = "<?= GetMessage('TN_ALERT_REMOVE_ACTION_CONFIRM') ?>";
-    var TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE') ?>";
-    var TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST = "<?= GetMessage('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST') ?>";
-    var TN_ALERT_LOST_DOC = "<?= GetMessage('TN_ALERT_LOST_DOC') ?>";
-</script>
 
 <?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_admin.php"); ?>
 

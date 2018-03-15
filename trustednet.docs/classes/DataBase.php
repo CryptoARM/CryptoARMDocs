@@ -249,6 +249,7 @@ class DataBase
      */
     static function getDocumentsByName($name)
     {
+        // TODO: fuzzy finding
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
             . ' WHERE NAME = "' . $DB->ForSql($name) . '"'

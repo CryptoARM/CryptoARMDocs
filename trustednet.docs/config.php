@@ -7,6 +7,7 @@ define("TN_DOCS_MODULE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . TN
 define("TN_DOCS_MODULE_DIR_CLASSES", TN_DOCS_MODULE_DIR . "classes/");
 define("TN_DOCS_MODULE_DIR_CLASSES_GENERAL", TN_DOCS_MODULE_DIR . "classes/general/");
 
+// AJAX controller is also defined in lang/ru/javascript.php
 define("TN_DOCS_AJAX_CONTROLLER", "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/trustednet.docs/ajax.php");
 
 // DB tables

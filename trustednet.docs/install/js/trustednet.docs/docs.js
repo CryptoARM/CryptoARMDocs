@@ -1,3 +1,10 @@
+var AJAX_CONTROLLER = BX.message('TN_DOCS_AJAX_CONTROLLER');
+var NO_CLIENT = BX.message('TN_ALERT_NO_CLIENT');
+var REMOVE_ACTION_CONFIRM = BX.message('TN_ALERT_REMOVE_ACTION_CONFIRM');
+var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
+var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
+var LOST_DOC= BX.message('TN_ALERT_LOST_DOC');
+
 var socket = io('https://localhost:4040');
 
 socket.on('connect', function () {
@@ -34,7 +41,7 @@ function sign(docs, extra = {}) {
         req.params.token = '';
         req.params.files = docs;
         req.params.extra = extra;
-        req.params.uploader = TN_DOCS_AJAX_CONTROLLER + '?command=upload';
+        req.params.uploader = AJAX_CONTROLLER + '?command=upload';
         if (socket.connected) {
             socket.emit('sign', req);
             ids = [];
@@ -45,14 +52,14 @@ function sign(docs, extra = {}) {
                 location.reload();
             });
         } else {
-            alert(TN_ALERT_NO_CLIENT);
+            alert(NO_CLIENT);
         }
     }
 }
 
 function block(ids, cb = null) {
     $.ajax({
-        url: TN_DOCS_AJAX_CONTROLLER + '?command=block',
+        url: AJAX_CONTROLLER + '?command=block',
         type: 'post',
         data: {id: ids},
         success: function (d) {
@@ -79,7 +86,7 @@ function block(ids, cb = null) {
 
 function unblock(ids) {
     $.ajax({
-        url: TN_DOCS_AJAX_CONTROLLER + '?command=unblock',
+        url: AJAX_CONTROLLER + '?command=unblock',
         type: 'post',
         data: {id: ids},
         success: function (d) {
@@ -104,11 +111,11 @@ function unblock(ids) {
     });
 }
 
-function remove(ids, message = TN_ALERT_REMOVE_ACTION_CONFIRM) {
+function remove(ids, message = REMOVE_ACTION_CONFIRM) {
     var conf = confirm(message);
     if (conf == true) {
         $.ajax({
-            url: TN_DOCS_AJAX_CONTROLLER + '?command=remove',
+            url: AJAX_CONTROLLER + '?command=remove',
             type: 'post',
             data: {id: ids},
             success: function (d) {
@@ -136,21 +143,21 @@ function remove(ids, message = TN_ALERT_REMOVE_ACTION_CONFIRM) {
 
 function download(id, del = false) {
     $.ajax({
-        url: TN_DOCS_AJAX_CONTROLLER + '?command=download',
+        url: AJAX_CONTROLLER + '?command=download',
         type: 'post',
         data: {id: id},
         success: function(d) {
             console.log(d);
             if (d.success === true) {
-                window.location.href = TN_DOCS_AJAX_CONTROLLER + '?command=content&id=' + id;
+                window.location.href = AJAX_CONTROLLER + '?command=content&id=' + id;
             } else {
                 if (del) {
-                    var removeMessage = TN_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE;
+                    var removeMessage = LOST_DOC_REMOVE_CONFIRM_PRE;
                     removeMessage += '\n' + d.filename + '\n';
-                    removeMessage += TN_ALERT_LOST_DOC_REMOVE_CONFIRM_POST;
+                    removeMessage += LOST_DOC_REMOVE_CONFIRM_POST;
                     remove({id}, removeMessage);
                 } else {
-                    var alertMessage = TN_ALERT_LOST_DOC;
+                    var alertMessage = LOST_DOC;
                     alertMessage += '\n' + d.filename;
                     alert(alertMessage);
                 }
@@ -164,7 +171,7 @@ function download(id, del = false) {
 
 function view(id) {
     $.ajax({
-        url: TN_DOCS_AJAX_CONTROLLER + '?command=view',
+        url: AJAX_CONTROLLER + '?command=view',
         type: 'post',
         data: {id: id},
         success: function (d) {
