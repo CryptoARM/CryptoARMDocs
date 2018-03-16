@@ -194,7 +194,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $html_signs = '';
     foreach ($array as &$doc) {
         $doc = $doc->getLastDocument();
-        $html_docs .= '<input type="button" value="i" onclick="view(' . $doc->getId() . ')" style="float: left; font-style: italic; margin: 2px; width: 15px;  margin-right: 10px; height: 15px; padding: 0;"/>';
+        $docColl = new Docs\DocumentCollection();
+        $docColl->add($doc);
+        $html_docs .= "<input type='button' value='i' onclick='verify(" . $docColl->toJSON() . ")' style='float: left; font-style: italic; margin: 2px; width: 15px;  margin-right: 10px; height: 15px; padding: 0;'/>";
         $html_docs .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $doc->getId() . ')" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a> <br/><br/>';
         $status = $doc->getStatus();
         $str = "";

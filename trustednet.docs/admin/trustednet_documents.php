@@ -125,8 +125,10 @@ $lAdmin->AddHeaders(array(
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $doc = Docs\DataBase::getDocumentById($f_ID);
+    $docColl = new Docs\DocumentCollection();
+    $docColl->add($doc);
 
-    $docName = '<input type="button" value="i" onclick="view(' . $f_ID . ')" style="float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;"/>';
+    $docName = "<input type='button' value='i' onclick='verify(" . $docColl->toJSON() . ")' style='float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;'/>";
     $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $doc->getId() . ', true)" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a>';
 
     if ($doc->getSigners() == "") {

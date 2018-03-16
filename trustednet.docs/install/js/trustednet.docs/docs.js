@@ -57,6 +57,23 @@ function sign(docs, extra = {}) {
     }
 }
 
+function verify(docs) {
+    if (docs.length > 0) {
+        req = {};
+        req.jsonrpc = '2.0';
+        req.method = 'verify';
+        req.params = {};
+        req.params.token = '';
+        req.params.files = docs;
+        if (socket.connected) {
+            socket.emit('verify', req);
+            ids = [];
+        } else {
+            alert(NO_CLIENT);
+        }
+    }
+}
+
 function block(ids, cb = null) {
     $.ajax({
         url: AJAX_CONTROLLER + '?command=block',

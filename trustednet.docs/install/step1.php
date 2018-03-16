@@ -11,7 +11,7 @@ $APPLICATION->SetTitle(GetMessage("TN_DOCS_INSTALL_TITLE"));
 function checkDB()
 {
     global $DB;
-    $tables = array("trn_docs", "trn_docs_property", "trn_docs_status");
+    $tables = array("trn_docs", "trn_docs_property");
     $res = array();
     foreach($tables as $table) {
         $sql = "SHOW TABLES LIKE '" . $table . "'";
@@ -31,7 +31,7 @@ function checkDB()
     <input type="hidden" name="id" value="trustednet.docs">
     <input type="hidden" name="install" value="Y">
     <?php
-    $tables = array("trn_docs", "trn_docs_property", "trn_docs_status");
+    $tables = array("trn_docs", "trn_docs_property");
     $tablesInDB = checkDB();
     $tablesNotInDB = array_diff($tables, $tablesInDB);
 
