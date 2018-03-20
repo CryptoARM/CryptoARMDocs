@@ -24,13 +24,13 @@ class Document implements IEntity, ISave
      * Document name. NAME field in DB.
      * @var string
      */
-    protected $name = '';
+    protected $name = "";
 
     /**
      * Path to document file relative to the site root. PATH field in DB.
      * @var string
      */
-    protected $path = '';
+    protected $path = "";
 
     /**
      * Document type. TYPE field in DB.
@@ -50,7 +50,7 @@ class Document implements IEntity, ISave
      * Information about document signers. SIGNERS field in DB.
      * @var string JSON
      */
-    protected $signers = '';
+    protected $signers = "";
 
     /**
      * ID of the parent of the document. PARENT_ID field in DB.
@@ -68,7 +68,7 @@ class Document implements IEntity, ISave
      * Document creation time. TIMESTAMP_X field in DB.
      * @var string
      */
-    protected $created = '';
+    protected $created = "";
 
     function __construct()
     {
@@ -103,10 +103,23 @@ class Document implements IEntity, ISave
         return $doc;
     }
 
+    /**
+     * Converts document object to associative array.
+     * @return array
+     */
     public function toArray()
     {
-        //TODO: implement toArray
-        return;
+        $a = array(
+            "id"       => $this->getId(),
+            "name"     => $this->getName(),
+            "path"     => $this->getPath(),
+            "type"     => $this->getType(),
+            "status"   => $this->getStatus(),
+            "signers"  => $this->getSigners(),
+            "parentId" => $this->getParentId(),
+            "childId"  => $this->getChildId(),
+        );
+        return $a;
     }
 
     /**
@@ -440,7 +453,7 @@ class Document implements IEntity, ISave
         $props = &$this->properties;
         if (!$props) {
             if ($this->getId()) {
-                $props = DataBase::getPropertiesByDocumentId(DB_TABLE_PROPERTY, $this->getId());
+                $props = DataBase::getPropertiesByDocumentId($this->getId(), DB_TABLE_PROPERTY);
             } else {
                 $props = new PropertyCollection();
             }

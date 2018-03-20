@@ -8,8 +8,6 @@ require_once __DIR__ . "/../config.php";
  */
 class DataBase
 {
-    // TODO: get rid of tableName
-
     /**
      * Return collection of all last documents.
      * Last documents in the chain have empty CHILD_ID field.
@@ -271,7 +269,7 @@ class DataBase
      * @param string $tableName DB table name
      * @return void
      */
-    static function saveProperty($property, $tableName)
+    static function saveProperty($property, $tableName = DB_TABLE_PROPERTY)
     {
         if ($property->getId() == null) {
             DataBase::insertProperty($property, $tableName);
@@ -293,7 +291,7 @@ class DataBase
      * @param string $tableName DB table name
      * @return void
      */
-    static function insertProperty($property, $tableName)
+    static function insertProperty($property, $tableName = DB_TABLE_PROPERTY)
     {
         global $DB;
         $sql = 'INSERT INTO ' . $tableName .
@@ -309,12 +307,12 @@ class DataBase
     /**
      * Gets property collection from DB by specified type and value fields.
      * @global object $DB Bitrix global CDatabase object
-     * @param string $tableName DB table name
      * @param string $type TYPE field
      * @param string $value VALUE field
+     * @param string $tableName DB table name
      * @return PropertyCollection
      */
-    static function getPropertiesByTypeAndValue($tableName, $type, $value)
+    static function getPropertiesByTypeAndValue($type, $value, $tableName = DB_TABLE_PROPERTY)
     {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName .
@@ -331,14 +329,14 @@ class DataBase
     /**
      * Get single property from DB by specified field.
      * @global object $DB Bitrix global CDatabase object
-     * @param string $tableName DB table name
      * @param string $fldName Field in DB table
      * @param string $value VALUE field
+     * @param string $tableName DB table name
      * @return Property
      */
-    static function getPropertyBy($tableName, $fldName, $value)
+    static function getPropertyBy($fldName, $value, $tableName = DB_TABLE_PROPERTY)
     {
-        $props = DataBase::getPropertiesBy($tableName, $fldName, $value);
+        $props = DataBase::getPropertiesBy($fldName, $value, $tableName);
         $res = null;
         if ($props->count()) {
             $res = $props->items(0);
@@ -349,12 +347,12 @@ class DataBase
     /**
      * Gets property collection from DB by specified field.
      * @global object $DB Bitrix global CDatabase object
-     * @param string $tableName DB table name
      * @param string $fldName Field in DB
      * @param string $value VALUE field
+     * @param string $tableName DB table name
      * @return PropertyCollection
      */
-    static function getPropertiesBy($tableName, $fldName, $value)
+    static function getPropertiesBy($fldName, $value, $tableName = DB_TABLE_PROPERTY)
     {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName . ' WHERE  ' . $fldName . ' = "' . $DB->ForSql($value) . '"';
@@ -368,13 +366,13 @@ class DataBase
 
     /**
      * Gets property collection from DB by document ID.
-     * @param string $tableName DB table name
      * @param integer $documentId Documend ID
+     * @param string $tableName DB table name
      * @return PropertyCollection
      */
-    static function getPropertiesByDocumentId($tableName, $documentId)
+    static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY)
     {
-        return DataBase::getPropertiesBy($tableName, 'DOCUMENT_ID', $documentId);
+        return DataBase::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
     }
 
     /**

@@ -14,11 +14,14 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "sign":
+            $res = Docs\AjaxCommand::sign($params);
+            break;
         case "upload":
             $res = Docs\AjaxCommand::upload($params);
             break;
-        case "updateStatus":
-            $res = Docs\AjaxCommand::updateStatus($params);
+        case "getDocsToJSON":
+            $res = Docs\AjaxCommand::getDocsToJSON($params);
             break;
         case "block":
             $res = Docs\AjaxCommand::block($params);
@@ -39,9 +42,9 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::content($_GET);
             return $res;
             break;
-        case "token":
-            $res = Docs\AjaxCommand::token($_GET);
-            break;
+        // case "token":
+        //     $res = Docs\AjaxCommand::token($_GET);
+        //     break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

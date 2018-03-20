@@ -61,20 +61,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
         }
     }
 
-    $docs = new Docs\DocumentCollection();
-    foreach($ids as $id) {
-        $doc = Docs\DataBase::getDocumentById($id);
-        $docType = $doc->getType();
-        $docStatus = $doc->getStatus();
-        if ($docStatus !== DOC_STATUS_BLOCKED) {
-            $docs->add($doc);
-        }
-    }
-
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.sign(' . $docs->toJSON() . ')';
+            echo 'window.parent.sign(' . json_encode($ids) . ')';
             echo '</script>';
             break;
         case "unblock":
@@ -125,11 +115,10 @@ $lAdmin->AddHeaders(array(
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $doc = Docs\DataBase::getDocumentById($f_ID);
-    $docColl = new Docs\DocumentCollection();
-    $docColl->add($doc);
+    $docId = $doc->getId();
 
-    $docName = "<input type='button' value='i' onclick='verify(" . $docColl->toJSON() . ")' style='float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;'/>";
-    $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $doc->getId() . ', true)" data-id="' . $doc->getId() . '" >' . $doc->getName() . '</a>';
+    $docName = "<input type='button' value='i' onclick='verify([" . $docId . "])' style='float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;'/>";
+    $docName .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $docId . ', true)" data-id="' . $docId . '" >' . $doc->getName() . '</a>';
 
     if ($doc->getSigners() == "") {
         $signers = array();
@@ -182,9 +171,6 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("SIGN", $signersString);
     $row->AddViewField("TYPE", $docTypeString);
 
-    $docColl = new Docs\DocumentCollection();
-    $docColl->add($doc);
-
     // context menu
     $arActions = Array();
 
@@ -194,7 +180,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             "ICON" => "edit",
             "DEFAULT" => true,
             "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
-            "ACTION" => "sign(" . $docColl->toJSON() . ", null)"
+            "ACTION" => "sign(" . json_encode($arId) . ")"
         );
         $arActions[] = array("SEPARATOR" => true);
     }

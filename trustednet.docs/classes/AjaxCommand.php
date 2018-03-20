@@ -8,60 +8,137 @@ namespace TrustedNet\Docs;
  */
 class AjaxCommand
 {
-    //static function updateStatus($params)
-    //{
-    //    $res = array("success" => false, "message" => "Unknown error in Ajax.updateStatus");
-    //    $id = $params["id"];
-    //    $doc = DataBase::getDocumentById($id);
-    //    if (!$doc) {
-    //        $res['message'] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
-    //        return $res;
-    //    }
-    //    $status = $_GET["status"];
-    //    if ($doc->getStatus() && $doc->getStatus()->getValue() == DOC_STATUS_BLOCKED) {
-    //        echo "update status  " . $status . ' DOC_STATUS_CANCEL ' . DOC_STATUS_CANCEL . '      ' . DOC_STATUS_ERROR;
-    //        switch ($status) {
-    //            case DOC_STATUS_CANCEL:
-    //                if (!$doc->getSigners()) {
-    //                    DataBase::removeStatus($doc->getStatus());
-    //                } else {
-    //                    $doc->getStatus()->setValue(DOC_STATUS_NONE);
-    //                    $doc->getStatus()->save();
-    //                }
-    //                AjaxSign::sendSetStatus($params["operationId"], -1, "Canceled");
-    //                $res['success'] = true;
-    //                break;
-    //            case DOC_STATUS_ERROR:
-    //                $doc->getStatus()->setValue($status);
-    //                $doc->getStatus()->save();
-    //                AjaxSign::sendSetStatus($params["operationId"], -1, "Error");
-    //                $res['success'] = true;
-    //                break;
-    //            default:
-    //                $res['message'] = GetMessage('TRUSTEDNET_DOC_STATUNKNWN');
-    //        }
-    //    } else {
-    //        echo 'condition false';
-    //        $res['message'] = GetMessage('TRUSTEDNET_DOC_STATCHG');
-    //    }
-    //    die();
-    //    return $res;
-    //}
+    /**
+     *
+     * @param array $params [id]: array of document ids
+     *                      [extra]: additional information
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     *               [docsToSign]: JSON representation of documents that are ready to be signed
+     *               [docsNotFound]: array of ids that were not found in document database
+     *               [docsFileNotFound]: documents for which associated file was not found on disk
+     *               [docsBlocked]: documents blocked by previous operation
+     *               [docsRoleSigned]: documents that were already signed by provided ROLE
+     */
+    static function sign($params)
+    {
+        Utils::debug($params, "PARAMS");
+        $res = array(
+            "success" => false,
+            "message" => "Nothing to sign",
+        );
+        $docsId = $params["id"];
+        if (!isset($docsId)) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
+        $docsToSign = new DocumentCollection();
+        $docsNotFound = array();
+        $docsFileNotFound = new DocumentCollection();
+        $docsBlocked = new DocumentCollection();
+        $docsRoleSigned = new DocumentCollection();
+        foreach ($docsId as &$id) {
+            $doc = DataBase::getDocumentById($id)->getLastDocument();
+            if (!$doc) {
+                // No doc with that id is found
+                $docsNotFound[] = $id;
+            } else {
+                $doc = $doc->getLastDocument();
+                if ($doc->getStatus() === DOC_STATUS_BLOCKED) {
+                    // Doc is blocked by previous operation
+                    $docsBlocked->add($doc);
+                } elseif (!$doc->checkFile()) {
+                    // Associated file was not found on the disk
+                    $docsFileNotFound->add($doc);
+                } elseif (!Utils::checkDocByExtra($doc, $params["extra"]["role"])) {
+                    // No need to sign doc based on it ROLES property
+                    $docsRoleSigned->add($doc);
+                } else {
+                    // Doc is ready to be sent
+                    $docsToSign->add($doc);
+                }
+            }
+        }
+        if ($docsToSign->count()) {
+            $res["docsToSign"] = $docsToSign->toJSON();
+            $res["message"] = "Found documents to sign";
+            $res["success"] = true;
+        }
+        if ($docsNotFound) {
+            $res["docsNotFound"] = $docsNotFound;
+        }
+        if ($docsFileNotFound->count()) {
+            foreach($docsFileNotFound->getList() as $doc) {
+                $res["docsFileNotFound"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+        if ($docsBlocked->count()) {
+            foreach($docsBlocked->getList() as $doc) {
+                $res["docsBlocked"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+        if ($docsRoleSigned->count()) {
+            foreach($docsRoleSigned->getList() as $doc) {
+                $res["docsRoleSigned"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+
+        return $res;
+    }
+
+    // TODO: annotate
+    static function getDocsToJSON($params)
+    {
+        Utils::debug($params, "PARAMS");
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getDocJSON",
+        );
+        $docsId = $params["id"];
+        if (!isset($docsId)) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
+        $docColl = new DocumentCollection();
+        foreach ($docsId as &$id) {
+            $doc = DataBase::getDocumentById($id)->getLastDocument();
+            $docColl->add($doc);
+        }
+        if ($docColl->count()) {
+            $res["docs"] = $docColl->toJSON();
+            $res["message"] = "Found documents";
+            $res["success"] = true;
+        }
+        return $res;
+    }
 
     /**
      * Recieves signed file from signing client through POST method.
      *
      * Creates new document and updates type and status of other documents accordingly.
      *
-     * @param array $params [id]: document id,
-     *                      [signers]: information about signer,
+     * @param array $params [id]: document id
+     *                      [signers]: information about signer
      *                      [extra]: additional information
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
     static function upload($params)
     {
-        $res = array("success" => false, "message" => "Unknown error in Ajax.upload");
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.upload",
+        );
+        // TODO: do not accept if document is not last
         $doc = DataBase::getDocumentById($params['id'])->getLastDocument();
         // TODO: add security check
         if (true) {
@@ -81,7 +158,6 @@ class AjaxCommand
                 $newDoc->save();
                 move_uploaded_file(
                     $file['tmp_name'],
-                    // TODO: every file in chain should be in it's own directory
                     $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
                 );
                 // Drop "blocked" status of original doc
@@ -108,7 +184,10 @@ class AjaxCommand
      */
     function block($params)
     {
-        $res = array("success" => true, "message" => "");
+        $res = array(
+            "success" => true,
+            "message" => "",
+        );
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
@@ -117,7 +196,7 @@ class AjaxCommand
                 $doc->save();
             }
         } else {
-            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["message"] = "No ids were given";
             $res["success"] = false;
         }
         return $res;
@@ -132,7 +211,9 @@ class AjaxCommand
      */
     function unblock($params)
     {
-        $res = array("success" => true, "message" => "");
+        $res = array("success" => true,
+            "message" => "",
+        );
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
@@ -141,7 +222,7 @@ class AjaxCommand
                 $doc->save();
             }
         } else {
-            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["message"] = "No ids were given";
             $res["success"] = false;
         }
         return $res;
@@ -156,8 +237,15 @@ class AjaxCommand
      */
     function remove($params)
     {
-        $res = array("success" => false, "message" => "Unknown error in Ajax.remove");
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.remove",
+        );
         $docsId = $params["id"];
+        if (!isset($docsId)) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
         if (isset($docsId)) {
             // Try to find all docs in DB
             foreach ($docsId as &$id) {
@@ -165,12 +253,12 @@ class AjaxCommand
                 if ($doc) {
                     $lastDoc = $doc->getLastDocument();
                     if (!$lastDoc) {
-                        $res["message"] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+                        $res["message"] = "No document with this ID";
                         $res["success"] = false;
                         return $res;
                     }
                 } else {
-                    $res["message"] = GetMessage('TRUSTEDNET_DOC_IDNOTFOUND');
+                    $res["message"] = "No document with this ID";
                     $res["success"] = false;
                     return $res;
                 }
@@ -180,26 +268,14 @@ class AjaxCommand
                 $lastDoc = $doc->getLastDocument();
                 $lastDoc->remove();
             }
-            $res["message"] = GetMessage('TRUSTEDNET_DOC_REMOVE_SUCCESS');
+            $res["message"] = "Document was removed";
             $res["success"] = true;
         } else {
-            $res["message"] = GetMessage('TRUSTEDNET_DOC_POSTIDREQ');
+            $res["message"] = "No ids were given";
             $res["success"] = false;
         }
         return $res;
     }
-
-    //static function view($params)
-    //{
-    //    $res = array("success" => false, "message" => "Unknown error in Ajax.view");
-    //    $doc = DataBase::getDocumentById($params['id']);
-    //    if ($doc) {
-    //        $last = $doc->getLastDocument();
-    //        $ajaxParams = AjaxParams::fromArray($params);
-    //        $res = AjaxSign::sendViewRequest($last, $ajaxParams);
-    //    } else $res["message"] = "Document is not found";
-    //    return $res;
-    //}
 
     /**
      * Checks if file exists on the disk
@@ -226,7 +302,6 @@ class AjaxCommand
                 return $res;
             } else {
                 $res["message"] = "File not found";
-
             }
         } else {
             $res["message"] = "Document no found";
@@ -237,12 +312,15 @@ class AjaxCommand
     /**
      * Initiates file transfer
      *
-     * @param array $params [id]: document id,
+     * @param array $params [id]: document id
      * @return void
      */
     static function content($params)
     {
-        $res = array("success" => false, "message" => "Unknown error in Ajax.content");
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.content",
+        );
         $doc = DataBase::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();

@@ -32,46 +32,87 @@ socket.on('cancelled', function (data) {
 	console.log('Event: cancelled', data);
 });
 
-function sign(docs, extra = {}) {
-    if (docs.length > 0) {
-        req = {};
-        req.jsonrpc = '2.0';
-        req.method = 'sign';
-        req.params = {};
-        req.params.token = '';
-        req.params.files = docs;
-        req.params.extra = extra;
-        req.params.uploader = AJAX_CONTROLLER + '?command=upload';
-        if (socket.connected) {
-            socket.emit('sign', req);
-            ids = [];
-            docs.forEach(function(elem) {
-                ids.push(elem.id);
-            });
-            block(ids, function(){
-                location.reload();
-            });
-        } else {
-            alert(NO_CLIENT);
+function sign(ids, extra = null) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=sign',
+        type: 'post',
+        data: {id: ids, extra: extra},
+        success: function (d) {
+            if (d.success) {
+                docs = JSON.parse(d.docsToSign);
+                req = {};
+                req.jsonrpc = '2.0';
+                req.method = 'sign';
+                req.params = {};
+                req.params.token = '';
+                req.params.files = docs;
+                req.params.extra = extra;
+                req.params.uploader = AJAX_CONTROLLER + '?command=upload';
+                if (socket.connected) {
+                    socket.emit('sign', req);
+                    ids = [];
+                    docs.forEach(function(elem) {
+                        ids.push(elem.id);
+                    });
+                    block(ids, function(){
+                        location.reload();
+                    });
+                } else {
+                    alert(NO_CLIENT);
+                }
+            } else {
+                console.log(d);
+            }
+        },
+        error: function (e) {
+            console.error(e);
+            try {
+                var d = JSON.parse(e.responseText);
+                if (d.success === false) {
+                    console.log(d);
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
-    }
+    });
 }
 
-function verify(docs) {
-    if (docs.length > 0) {
-        req = {};
-        req.jsonrpc = '2.0';
-        req.method = 'verify';
-        req.params = {};
-        req.params.token = '';
-        req.params.files = docs;
-        if (socket.connected) {
-            socket.emit('verify', req);
-            ids = [];
-        } else {
-            alert(NO_CLIENT);
+function verify(ids) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getDocsToJSON',
+        type: 'post',
+        data: {id: ids},
+        success: function (d) {
+            if (d.success) {
+                docs = JSON.parse(d.docs);
+                req = {};
+                req.jsonrpc = '2.0';
+                req.method = 'verify';
+                req.params = {};
+                req.params.token = '';
+                req.params.files = docs;
+                if (socket.connected) {
+                    socket.emit('verify', req);
+                } else {
+                    alert(NO_CLIENT);
+                }
+            } else {
+                console.log(d);
+            }
+        },
+        error: function (e) {
+            console.error(e);
+            try {
+                var d = JSON.parse(e.responseText);
+                if (d.success === false) {
+                    console.log(d);
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
-    }
+    });
 }
 
 function block(ids, cb = null) {
@@ -128,6 +169,7 @@ function unblock(ids) {
     });
 }
 
+// TODO: add "force" argument
 function remove(ids, message = REMOVE_ACTION_CONFIRM) {
     var conf = confirm(message);
     if (conf == true) {

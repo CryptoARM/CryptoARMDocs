@@ -13,11 +13,10 @@ class Utils
      * @param string $file Path to file
      * @param string $propertyType User-set property (ORDER)
      * @param string $propertyValue User-set property value (order number)
-     * @param string $type File type. By default DOC_TYPE_FILE
      * @param boolean $copy If true copies the document into module folder
      * @return object Document
      */
-    public static function createDocument($file, $propertyType = null, $propertyValue = null, $type = DOC_TYPE_FILE, $copy = null)
+    public static function createDocument($file, $propertyType = null, $propertyValue = null, $copy = false)
     {
         $name = Directory::getFileName($file);
         if ($copy && Directory::exists($file) && !is_dir($file)) {
@@ -34,7 +33,7 @@ class Utils
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
-        $doc->setType($type);
+        $doc->setType(DOC_TYPE_FILE);
         $docId = $doc->getId();
         $props = $doc->getProperties();
         if ($propertyType) {
@@ -74,6 +73,39 @@ class Utils
                 }
             }
         }
+    }
+
+    /**
+     * Filter for documents that don't need to be signed,
+     * based on their ROLES property and EXTRA argument to the sign function.
+     *
+     * @param object Document $doc
+     * @param string JSON $extra
+     */
+    public static function checkDocByExtra($doc, $extra)
+    {
+        // TODO: rename function
+        $status = $doc->getProperties()->getItemByType("ROLES");
+        Utils::debug($status, "STATUS");
+        if (!$status) {
+            return true;
+        }
+        $statusValue = $status->getValue();
+        Utils::debug($statusValue, "STATUS VALUE");
+        if ($extra == "CLIENT") {
+            if ($statusValue == "SELLER" || $statusValue == "NONE") {
+                return true;
+            } else {
+                return false;
+            }
+        } elseif ($extra == "SELLER") {
+            if ($statusValue == "CLIENT" || $statusValue == "NONE") {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

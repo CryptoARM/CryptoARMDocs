@@ -61,11 +61,18 @@ class DocumentCollection extends Collection implements IEntity
         return $a;
     }
 
+    /**
+     * Converts document collection object to array.
+     * @return array
+     */
     public function toArray()
     {
-        // TODO: implement toArray
-        return;
-
+        $array = array();
+        foreach ($this->items_ as &$item) {
+            $a[] = $item->toArray();
+        }
+        return $a;
     }
+
 }
 
