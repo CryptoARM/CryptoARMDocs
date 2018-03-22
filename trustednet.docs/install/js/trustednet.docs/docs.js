@@ -80,7 +80,7 @@ function sign(ids, extra = null) {
 
 function verify(ids) {
     $.ajax({
-        url: AJAX_CONTROLLER + '?command=getDocsToJSON',
+        url: AJAX_CONTROLLER + '?command=verify',
         type: 'post',
         data: {id: ids},
         success: function (d) {

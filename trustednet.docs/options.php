@@ -11,7 +11,12 @@ $aTabs = array(
         "DIV" => "tn_docs_options",
         "TAB" => GetMessage("TN_DOCS_OPT_TAB"),
         "TITLE" => GetMessage("TN_DOCS_OPT_TAB_TITLE")
-    )
+    ),
+    array(
+        "DIV" => "tn_docs_logs",
+        "TAB" => GetMessage("TN_DOCS_LOGS_TAB"),
+        "TITLE" => GetMessage("TN_DOCS_LOGS_TAB_TITLE")
+    ),
 );
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
@@ -97,6 +102,22 @@ $tabControl->Begin();
                    value="<?= $DOCUMENTS_DIR ?>"/>
         </td>
     </tr>
+
+    <?= $tabControl->BeginNextTab(); ?>
+
+    <?
+    if ($_POST["purge_logs"]) {
+        unlink(TN_DOCS_LOG_FILE);
+    }
+    if (file_exists(TN_DOCS_LOG_FILE)) {
+    ?>
+        <input name="purge_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_PURGE") ?>"/>
+        <pre><? print_r(file_get_contents(TN_DOCS_LOG_FILE)) ?></pre>
+    <?
+    } else {
+        echo GetMessage("TN_DOCS_LOGS_NO_LOG_FILE");
+    }
+    ?>
 
     <? $tabControl->Buttons(); ?>
 

@@ -44,7 +44,10 @@ class Utils
             }
         }
         $doc->save();
-
+        Utils::log(array(
+            "action" => "created",
+            "docs" => $doc,
+        ));
         return $doc;
     }
 
@@ -185,6 +188,45 @@ class Utils
     }
 
     /**
+     * Logs operation details into module log file
+     *
+     * @param array $logArray [action]: usually function name
+     *                        [docs]: Document or DocumentCollection subjected to action
+     *                        [extra]: extra info associated with action
+     * @return void
+     */
+    public static function log($logArray) {
+        $logFile = fopen(TN_DOCS_LOG_FILE, "a");
+        $logTime = date("Y-m-d H:i:s", time());
+        $logAction = $logArray["action"];
+        $logDocs = $logArray["docs"];
+        $logExtra = $logArray["extra"];
+        if ($logDocs) {
+            $logDocsParsed = array();
+            if (get_class($logDocs) === "TrustedNet\Docs\Document") {
+                $logDocsParsed[] = $logDocs->getId() . "(" . $logDocs->getName() . ")";
+            }
+            if (get_class($logDocs) === "TrustedNet\Docs\DocumentCollection") {
+                foreach ($logDocs->getList() as $doc) {
+                    $logDocsParsed[] = $doc->getId() . "(" .$doc->getName() . ")";
+                }
+            }
+        }
+        fwrite($logFile, $logTime);
+        if ($logAction) {
+            fwrite($logFile, " action:" . print_r($logAction, true));
+        }
+        if ($logDocsParsed) {
+            fwrite($logFile, " docs:" . implode(",", $logDocsParsed));
+        }
+        if ($logExtra && $logExtra != "null") {
+            fwrite($logFile, " extra:" . print_r($logExtra, true));
+        }
+        fwrite($logFile, "\n");
+        fclose($logFile);
+    }
+
+    /**
      * Print debug info to log.txt in site root
      *
      * @param mixed $var
@@ -193,7 +235,7 @@ class Utils
      */
     public static function debug($var, $name = "VAR") {
         $logFile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a");
-        $logTime = date("d-m-Y H:i:s", time());
+        $logTime = date("Y-m-d H:i:s", time());
         fwrite($logFile, "##################################\n");
         fwrite($logFile, $logTime . " - " . $name . "\n");
         fwrite($logFile, "----------------------------------\n");

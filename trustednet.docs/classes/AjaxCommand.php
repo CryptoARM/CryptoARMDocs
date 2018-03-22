@@ -22,7 +22,6 @@ class AjaxCommand
      */
     static function sign($params)
     {
-        Utils::debug($params, "PARAMS");
         $res = array(
             "success" => false,
             "message" => "Nothing to sign",
@@ -91,14 +90,12 @@ class AjaxCommand
                 );
             }
         }
-
         return $res;
     }
 
     // TODO: annotate
-    static function getDocsToJSON($params)
+    static function verify($params)
     {
-        Utils::debug($params, "PARAMS");
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.getDocJSON",
@@ -138,9 +135,9 @@ class AjaxCommand
             "success" => false,
             "message" => "Unknown error in AjaxCommand.upload",
         );
+        // TODO: add security check
         // TODO: do not accept if document is not last
         $doc = DataBase::getDocumentById($params['id'])->getLastDocument();
-        // TODO: add security check
         if (true) {
             if ($doc) {
                 $newDoc = $doc->copy();
@@ -172,6 +169,11 @@ class AjaxCommand
         } else {
             $res["message"] = "Access denied";
         }
+        Utils::log(array(
+            "action" => "signed",
+            "docs" => $doc,
+            "extra" => $params["extra"],
+        ));
         return $res;
     }
 
@@ -267,6 +269,10 @@ class AjaxCommand
                 $doc = DataBase::getDocumentById($id);
                 $lastDoc = $doc->getLastDocument();
                 $lastDoc->remove();
+                Utils::log(array(
+                    "action" => "removed",
+                    "docs" => $lastDoc,
+                ));
             }
             $res["message"] = "Document was removed";
             $res["success"] = true;

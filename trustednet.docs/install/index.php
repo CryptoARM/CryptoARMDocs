@@ -233,9 +233,6 @@ Class trustednet_docs extends CModule
             . 'WHERE ID = ' . $id;
         $DB->Query($sql);
         $sql = 'DELETE FROM `trn_docs_property`'
-            . 'WHERE PARENT_ID = ' . $id;
-        $DB->Query($sql);
-        $sql = 'DELETE FROM `trn_docs_status`'
             . 'WHERE DOCUMENT_ID = ' . $id;
         $DB->Query($sql);
 

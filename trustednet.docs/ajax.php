@@ -20,8 +20,8 @@ if (isset($command)) {
         case "upload":
             $res = Docs\AjaxCommand::upload($params);
             break;
-        case "getDocsToJSON":
-            $res = Docs\AjaxCommand::getDocsToJSON($params);
+        case "verify":
+            $res = Docs\AjaxCommand::verify($params);
             break;
         case "block":
             $res = Docs\AjaxCommand::block($params);
