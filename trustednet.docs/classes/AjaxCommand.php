@@ -136,9 +136,13 @@ class AjaxCommand
             "message" => "Unknown error in AjaxCommand.upload",
         );
         // TODO: add security check
-        // TODO: do not accept if document is not last
-        $doc = DataBase::getDocumentById($params['id'])->getLastDocument();
         if (true) {
+            $doc = DataBase::getDocumentById($params['id']);
+            $lastDoc =$doc->getLastDocument();
+            if ($lastDoc->getId() != $doc->getId()) {
+                $res["message"] = "Document already has child.";
+                return $res;
+            }
             if ($doc) {
                 $newDoc = $doc->copy();
                 $signers = urldecode($params["signers"]);
