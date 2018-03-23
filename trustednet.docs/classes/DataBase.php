@@ -68,7 +68,7 @@ class DataBase
             WHERE
                 isnull(TD.CHILD_ID)";
         if ($find_docId !== "")
-            $sql .= " AND TD.ID = " . $find_docId;
+            $sql .= " AND TD.ID = '" . $find_docId . "'";
         if ($find_fileName !== "")
             $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
         if ($find_signInfo !== "")
@@ -450,7 +450,7 @@ class DataBase
         AND TDP.TYPE = 'ORDER'
         AND isnull(TD.CHILD_ID)";
         if ($find_order !== "")
-            $sql .= " AND OrderList.VALUE = " . $find_order;
+            $sql .= " AND OrderList.VALUE = '" . $find_order . "'";
         if ($find_order_status !== "")
             $sql .= " AND BO.STATUS_ID = '" . $find_order_status . "'";
         if ($find_clientName !== "")
