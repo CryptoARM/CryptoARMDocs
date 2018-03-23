@@ -53,11 +53,11 @@ class DataBase
             ),
         );
 
-        $find_docId = $filter['DOC'];
-        $find_fileName = $filter['FILE_NAME'];
-        $find_signInfo = $filter['SIGN'];
-        $find_type = $filter['TYPE'];
-        $find_status = $filter['STATUS'];
+        $find_docId = (string)$filter['DOC'];
+        $find_fileName = (string)$filter['FILE_NAME'];
+        $find_signInfo = (string)$filter['SIGN'];
+        $find_type = (string)$filter['TYPE'];
+        $find_status = (string)$filter['STATUS'];
 
         global $DB;
         $sql = "
@@ -67,15 +67,15 @@ class DataBase
                 " . DB_TABLE_DOCUMENTS . " TD
             WHERE
                 isnull(TD.CHILD_ID)";
-        if ($find_docId)
+        if ($find_docId !== "")
             $sql .= " AND TD.ID = " . $find_docId;
-        if ($find_fileName)
+        if ($find_fileName !== "")
             $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
-        if ($find_signInfo)
+        if ($find_signInfo !== "")
             $sql .= " AND TD.SIGNERS LIKE '%" . $DB->ForSql($find_signInfo) . "%'";
-        if ($find_type != "")
+        if ($find_type !== "")
             $sql .= " AND TD.TYPE = " . $find_type;
-        if ($find_status != "")
+        if ($find_status !== "")
             $sql .= " AND TD.STATUS = " . $find_status;
 
         $sOrder = '';
@@ -425,12 +425,12 @@ class DataBase
             ),
         );
 
-        $find_order = $filter['ORDER'];
-        $find_order_status = $filter['ORDER_STATUS'];
-        $find_clientEmail = $filter['CLIENT_EMAIL'];
-        $find_clientName = $filter['CLIENT_NAME'];
-        $find_clientLastName = $filter['CLIENT_LASTNAME'];
-        $find_docState = $filter['DOC_STATE'];
+        $find_order = (string)$filter['ORDER'];
+        $find_order_status = (string)$filter['ORDER_STATUS'];
+        $find_clientEmail = (string)$filter['CLIENT_EMAIL'];
+        $find_clientName = (string)$filter['CLIENT_NAME'];
+        $find_clientLastName = (string)$filter['CLIENT_LASTNAME'];
+        $find_docState = (string)$filter['DOC_STATE'];
 
         global $DB;
         $sql = "
@@ -449,17 +449,17 @@ class DataBase
         AND TD.ID = OrderList.DOCUMENT_ID
         AND TDP.TYPE = 'ORDER'
         AND isnull(TD.CHILD_ID)";
-        if ($find_order)
+        if ($find_order !== "")
             $sql .= " AND OrderList.VALUE = " . $find_order;
-        if ($find_order_status)
+        if ($find_order_status !== "")
             $sql .= " AND BO.STATUS_ID = '" . $find_order_status . "'";
-        if ($find_clientName)
+        if ($find_clientName !== "")
             $sql .= " AND BU.NAME LIKE '%" . $find_clientName . "%'";
-        if ($find_clientLastName)
+        if ($find_clientLastName !== "")
             $sql .= " AND BU.LAST_NAME LIKE '%" . $find_clientLastName . "%'";
-        if ($find_clientEmail)
+        if ($find_clientEmail !== "")
             $sql .= " AND BU.EMAIL LIKE '%" . $find_clientEmail . "%'";
-        if ($find_docState)
+        if ($find_docState !== "")
             $sql .= " AND TDP.VALUE ='" . $find_docState . "'";
 
         $sql .= " GROUP BY OrderList.VALUE";

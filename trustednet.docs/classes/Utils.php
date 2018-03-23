@@ -239,8 +239,7 @@ class Utils
         fwrite($logFile, "##################################\n");
         fwrite($logFile, $logTime . " - " . $name . "\n");
         fwrite($logFile, "----------------------------------\n");
-        fwrite($logFile, print_r($var, true) . "\n");
-        fwrite($logFile, "##################################\n\n\n");
+        fwrite($logFile, print_r($var, true) . "\n\n\n");
         fclose($logFile);
     }
 
