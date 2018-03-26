@@ -169,9 +169,12 @@ function unblock(ids) {
     });
 }
 
-// TODO: add "force" argument
-function remove(ids, message = REMOVE_ACTION_CONFIRM) {
-    var conf = confirm(message);
+function remove(ids, force = false, message = REMOVE_ACTION_CONFIRM) {
+    if (force) {
+        var conf = true;
+    } else {
+        var conf = confirm(message);
+    }
     if (conf == true) {
         $.ajax({
             url: AJAX_CONTROLLER + '?command=remove',

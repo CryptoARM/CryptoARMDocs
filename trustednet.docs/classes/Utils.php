@@ -84,17 +84,16 @@ class Utils
      *
      * @param object Document $doc
      * @param string JSON $extra
+     * @return boolean
      */
-    public static function checkDocByExtra($doc, $extra)
+    public static function checkDocByRole($doc, $extra)
     {
         // TODO: rename function
         $status = $doc->getProperties()->getItemByType("ROLES");
-        Utils::debug($status, "STATUS");
         if (!$status) {
             return true;
         }
         $statusValue = $status->getValue();
-        Utils::debug($statusValue, "STATUS VALUE");
         if ($extra == "CLIENT") {
             if ($statusValue == "SELLER" || $statusValue == "NONE") {
                 return true;

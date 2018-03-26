@@ -9,6 +9,8 @@ namespace TrustedNet\Docs;
 class AjaxCommand
 {
     /**
+     * Recieves array of document ids and checks them all before
+     * determining which ones are ready to signed.
      *
      * @param array $params [id]: array of document ids
      *                      [extra]: additional information
@@ -49,7 +51,7 @@ class AjaxCommand
                 } elseif (!$doc->checkFile()) {
                     // Associated file was not found on the disk
                     $docsFileNotFound->add($doc);
-                } elseif (!Utils::checkDocByExtra($doc, $params["extra"]["role"])) {
+                } elseif (!Utils::checkDocByRole($doc, $params["extra"]["role"])) {
                     // No need to sign doc based on it ROLES property
                     $docsRoleSigned->add($doc);
                 } else {
@@ -93,7 +95,15 @@ class AjaxCommand
         return $res;
     }
 
-    // TODO: annotate
+    /**
+     * Returns document info in JSON format to send
+     * to the signing progamm.
+     *
+     * @param array $params [id]: array of document ids
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     *               [docs]: document info in JSON format
+     */
     static function verify($params)
     {
         $res = array(
