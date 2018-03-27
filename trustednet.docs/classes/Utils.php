@@ -144,6 +144,29 @@ class Utils
     }
 
     /**
+     * Initiates file download
+     *
+     * @param string $filepath
+     * @param string $filename
+     */
+    public static function download($filepath, $filename)
+    {
+        if (file_exists($filepath)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($filepath));
+            ob_clean();
+            flush();
+            readfile($filepath);
+            exit;
+        }
+    }
+
+    /**
      * Validation for user-set Property Type field.
      *
      * Length between 1 and 50.
@@ -187,6 +210,64 @@ class Utils
     }
 
     /**
+     * Reads n last lines from the file.
+     *
+     * @author Torleif Berger, Lorenzo Stanco
+     * @link http://stackoverflow.com/a/15025877/995958
+     * @license http://creativecommons.org/licenses/by/3.0/
+     * @param string $path Path to the file
+     * @param int $lines Number of lines to read
+     * @param mixed $adaptive
+     * @return string
+     */
+    public static function tail($filepath, $lines = 1, $adaptive = true)
+    {
+        $f = @fopen($filepath, "rb");
+        if ($f === false) {
+            return false;
+        }
+        // Sets buffer size, according to the number of lines to retrieve.
+        // This gives a performance boost when reading a few lines from the file.
+        if (!$adaptive) {
+            $buffer = 4096;
+        } else {
+            $buffer = ($lines < 2 ? 64 : ($lines < 10 ? 512 : 4096));
+        }
+        // Jump to last character
+        fseek($f, -1, SEEK_END);
+        // Read it and adjust line number if necessary
+        // (Otherwise the result would be wrong if file doesn't end with a blank line)
+        if (fread($f, 1) != "\n") {
+            $lines -= 1;
+        }
+        // Start reading
+        $output = "";
+        $chunk = "";
+        // While we would like more
+        while (ftell($f) > 0 && $lines >= 0) {
+            // Figure out how far back we should jump
+            $seek = min(ftell($f), $buffer);
+            // Do the jump (backwards, relative to where we are)
+            fseek($f, -$seek, SEEK_CUR);
+            // Read a chunk and prepend it to our output
+            $output = ($chunk = fread($f, $seek)) . $output;
+            // Jump back to where we started reading
+            fseek($f, -mb_strlen($chunk, "8bit"), SEEK_CUR);
+            // Decrease our line counter
+            $lines -= substr_count($chunk, "\n");
+        }
+        // While we have too many lines
+        // (Because of buffer size we might have read too many)
+        while ($lines++ < 0) {
+            // Find first newline and remove all text before that
+            $output = substr($output, strpos($output, "\n") + 1);
+        }
+        // Close file and return
+        fclose($f);
+        return trim($output);
+    }
+
+    /**
      * Logs operation details into module log file
      *
      * @param array $logArray [action]: usually function name
@@ -194,7 +275,8 @@ class Utils
      *                        [extra]: extra info associated with action
      * @return void
      */
-    public static function log($logArray) {
+    public static function log($logArray)
+    {
         $logFile = fopen(TN_DOCS_LOG_FILE, "a");
         $logTime = date("Y-m-d H:i:s", time());
         $logAction = $logArray["action"];
@@ -232,7 +314,8 @@ class Utils
      * @param string $name
      * @return void
      */
-    public static function debug($var, $name = "VAR") {
+    public static function debug($var, $name = "VAR")
+    {
         $logFile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a");
         $logTime = date("Y-m-d H:i:s", time());
         fwrite($logFile, "##################################\n");
@@ -248,7 +331,8 @@ class Utils
      * @param string|array|number $msg
      * @return void
      */
-    public static function throwError($msg) {
+    public static function throwError($msg)
+    {
         header("HTTP/1.1 500 Internal Server Error");
         echo json_encode(array("success" => false, "message" => $msg));
         die();

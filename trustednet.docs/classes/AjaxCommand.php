@@ -306,7 +306,7 @@ class AjaxCommand
      */
     static function download($params)
     {
-        // TODO: rename
+        // TODO: rename or merge with content
         $res = array(
             "success" => false,
             "message" => "Unknown error in Ajax.download",
@@ -330,7 +330,7 @@ class AjaxCommand
     }
 
     /**
-     * Initiates file transfer
+     * Sends document file
      *
      * @param array $params [id]: document id
      * @return void
@@ -345,18 +345,8 @@ class AjaxCommand
         if ($doc) {
             $last = $doc->getLastDocument();
             $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
-            if (file_exists($file)) {
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . $doc->getName() . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($file));
-                readfile($file);
-            }
+            Utils::download($file, $doc->getName());
         } else {
-            echo 'file not exist';
             header("HTTP/1.1 500 Internal Server Error");
             $res["message"] = "Document is not found";
             echo json_encode($res);

@@ -1,4 +1,5 @@
 <?php
+use TrustedNet\Docs;
 
 include __DIR__ . "/config.php";
 $module_id = TN_DOCS_MODULE_ID;
@@ -109,10 +110,15 @@ $tabControl->Begin();
     if ($_POST["purge_logs"]) {
         unlink(TN_DOCS_LOG_FILE);
     }
+    if ($_POST["download_logs"]) {
+        Docs\Utils::download(TN_DOCS_LOG_FILE, "tn_docs_log_" . date("Y-m-d") . ".txt");
+    }
     if (file_exists(TN_DOCS_LOG_FILE)) {
     ?>
+        <p><?= GetMessage("TN_DOCS_LOGS_LAST_100") ?></p>
+        <pre><? print_r(Docs\Utils::tail(TN_DOCS_LOG_FILE, 100)) ?></pre>
+        <input name="download_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_DOWNLOAD") ?>"/>
         <input name="purge_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_PURGE") ?>"/>
-        <pre><? print_r(file_get_contents(TN_DOCS_LOG_FILE)) ?></pre>
     <?
     } else {
         echo GetMessage("TN_DOCS_LOGS_NO_LOG_FILE");
