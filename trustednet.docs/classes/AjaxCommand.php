@@ -62,7 +62,7 @@ class AjaxCommand
         }
         if ($docsToSign->count()) {
             $res["docsToSign"] = $docsToSign->toJSON();
-            $res["message"] = "Found documents to sign";
+            $res["message"] = "Some documents were sent for signing";
             $res["success"] = true;
         }
         if ($docsNotFound) {

@@ -19,6 +19,7 @@ if ($APPLICATION->GetGroupRight("trustednet.docs") >= "R") {
 
         $Menu[] = array("text" => GetMessage("TN_DOCS_MENU_DOCUMENTS"),
             "url" => "trustednet_documents.php?lang=" . LANGUAGE_ID,
+            // more_url assigns page to the menu entry
             "more_url" => array("trustednet_documents_upload.php"),
             "title" => GetMessage("TN_DOCS_MENU_DOCUMENTS")
         );

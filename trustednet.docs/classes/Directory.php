@@ -1,7 +1,7 @@
 <?php
 namespace TrustedNet\Docs;
 
-// TODO: remove?
+// TODO: remove class Directory?
 class Directory
 {
 

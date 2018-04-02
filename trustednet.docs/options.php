@@ -14,6 +14,11 @@ $aTabs = array(
         "TITLE" => GetMessage("TN_DOCS_OPT_TAB_TITLE")
     ),
     array(
+        "DIV" => "tn_docs_license",
+        "TAB" => GetMessage("TN_DOCS_LICENSE_TAB"),
+        "TITLE" => GetMessage("TN_DOCS_LICENSE_TAB_TITLE")
+    ),
+    array(
         "DIV" => "tn_docs_logs",
         "TAB" => GetMessage("TN_DOCS_LOGS_TAB"),
         "TITLE" => GetMessage("TN_DOCS_LOGS_TAB_TITLE")
@@ -66,19 +71,42 @@ function CheckDocumentsDir($dir) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && check_bitrix_sessid())
-    if (isset($_POST['Update'])) {
+$PROVIDE_LICENSE = COption::GetOptionString($module_id, "PROVIDE_LICENSE", "");
+$CLIENT_ID = COption::GetOptionString($module_id, "CLIENT_ID", "");
+$SECRET = COption::GetOptionString($module_id, "SECRET", "");
 
-        if (isset($_POST['DOCUMENTS_DIR'])) {
-            $documentsDirFromPost = (string)$_POST['DOCUMENTS_DIR'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
+    if (isset($_POST["Update"])) {
+
+        if (isset($_POST["DOCUMENTS_DIR"])) {
+            $documentsDirFromPost = (string)$_POST["DOCUMENTS_DIR"];
         }
         $documentsDirFromPost = TrimDocumentsDir($documentsDirFromPost);
         $checkRes = CheckDocumentsDir($documentsDirFromPost);
         if ($checkRes === true) {
             $DOCUMENTS_DIR = $documentsDirFromPost;
-            COption::SetOptionString($module_id, 'DOCUMENTS_DIR', $DOCUMENTS_DIR);
-        } else
+            COption::SetOptionString($module_id, "DOCUMENTS_DIR", $DOCUMENTS_DIR);
+        } else {
             CAdminMessage::ShowMessage($checkRes);
+        }
+
+        if (isset($_POST["PROVIDE_LICENSE"])) {
+            $PROVIDE_LICENSE = (string)$_POST["PROVIDE_LICENSE"];
+            COption::SetOptionString($module_id, "PROVIDE_LICENSE", "on");
+        } else {
+            $PROVIDE_LICENSE = false;
+            COption::SetOptionString($module_id, "PROVIDE_LICENSE", "");
+        }
+
+        if (isset($_POST["CLIENT_ID"])) {
+            $CLIENT_ID = (string)$_POST["CLIENT_ID"];
+            COption::SetOptionString($module_id, "CLIENT_ID", $CLIENT_ID);
+        }
+
+        if (isset($_POST["SECRET"])) {
+            $SECRET = (string)$_POST["SECRET"];
+            COption::SetOptionString($module_id, "SECRET", $SECRET);
+        }
     }
 
 $tabControl->Begin();
@@ -101,6 +129,42 @@ $tabControl->Begin();
                    class="adm-detail-content-cell-r"
                    size="40"
                    value="<?= $DOCUMENTS_DIR ?>"/>
+        </td>
+    </tr>
+
+    <?= $tabControl->BeginNextTab(); ?>
+
+    <tr>
+        <td width="40%" class="adm-detail-content-cell-l">
+            <?= GetMessage("TN_DOCS_LICENSE_ENABLE") ?>
+        </td>
+        <td width="60%">
+            <input type="checkbox"
+                   <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
+                   name="PROVIDE_LICENSE"
+                   onchange="document.getElementById('CLIENT_ID').disabled = !this.checked; document.getElementById('SECRET').disabled = !this.checked"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_CLIENT_ID") ?> </td>
+        <td>
+            <input name="CLIENT_ID"
+                   id="CLIENT_ID"
+                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                   style="width: 300px;"
+                   value="<?= $CLIENT_ID ?>"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_SECRET") ?> </td>
+        <td>
+            <input name="SECRET"
+                   id="SECRET"
+                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                   style="width: 300px;"
+                   value="<?= $SECRET ?>"/>
         </td>
     </tr>
 

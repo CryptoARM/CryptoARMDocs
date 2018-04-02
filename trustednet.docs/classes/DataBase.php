@@ -27,7 +27,7 @@ class DataBase
     }
 
     /**
-     * Returns object with documents filtered by specified filter.
+     * Returns object with document ids, filtered by specified filter.
      * @global object $DB Bitrix global CDatabase object
      * @param array $arOrder Sort direction
      * @param array $filter Array with filter keys and values
