@@ -171,10 +171,6 @@ Class trustednet_docs extends CModule
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep2.php"
             );
         }
-
-        $this->UninstallFiles();
-        $this->UnInstallDB();
-        UnRegisterModule($this->MODULE_ID);
     }
 
     function UnInstallFiles()

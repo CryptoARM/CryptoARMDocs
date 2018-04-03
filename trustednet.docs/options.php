@@ -29,6 +29,12 @@ $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
 
 $DOCUMENTS_DIR = COption::GetOptionString($module_id, 'DOCUMENTS_DIR', "docs");
 
+$PROVIDE_LICENSE = COption::GetOptionString($module_id, "PROVIDE_LICENSE", "");
+$USERNAME = COption::GetOptionString($module_id, "USERNAME", "");
+$PASSWORD = COption::GetOptionString($module_id, "PASSWORD", "");
+$CLIENT_ID = COption::GetOptionString($module_id, "CLIENT_ID", "");
+$SECRET = COption::GetOptionString($module_id, "SECRET", "");
+
 function TrimDocumentsDir($dir) {
     $dir = trim($dir);
     $dir = trim($dir, "/.");
@@ -71,10 +77,6 @@ function CheckDocumentsDir($dir) {
     }
 }
 
-$PROVIDE_LICENSE = COption::GetOptionString($module_id, "PROVIDE_LICENSE", "");
-$CLIENT_ID = COption::GetOptionString($module_id, "CLIENT_ID", "");
-$SECRET = COption::GetOptionString($module_id, "SECRET", "");
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
     if (isset($_POST["Update"])) {
 
@@ -96,6 +98,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
         } else {
             $PROVIDE_LICENSE = false;
             COption::SetOptionString($module_id, "PROVIDE_LICENSE", "");
+        }
+
+        if (isset($_POST["USERNAME"])) {
+            $USERNAME = (string)$_POST["USERNAME"];
+            COption::SetOptionString($module_id, "USERNAME", $USERNAME);
+        }
+
+        if (isset($_POST["PASSWORD"])) {
+            $PASSWORD = (string)$_POST["PASSWORD"];
+            COption::SetOptionString($module_id, "PASSWORD", $PASSWORD);
         }
 
         if (isset($_POST["CLIENT_ID"])) {
@@ -142,7 +154,30 @@ $tabControl->Begin();
             <input type="checkbox"
                    <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                    name="PROVIDE_LICENSE"
-                   onchange="document.getElementById('CLIENT_ID').disabled = !this.checked; document.getElementById('SECRET').disabled = !this.checked"/>
+                   onchange="toggleInputs(!this.checked)"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_USERNAME") ?> </td>
+        <td>
+            <input name="USERNAME"
+                   id="USERNAME"
+                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                   style="width: 300px;"
+                   value="<?= $USERNAME ?>"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_PASSWORD") ?> </td>
+        <td>
+            <input name="PASSWORD"
+                   id="PASSWORD"
+                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                   style="width: 300px;"
+                   type="password"
+                   value="<?= $PASSWORD ?>"/>
         </td>
     </tr>
 
@@ -164,6 +199,7 @@ $tabControl->Begin();
                    id="SECRET"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
+                   type="password"
                    value="<?= $SECRET ?>"/>
         </td>
     </tr>
@@ -196,4 +232,13 @@ $tabControl->Begin();
     <input type="submit" name="Update" value="<?= GetMessage("TN_DOCS_OPT_SAVE") ?>"/>
 
 </form>
+
+<script>
+    function toggleInputs (state) {
+        document.getElementById("USERNAME").disabled = state;
+        document.getElementById("PASSWORD").disabled = state;
+        document.getElementById("CLIENT_ID").disabled = state;
+        document.getElementById("SECRET").disabled = state;
+    }
+</script>
 

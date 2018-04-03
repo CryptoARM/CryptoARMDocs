@@ -15,8 +15,10 @@ $MESS ["TN_DOCS_OPT_CANNOT_USE_SYSTEM_DIRECTORY"] = "Нельзя сохраня
 $MESS ["TN_DOCS_OPT_DOCS_DIR"] = "Директория для хранения документов";
 
 $MESS ["TN_DOCS_LICENSE_ENABLE"] = "Включить предоставление пользователям одноразовых лицензий на подпись документов";
-$MESS ["TN_DOCS_LICENSE_CLIENT_ID"] = "ID клиента сервиса TrustedNet";
-$MESS ["TN_DOCS_LICENSE_SECRET"] = "Secret клиента сервиса TrustedNet";
+$MESS ["TN_DOCS_LICENSE_USERNAME"] = "Имя пользователя на сервисе TrustedNet";
+$MESS ["TN_DOCS_LICENSE_PASSWORD"] = "Пароль пользователя на сервисе TrustedNet";
+$MESS ["TN_DOCS_LICENSE_CLIENT_ID"] = "ID приложения TrustedNet";
+$MESS ["TN_DOCS_LICENSE_SECRET"] = "Пароль приложения TrustedNet";
 
 $MESS ["TN_DOCS_LOGS_LAST_100"] = "Последние 100 операций:";
 $MESS ["TN_DOCS_LOGS_NO_LOG_FILE"] = "Записи об операциях отсутствуют.";
