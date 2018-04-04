@@ -141,7 +141,12 @@ $tabControl->Begin();
             <input name="DOCUMENTS_DIR"
                    class="adm-detail-content-cell-r"
                    size="40"
+                   readonly
                    value="<?= $DOCUMENTS_DIR ?>"/>
+            <input id="dir_but"
+                   type="button"
+                   value="<?= GetMessage("TN_DOCS_OPT_DOCS_DIR_SELECT") ?>"
+                   onclick="dirSelector()">
         </td>
     </tr>
 
@@ -234,12 +239,35 @@ $tabControl->Begin();
 
 </form>
 
+<?=
+    CAdminFileDialog::ShowScript
+    (
+        Array(
+            "event" => "dirSelector",
+            "arResultDest" => array(
+                "FORM_NAME" => "trustednetdocs_settings",
+                "FORM_ELEMENT_NAME" => "DOCUMENTS_DIR",
+            ),
+            "arPath" => array(),
+            "select" => 'D',// F - file only, D - folder only
+            "operation" => 'O',
+            "showUploadTab" => false,
+            "showAddToMenuTab" => false,
+            "fileFilter" => '',
+            "allowAllFiles" => true,
+            "SaveConfig" => true
+        )
+    );
+?>
+
 <script>
-    function toggleInputs (state) {
-        document.getElementById("USERNAME").disabled = state;
-        document.getElementById("PASSWORD").disabled = state;
-        document.getElementById("CLIENT_ID").disabled = state;
-        document.getElementById("SECRET").disabled = state;
-    }
+
+function toggleInputs (state) {
+    document.getElementById("USERNAME").disabled = state;
+    document.getElementById("PASSWORD").disabled = state;
+    document.getElementById("CLIENT_ID").disabled = state;
+    document.getElementById("SECRET").disabled = state;
+}
+
 </script>
 
