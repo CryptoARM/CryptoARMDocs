@@ -27,3 +27,6 @@ define("DOC_STATUS_BLOCKED", 1);
 define("DOC_STATUS_CANCEL", 2);
 define("DOC_STATUS_ERROR", 3);
 
+// License request url
+define("LICENSE_SERVICE_URL" , "https://licensesvc.trusted.ru/license/jwt/gettoken");
+
