@@ -1,5 +1,6 @@
 <?php
 use TrustedNet\Docs;
+use Bitrix\Main\Config\Option;
 
 include __DIR__ . "/config.php";
 $module_id = TN_DOCS_MODULE_ID;
@@ -27,13 +28,13 @@ $aTabs = array(
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
 
-$DOCUMENTS_DIR = COption::GetOptionString($module_id, 'DOCUMENTS_DIR', "docs");
+$DOCUMENTS_DIR = Option::get($module_id, 'DOCUMENTS_DIR', "docs");
 
-$PROVIDE_LICENSE = COption::GetOptionString($module_id, "PROVIDE_LICENSE", "");
-$USERNAME = COption::GetOptionString($module_id, "USERNAME", "");
-$PASSWORD = COption::GetOptionString($module_id, "PASSWORD", "");
-$CLIENT_ID = COption::GetOptionString($module_id, "CLIENT_ID", "");
-$SECRET = COption::GetOptionString($module_id, "SECRET", "");
+$PROVIDE_LICENSE = Option::get($module_id, "PROVIDE_LICENSE", "");
+$USERNAME = Option::get($module_id, "USERNAME", "");
+$PASSWORD = Option::get($module_id, "PASSWORD", "");
+$CLIENT_ID = Option::get($module_id, "CLIENT_ID", "");
+$SECRET = Option::get($module_id, "SECRET", "");
 
 function TrimDocumentsDir($dir) {
     $dir = trim($dir);
@@ -87,37 +88,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
         $checkRes = CheckDocumentsDir($documentsDirFromPost);
         if ($checkRes === true) {
             $DOCUMENTS_DIR = $documentsDirFromPost;
-            COption::SetOptionString($module_id, "DOCUMENTS_DIR", $DOCUMENTS_DIR);
+            Option::set($module_id, "DOCUMENTS_DIR", $DOCUMENTS_DIR);
         } else {
             CAdminMessage::ShowMessage($checkRes);
         }
 
         if (isset($_POST["PROVIDE_LICENSE"])) {
             $PROVIDE_LICENSE = (string)$_POST["PROVIDE_LICENSE"];
-            COption::SetOptionString($module_id, "PROVIDE_LICENSE", "on");
+            Option::set($module_id, "PROVIDE_LICENSE", "on");
         } else {
             $PROVIDE_LICENSE = false;
-            COption::SetOptionString($module_id, "PROVIDE_LICENSE", "");
+            Option::set($module_id, "PROVIDE_LICENSE", "");
         }
 
         if (isset($_POST["USERNAME"])) {
             $USERNAME = (string)$_POST["USERNAME"];
-            COption::SetOptionString($module_id, "USERNAME", $USERNAME);
+            Option::set($module_id, "USERNAME", $USERNAME);
         }
 
         if (isset($_POST["PASSWORD"])) {
             $PASSWORD = (string)$_POST["PASSWORD"];
-            COption::SetOptionString($module_id, "PASSWORD", $PASSWORD);
+            Option::set($module_id, "PASSWORD", $PASSWORD);
         }
 
         if (isset($_POST["CLIENT_ID"])) {
             $CLIENT_ID = (string)$_POST["CLIENT_ID"];
-            COption::SetOptionString($module_id, "CLIENT_ID", $CLIENT_ID);
+            Option::set($module_id, "CLIENT_ID", $CLIENT_ID);
         }
 
         if (isset($_POST["SECRET"])) {
             $SECRET = (string)$_POST["SECRET"];
-            COption::SetOptionString($module_id, "SECRET", $SECRET);
+            Option::set($module_id, "SECRET", $SECRET);
         }
     }
 
