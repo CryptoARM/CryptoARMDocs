@@ -171,6 +171,7 @@ $tabControl->Begin();
                    id="USERNAME"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
+                   type="text"
                    value="<?= $USERNAME ?>"/>
         </td>
     </tr>
@@ -194,6 +195,7 @@ $tabControl->Begin();
                    id="CLIENT_ID"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
+                   type="text"
                    value="<?= $CLIENT_ID ?>"/>
         </td>
     </tr>
