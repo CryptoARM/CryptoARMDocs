@@ -94,31 +94,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
         }
 
         if (isset($_POST["PROVIDE_LICENSE"])) {
-            $PROVIDE_LICENSE = (string)$_POST["PROVIDE_LICENSE"];
-            Option::set($module_id, "PROVIDE_LICENSE", "on");
+            if (!$_POST["USERNAME"] ||
+                !$_POST["PASSWORD"] ||
+                !$_POST["CLIENT_ID"] ||
+                !$_POST["SECRET"]) {
+                CAdminMessage::ShowMessage(GetMessage("TN_DOCS_LICENSE_NO_EMPTY_FIELDS"));
+            } else {
+                $PROVIDE_LICENSE = (string)$_POST["PROVIDE_LICENSE"];
+                Option::set($module_id, "PROVIDE_LICENSE", "on");
+                $USERNAME = (string)$_POST["USERNAME"];
+                Option::set($module_id, "USERNAME", $USERNAME);
+                $PASSWORD = (string)$_POST["PASSWORD"];
+                Option::set($module_id, "PASSWORD", $PASSWORD);
+                $CLIENT_ID = (string)$_POST["CLIENT_ID"];
+                Option::set($module_id, "CLIENT_ID", $CLIENT_ID);
+                $SECRET = (string)$_POST["SECRET"];
+                Option::set($module_id, "SECRET", $SECRET);
+            }
         } else {
             $PROVIDE_LICENSE = false;
             Option::set($module_id, "PROVIDE_LICENSE", "");
-        }
-
-        if (isset($_POST["USERNAME"])) {
-            $USERNAME = (string)$_POST["USERNAME"];
-            Option::set($module_id, "USERNAME", $USERNAME);
-        }
-
-        if (isset($_POST["PASSWORD"])) {
-            $PASSWORD = (string)$_POST["PASSWORD"];
-            Option::set($module_id, "PASSWORD", $PASSWORD);
-        }
-
-        if (isset($_POST["CLIENT_ID"])) {
-            $CLIENT_ID = (string)$_POST["CLIENT_ID"];
-            Option::set($module_id, "CLIENT_ID", $CLIENT_ID);
-        }
-
-        if (isset($_POST["SECRET"])) {
-            $SECRET = (string)$_POST["SECRET"];
-            Option::set($module_id, "SECRET", $SECRET);
         }
     }
 

@@ -20,6 +20,7 @@ $MESS ["TN_DOCS_LICENSE_USERNAME"] = "Имя пользователя на се�
 $MESS ["TN_DOCS_LICENSE_PASSWORD"] = "Пароль пользователя на сервисе TrustedNet";
 $MESS ["TN_DOCS_LICENSE_CLIENT_ID"] = "ID приложения TrustedNet";
 $MESS ["TN_DOCS_LICENSE_SECRET"] = "Пароль приложения TrustedNet";
+$MESS ["TN_DOCS_LICENSE_NO_EMPTY_FIELDS"] = "Заполните все поля чтобы влючить предоставление лицензий.";
 
 $MESS ["TN_DOCS_LOGS_LAST_100"] = "Последние 100 операций:";
 $MESS ["TN_DOCS_LOGS_NO_LOG_FILE"] = "Записи об операциях отсутствуют.";
