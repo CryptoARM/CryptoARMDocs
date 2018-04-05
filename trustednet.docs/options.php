@@ -78,9 +78,8 @@ function CheckDocumentsDir($dir) {
     }
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
+if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
     if (isset($_POST["Update"])) {
-
         if (isset($_POST["DOCUMENTS_DIR"])) {
             $documentsDirFromPost = (string)$_POST["DOCUMENTS_DIR"];
         }
@@ -92,7 +91,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
         } else {
             CAdminMessage::ShowMessage($checkRes);
         }
-
         if (isset($_POST["PROVIDE_LICENSE"])) {
             if (!$_POST["USERNAME"] ||
                 !$_POST["PASSWORD"] ||
@@ -116,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid())
             Option::set($module_id, "PROVIDE_LICENSE", "");
         }
     }
+}
 
 $tabControl->Begin();
 ?>
@@ -137,6 +136,7 @@ $tabControl->Begin();
                    class="adm-detail-content-cell-r"
                    size="40"
                    readonly
+                   style="opacity:1;"
                    value="<?= $DOCUMENTS_DIR ?>"/>
             <input id="dir_but"
                    type="button"

@@ -29,6 +29,7 @@ $MESS["TN_DOCS_DOC_BLOCKED"] = "Некоторые документы забло
 $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TN_DOCS_ACT_UNBLOCK"] = "Разблокировать";
 $MESS["TN_DOCS_ACT_SEND_MAIL"] = "Отправить письмо";
+$MESS["TN_DOCS_ACT_REMOVE"] = "Удалить";
 
 $MESS["TN_DOCS_ROLES_CLIENT"] = "Подписан клиентом";
 $MESS["TN_DOCS_ROLES_SELLER"] = "Подписан продавцом";

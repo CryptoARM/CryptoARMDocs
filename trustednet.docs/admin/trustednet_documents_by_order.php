@@ -87,6 +87,11 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo 'window.parent.unblock(' . json_encode($ids) . ')';
             echo '</script>';
             break;
+        case "remove":
+            echo '<script>';
+            echo 'window.parent.remove(' . json_encode($ids) . ')';
+            echo '</script>';
+            break;
         case "send_mail":
             $i = 0;
             $e = 0;
@@ -210,32 +215,39 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     // context menu
     $arActions = Array();
 
-    $arActions[] = array(
-        "ICON" => "edit",
-        "DEFAULT" => true,
-        "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
-        //"ACTION" => "sign(" . json_encode($ids) . ")"
-        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
-    );
-
-    $arActions[] = array("SEPARATOR" => true);
-
-    // Add unblock action for docs with status PROCESSING
-    $blockedDocs = false;
+    // Add sign action for orders with unblocked docs
     foreach ($array as &$doc) {
-        if ($doc->getStatus() == DOC_STATUS_BLOCKED) {
-            $blockedDocs = true;
+        if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
+
+            $arActions[] = array(
+                "ICON" => "edit",
+                "DEFAULT" => true,
+                "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
+                //"ACTION" => "sign(" . json_encode($ids) . ")"
+                "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
+            );
+
+            $arActions[] = array("SEPARATOR" => true);
+
+            break;
         }
     }
-    if ($blockedDocs) {
-        $arActions[] = array(
-            "ICON" => "access",
-            "DEFAULT" => false,
-            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
-            "ACTION" => $lAdmin->ActionDoGroup($f_ID, "unblock"),
-        );
 
-        $arActions[] = array("SEPARATOR" => true);
+    // Add unblock action for orders with blocked docs
+    foreach ($array as &$doc) {
+        if ($doc->getStatus() == DOC_STATUS_BLOCKED) {
+
+            $arActions[] = array(
+                "ICON" => "access",
+                "DEFAULT" => false,
+                "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+                "ACTION" => $lAdmin->ActionDoGroup($f_ID, "unblock"),
+            );
+
+            $arActions[] = array("SEPARATOR" => true);
+
+            break;
+        }
     }
 
     $arActions[] = array(
@@ -243,6 +255,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "DEFAULT" => false,
         "TEXT" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
         "ACTION" => $lAdmin->ActionDoGroup($f_ID, "send_mail"),
+    );
+
+    $arActions[] = array("SEPARATOR" => true);
+
+    $arActions[] = array(
+        "ICON" => "delete",
+        "DEFAULT" => false,
+        "TEXT" => GetMessage("TN_DOCS_ACT_REMOVE"),
+        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "remove"),
     );
 
     // apply context menu to the row

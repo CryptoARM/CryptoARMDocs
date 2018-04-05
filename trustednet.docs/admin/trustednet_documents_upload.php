@@ -215,7 +215,7 @@ function dirSelectorAct(filename, path, site)
                             <td class="adm-detail-content-cell-l; white-space: nowrap;">
                                 <div style="white-space: nowrap;">
                                     <input class="adm_input" id="dir_<?= $i ?>" name="dir_<?= $i ?>"
-                                           value="<?= $DOCUMENTS_DIR ?>" style="width: 220px;" type="text" readonly/>
+                                           value="<?= $DOCUMENTS_DIR ?>" style="width:220px;opacity:1;" type="text" readonly/>
                                     <input id="dir_but_<?= $i ?>" value="..." title=""
                                            onclick="dirSelectorWrapper(<?= $i ?>)" type="button">
                                 </div>
