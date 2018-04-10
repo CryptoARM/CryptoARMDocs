@@ -542,7 +542,29 @@ class Document implements IEntity, ISave
      */
     public function remove()
     {
+        // Remove record in database
         DataBase::removeDocumentRecursively($this);
+        // Remove document file
+        $file = $_SERVER["DOCUMENT_ROOT"] . $this->getPath();
+        if (file_exists($file)) {
+            unlink($file);
+        }
+        // Remove unsigned file if it exists
+        if ($this->getType() == DOC_TYPE_SIGNED_FILE) {
+            $unsignedFile = preg_replace("/\.sig$/", "", $file);
+            if (file_exists($unsignedFile)) {
+                unlink($unsignedFile);
+            }
+        }
+        // Remove unique document directory if it's empty
+        $dir = dirname($file);
+        if (is_readable($dir)) {
+            if (preg_match("/^([\dabcdef]){13}$/", basename($dir))) {
+                if (count(scandir($dir)) == 2) {
+                    rmdir($dir);
+                }
+            }
+        }
     }
 
     /**
