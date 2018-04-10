@@ -121,19 +121,19 @@ class Utils
         if ($state) {
             $state_value = $state->getValue();
             switch ($state_value) {
-            case "CLIENT":
-                $str = GetMessage("ROLES_CLIENT");
-                break;
-            case "SELLER":
-                $str = GetMessage("ROLES_SELLER");
-                break;
-            case "BOTH":
-                $str = GetMessage("ROLES_BOTH");
-                break;
-            case "NONE":
-                $str = GetMessage("ROLES_NONE");
-                break;
-            default:
+                case "CLIENT":
+                    $str = GetMessage("ROLES_CLIENT");
+                    break;
+                case "SELLER":
+                    $str = GetMessage("ROLES_SELLER");
+                    break;
+                case "BOTH":
+                    $str = GetMessage("ROLES_BOTH");
+                    break;
+                case "NONE":
+                    $str = GetMessage("ROLES_NONE");
+                    break;
+                default:
             }
         } else {
             $str = GetMessage("ROLES_NONE");

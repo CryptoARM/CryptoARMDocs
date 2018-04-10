@@ -289,6 +289,7 @@ $lAdmin->AddGroupActionTable(Array(
     "sign" => GetMessage("TN_DOCS_ACT_SIGN"),
     "unblock" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
     "send_mail" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
+    "remove" => GetMessage("TN_DOCS_ACT_REMOVE"),
 ));
 
 $lAdmin->AddAdminContextMenu();
