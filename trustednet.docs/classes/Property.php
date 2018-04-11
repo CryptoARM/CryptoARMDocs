@@ -163,7 +163,7 @@ class Property implements IEntity, ISave
      */
     public function save()
     {
-        DataBase::saveProperty($this, DB_TABLE_PROPERTY);
+        Database::saveProperty($this, DB_TABLE_PROPERTY);
     }
 
 }

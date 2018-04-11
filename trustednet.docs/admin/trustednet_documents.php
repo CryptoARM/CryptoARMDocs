@@ -50,7 +50,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
         // apply filter
-        $docs = Docs\DataBase::getDocumentsIdByFilter(array($by => $order), $arFilter);
+        $docs = Docs\Database::getDocumentsIdByFilter(array($by => $order), $arFilter);
         while($arRes = $docs->Fetch()) {
             $ids[] = $arRes['ID'];
         }
@@ -80,7 +80,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$docs = Docs\DataBase::getDocumentsIdByFilter(array($by => $order), $arFilter);
+$docs = Docs\Database::getDocumentsIdByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));
@@ -114,7 +114,7 @@ $lAdmin->AddHeaders(array(
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
-    $doc = Docs\DataBase::getDocumentById($f_ID);
+    $doc = Docs\Database::getDocumentById($f_ID);
     $docId = $doc->getId();
 
     $docName = "<input type='button' value='i' onclick='verify([" . $docId . "])' style='float: left; font-style: italic; margin: 2px; width: 15px; margin-right: 10px; height: 15px; padding: 0;'/>";

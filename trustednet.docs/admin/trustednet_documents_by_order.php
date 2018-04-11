@@ -54,13 +54,13 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
-        $orders = Docs\DataBase::getOrdersByFilter(array($by => $order), $arFilter);
+        $orders = Docs\Database::getOrdersByFilter(array($by => $order), $arFilter);
         while ($order = $orders->Fetch()) {
             $arOrders[] = $order["ORDER"];
         }
         $ids = array();
         foreach ($arOrders as $order) {
-            $idsOrder = Docs\DataBase::getIdsByOrder($order);
+            $idsOrder = Docs\Database::getIdsByOrder($order);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
@@ -68,7 +68,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     } else {
         foreach ($arID as $ID) {
             $ID = IntVal($ID);
-            $idsOrder = Docs\DataBase::getIdsByOrder($ID);
+            $idsOrder = Docs\Database::getIdsByOrder($ID);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
             }
@@ -98,7 +98,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
             foreach ($ids as $id) {
 
-                $order_ID = Docs\DataBase::getOrderByDocumentId($id);
+                $order_ID = Docs\Database::getOrderByDocumentId($id);
                 $order_ID = implode($order_ID);
                 $order = CSaleOrder::GetByID(intval($order_ID));
                 $user_id = $order["USER_ID"];
@@ -106,7 +106,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $user_email = $user["EMAIL"];
                 $user_name = $user["NAME"];
 
-                $html = Docs\DataBase::getDocumentById($id);
+                $html = Docs\Database::getDocumentById($id);
                 $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $html->getHtmlPath());
 
                 $arEventFields = array(
@@ -129,7 +129,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$orders = Docs\DataBase::getOrdersByFilter(array($by => $order), $arFilter);
+$orders = Docs\Database::getOrdersByFilter(array($by => $order), $arFilter);
 
 // convert list to the CAdminResult class
 $rsData = new CAdminResult($orders, $sTableID);
@@ -175,7 +175,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $user_login = $user["LOGIN"];
 
     // get docs by order
-    $docs = Docs\DataBase::getDocumentsByOrder($order_id);
+    $docs = Docs\Database::getDocumentsByOrder($order_id);
 
     // order
     $arActions = Array();

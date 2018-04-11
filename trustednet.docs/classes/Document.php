@@ -343,7 +343,7 @@ class Document implements IEntity, ISave
     function getChild()
     {
         if ($this->childId) {
-            return DataBase::getDocumentById($this->childId);
+            return Database::getDocumentById($this->childId);
         } else {
             return null;
         }
@@ -379,7 +379,7 @@ class Document implements IEntity, ISave
     function getParent()
     {
         if ($this->parentId) {
-            return DataBase::getDocumentById($this->parentId);
+            return Database::getDocumentById($this->parentId);
         } else {
             return null;
         }
@@ -453,7 +453,7 @@ class Document implements IEntity, ISave
         $props = &$this->properties;
         if (!$props) {
             if ($this->getId()) {
-                $props = DataBase::getPropertiesByDocumentId($this->getId(), DB_TABLE_PROPERTY);
+                $props = Database::getPropertiesByDocumentId($this->getId(), DB_TABLE_PROPERTY);
             } else {
                 $props = new PropertyCollection();
             }
@@ -467,7 +467,7 @@ class Document implements IEntity, ISave
      */
     public function save()
     {
-        DataBase::saveDocument($this);
+        Database::saveDocument($this);
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {
             if (!$prop->getDocumentId()) {
@@ -543,7 +543,7 @@ class Document implements IEntity, ISave
     public function remove()
     {
         // Remove record in database
-        DataBase::removeDocumentRecursively($this);
+        Database::removeDocumentRecursively($this);
         // Remove document file
         $file = $_SERVER["DOCUMENT_ROOT"] . $this->getPath();
         if (file_exists($file)) {

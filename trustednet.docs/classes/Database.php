@@ -6,7 +6,7 @@ require_once __DIR__ . "/../config.php";
 /**
  * DB interaction class.
  */
-class DataBase
+class Database
 {
     /**
      * Return collection of all last documents.
@@ -112,7 +112,7 @@ class DataBase
     static function saveDocument($doc)
     {
         if ($doc->getId() == null) {
-            DataBase::insertDocument($doc);
+            Database::insertDocument($doc);
         } else {
             global $DB;
             $parentId = $doc->getParentId();
@@ -133,7 +133,7 @@ class DataBase
                 . 'CHILD_ID = ' . $childId . ' '
                 . 'WHERE ID = ' . $doc->getId();
             $DB->Query($sql);
-            DataBase::saveDocumentParent($doc, $doc->getId());
+            Database::saveDocumentParent($doc, $doc->getId());
         }
     }
 
@@ -166,7 +166,7 @@ class DataBase
             . ')';
         $DB->Query($sql);
         $doc->setId($DB->LastID());
-        DataBase::saveDocumentParent($doc, $doc->getId());
+        Database::saveDocumentParent($doc, $doc->getId());
     }
 
     /**
@@ -200,7 +200,7 @@ class DataBase
             . 'WHERE DOCUMENT_ID = ' . $doc->getId();
         $DB->Query($sql);
         // Removes childId from parent document
-        DataBase::saveDocumentParent($doc);
+        Database::saveDocumentParent($doc);
     }
 
     /**
@@ -216,9 +216,9 @@ class DataBase
         if ($doc->getParent()) {
             $parent = $doc->getParent();
         }
-        DataBase::removeDocument($doc);
+        Database::removeDocument($doc);
         if ($parent) {
-            DataBase::removeDocumentRecursively($parent);
+            Database::removeDocumentRecursively($parent);
         }
     }
 
@@ -272,7 +272,7 @@ class DataBase
     static function saveProperty($property, $tableName = DB_TABLE_PROPERTY)
     {
         if ($property->getId() == null) {
-            DataBase::insertProperty($property, $tableName);
+            Database::insertProperty($property, $tableName);
         } else {
             global $DB;
             $sql = 'UPDATE ' . $tableName .
@@ -336,7 +336,7 @@ class DataBase
      */
     static function getPropertyBy($fldName, $value, $tableName = DB_TABLE_PROPERTY)
     {
-        $props = DataBase::getPropertiesBy($fldName, $value, $tableName);
+        $props = Database::getPropertiesBy($fldName, $value, $tableName);
         $res = null;
         if ($props->count()) {
             $res = $props->items(0);
@@ -372,7 +372,7 @@ class DataBase
      */
     static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY)
     {
-        return DataBase::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
+        return Database::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
     }
 
     /**
@@ -498,7 +498,7 @@ class DataBase
      */
     static function getIdsByOrder($order)
     {
-        $docs = DataBase::getDocumentsByOrder($order);
+        $docs = Database::getDocumentsByOrder($order);
         $list = $docs->getList();
         $ids = array();
         foreach ($list as &$doc) {

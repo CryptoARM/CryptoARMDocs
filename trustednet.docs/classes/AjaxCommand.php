@@ -39,7 +39,7 @@ class AjaxCommand
         $docsBlocked = new DocumentCollection();
         $docsRoleSigned = new DocumentCollection();
         foreach ($docsId as &$id) {
-            $doc = DataBase::getDocumentById($id)->getLastDocument();
+            $doc = Database::getDocumentById($id)->getLastDocument();
             if (!$doc) {
                 // No doc with that id is found
                 $docsNotFound[] = $id;
@@ -117,7 +117,7 @@ class AjaxCommand
         }
         $docColl = new DocumentCollection();
         foreach ($docsId as &$id) {
-            $doc = DataBase::getDocumentById($id)->getLastDocument();
+            $doc = Database::getDocumentById($id)->getLastDocument();
             $docColl->add($doc);
         }
         if ($docColl->count()) {
@@ -147,7 +147,7 @@ class AjaxCommand
         );
         // TODO: add security check
         if (true) {
-            $doc = DataBase::getDocumentById($params['id']);
+            $doc = Database::getDocumentById($params['id']);
             $lastDoc =$doc->getLastDocument();
             if ($lastDoc->getId() != $doc->getId()) {
                 $res["message"] = "Document already has child.";
@@ -172,7 +172,7 @@ class AjaxCommand
                     $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
                 );
                 // Drop "blocked" status of original doc
-                $doc = DataBase::getDocumentById($params['id']);
+                $doc = Database::getDocumentById($params['id']);
                 $doc->setStatus(DOC_STATUS_NONE);
                 $doc->save();
                 $res["success"] = true;
@@ -207,7 +207,7 @@ class AjaxCommand
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
-                $doc = DataBase::getDocumentById($id);
+                $doc = Database::getDocumentById($id);
                 $doc->setStatus(DOC_STATUS_BLOCKED);
                 $doc->save();
             }
@@ -233,7 +233,7 @@ class AjaxCommand
         $docsId = $params["id"];
         if (isset($docsId)) {
             foreach ($docsId as &$id) {
-                $doc = DataBase::getDocumentById($id);
+                $doc = Database::getDocumentById($id);
                 $doc->setStatus(DOC_STATUS_NONE);
                 $doc->save();
             }
@@ -265,7 +265,7 @@ class AjaxCommand
         if (isset($docsId)) {
             // Try to find all docs in DB
             foreach ($docsId as &$id) {
-                $doc = DataBase::getDocumentById($id);
+                $doc = Database::getDocumentById($id);
                 if ($doc) {
                     $lastDoc = $doc->getLastDocument();
                     if (!$lastDoc) {
@@ -280,7 +280,7 @@ class AjaxCommand
                 }
             }
             foreach ($docsId as &$id) {
-                $doc = DataBase::getDocumentById($id);
+                $doc = Database::getDocumentById($id);
                 $lastDoc = $doc->getLastDocument();
                 $lastDoc->remove();
                 Utils::log(array(
@@ -312,7 +312,7 @@ class AjaxCommand
             "message" => "Unknown error in Ajax.download",
             "filename" => ""
         );
-        $doc = DataBase::getDocumentById($params['id']);
+        $doc = Database::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
             $res["filename"] = $last->getName();
@@ -341,7 +341,7 @@ class AjaxCommand
             "success" => false,
             "message" => "Unknown error in Ajax.content",
         );
-        $doc = DataBase::getDocumentById($params['id']);
+        $doc = Database::getDocumentById($params['id']);
         if ($doc) {
             $last = $doc->getLastDocument();
             $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
