@@ -5,25 +5,32 @@ use Bitrix\Main\Config\Option;
 include __DIR__ . "/config.php";
 $module_id = TN_DOCS_MODULE_ID;
 CModule::IncludeModule($module_id);
+$saleModule = CModule::IncludeModule("sale");
 
 IncludeModuleLangFile(__FILE__);
 
-$aTabs = array(
-    array(
-        "DIV" => "tn_docs_options",
-        "TAB" => GetMessage("TN_DOCS_OPT_TAB"),
-        "TITLE" => GetMessage("TN_DOCS_OPT_TAB_TITLE")
-    ),
-    array(
-        "DIV" => "tn_docs_license",
-        "TAB" => GetMessage("TN_DOCS_LICENSE_TAB"),
-        "TITLE" => GetMessage("TN_DOCS_LICENSE_TAB_TITLE")
-    ),
-    array(
-        "DIV" => "tn_docs_logs",
-        "TAB" => GetMessage("TN_DOCS_LOGS_TAB"),
-        "TITLE" => GetMessage("TN_DOCS_LOGS_TAB_TITLE")
-    ),
+$aTabs = array();
+$aTabs[] = array(
+    "DIV" => "tn_docs_options",
+    "TAB" => GetMessage("TN_DOCS_OPT_TAB"),
+    "TITLE" => GetMessage("TN_DOCS_OPT_TAB_TITLE")
+);
+$aTabs[] = array(
+    "DIV" => "tn_docs_license",
+    "TAB" => GetMessage("TN_DOCS_LICENSE_TAB"),
+    "TITLE" => GetMessage("TN_DOCS_LICENSE_TAB_TITLE")
+);
+if($saleModule) {
+    $aTabs[] = array(
+        "DIV" => "tn_docs_email",
+        "TAB" => GetMessage("TN_DOCS_EMAIL_TAB"),
+        "TITLE" => GetMessage("TN_DOCS_EMAIL_TAB_TITLE")
+    );
+}
+$aTabs[] = array(
+    "DIV" => "tn_docs_logs",
+    "TAB" => GetMessage("TN_DOCS_LOGS_TAB"),
+    "TITLE" => GetMessage("TN_DOCS_LOGS_TAB_TITLE")
 );
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
@@ -35,6 +42,8 @@ $USERNAME = Option::get($module_id, "USERNAME", "");
 $PASSWORD = Option::get($module_id, "PASSWORD", "");
 $CLIENT_ID = Option::get($module_id, "CLIENT_ID", "");
 $SECRET = Option::get($module_id, "SECRET", "");
+$MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
+$MAIL_SITE_ID = Option::get($module_id, "MAIL_SITE_ID", "");
 
 function TrimDocumentsDir($dir) {
     $dir = trim($dir);
@@ -112,6 +121,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         } else {
             $PROVIDE_LICENSE = false;
             Option::set($module_id, "PROVIDE_LICENSE", "");
+        }
+        if (isset($_POST["MAIL_EVENT_ID"])) {
+            if (trim($_POST["MAIL_EVENT_ID"])) {
+                $MAIL_EVENT_ID = (string)$_POST["MAIL_EVENT_ID"];
+                Option::set($module_id, "MAIL_EVENT_ID", $MAIL_EVENT_ID);
+            }
+        }
+        if (isset($_POST["MAIL_SITE_ID"])) {
+            if (trim($_POST["MAIL_SITE_ID"])) {
+                $MAIL_SITE_ID = (string)$_POST["MAIL_SITE_ID"];
+                Option::set($module_id, "MAIL_SITE_ID", $MAIL_SITE_ID);
+            }
         }
     }
 }
@@ -207,6 +228,52 @@ $tabControl->Begin();
         </td>
     </tr>
 
+    <? if ($saleModule): ?>
+        <?= $tabControl->BeginNextTab(); ?>
+
+        <?echo BeginNote();?>
+        <?echo GetMessage("TN_DOCS_EMAIL_DESCRIPTION")?><br>
+        <?echo EndNote();?>
+
+        <tr>
+            <td width="20%" class="adm-detail-content-cell-l">
+                <?= GetMessage("TN_DOCS_EMAIL_MAIL_EVENT_ID") ?>
+            </td>
+            <td width="80%">
+            <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
+                <option value="" disabled hidden <?= $MAIL_EVENT_ID ? "" : "selected" ?>>Выберите событие</option>
+                <?
+                $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
+                while ($event = $events->Fetch()) {
+                    $eventId = htmlspecialcharsbx($event["ID"]);
+                    $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                    $eventName = htmlspecialcharsbx($event["NAME"]);
+                    $sel = $MAIL_EVENT_ID == $eventTypeName ? " selected" : "";
+                    echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                }
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= GetMessage("TN_DOCS_EMAIL_SITE_ID") ?> </td>
+            <td>
+                <select name="MAIL_SITE_ID" id="MAIL_SITE_ID">
+                <option value="" disabled hidden <?= $MAIL_SITE_ID ? "" : "selected" ?>>Выберите сайт</option>
+                <?
+                $sites = CSite::GetList($by="sort", $order="desc", array());
+                while ($site = $sites->Fetch()) {
+                    $siteId = htmlspecialcharsbx($site["ID"]);
+                    $siteName = htmlspecialcharsbx($site["NAME"]);
+                    $sel = $MAIL_SITE_ID == $siteId ? " selected" : "";
+                    echo "<option value='" . $siteId . "'" . $sel . ">" . $siteId . " - " . $siteName . "</option>";
+                }
+                ?>
+            </td>
+        </tr>
+
+    <? endif; ?>
+
     <?= $tabControl->BeginNextTab(); ?>
 
     <?
@@ -220,7 +287,7 @@ $tabControl->Begin();
     ?>
         <p><?= GetMessage("TN_DOCS_LOGS_LAST_100") ?></p>
         <pre><? print_r(Docs\Utils::tail(TN_DOCS_LOG_FILE, 100)) ?></pre>
-        <input name="download_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_DOWNLOAD") ?>"/>
+        <input name="download_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_DOWNLOAD") ?>" style="margin-right:5px;"/>
         <input name="purge_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_PURGE") ?>"/>
     <?
     } else {

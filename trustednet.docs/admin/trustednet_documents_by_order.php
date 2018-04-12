@@ -1,15 +1,20 @@
 <?php
 use TrustedNet\Docs;
+use Bitrix\Main\Config\Option;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 $module_id = 'trustednet.docs';
 CModule::IncludeModule($module_id);
+// TODO: Do not show page if module sale is unavailable
 CModule::IncludeModule("sale");
 
 IncludeModuleLangFile(__FILE__);
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
+
+$MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
+$MAIL_SITE_ID = Option::get($module_id, "MAIL_SITE_ID", "");
 
 $sTableID = "Order_ID";
 $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
@@ -93,6 +98,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo '</script>';
             break;
         case "send_mail":
+            if (!$MAIL_EVENT_ID || !$MAIL_SITE_ID) {
+                echo "<script>alert('" . GetMessage("TN_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
+                break;
+            }
             $i = 0;
             $e = 0;
 
@@ -113,7 +122,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                     "EMAIL" => $user_email,
                     "ORDER_USER" => $user_name,
                 );
-                if (CEvent::Send("manual_signed", "s4", $arEventFields, "N", "", array($link))) {
+                if (CEvent::Send($MAIL_EVENT_ID, $MAIL_SITE_ID, $arEventFields, "N", "", array($link))) {
                     $i++;
                 } else {
                     $e++;
