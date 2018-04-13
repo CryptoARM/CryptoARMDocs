@@ -115,8 +115,8 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $user_email = $user["EMAIL"];
                 $user_name = $user["NAME"];
 
-                $html = Docs\Database::getDocumentById($id);
-                $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $html->getHtmlPath());
+                $doc = Docs\Database::getDocumentById($id);
+                $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
 
                 $arEventFields = array(
                     "EMAIL" => $user_email,
@@ -124,6 +124,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 );
                 if (CEvent::Send($MAIL_EVENT_ID, $MAIL_SITE_ID, $arEventFields, "N", "", array($link))) {
                     $i++;
+                    Docs\Utils::log(array(
+                        "action" => "email_sent",
+                        "docs" => $doc,
+                    ));
                 } else {
                     $e++;
                 };
