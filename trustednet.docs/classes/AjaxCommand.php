@@ -39,8 +39,7 @@ class AjaxCommand
         $docsBlocked = new DocumentCollection();
         $docsRoleSigned = new DocumentCollection();
         foreach ($docsId as &$id) {
-            // TODO: check if document exists before calling getLastDocument
-            $doc = Database::getDocumentById($id)->getLastDocument();
+            $doc = Database::getDocumentById($id);
             if (!$doc) {
                 // No doc with that id is found
                 $docsNotFound[] = $id;
@@ -52,11 +51,10 @@ class AjaxCommand
                 } elseif (!$doc->checkFile()) {
                     // Associated file was not found on the disk
                     $docsFileNotFound->add($doc);
-                } elseif ($params["extra"]) {
-                    if (!Utils::checkDocByRole($doc, $params["extra"]["role"])) {
-                        // No need to sign doc based on it ROLES property
-                        $docsRoleSigned->add($doc);
-                    }
+                } elseif ($params["extra"] && !Utils::checkDocByRole($doc, $params["extra"]["role"])) {
+                    Utils::debug($params, "got check");
+                    // No need to sign doc based on it ROLES property
+                    $docsRoleSigned->add($doc);
                 } else {
                     // Doc is ready to be sent
                     $docsToSign->add($doc);
