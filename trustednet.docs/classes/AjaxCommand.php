@@ -52,7 +52,6 @@ class AjaxCommand
                     // Associated file was not found on the disk
                     $docsFileNotFound->add($doc);
                 } elseif ($params["extra"] && !Utils::checkDocByRole($doc, $params["extra"]["role"])) {
-                    Utils::debug($params, "got check");
                     // No need to sign doc based on it ROLES property
                     $docsRoleSigned->add($doc);
                 } else {

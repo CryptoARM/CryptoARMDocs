@@ -42,6 +42,7 @@ class Utils
             }
         }
         $doc->save();
+        // TODO: log document properties
         Utils::log(array(
             "action" => "created",
             "docs" => $doc,

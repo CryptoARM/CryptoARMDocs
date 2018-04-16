@@ -2,7 +2,7 @@
 
 $MESS["TN_DOCS_AJAX_CONTROLLER"] = "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/trustednet.docs/ajax.php";
 
-$MESS["TN_ALERT_NO_CLIENT"] = "Установите на компьютер клиент для подписи документов.";
+$MESS["TN_ALERT_NO_CLIENT"] = "Для подписи документов установите и запустите КриптоАРМ ГОСТ.";
 $MESS["TN_ALERT_DOC_NOT_FOUND"] = "Документы со следующими индентификаторами не были обнаружены в базе данных";
 $MESS["TN_ALERT_DOC_BLOCKED"] = "Некоторые документы заблокированы и не могут быть отправлены на подпись";
 $MESS["TN_ALERT_REMOVE_ACTION_CONFIRM"] = "Вы действительно хотите удалить документ? Эту операцию невозможно отменить.";
