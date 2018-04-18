@@ -67,6 +67,7 @@ Class trustednet_docs extends CModule
             $this->CreateDocsDir();
             $this->InstallModuleOptions();
             $this->InstallDB();
+            $this->InstallMailEvent();
             RegisterModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -115,6 +116,9 @@ Class trustednet_docs extends CModule
         if (!Option::get("trustednet.docs", "DOCUMENTS_DIR", "")) {
             Option::set("trustednet.docs", "DOCUMENTS_DIR", "/docs/");
         }
+        if (!Option::get("trustednet.docs", "MAIL_EVENT_ID", "")) {
+            Option::set("trustednet.docs", "MAIL_EVENT_ID", "TN_DOCS_MAIL_BY_ORDER");
+        }
     }
 
     function InstallDB()
@@ -158,6 +162,28 @@ Class trustednet_docs extends CModule
         $DB->Query($sql);
     }
 
+    function InstallMailEvent()
+    {
+        $obEventType = new CEventType;
+        $obEventType->add(array(
+            "LID" => "ru",
+            "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
+            "NAME" => GetMessage("TN_DOCS_MAIL_EVENT_NAME"),
+            "DESCRIPTION" => GetMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION")
+        ));
+        $obEventMessage = new CEventMessage;
+        $obEventMessage->add(array(
+            "ACTIVE" => "Y",
+            "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
+            "LID" => array("s1", "4d"),
+            "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+            "EMAIL_TO" => "#EMAIL#",
+            "SUBJECT" => GetMessage("TN_DOCS_MAIL_TEMPLATE_SUBJECT"),
+            "BODY_TYPE" => "html",
+            "MESSAGE" => GetMessage("TN_DOCS_MAIL_TEMPLATE_BODY"),
+        ));
+    }
+
     function DoUninstall()
     {
         global $DOCUMENT_ROOT, $APPLICATION, $step;
@@ -175,6 +201,7 @@ Class trustednet_docs extends CModule
             if ($savedata != "Y") {
                 $this->UnInstallDB();
             }
+            $this->UnInstallMailEvent();
             UnRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 GetMessage("MOD_UNINSTALL_TITLE"),
@@ -220,11 +247,17 @@ Class trustednet_docs extends CModule
         $DB->Query($sql);
     }
 
-    function dropTableDocumentStatus()
+    function UnInstallMailEvent()
     {
-        global $DB;
-        $sql = "DROP TABLE IF EXISTS `trn_docs_status`";
-        $DB->Query($sql);
+        $by = "id";
+        $order = "desc";
+        $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TN_DOCS_MAIL_BY_ORDER"));
+        $eventMessage = new CEventMessage;
+        while ($template = $eventMessages->Fetch()) {
+            $eventMessage->Delete((int)$template["ID"]);
+        }
+        $obEventType = new CEventType;
+        $obEventType->Delete("TN_DOCS_MAIL_BY_ORDER");
     }
 
     function dropDocumentChain($id)

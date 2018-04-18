@@ -8,7 +8,7 @@ $MESS["TN_DOCS_MAIL_NOT_CONFIGURED"] = "Задайте параметры отп
 $MESS["TN_DOCS_MAIL_SENT_PRE"] = "Отправлено ";
 $MESS["TN_DOCS_MAIL_SENT_POST"] = " документов";
 $MESS["TN_DOCS_MAIL_ERROR_PRE"] = "Ошибка с отправкой ";
-$MESS["TN_DOCS_MAIL_ERROR_POST"] = " документов.";
+$MESS["TN_DOCS_MAIL_ERROR_POST"] = " документов. Проверьте настройки отправки сообщений в настройках модуля.";
 
 // Columns
 $MESS["TN_DOCS_COL_ORDER"] = "№ заказа";
@@ -28,6 +28,9 @@ $MESS["TN_DOCS_BUYER_PROFILE"] = "Профиль покупателя";
 $MESS["TN_DOCS_MAILTO"] = "Написать письмо покумателю";
 $MESS["TN_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
 $MESS["TN_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
+$MESS["TN_DOCS_EMAIL_NOT_SENT"] = "Письмо с документом не отправлено";
+$MESS["TN_DOCS_EMAIL_SENT"] = "Письмо с документом отправлено";
+$MESS["TN_DOCS_EMAIL_READ"] = "Письмо с документом прочитано";
 
 $MESS["TN_DOCS_STATUS"] = "Статус:";
 

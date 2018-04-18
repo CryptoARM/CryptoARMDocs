@@ -8,6 +8,8 @@ namespace TrustedNet\Docs;
  */
 class PropertyCollection extends Collection
 {
+    // TODO: simplify adding properties to the collection
+    // add "add" method
 
     /**
      * Returns property from collection by index.

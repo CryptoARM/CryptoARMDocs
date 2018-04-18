@@ -71,7 +71,7 @@ $moduleOptions = array(
     "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
     "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
     "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ",
-    "MAIL_EVENT_ID", "MAIL_SITE_ID",
+    "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID",
 );
 
 function UpdateOption($option, $value = false) {
@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("EVENT_EMAIL_SENT");
         UpdateOption("EVENT_EMAIL_READ");
         UpdateOption("MAIL_EVENT_ID");
-        UpdateOption("MAIL_SITE_ID");
+        UpdateOption("MAIL_TEMPLATE_ID");
     }
 }
 
@@ -401,17 +401,18 @@ $tabControl->Begin();
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EMAIL_SITE_ID") ?> </td>
+            <td> <?= GetMessage("TN_DOCS_EMAIL_TEMPLATE_ID") ?> </td>
             <td>
-                <select name="MAIL_SITE_ID" id="MAIL_SITE_ID">
-                    <option value="" <?= $MAIL_SITE_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                <select name="MAIL_TEMPLATE_ID" id="MAIL_TEMPLATE_ID">
+                    <option value="" <?= $MAIL_TEMPLATE_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
                     <?
-                    $sites = CSite::GetList($by="sort", $order="desc", array());
-                    while ($site = $sites->Fetch()) {
-                        $siteId = htmlspecialcharsbx($site["ID"]);
-                        $siteName = htmlspecialcharsbx($site["NAME"]);
-                        $sel = $MAIL_SITE_ID == $siteId ? " selected" : "";
-                        echo "<option value='" . $siteId . "'" . $sel . ">" . $siteId . " - " . $siteName . "</option>";
+                    $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID));
+                    while ($template = $templates->Fetch()) {
+                        print_r($template);
+                        $templateId = htmlspecialcharsbx($template["ID"]);
+                        $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                        $sel = $MAIL_TEMPLATE_ID == $templateId ? " selected" : "";
+                        echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
                     }
                     ?>
                 </select>

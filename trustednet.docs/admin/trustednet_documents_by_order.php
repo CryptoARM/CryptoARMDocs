@@ -3,6 +3,7 @@ use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
+echo SITE_SERVER_NAME;
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
 // TODO: Do not show page if module sale is unavailable
@@ -14,7 +15,7 @@ IncludeModuleLangFile(__FILE__);
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
 
 $MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
-$MAIL_SITE_ID = Option::get($module_id, "MAIL_SITE_ID", "");
+$MAIL_TEMPLATE_ID = Option::get($module_id, "MAIL_TEMPLATE_ID", "");
 
 $sTableID = "Order_ID";
 $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
@@ -97,7 +98,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo '</script>';
             break;
         case "send_mail":
-            if (!$MAIL_EVENT_ID || !$MAIL_SITE_ID) {
+            if (!$MAIL_EVENT_ID || !$MAIL_TEMPLATE_ID) {
                 echo "<script>alert('" . GetMessage("TN_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
                 break;
             }
@@ -118,15 +119,37 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $doc = Docs\Database::getDocumentById($id);
                 $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
 
+                $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+                $siteIds = array();
+                while ($site = $sites->Fetch()) {
+                    $siteIds[] = $site["ID"];
+                    if ($site["DEF"] == "Y") {
+                        $defaultSite = $site;
+                    }
+                }
                 $arEventFields = array(
                     "EMAIL" => $user_email,
                     "ORDER_USER" => $user_name,
+                    "ORDER_ID" => $order_ID,
+                    "FILE_NAME" => $doc->getName(),
+                    "SITE_URL" => "http://" . $defaultSite["SERVER_NAME"],
                 );
-                if (CEvent::Send($MAIL_EVENT_ID, $MAIL_SITE_ID, $arEventFields, "N", "", array($link))) {
+                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($link))) {
                     $i++;
+
                     if ($eventEmailSent) {
                         Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
                     }
+
+                    // Add email tracking property
+                    $docProps = $doc->getProperties();
+                    if ($emailProp = $docProps->getPropByType("EMAIL")) {
+                        $emailProp->setValue("SENT");
+                    } else {
+                        $docProps->add(new Docs\Property($id, "EMAIL", "SENT"));
+                    }
+                    $doc->save();
+
                     Docs\Utils::log(array(
                         "action" => "email_sent",
                         "docs" => $doc,
@@ -139,9 +162,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo "<script>alert('" . $message . "')</script>";
             if ($e > 0) {
                 $message = GetMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . GetMessage("TN_DOCS_MAIL_ERROR_POST");
-                echo "<script>alert('" . $message . "')</script>}}";
+                echo "<script>alert('" . $message . "')</script>";
             }
-            // Reload page to show changed order status
+            // Reload page to show changes
             if ($eventEmailSent) {
                 echo "<script>location.reload()</script>";
             }
@@ -238,6 +261,20 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     foreach ($docList as $doc) {
         $docId = $doc->getId();
         $docName = $doc->getName();
+        $docEmailProp = $doc->getProperties()->getPropByType("EMAIL");
+        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_not_sent.png"';
+        $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_NOT_SENT") . '">';
+        if ($docEmailProp) {
+            $docEmailPropValue = $docEmailProp->getValue();
+            if ($docEmailPropValue == "SENT") {
+                $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_sent.png"';
+                $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_SENT") . '">';
+            }
+            if ($docEmailPropValue == "READ") {
+                $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_read.png"';
+                $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_READ") . '">';
+            }
+        }
         $docRoleStatus = Docs\DocumentsByOrder::getRoleString($doc);
         if ($doc->getStatus() == DOC_STATUS_NONE) {
             $docStatus = "";
@@ -248,6 +285,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= "<td>";
         $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
         $docViewField .= $docId . "])' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+        $docViewField .= $docEmailIcon;
         $docViewField .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
         $docViewField .= $docId;
         $docViewField .= ", true)'>";
