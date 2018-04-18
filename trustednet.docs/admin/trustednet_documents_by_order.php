@@ -226,7 +226,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("SIGN", '<small>' . $html_signs . '<small>');
 
     // context menu
-    $arActions = Array();
+    $arActions = array();
 
     // Add sign action for orders with unblocked docs
     foreach ($array as &$doc) {
@@ -305,7 +305,15 @@ $lAdmin->AddGroupActionTable(Array(
     "remove" => GetMessage("TN_DOCS_ACT_REMOVE"),
 ));
 
-$lAdmin->AddAdminContextMenu();
+$contextMenu = array(
+    array(
+        "ICON" => "btn_new",
+        "TEXT" => GetMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
+        "TITLE" => GetMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
+        "LINK" => "trustednet_documents_upload_by_order.php?lang=ru",
+    )
+);
+$lAdmin->AddAdminContextMenu($contextMenu);
 
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();

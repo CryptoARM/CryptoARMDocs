@@ -209,6 +209,26 @@ class Utils
     }
 
     /**
+     * Validation for user-set OrderId field.
+     *
+     * Length between 1 and 255.
+     * Numbers only.
+     *
+     * @param string $value
+     * @return boolean
+     */
+    public static function propertyOrderIdValidation($value)
+    {
+        $res = true;
+        $len = mb_strlen($value, "UTF-8");
+        if ($len = 0 || $len > 255)
+            $res = false;
+        if (!preg_match("/^\d+$/", $value))
+            $res = false;
+        return $res;
+    }
+
+    /**
      * Reads n last lines from the file.
      *
      * @author Torleif Berger, Lorenzo Stanco

@@ -37,3 +37,5 @@ $MESS["TN_DOCS_ROLES_SELLER"] = "Подписан продавцом";
 $MESS["TN_DOCS_ROLES_BOTH"] = "Подписан обеими сторонами";
 $MESS["TN_DOCS_ROLES_NONE"] = "Требуется подпись";
 
+$MESS["TN_DOCS_ADD_DOC_BY_ORDER"] = "Добавить документ по заказу";
+
