@@ -1,4 +1,58 @@
 /* Menu icon */
-.trustednetdocs_menu_icon {background-image:url(icons/trustednet.docs/mnu_docs.png); background-position: 9px 4px;}
-#trustednetdocs_menu_icon {background-image:url(icons/trustednet.docs/mnu_docs.png);}
+.trustednetdocs_menu_icon {
+    background-image: url(icons/trustednet.docs/mnu_docs.png);
+    background-position: 9px 4px;
+}
+
+#trustednetdocs_menu_icon {
+    background-image:url(icons/trustednet.docs/mnu_docs.png);
+}
+
+/* Table with separators between rows */
+.trustednetdocs_doc_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.trustednetdocs_doc_table tr {
+    border: solid;
+    border-width: 1px 0;
+    border-color: #D3D3D3;
+}
+
+.trustednetdocs_doc_table td {
+    width: 30%;
+    padding: 5px 0;
+}
+
+.trustednetdocs_doc_table tr:first-child {
+    border-top: none;
+}
+
+.trustednetdocs_doc_table tr:last-child {
+    border-bottom: none;
+}
+
+/*
+.tn_document {
+    text-overflow: ellipsis !important;
+    max-width: 50px !important;
+}
+*/
+
+/* Verify document button */
+.verify_button {
+    float: left;
+    font-style: italic;
+    margin: 2px;
+    width: 15px;
+    margin-right: 10px;
+    height: 15px !important;
+    padding: 0 !important;
+}
+
+/* Document link */
+.tn_document {
+    cursor: pointer;
+}
 

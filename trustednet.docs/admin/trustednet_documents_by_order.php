@@ -207,8 +207,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     foreach ($array as &$doc) {
         $doc = $doc->getLastDocument();
         $docId = $doc->getId();
-        $html_docs .= "<input type='button' value='i' onclick='verify([" . $docId . "])' style='float: left; font-style: italic; margin: 2px; width: 15px;  margin-right: 10px; height: 15px; padding: 0;'/>";
-        $html_docs .= '<a class="tn-document" style="cursor: pointer;" onclick="self.download(' . $docId . ')" data-id="' . $docId . '" >' . $doc->getName() . '</a> <br/><br/>';
+        $html_docs .= "<input type='button' value='i' onclick='verify([" . $docId . "])' class='verify_button'/>";
+        $html_docs .= '<a class="tn_document" onclick="self.download(' . $docId . ')" data-id="' . $docId . '" >' . $doc->getName() . '</a> <br/><br/>';
         $status = $doc->getStatus();
         $str = "";
         if ($status  == DOC_STATUS_BLOCKED) {
