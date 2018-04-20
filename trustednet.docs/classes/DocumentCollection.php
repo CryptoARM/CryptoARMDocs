@@ -10,6 +10,8 @@ namespace TrustedNet\Docs;
 class DocumentCollection extends Collection implements IEntity
 {
 
+    // TODO: add getIds method
+
     /**
      * Generates document collection from array.
      *

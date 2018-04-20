@@ -9,7 +9,6 @@ if (!$USER->CanDoOperation('fileman_upload_files')) {
 }
 
 CModule::IncludeModule("fileman");
-CModule::IncludeModule("sale");
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
@@ -27,7 +26,7 @@ $DOCUMENTS_DIR = $io->CombinePath("/", $DOCUMENTS_DIR);
 $site = CFileMan::__CheckSite($site);
 $DOC_ROOT = CSite::GetSiteDocRoot($site);
 
-$ret = "/bitrix/admin/trustednet_documents_by_order.php?lang=" . LANGUAGE_ID;
+$ret = "/bitrix/admin/trustednet_documents_by_user.php?lang=" . LANGUAGE_ID;
 $sub = $_SERVER[REQUEST_URI];
 
 $bCan = false;
@@ -43,11 +42,11 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
             for ($i = 1; $i <= $nums; $i++) {
                 $path = $_POST["dir_" . $i];
                 $arFile = $_FILES["file_" . $i];
-                $arOrderId = $_POST["order_id_" . $i];
+                $arUserId = $_POST["user_id_" . $i];
                 // User-set property value can contain spaces,
                 // but not at the beginning or end of the string
                 // Spaces only value will be ignored
-                $arOrderId = trim($arOrderId);
+                $arUserId = trim($arUserId);
 
                 if (strlen($arFile["name"]) <= 0 || $arFile["tmp_name"] == "none") continue;
 
@@ -70,10 +69,10 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_FILE_EXISTS1") . " \"" . $pathto . "\" " . GetMessage("TN_DOCS_UPLOAD_FILE_EXISTS2") . ".\n";
                 elseif (!$USER->IsAdmin() && (HasScriptExtension($pathto) || substr(CFileman::GetFileName($pathto), 0, 1) == "."))
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_PHPERROR") . " \"" . $pathto . "\".\n";
-                elseif (!Docs\Utils::propertyNumericalIdValidation($arOrderId))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_ORDER_ID") . "\n";
-                elseif (!CSaleOrder::GetByID((int)$arOrderId))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_ORDER_ID_DOESNT_EXIST");
+                elseif (!Docs\Utils::propertyNumericalIdValidation($arUserId))
+                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_USER_ID") . "\n";
+                elseif (!CUser::GetByID((int)$arUserId)->Fetch())
+                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_USER_ID_DOESNT_EXIST");
                 elseif (preg_match("/^\/bitrix\/.*/", $pathto))
                     $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_DIR");
                 else {
@@ -99,7 +98,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                                 $res_log['path'] = substr($pathto, 1);
                                 CEventLog::Log("content", "FILE_ADD", "main", "", serialize($res_log));
                             }
-                            if (Docs\Utils::createDocument($pathto, "ORDER", $arOrderId));
+                            if (Docs\Utils::createDocument($pathto, "USER", $arUserId));
                             else $strWarning .= 'Error creating file';
                         }
                     } else $strWarning .= $quota->LAST_ERROR . "\n";
@@ -108,7 +107,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
         }
 
         if (strlen($strWarning) <= 0) {
-            $backurl = '/bitrix/admin/trustednet_documents_by_order.php?lang=' . LANGUAGE_ID;
+            $backurl = '/bitrix/admin/trustednet_documents_by_user.php?lang=' . LANGUAGE_ID;
             if (!empty($_POST["apply"])) LocalRedirect($ret); else LocalRedirect($ret);
         }
     }
@@ -192,7 +191,7 @@ function dirSelectorAct(filename, path, site)
                         </td>
 
                         <td style="text-align: left!important;">
-                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_ORDER_ID") ?>
+                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_USER_ID") ?>
                             <span class="required"><sup>*</sup></span>
                         </td>
                     </tr>
@@ -214,7 +213,7 @@ function dirSelectorAct(filename, path, site)
                             </td>
 
                             <td class="adm-detail-content-cell-r">
-                                <input type="text" name="order_id_<?= $i ?>"
+                                <input type="text" name="user_id_<?= $i ?>"
                                        placeholder=""
                                        size="15" maxlength="255" value="">
                             </td>
@@ -239,7 +238,7 @@ function dirSelectorAct(filename, path, site)
     </form>
 
     <?echo BeginNote();?>
-    <span class="required"><sup>*</sup></span><?echo GetMessage("TN_DOCS_UPLOAD_ORDER_ID_NOTE")?>
+    <span class="required"><sup>*</sup></span><?echo GetMessage("TN_DOCS_UPLOAD_USER_ID_NOTE")?>
     <?echo EndNote();?>
 
 <? endif; ?>

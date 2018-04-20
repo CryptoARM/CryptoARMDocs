@@ -27,82 +27,6 @@ class Database
     }
 
     /**
-     * Returns object with document ids, filtered by specified filter.
-     * @global object $DB Bitrix global CDatabase object
-     * @param array $arOrder Sort direction
-     * @param array $filter Array with filter keys and values
-     * @return CDBResult
-     */
-    static function getDocumentsIdByFilter($arOrder = array(), $filter)
-    {
-        $arFields = array(
-            'DOC' => array(
-                'FIELD_NAME' => 'TD.ID',
-            ),
-            'FILE_NAME' => array(
-                'FIELD_NAME' => 'TD.NAME',
-            ),
-            'SIGN' => array(
-                'FIELD_NAME' => 'TD.SIGNERS',
-            ),
-            'TYPE' => array(
-                'FIELD_NAME' => 'TD.TYPE',
-            ),
-            'STATUS' => array(
-                'FIELD_NAME' => 'TD.STATUS',
-            ),
-        );
-
-        $find_docId = (string)$filter['DOC'];
-        $find_fileName = (string)$filter['FILE_NAME'];
-        $find_signInfo = (string)$filter['SIGN'];
-        $find_type = (string)$filter['TYPE'];
-        $find_status = (string)$filter['STATUS'];
-
-        global $DB;
-        $sql = "
-            SELECT
-                TD.ID
-            FROM
-                " . DB_TABLE_DOCUMENTS . " TD
-            WHERE
-                isnull(TD.CHILD_ID)";
-        if ($find_docId !== "")
-            $sql .= " AND TD.ID = '" . $find_docId . "'";
-        if ($find_fileName !== "")
-            $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
-        if ($find_signInfo !== "")
-            $sql .= " AND TD.SIGNERS LIKE '%" . $DB->ForSql($find_signInfo) . "%'";
-        if ($find_type !== "")
-            $sql .= " AND TD.TYPE = " . $find_type;
-        if ($find_status !== "")
-            $sql .= " AND TD.STATUS = " . $find_status;
-
-        $sOrder = '';
-        if (is_array($arOrder)) {
-            foreach ($arOrder as $k => $v) {
-                if (array_key_exists($k, $arFields)) {
-                    $v = strtoupper($v);
-                    if ($v != 'DESC') {
-                        $v = 'ASC';
-                    }
-                    if (strlen($sOrder) > 0) {
-                        $sOrder .= ', ';
-                    }
-                    $k = strtoupper($k);
-                    $sOrder .= $arFields[$k]['FIELD_NAME'] . ' ' . $v;
-                }
-            }
-
-            if (strlen($sOrder) > 0) {
-                $sql .= ' ORDER BY ' . $sOrder . ';';
-            }
-        }
-        $rows = $DB->Query($sql);
-        return $rows;
-    }
-
-    /**
      * Saves document in DB.
      * If the document doesn't have an id creates new record for it.
      * @global object $DB Bitrix global CDatabase object
@@ -376,6 +300,205 @@ class Database
     }
 
     /**
+     * Returns object with document ids, filtered by specified filter.
+     * @global object $DB Bitrix global CDatabase object
+     * @param array $arOrder Sort direction
+     * @param array $filter Array with filter keys and values
+     * @return CDBResult
+     */
+    static function getDocumentIdsByFilter($arOrder = array(), $filter)
+    {
+        // TODO: change $arOrder to separate $by and $order
+        $arFields = array(
+            'DOC' => array(
+                'FIELD_NAME' => 'TD.ID',
+            ),
+            'FILE_NAME' => array(
+                'FIELD_NAME' => 'TD.NAME',
+            ),
+            'SIGN' => array(
+                'FIELD_NAME' => 'TD.SIGNERS',
+            ),
+            'TYPE' => array(
+                'FIELD_NAME' => 'TD.TYPE',
+            ),
+            'STATUS' => array(
+                'FIELD_NAME' => 'TD.STATUS',
+            ),
+        );
+
+        $find_docId = (string)$filter['DOC'];
+        $find_fileName = (string)$filter['FILE_NAME'];
+        $find_signInfo = (string)$filter['SIGN'];
+        $find_type = (string)$filter['TYPE'];
+        $find_status = (string)$filter['STATUS'];
+
+        global $DB;
+        $sql = "
+            SELECT
+                TD.ID
+            FROM
+                " . DB_TABLE_DOCUMENTS . " TD
+            WHERE
+                isnull(TD.CHILD_ID)";
+        if ($find_docId !== "")
+            $sql .= " AND TD.ID = '" . $find_docId . "'";
+        if ($find_fileName !== "")
+            $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
+        if ($find_signInfo !== "")
+            $sql .= " AND TD.SIGNERS LIKE '%" . $DB->ForSql($find_signInfo) . "%'";
+        if ($find_type !== "")
+            $sql .= " AND TD.TYPE = " . $find_type;
+        if ($find_status !== "")
+            $sql .= " AND TD.STATUS = " . $find_status;
+
+        $sOrder = '';
+        if (is_array($arOrder)) {
+            foreach ($arOrder as $k => $v) {
+                if (array_key_exists($k, $arFields)) {
+                    $v = strtoupper($v);
+                    if ($v != 'DESC') {
+                        $v = 'ASC';
+                    }
+                    if (strlen($sOrder) > 0) {
+                        $sOrder .= ', ';
+                    }
+                    $k = strtoupper($k);
+                    $sOrder .= $arFields[$k]['FIELD_NAME'] . ' ' . $v;
+                }
+            }
+
+            if (strlen($sOrder) > 0) {
+                $sql .= ' ORDER BY ' . $sOrder . ';';
+            }
+        }
+        $rows = $DB->Query($sql);
+        return $rows;
+    }
+
+    /**
+     * Returns object with info about users with attached documents,
+     * filtered by specified filter.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $by Sort column
+     * @param string $order Sort order
+     * @param array $filter Array with filter keys and values
+     * @return CDBResult
+     */
+    static function getUsersWithDocsByFilter($by, $order, $filter)
+    {
+        $find_user_id = (string)$filter["USER_ID"];
+        $find_user_name = (string)$filter["USER_NAME"];
+        $find_user_email = (string)$filter["USER_EMAIL"];
+        $find_doc_id = (string)$filter["DOC_ID"];
+        $find_doc_name = (string)$filter["DOC_NAME"];
+        $find_doc_type = (string)$filter["DOC_TYPE"];
+        $find_doc_status = (string)$filter["DOC_STATUS"];
+
+        $sqlWhere = array();
+        if ($find_user_id !== "") {
+            $sqlWhere[] = "BU.ID = '" . $find_user_id . "'";
+        }
+        if ($find_user_name !== "") {
+            $sqlWhere[] = "CONCAT(BU.NAME, ' ', BU.LAST_NAME) LIKE '%" . $find_user_name . "%'";
+        }
+        if ($find_user_email !== "") {
+            $sqlWhere[] = "BU.EMAIL LIKE '%" . $find_user_email . "%'";
+        }
+        if ($find_doc_id !== "") {
+            $sqlWhere[] = "TD.ID = '" . $find_doc_id . "'";
+        }
+        if ($find_doc_name !== "") {
+            $sqlWhere[] = "TD.NAME LIKE '%" . $find_doc_name . "%'";
+        }
+        if ($find_doc_type !== "") {
+            $sqlWhere[] = "TD.TYPE LIKE '%" . $find_doc_type . "%'";
+        }
+        if ($find_doc_status !== "") {
+            $sqlWhere[] = "TD.STATUS LIKE '%" . $find_doc_status . "%'";
+        }
+
+        global $DB;
+        $sql = "
+            SELECT
+                BU.ID, BU.LOGIN, CONCAT(BU.NAME, ' ', BU.LAST_NAME) as NAME, BU.EMAIL
+            FROM
+                b_user as BU,
+                trn_docs as TD,
+                trn_docs_property as TDP
+            WHERE
+                TD.ID = TDP.DOCUMENT_ID AND
+                TDP.VALUE = BU.ID AND
+                TDP.TYPE = 'USER'";
+
+        // Filtering
+        if (count($sqlWhere)) {
+            $sql .= " AND " . implode(" AND ", $sqlWhere);
+        }
+
+        // Squash rows by user
+        $sql .= " GROUP BY BU.ID";
+
+        // Ordering
+        $fields = array(
+            "USER_ID" => "BU.ID",
+            "USER_NAME" => "NAME",
+        );
+        $by = strtoupper($by);
+        $order = strtoupper($order);
+        if (array_key_exists($by, $fields)) {
+            if ($order != "DESC") {
+                $order = "ASC";
+            }
+            $sql .= " ORDER BY " . $fields[$by] . " " . $order . ";";
+        }
+
+        $rows = $DB->Query($sql);
+        return $rows;
+    }
+
+    /**
+     * Returns all documents attached to the user.
+     * @param integer $userId
+     * @return DocumentCollection
+     */
+    static function getDocumentsByUser($userId)
+    {
+        global $DB;
+        $sql = "
+            SELECT
+                TD.ID
+            FROM
+                trn_docs as TD,
+                trn_docs_property as TDP
+            WHERE
+                TD.ID = TDP.DOCUMENT_ID AND
+                TDP.TYPE = 'USER' AND
+                TDP.VALUE = '" . (int)$userId . "';";
+        $rows = $DB->Query($sql);
+        $docs = new DocumentCollection;
+        while ($row = $rows->Fetch()) {
+            $docs->add(Database::getDocumentById($row["ID"]));
+        }
+        return $docs;
+    }
+
+    /**
+     * Returns array of ids of documents attached to the user.
+     * @param integer $userId
+     * @return array
+     */
+    static function getDocumentIdsByUser($userId)
+    {
+        $docs = Database::getDocumentsByUser($userId);
+        $res = array();
+        foreach ($docs->getList() as $doc) {
+            $res[] = $doc->getId();
+        }
+        return $res;
+    }
+
+    /**
      * Returns array of order IDs with documents attached to them.
      * Requires 'sale' module.
      * @global object $DB Bitrix global CDatabase object
@@ -406,7 +529,7 @@ class Database
      */
     static function getOrdersByFilter($arOrder = array(), $filter)
     {
-
+        // TODO: change $arOrder to separate $by and $order
         $arFields = array(
             'ORDER' => array(
                 'FIELD_NAME' => 'OrderList.VALUE',

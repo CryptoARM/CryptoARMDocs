@@ -83,7 +83,6 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            //echo 'window.parent.sign(' . $docs->toJSON() . ', "SELLER")';
             echo 'window.parent.sign(' . json_encode($ids) . ', {"role": "SELLER"})';
             echo '</script>';
             break;
@@ -151,14 +150,39 @@ $rsData = new CAdminResult($orders, $sTableID);
 $rsData->NavStart();
 
 // send page selector to the main object $lAdmin
-$lAdmin->NavText("<p class='nav_print' style='text-align: center;'>" . $rsData->GetNavPrint(GetMessage("TN_DOCS_NAV_TEXT")) . "</p>");
+$lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_NAV_TEXT")));
 
 $lAdmin->AddHeaders(array(
-    array("id" => "ORDER", "content" => GetMessage("TN_DOCS_COL_ORDER"), "sort" => "ORDER", "default" => true),
-    array("id" => "ORDER_STATUS", "content" => GetMessage("TN_DOCS_COL_ORDER_STATUS"), "sort" => "ORDER_STATUS", "default" => true),
-    array("id" => "BUYER", "content" => GetMessage("TN_DOCS_COL_BUYER"), "sort" => "CLIENT_NAME", "default" => true),
-    array("id" => "DOCS", "content" => GetMessage("TN_DOCS_COL_DOCS"), "sort" => "DOCS", "default" => true),
-    array("id" => "SIGN", "content" => GetMessage("TN_DOCS_COL_STATUS"), "sort" => "DOC_STATE", "default" => true),
+    array(
+        "id" => "ORDER",
+        "content" => GetMessage("TN_DOCS_COL_ORDER"),
+        "sort" => "ORDER",
+        "default" => true
+    ),
+    array(
+        "id" => "ORDER_STATUS",
+        "content" => GetMessage("TN_DOCS_COL_ORDER_STATUS"),
+        "sort" => "ORDER_STATUS",
+        "default" => true
+    ),
+    array(
+        "id" => "BUYER",
+        "content" => GetMessage("TN_DOCS_COL_BUYER"),
+        "sort" => "CLIENT_NAME",
+        "default" => true
+    ),
+    array(
+        "id" => "DOCS",
+        "content" => GetMessage("TN_DOCS_COL_DOCS"),
+        "sort" => "DOCS",
+        "default" => true
+    ),
+    array(
+        "id" => "SIGN",
+        "content" => GetMessage("TN_DOCS_COL_STATUS"),
+        "sort" => "DOC_STATE",
+        "default" => true
+    ),
 ));
 
 while ($arRes = $rsData->NavNext(true, "f_")) {

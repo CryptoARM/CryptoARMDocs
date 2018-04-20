@@ -50,7 +50,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
         // apply filter
-        $docs = Docs\Database::getDocumentsIdByFilter(array($by => $order), $arFilter);
+        $docs = Docs\Database::getDocumentIdsByFilter(array($by => $order), $arFilter);
         while($arRes = $docs->Fetch()) {
             $ids[] = $arRes['ID'];
         }
@@ -80,7 +80,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     }
 }
 
-$docs = Docs\Database::getDocumentsIdByFilter(array($by => $order), $arFilter);
+$docs = Docs\Database::getDocumentIdsByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));
@@ -146,6 +146,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
+    // TODO: use Utils::getTypeString instead
     $docType = $doc->getType();
     $docTypeString = GetMessage("TN_DOCS_TYPE_" . $docType);
 

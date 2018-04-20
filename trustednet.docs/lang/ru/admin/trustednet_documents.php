@@ -27,5 +27,5 @@ $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TN_DOCS_ACT_UNBLOCK"] = "Разблокировать";
 $MESS["TN_DOCS_ACT_REMOVE"] = "Удалить";
 
-$MESS["TN_DOCS_ADD_DOC"] = "Добавить документ";
+$MESS["TN_DOCS_ADD_DOC"] = "Добавить документы";
 

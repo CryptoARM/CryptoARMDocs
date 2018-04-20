@@ -110,6 +110,30 @@ class Utils
     }
 
     /**
+     * Returns textual representation of document type
+     *
+     * @param object Document $doc
+     * @return string
+     */
+    public static function getTypeString($doc)
+    {
+        $docType = $doc->getType();
+        return GetMessage("TN_DOCS_TYPE_" . $docType);
+    }
+
+    /**
+     * Returns textual representation of document status
+     *
+     * @param object Document $doc
+     * @return string
+     */
+    public static function getStatusString($doc)
+    {
+        $docStatus = $doc->getStatus();
+        return GetMessage("TN_DOCS_STATUS_" . $docStatus);
+    }
+
+    /**
      * Returns textual representation of role property
      *
      * @param object Document $doc
@@ -209,7 +233,7 @@ class Utils
     }
 
     /**
-     * Validation for user-set OrderId field.
+     * Validation for user-set property value field.
      *
      * Length between 1 and 255.
      * Numbers only.
@@ -217,7 +241,7 @@ class Utils
      * @param string $value
      * @return boolean
      */
-    public static function propertyOrderIdValidation($value)
+    public static function propertyNumericalIdValidation($value)
     {
         $res = true;
         $len = mb_strlen($value, "UTF-8");
