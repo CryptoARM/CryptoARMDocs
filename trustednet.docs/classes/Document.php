@@ -546,6 +546,7 @@ class Document implements IEntity, ISave
         Database::removeDocumentRecursively($this);
         // Remove document file
         $file = $_SERVER["DOCUMENT_ROOT"] . $this->getPath();
+        $file = rawurldecode($file);
         if (file_exists($file)) {
             unlink($file);
         }
