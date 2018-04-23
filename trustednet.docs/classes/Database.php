@@ -473,6 +473,7 @@ class Database
                 trn_docs_property as TDP
             WHERE
                 TD.ID = TDP.DOCUMENT_ID AND
+                isnull(TD.CHILD_ID) AND
                 TDP.TYPE = 'USER' AND
                 TDP.VALUE = '" . (int)$userId . "';";
         $rows = $DB->Query($sql);

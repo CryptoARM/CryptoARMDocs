@@ -369,15 +369,15 @@ class Utils
     }
 
     /**
-     * Display error in browser window
+     * Display variable in browser and stop execution
      *
-     * @param string|array|number $msg
+     * @param mixed $msg
      * @return void
      */
-    public static function throwError($msg)
+    public static function printAndDie($var)
     {
         header("HTTP/1.1 500 Internal Server Error");
-        echo json_encode(array("success" => false, "message" => $msg));
+        echo "<pre>" . print_r($var, true) . "</pre>";
         die();
     }
 

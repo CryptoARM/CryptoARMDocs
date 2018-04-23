@@ -214,6 +214,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     // get docs by order
     $docs = Docs\Database::getDocumentsByOrder($order_id);
 
+    // TODO: rewrite formatting of documents like on docs by user
+
     // order
     $arActions = Array();
     $fieldOrder = "[<a href=\"/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TN_DOCS_BUYER_PROFILE") . "\">" . $order_id . "</a>] ";

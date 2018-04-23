@@ -161,6 +161,7 @@ class AjaxCommand
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
                 $extra = json_decode($params["extra"], true);
+                // TODO: move documents by order logic in separate functions
                 Utils::roleHandler($newDoc, $extra);
                 if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
                     $newDoc->setName($newDoc->getName() . '.sig');

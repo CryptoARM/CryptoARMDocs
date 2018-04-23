@@ -6,7 +6,6 @@ $MESS["TN_DOCS_UPLOAD_TAB_TITLE"] = "Выберите документы для 
 $MESS["TN_DOCS_UPLOAD_FILE_DIR"] = "Выбор директории";
 $MESS["TN_DOCS_UPLOAD_FILE_ORDER_ID"] = "Номер заказа";
 
-
 $MESS["TN_DOCS_UPLOAD_ACCESS_DENIED"] = "Недостаточно прав для создания файла";
 $MESS["TN_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимальный допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
 $MESS["TN_DOCS_UPLOAD_FILE_EXISTS1"] = "Файл с именем";

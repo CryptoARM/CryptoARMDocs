@@ -3,9 +3,11 @@ use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
 
 include __DIR__ . "/config.php";
-$module_id = TN_DOCS_MODULE_ID;
-CModule::IncludeModule($module_id);
-$saleModule = CModule::IncludeModule("sale");
+CModule::IncludeModule(TN_DOCS_MODULE_ID);
+$saleModule = IsModuleInstalled("sale");
+if ($saleModule) {
+    CModule::IncludeModule("sale");
+}
 
 IncludeModuleLangFile(__FILE__);
 
@@ -22,9 +24,9 @@ $aTabs[] = array(
 );
 if($saleModule) {
     $aTabs[] = array(
-        "DIV" => "tn_docs_email",
-        "TAB" => GetMessage("TN_DOCS_EMAIL_TAB"),
-        "TITLE" => GetMessage("TN_DOCS_EMAIL_TAB_TITLE")
+        "DIV" => "tn_docs_order",
+        "TAB" => GetMessage("TN_DOCS_ORDER_TAB"),
+        "TITLE" => GetMessage("TN_DOCS_ORDER_TAB_TITLE")
     );
 }
 $aTabs[] = array(
@@ -35,70 +37,62 @@ $aTabs[] = array(
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
 
-$DOCUMENTS_DIR = Option::get($module_id, 'DOCUMENTS_DIR', "docs");
-
-$PROVIDE_LICENSE = Option::get($module_id, "PROVIDE_LICENSE", "");
-$USERNAME = Option::get($module_id, "USERNAME", "");
-$PASSWORD = Option::get($module_id, "PASSWORD", "");
-$CLIENT_ID = Option::get($module_id, "CLIENT_ID", "");
-$SECRET = Option::get($module_id, "SECRET", "");
-$MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
-$MAIL_SITE_ID = Option::get($module_id, "MAIL_SITE_ID", "");
-
-function TrimDocumentsDir($dir) {
-    $dir = trim($dir);
-    $dir = trim($dir, "/.");
-    // Get rid of /../
-    $dir = preg_replace("/\/.*\//", "/", $dir);
-    return $dir;
-}
-
+// TODO: move to Utils
 function CheckDocumentsDir($dir) {
     $docRoot = $_SERVER["DOCUMENT_ROOT"];
-    $fullPath = $docRoot . "/" . $dir;
+    $fullPath = $docRoot . $dir;
     // Expand extra /../
     $fullPath = realpath($fullPath);
-
-    if ($dir == '') {
-        return GetMessage("TN_DOCS_OPT_EMPTY_DIR_FIELD");
-    }
-
-    // Check for existing directory
-    if (!is_dir($fullPath)) {
-        return GetMessage("TN_DOCS_OPT_NO_DIR");
-    }
 
     // Check if we are in bitrix root
     $len = strlen($docRoot);
     if (strncmp($fullPath, $docRoot, $len) < 0 || strcmp($fullPath, $docRoot) == 0) {
-        return GetMessage("TN_DOCS_OPT_CANNOT_USE_SYSTEM_DIRECTORY");
+        return GetMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
     }
 
     // Check for entering bitrix system directory
     if (preg_match("/^bitrix($|\/*)/", $dir)) {
-        return GetMessage("TN_DOCS_OPT_CANNOT_USE_SYSTEM_DIRECTORY");
+        return GetMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
     }
 
     // Check for permissions
-    if (is_readable($fullPath) && is_writable($fullPath)) {
-        return true;
-    } else {
-        return GetMessage("TN_DOCS_OPT_NO_ACCESS_TO_DIRECTORY");
+    if (!is_readable($fullPath) && !is_writable($fullPath)) {
+        return GetMessage("TN_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
     }
+
+    return true;
+}
+
+$moduleOptions = array(
+    "DOCUMENTS_DIR",
+    "PROVIDE_LICENSE", "USERNAME", "PASSWORD", "CLIENT_ID", "SECRET",
+    "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
+    "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
+    "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ",
+    "MAIL_EVENT_ID", "MAIL_SITE_ID",
+);
+
+function UpdateOption($option, $value = false) {
+    // Try to use value from POST if no explicit value is provided
+    if ($value === false) {
+        if (isset($_POST[$option])) {
+            $$option = (string)$_POST[$option];
+        } else {
+            $$option = "";
+        }
+    } else {
+        $$option = (string)$value;
+    }
+    Option::set(TN_DOCS_MODULE_ID, $option, $$option);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
     if (isset($_POST["Update"])) {
-        if (isset($_POST["DOCUMENTS_DIR"])) {
-            $documentsDirFromPost = (string)$_POST["DOCUMENTS_DIR"];
-        }
-        $documentsDirFromPost = TrimDocumentsDir($documentsDirFromPost);
-        $checkRes = CheckDocumentsDir($documentsDirFromPost);
-        if ($checkRes === true) {
-            $DOCUMENTS_DIR = $documentsDirFromPost;
-            Option::set($module_id, "DOCUMENTS_DIR", $DOCUMENTS_DIR);
+        $docsDirCheck = CheckDocumentsDir($_POST["DOCUMENTS_DIR"]);
+        if ($docsDirCheck === true) {
+            UpdateOption("DOCUMENTS_DIR");
         } else {
-            CAdminMessage::ShowMessage($checkRes);
+            CAdminMessage::ShowMessage($docsDirCheck);
         }
         if (isset($_POST["PROVIDE_LICENSE"])) {
             if (!$_POST["USERNAME"] ||
@@ -107,41 +101,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
                 !$_POST["SECRET"]) {
                 CAdminMessage::ShowMessage(GetMessage("TN_DOCS_LICENSE_NO_EMPTY_FIELDS"));
             } else {
-                $PROVIDE_LICENSE = (string)$_POST["PROVIDE_LICENSE"];
-                Option::set($module_id, "PROVIDE_LICENSE", "on");
-                $USERNAME = (string)$_POST["USERNAME"];
-                Option::set($module_id, "USERNAME", $USERNAME);
-                $PASSWORD = (string)$_POST["PASSWORD"];
-                Option::set($module_id, "PASSWORD", $PASSWORD);
-                $CLIENT_ID = (string)$_POST["CLIENT_ID"];
-                Option::set($module_id, "CLIENT_ID", $CLIENT_ID);
-                $SECRET = (string)$_POST["SECRET"];
-                Option::set($module_id, "SECRET", $SECRET);
-            }
-        } else {
-            $PROVIDE_LICENSE = false;
-            Option::set($module_id, "PROVIDE_LICENSE", "");
-        }
-        if (isset($_POST["MAIL_EVENT_ID"])) {
-            if (trim($_POST["MAIL_EVENT_ID"])) {
-                $MAIL_EVENT_ID = (string)$_POST["MAIL_EVENT_ID"];
-                Option::set($module_id, "MAIL_EVENT_ID", $MAIL_EVENT_ID);
+                UpdateOption("USERNAME");
+                UpdateOption("PASSWORD");
+                UpdateOption("CLIENT_ID");
+                UpdateOption("SECRET");
             }
         }
-        if (isset($_POST["MAIL_SITE_ID"])) {
-            if (trim($_POST["MAIL_SITE_ID"])) {
-                $MAIL_SITE_ID = (string)$_POST["MAIL_SITE_ID"];
-                Option::set($module_id, "MAIL_SITE_ID", $MAIL_SITE_ID);
-            }
-        }
+        UpdateOption("PROVIDE_LICENSE");
+        UpdateOption("EVENT_SIGNED_BY_CLIENT");
+        UpdateOption("EVENT_SIGNED_BY_SELLER");
+        UpdateOption("EVENT_SIGNED_BY_BOTH");
+        UpdateOption("EVENT_SIGNED_BY_CLIENT_ALL_DOCS");
+        UpdateOption("EVENT_SIGNED_BY_SELLER_ALL_DOCS");
+        UpdateOption("EVENT_SIGNED_BY_BOTH_ALL_DOCS");
+        UpdateOption("EVENT_EMAIL_SENT");
+        UpdateOption("EVENT_EMAIL_READ");
+        UpdateOption("MAIL_EVENT_ID");
+        UpdateOption("MAIL_SITE_ID");
     }
 }
 
+foreach ($moduleOptions as $option) {
+    $$option = Option::get(TN_DOCS_MODULE_ID, $option, "");
+}
+
 $tabControl->Begin();
+
 ?>
 
 <form method="POST" enctype="multipart/form-data"
-      action="<?= $APPLICATION->GetCurPage() ?>?lang=<?= LANGUAGE_ID ?>&mid=<?= $module_id ?>"
+      action="<?= $APPLICATION->GetCurPage() ?>?lang=<?= LANGUAGE_ID ?>&mid=<?= TN_DOCS_MODULE_ID ?>"
       name="trustednetdocs_settings">
 
     <?= bitrix_sessid_post(); ?>
@@ -150,7 +139,7 @@ $tabControl->Begin();
 
     <tr>
         <td width="20%" class="adm-detail-content-cell-l">
-            <?= GetMessage("TN_DOCS_OPT_DOCS_DIR") ?>
+            <?= GetMessage("TN_DOCS_DOCS_DIR") ?>
         </td>
         <td width="80%">
             <input name="DOCUMENTS_DIR"
@@ -161,7 +150,7 @@ $tabControl->Begin();
                    value="<?= $DOCUMENTS_DIR ?>"/>
             <input id="dir_but"
                    type="button"
-                   value="<?= GetMessage("TN_DOCS_OPT_DOCS_DIR_SELECT") ?>"
+                   value="<?= GetMessage("TN_DOCS_DOCS_DIR_SELECT") ?>"
                    onclick="dirSelector()">
         </td>
     </tr>
@@ -176,6 +165,7 @@ $tabControl->Begin();
             <input type="checkbox"
                    <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                    name="PROVIDE_LICENSE"
+                   value="true"
                    onchange="toggleInputs(!this.checked)"/>
         </td>
     </tr>
@@ -231,27 +221,180 @@ $tabControl->Begin();
     <? if ($saleModule): ?>
         <?= $tabControl->BeginNextTab(); ?>
 
-        <?echo BeginNote();?>
-        <?echo GetMessage("TN_DOCS_EMAIL_DESCRIPTION")?><br>
-        <?echo EndNote();?>
+        <tr class="heading">
+            <td colspan="2"><?= GetMessage("TN_DOCS_EVENTS_HEADING") ?></td>
+        </tr>
 
         <tr>
-            <td width="20%" class="adm-detail-content-cell-l">
+            <td colspan="2">
+                <?
+                echo BeginNote(), GetMessage("TN_DOCS_EVENTS_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <?
+        $dbResultList = CSaleStatus::GetList(
+            array("SORT" => "ASC"),
+            array("LID" => "ru"),
+            false,
+            false,
+            array("ID", "NAME")
+        );
+        $orderStatuses = array();
+        while ($status = $dbResultList->Fetch()) {
+            $orderStatuses[] = array(
+                "ID" => $status["ID"],
+                "NAME" => $status["NAME"],
+            );
+        }
+        ?>
+
+        <tr>
+            <td width="30%" class="trustednetdocs_opt_multiline_cell"> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_CLIENT") ?> </td>
+            <td width="70%">
+                <select name="EVENT_SIGNED_BY_CLIENT" id="EVENT_SIGNED_BY_CLIENT">
+                    <option value="" <?= $EVENT_SIGNED_BY_CLIENT ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <?
+                    foreach ($orderStatuses as $status) {
+                        $statusId = htmlspecialcharsbx($status["ID"]);
+                        $statusName = htmlspecialcharsbx($status["NAME"]);
+                        $sel = $EVENT_SIGNED_BY_CLIENT == $statusId ? " selected" : "";
+                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="checkbox"
+                       <?= (($EVENT_SIGNED_BY_CLIENT_ALL_DOCS) ? "checked='checked'" : "") ?>
+                       name="EVENT_SIGNED_BY_CLIENT_ALL_DOCS"
+                       value="true"/>
+                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_SELLER") ?> </td>
+            <td>
+                <select name="EVENT_SIGNED_BY_SELLER" id="EVENT_SIGNED_BY_SELLER">
+                    <option value="" <?= $EVENT_SIGNED_BY_SELLER ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <?
+                    foreach ($orderStatuses as $status) {
+                        $statusId = htmlspecialcharsbx($status["ID"]);
+                        $statusName = htmlspecialcharsbx($status["NAME"]);
+                        $sel = $EVENT_SIGNED_BY_SELLER == $statusId ? " selected" : "";
+                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="checkbox"
+                       <?= (($EVENT_SIGNED_BY_SELLER_ALL_DOCS) ? "checked='checked'" : "") ?>
+                       name="EVENT_SIGNED_BY_SELLER_ALL_DOCS"
+                       value="true"/>
+                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_BOTH") ?> </td>
+            <td>
+                <select name="EVENT_SIGNED_BY_BOTH" id="EVENT_SIGNED_BY_BOTH">
+                    <option value="" <?= $EVENT_SIGNED_BY_BOTH ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <?
+                    foreach ($orderStatuses as $status) {
+                        $statusId = htmlspecialcharsbx($status["ID"]);
+                        $statusName = htmlspecialcharsbx($status["NAME"]);
+                        $sel = $EVENT_SIGNED_BY_BOTH == $statusId ? " selected" : "";
+                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="checkbox"
+                       <?= (($EVENT_SIGNED_BY_BOTH_ALL_DOCS) ? "checked='checked'" : "") ?>
+                       name="EVENT_SIGNED_BY_BOTH_ALL_DOCS"
+                       value="true"/>
+                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= GetMessage("TN_DOCS_EVENTS_EMAIL_SENT") ?> </td>
+            <td>
+                <select name="EVENT_EMAIL_SENT" id="EVENT_EMAIL_SENT">
+                    <option value="" <?= $EVENT_EMAIL_SENT ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <?
+                    foreach ($orderStatuses as $status) {
+                        $statusId = htmlspecialcharsbx($status["ID"]);
+                        $statusName = htmlspecialcharsbx($status["NAME"]);
+                        $sel = $EVENT_EMAIL_SENT == $statusId ? " selected" : "";
+                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= GetMessage("TN_DOCS_EVENTS_EMAIL_READ") ?> </td>
+            <td>
+                <select name="EVENT_EMAIL_READ" id="EVENT_EMAIL_READ">
+                    <option value="" <?= $EVENT_EMAIL_READ ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <?
+                    foreach ($orderStatuses as $status) {
+                        $statusId = htmlspecialcharsbx($status["ID"]);
+                        $statusName = htmlspecialcharsbx($status["NAME"]);
+                        $sel = $EVENT_EMAIL_READ == $statusId ? " selected" : "";
+                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= GetMessage("TN_DOCS_EMAIL_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), GetMessage("TN_DOCS_EMAIL_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adm-detail-content-cell-l">
                 <?= GetMessage("TN_DOCS_EMAIL_MAIL_EVENT_ID") ?>
             </td>
-            <td width="80%">
-            <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
-                <option value="" disabled hidden <?= $MAIL_EVENT_ID ? "" : "selected" ?>>Выберите событие</option>
-                <?
-                $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
-                while ($event = $events->Fetch()) {
-                    $eventId = htmlspecialcharsbx($event["ID"]);
-                    $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
-                    $eventName = htmlspecialcharsbx($event["NAME"]);
-                    $sel = $MAIL_EVENT_ID == $eventTypeName ? " selected" : "";
-                    echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
-                }
-                ?>
+            <td>
+                <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
+                    <option value="" <?= $MAIL_EVENT_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
+                    while ($event = $events->Fetch()) {
+                        $eventId = htmlspecialcharsbx($event["ID"]);
+                        $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                        $eventName = htmlspecialcharsbx($event["NAME"]);
+                        $sel = $MAIL_EVENT_ID == $eventTypeName ? " selected" : "";
+                        echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                    }
+                    ?>
+                </select>
             </td>
         </tr>
 
@@ -259,16 +402,17 @@ $tabControl->Begin();
             <td> <?= GetMessage("TN_DOCS_EMAIL_SITE_ID") ?> </td>
             <td>
                 <select name="MAIL_SITE_ID" id="MAIL_SITE_ID">
-                <option value="" disabled hidden <?= $MAIL_SITE_ID ? "" : "selected" ?>>Выберите сайт</option>
-                <?
-                $sites = CSite::GetList($by="sort", $order="desc", array());
-                while ($site = $sites->Fetch()) {
-                    $siteId = htmlspecialcharsbx($site["ID"]);
-                    $siteName = htmlspecialcharsbx($site["NAME"]);
-                    $sel = $MAIL_SITE_ID == $siteId ? " selected" : "";
-                    echo "<option value='" . $siteId . "'" . $sel . ">" . $siteId . " - " . $siteName . "</option>";
-                }
-                ?>
+                    <option value="" <?= $MAIL_SITE_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $sites = CSite::GetList($by="sort", $order="desc", array());
+                    while ($site = $sites->Fetch()) {
+                        $siteId = htmlspecialcharsbx($site["ID"]);
+                        $siteName = htmlspecialcharsbx($site["NAME"]);
+                        $sel = $MAIL_SITE_ID == $siteId ? " selected" : "";
+                        echo "<option value='" . $siteId . "'" . $sel . ">" . $siteId . " - " . $siteName . "</option>";
+                    }
+                    ?>
+                </select>
             </td>
         </tr>
 

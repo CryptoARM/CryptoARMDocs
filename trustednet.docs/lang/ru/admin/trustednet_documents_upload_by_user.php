@@ -6,10 +6,9 @@ $MESS["TN_DOCS_UPLOAD_TAB_TITLE"] = "Выберите документы для 
 $MESS["TN_DOCS_UPLOAD_FILE_DIR"] = "Выбор директории";
 $MESS["TN_DOCS_UPLOAD_FILE_USER_ID"] = "ID пользователя";
 
-
 $MESS["TN_DOCS_UPLOAD_ACCESS_DENIED"] = "Недостаточно прав для создания файла";
 $MESS["TN_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимальный допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
-// TODO: File exists error is deprecated
+// TODO: File exists error is deprecated. Need to be fixed in all upload pages
 $MESS["TN_DOCS_UPLOAD_FILE_EXISTS1"] = "Файл с именем";
 $MESS["TN_DOCS_UPLOAD_FILE_EXISTS2"] = "уже существует";
 $MESS["TN_DOCS_UPLOAD_PHPERROR"] = "Недостаточно прав для загрузки PHP файла";

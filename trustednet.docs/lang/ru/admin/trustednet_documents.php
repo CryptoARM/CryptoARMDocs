@@ -4,7 +4,7 @@ $MESS["TN_DOCS_TITLE"] = "Документы";
 
 // Columns
 $MESS["TN_DOCS_COL_ID"] = "ID";
-$MESS["TN_DOCS_COL_FILENAME"] = "Имя документа";
+$MESS["TN_DOCS_COL_FILENAME"] = "Название документа";
 $MESS["TN_DOCS_COL_SIGN"] = "Информация о сертификате подписи";
 $MESS["TN_DOCS_COL_TYPE"] = "Тип документа";
 $MESS["TN_DOCS_COL_STATUS"] = "Статус документа";

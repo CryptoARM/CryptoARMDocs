@@ -293,7 +293,7 @@ $oFilter = new CAdminFilter(
             <?= GetMessage("TN_DOCS_FIELDS_USER_EMAIL") . ":" ?>
         </td>
         <td>
-            <input type="text" name="find_user_name" size="47" value="<?= htmlspecialchars($find_user_name) ?>">
+            <input type="text" name="find_user_email" size="47" value="<?= htmlspecialchars($find_user_email) ?>">
         </td>
     </tr>
 
