@@ -21,7 +21,7 @@ $strWarning = "";
 
 $io = CBXVirtualIo::GetInstance();
 
-$DOCUMENTS_DIR = COption::GetOptionString($module_id, "DOCUMENTS_DIR", "docs");
+$DOCUMENTS_DIR = COption::GetOptionString($module_id, "DOCUMENTS_DIR", "/docs/");
 $DOCUMENTS_DIR = $io->CombinePath("/", $DOCUMENTS_DIR);
 
 $site = CFileMan::__CheckSite($site);

@@ -94,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         } else {
             CAdminMessage::ShowMessage($docsDirCheck);
         }
+        UpdateOption("PROVIDE_LICENSE");
         if (isset($_POST["PROVIDE_LICENSE"])) {
             if (!$_POST["USERNAME"] ||
                 !$_POST["PASSWORD"] ||
@@ -107,7 +108,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
                 UpdateOption("SECRET");
             }
         }
-        UpdateOption("PROVIDE_LICENSE");
         UpdateOption("EVENT_SIGNED_BY_CLIENT");
         UpdateOption("EVENT_SIGNED_BY_SELLER");
         UpdateOption("EVENT_SIGNED_BY_BOTH");
@@ -138,7 +138,7 @@ $tabControl->Begin();
     <?= $tabControl->BeginNextTab(); ?>
 
     <tr>
-        <td width="20%" class="adm-detail-content-cell-l">
+        <td width="20%">
             <?= GetMessage("TN_DOCS_DOCS_DIR") ?>
         </td>
         <td width="80%">
@@ -158,7 +158,7 @@ $tabControl->Begin();
     <?= $tabControl->BeginNextTab(); ?>
 
     <tr>
-        <td width="40%" class="adm-detail-content-cell-l">
+        <td width="40%">
             <?= GetMessage("TN_DOCS_LICENSE_ENABLE") ?>
         </td>
         <td width="60%">
@@ -378,7 +378,7 @@ $tabControl->Begin();
         </tr>
 
         <tr>
-            <td class="adm-detail-content-cell-l">
+            <td>
                 <?= GetMessage("TN_DOCS_EMAIL_MAIL_EVENT_ID") ?>
             </td>
             <td>
