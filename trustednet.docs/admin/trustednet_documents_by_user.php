@@ -28,7 +28,6 @@ $FilterArr = array(
     "find_user_id",
     "find_user_name",
     "find_user_email",
-    "find_doc_id",
     "find_doc_name",
     "find_doc_type",
     "find_doc_status",
@@ -41,7 +40,6 @@ if (CheckFilter()) {
         "USER_ID" => $find_user_id,
         "USER_NAME" => $find_user_name,
         "USER_EMAIL" => $find_user_email,
-        "DOC_ID" => $find_doc_id,
         "DOC_NAME" => $find_doc_name,
         "DOC_TYPE" => $find_doc_type,
         "DOC_STATUS" => $find_doc_status,
@@ -272,7 +270,6 @@ $oFilter = new CAdminFilter(
         GetMessage("TN_DOCS_FIELDS_USER_ID"),
         GetMessage("TN_DOCS_FIELDS_USER_NAME"),
         GetMessage("TN_DOCS_FIELDS_USER_EMAIL"),
-        GetMessage("TN_DOCS_FIELDS_DOC_ID"),
         GetMessage("TN_DOCS_FIELDS_DOC_NAME"),
         GetMessage("TN_DOCS_FIELDS_DOC_TYPE"),
         GetMessage("TN_DOCS_FIELDS_DOC_STATUS"),
@@ -307,15 +304,6 @@ $oFilter = new CAdminFilter(
         </td>
         <td>
             <input type="text" name="find_user_email" size="47" value="<?= htmlspecialchars($find_user_email) ?>">
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <?= GetMessage("TN_DOCS_FIELDS_DOC_ID") . ":" ?>
-        </td>
-        <td>
-            <input type="text" name="find_doc_id" size="47" value="<?= htmlspecialchars($find_doc_id) ?>">
         </td>
     </tr>
 

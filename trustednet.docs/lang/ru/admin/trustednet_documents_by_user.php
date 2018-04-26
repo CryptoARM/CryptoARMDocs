@@ -8,7 +8,6 @@ $MESS["TN_DOCS_NAV_TEXT"] = "Пользователи";
 $MESS["TN_DOCS_FIELDS_USER_ID"] = "ID пользователя";
 $MESS["TN_DOCS_FIELDS_USER_NAME"] = "Имя пользователя";
 $MESS["TN_DOCS_FIELDS_USER_EMAIL"] = "E-Mail пользователя";
-$MESS["TN_DOCS_FIELDS_DOC_ID"] = "ID документа";
 $MESS["TN_DOCS_FIELDS_DOC_NAME"] = "Название документа";
 $MESS["TN_DOCS_FIELDS_DOC_TYPE"] = "Тип документа";
 $MESS["TN_DOCS_FIELDS_DOC_STATUS"] = "Статус документа";

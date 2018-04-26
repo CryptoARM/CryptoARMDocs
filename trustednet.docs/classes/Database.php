@@ -388,7 +388,6 @@ class Database
         $find_user_id = (string)$filter["USER_ID"];
         $find_user_name = (string)$filter["USER_NAME"];
         $find_user_email = (string)$filter["USER_EMAIL"];
-        $find_doc_id = (string)$filter["DOC_ID"];
         $find_doc_name = (string)$filter["DOC_NAME"];
         $find_doc_type = (string)$filter["DOC_TYPE"];
         $find_doc_status = (string)$filter["DOC_STATUS"];
@@ -402,9 +401,6 @@ class Database
         }
         if ($find_user_email !== "") {
             $sqlWhere[] = "BU.EMAIL LIKE '%" . $find_user_email . "%'";
-        }
-        if ($find_doc_id !== "") {
-            $sqlWhere[] = "TD.ID = '" . $find_doc_id . "'";
         }
         if ($find_doc_name !== "") {
             $sqlWhere[] = "TD.NAME LIKE '%" . $find_doc_name . "%'";
