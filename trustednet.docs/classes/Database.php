@@ -1,8 +1,6 @@
 <?php
 namespace TrustedNet\Docs;
 
-require_once __DIR__ . "/../config.php";
-
 /**
  * DB interaction class.
  */

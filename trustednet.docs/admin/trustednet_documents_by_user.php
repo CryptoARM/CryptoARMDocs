@@ -137,7 +137,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $f_ID . "'>";
     $userNameViewField .= $f_LOGIN;
     $userNameViewField .= "</a>]<br />";
-    $userNameViewField .= "<a href='mailto:" . $f_EMAIL . "'>" . $f_EMAIL . "</a>";
+    $userNameViewField .= "<small><a href='mailto:" . $f_EMAIL . "'>" . $f_EMAIL . "</a></small>";
 
     $docViewField = "<table class='trustednetdocs_doc_table'>";
     foreach ($docList as $doc) {
@@ -162,7 +162,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $row->AddViewField("USER_ID", $f_ID);
     $row->AddViewField("USER_NAME", $userNameViewField);
-    $row->AddViewField("DOCS", $docViewField);
+    $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
     // context menu
     $arActions = array();

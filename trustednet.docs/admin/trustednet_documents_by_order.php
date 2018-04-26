@@ -157,31 +157,25 @@ $lAdmin->AddHeaders(array(
         "id" => "ORDER",
         "content" => GetMessage("TN_DOCS_COL_ORDER"),
         "sort" => "ORDER",
-        "default" => true
+        "default" => true,
     ),
     array(
         "id" => "ORDER_STATUS",
         "content" => GetMessage("TN_DOCS_COL_ORDER_STATUS"),
         "sort" => "ORDER_STATUS",
-        "default" => true
+        "default" => true,
     ),
     array(
         "id" => "BUYER",
         "content" => GetMessage("TN_DOCS_COL_BUYER"),
         "sort" => "CLIENT_NAME",
-        "default" => true
+        "default" => true,
     ),
     array(
         "id" => "DOCS",
         "content" => GetMessage("TN_DOCS_COL_DOCS"),
         "sort" => "DOCS",
-        "default" => true
-    ),
-    array(
-        "id" => "SIGN",
-        "content" => GetMessage("TN_DOCS_COL_STATUS"),
-        "sort" => "DOC_STATE",
-        "default" => true
+        "default" => true,
     ),
 ));
 
@@ -213,49 +207,80 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     // get docs by order
     $docs = Docs\Database::getDocumentsByOrder($order_id);
+    $docList = $docs->getList();
 
-    // TODO: rewrite formatting of documents like on docs by user
+    $orderViewField = "[<a href='";
+    $orderViewField .= "/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "'";
+    $orderViewField .= "title='" . GetMessage("TN_DOCS_EDIT_ORDER") . "'>";
+    $orderViewField .= $order_id;
+    $orderViewField .= "</a>]";
 
-    // order
-    $arActions = Array();
-    $fieldOrder = "[<a href=\"/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TN_DOCS_BUYER_PROFILE") . "\">" . $order_id . "</a>] ";
+    $buyerViewField = $user_name . " " . $user_last_name . "<br />";
+    $buyerViewField .= "[<a href='";
+    $buyerViewField .= "/bitrix/admin/user_edit.php?ID=" . $user_id . "'";
+    $buyerViewField .= "title='" . GetMessage("TN_DOCS_BUYER_PROFILE") . "'>";
+    $buyerViewField .= $user_login;
+    $buyerViewField .= "</a>]<br />";
+    $buyerViewField .= "<small><a href='mailto:";
+    $buyerViewField .= $user_email;
+    $buyerViewField .= "' title='" . GetMessage("TN_DOCS_MAILTO") . "'>";
+    $buyerViewField .= $user_email;
+    $buyerViewField .= "</a></small>";
 
-    // client
-    $fieldValue = "[<a href=\"/bitrix/admin/user_edit.php?ID=" . $user_id . "&lang=" . LANG . "\" title=\"" . GetMessage("TN_DOCS_BUYER_PROFILE") . "\">" . $user_name . "</a>] ";
-    $fieldValue .= htmlspecialcharsEx($user_name . ((strlen($user_name) <= 0 || strlen($user_last_name) <= 0) ? "" : " ") . $user_last_name) . "<br/>";
-    $fieldValue .= htmlspecialcharsEx($user_login) . "<br/>";
-    $fieldValue .= "<small><a href=\"mailto:" . htmlspecialcharsEx($user_email) . "\" title=\"" . GetMessage("STA_MAILTO") . "\">" . htmlspecialcharsEx($user_email) . "</a></small>";
+    $docViewField = "<table class='trustednetdocs_doc_table'>";
+    foreach ($docList as $doc) {
+        $docId = $doc->getId();
+        $docName = $doc->getName();
+        $docRoleStatus = Docs\DocumentsByOrder::getRoleString($doc);
+        if ($doc->getStatus() == DOC_STATUS_NONE) {
+            $docStatus = "";
+        } else {
+            $docStatus = "<b>" . GetMessage("TN_DOCS_STATUS") . "</b> " . Docs\Utils::getStatusString($doc);
+        }
+        $docViewField .= "<tr>";
+        $docViewField .= "<td>";
+        $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
+        $docViewField .= $docId . "])' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+        $docViewField .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+        $docViewField .= $docId;
+        $docViewField .= ", true)'>";
+        $docViewField .= $docName . "</a>";
+        $docViewField .= "</td>";
+        $docViewField .= "<td>" . $docRoleStatus . "<br />";
+        $docViewField .= $docStatus . "</td>";
+        $docViewField .= "</tr>";
+    }
+    $docViewField .= "</table>";
 
     // docs/status
-    $html_docs = '';
-    $array = $docs->getList();
-    $html_signs = '';
-    foreach ($array as &$doc) {
-        $doc = $doc->getLastDocument();
-        $docId = $doc->getId();
-        $html_docs .= "<input type='button' value='i' onclick='verify([" . $docId . "])' class='verify_button'/>";
-        $html_docs .= '<a class="tn_document" onclick="self.download(' . $docId . ')" data-id="' . $docId . '" >' . $doc->getName() . '</a> <br/><br/>';
-        $status = $doc->getStatus();
-        $str = "";
-        if ($status  == DOC_STATUS_BLOCKED) {
-            $str = GetMessage("TN_DOCS_DOC_BLOCKED");
-        } else {
-            $str = Docs\Utils::getRoleString($doc);
-        }
-        $html_signs .= $str . '<br/><br/>';
-    }
+    // $html_docs = '';
+    // $array = $docs->getList();
+    // $html_signs = '';
+    // foreach ($array as &$doc) {
+    //     $doc = $doc->getLastDocument();
+    //     $docId = $doc->getId();
+    //     $html_docs .= "<input type='button' value='i' onclick='verify([" . $docId . "])' class='verify_button'/>";
+    //     $html_docs .= '<a class="tn_document" onclick="self.download(' . $docId . ')" data-id="' . $docId . '" >' . $doc->getName() . '</a> <br/><br/>';
+    //     $status = $doc->getStatus();
+    //     $str = "";
+    //     if ($status  == DOC_STATUS_BLOCKED) {
+    //         $str = GetMessage("TN_DOCS_DOC_BLOCKED");
+    //     } else {
+    //         $str = Docs\DocumentsByOrder::getRoleString($doc);
+    //     }
+    //     $html_signs .= $str . '<br/><br/>';
+    // }
 
-    $row->AddViewField("ORDER", $fieldOrder);
+    $row->AddViewField("ORDER", $orderViewField);
     $row->AddViewField("ORDER_STATUS", $order_status);
-    $row->AddViewField("BUYER", $fieldValue);
-    $row->AddViewField("DOCS", '<small>' . $html_docs . '<small>');
-    $row->AddViewField("SIGN", '<small>' . $html_signs . '<small>');
+    $row->AddViewField("BUYER", $buyerViewField);
+    $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
     // context menu
     $arActions = array();
 
     // Add sign action for orders with unblocked docs
-    foreach ($array as &$doc) {
+    foreach ($docList as &$doc) {
         if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
 
             $arActions[] = array(
@@ -273,7 +298,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     }
 
     // Add unblock action for orders with blocked docs
-    foreach ($array as &$doc) {
+    foreach ($docList as &$doc) {
         if ($doc->getStatus() == DOC_STATUS_BLOCKED) {
 
             $arActions[] = array(
