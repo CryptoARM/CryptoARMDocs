@@ -22,12 +22,14 @@ $MESS["TN_DOCS_FILTER_BUYER_EMAIL"] = "E-Mail покупателя";
 $MESS["TN_DOCS_FILTER_BUYER_NAME"] = "Имя покупателя";
 $MESS["TN_DOCS_FILTER_BUYER_LAST_NAME"] = "Фамилия покупателя";
 
+// Hover titles
 $MESS["TN_DOCS_EDIT_ORDER"] = "Редактировать заказ";
 $MESS["TN_DOCS_BUYER_PROFILE"] = "Профиль покупателя";
 $MESS["TN_DOCS_MAILTO"] = "Написать письмо покумателю";
-$MESS["TN_DOCS_STATUS"] = "Статус:";
 $MESS["TN_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
 $MESS["TN_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
+
+$MESS["TN_DOCS_STATUS"] = "Статус:";
 
 $MESS["TN_DOCS_DOC_BLOCKED"] = "Некоторые документы заблокированы и не могут быть отправлены на подпись";
 

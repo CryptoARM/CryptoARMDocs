@@ -17,6 +17,12 @@ $MESS["TN_DOCS_FIELDS_DOC_STATUS"] = "Статус документа";
 $MESS["TN_DOCS_COL_USER_ID"] = "ID";
 $MESS["TN_DOCS_COL_DOCS"] = "Документы";
 
+// Hover titles
+$MESS["TN_DOCS_USER_PROFILE"] = "Профиль пользователя";
+$MESS["TN_DOCS_MAILTO"] = "Написать письмо пользователю";
+$MESS["TN_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
+$MESS["TN_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
+
 // Actions
 $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TN_DOCS_ACT_UNBLOCK"] = "Разблокировать";

@@ -133,11 +133,22 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docs = Docs\Database::getDocumentsByUser($f_ID);
     $docList = $docs->getList();
 
+    $userIdViewField = "[<a href='";
+    $userIdViewField .= "/bitrix/admin/user_edit.php?ID=" . $f_ID . "'";
+    $userIdViewField .= "title='" . GetMessage("TN_DOCS_USER_PROFILE") . "'>";
+    $userIdViewField .= $f_ID;
+    $userIdViewField .= "</a>]";
+
     $userNameViewField = $f_NAME . "<br />";
-    $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $f_ID . "'>";
+    $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $f_ID . "'";
+    $userNameViewField .= "title='" . GetMessage("TN_DOCS_USER_PROFILE") . "'>";
     $userNameViewField .= $f_LOGIN;
     $userNameViewField .= "</a>]<br />";
-    $userNameViewField .= "<small><a href='mailto:" . $f_EMAIL . "'>" . $f_EMAIL . "</a></small>";
+    $userNameViewField .= "<small><a href='mailto:";
+    $userNameViewField .= $f_EMAIL;
+    $userNameViewField .= "' title='" . GetMessage("TN_DOCS_MAILTO") . "'>";
+    $userNameViewField .= $f_EMAIL;
+    $userNameViewField .= "</a></small>";
 
     $docViewField = "<table class='trustednetdocs_doc_table'>";
     foreach ($docList as $doc) {
@@ -151,8 +162,10 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
-        $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([" . $docId . "])'/>";
-        $docViewField .= "<a class='tn_document' onclick='self.download(" . $docId . ", true)'>" . $docName . "</a>";
+        $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
+        $docViewField .= $docId . "])' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+        $docViewField .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+        $docViewField .= $docId . ", true)'>" . $docName . "</a>";
         $docViewField .= "</td>";
         $docViewField .= "<td>" . $docType . "<br />";
         $docViewField .= $docStatus . "</td>";
@@ -160,7 +173,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     }
     $docViewField .= "</table>";
 
-    $row->AddViewField("USER_ID", $f_ID);
+    $row->AddViewField("USER_ID", $userIdViewField);
     $row->AddViewField("USER_NAME", $userNameViewField);
     $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
