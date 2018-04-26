@@ -406,10 +406,10 @@ class Database
             $sqlWhere[] = "TD.NAME LIKE '%" . $find_doc_name . "%'";
         }
         if ($find_doc_type !== "") {
-            $sqlWhere[] = "TD.TYPE LIKE '%" . $find_doc_type . "%'";
+            $sqlWhere[] = "TD.TYPE = " . $find_doc_type;
         }
         if ($find_doc_status !== "") {
-            $sqlWhere[] = "TD.STATUS LIKE '%" . $find_doc_status . "%'";
+            $sqlWhere[] = "TD.STATUS = " . $find_doc_status;
         }
 
         global $DB;
@@ -421,6 +421,7 @@ class Database
                 trn_docs as TD,
                 trn_docs_property as TDP
             WHERE
+                isnull(TD.CHILD_ID) AND
                 TD.ID = TDP.DOCUMENT_ID AND
                 TDP.VALUE = BU.ID AND
                 TDP.TYPE = 'USER'";
