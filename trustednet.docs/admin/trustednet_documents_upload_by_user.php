@@ -215,6 +215,7 @@ function dirSelectorAct(filename, path, site)
                             <td class="adm-detail-content-cell-r">
                                 <input type="text" name="user_id_<?= $i ?>"
                                        placeholder=""
+                                       autocomplete="off"
                                        size="15" maxlength="255" value="">
                             </td>
 

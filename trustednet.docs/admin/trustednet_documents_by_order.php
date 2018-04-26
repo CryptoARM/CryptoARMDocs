@@ -3,7 +3,7 @@ use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
-$module_id = 'trustednet.docs';
+$module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
 // TODO: Do not show page if module sale is unavailable
 CModule::IncludeModule("sale");
@@ -103,6 +103,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             }
             $i = 0;
             $e = 0;
+            $eventEmailSent = Option::get($module_id, "EVENT_EMAIL_SENT", "");
 
             foreach ($ids as $id) {
 
@@ -123,6 +124,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 );
                 if (CEvent::Send($MAIL_EVENT_ID, $MAIL_SITE_ID, $arEventFields, "N", "", array($link))) {
                     $i++;
+                    if ($eventEmailSent) {
+                        Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
+                    }
                     Docs\Utils::log(array(
                         "action" => "email_sent",
                         "docs" => $doc,
@@ -136,6 +140,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             if ($e > 0) {
                 $message = GetMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . GetMessage("TN_DOCS_MAIL_ERROR_POST");
                 echo "<script>alert('" . $message . "')</script>}}";
+            }
+            // Reload page to show changed order status
+            if ($eventEmailSent) {
+                echo "<script>location.reload()</script>";
             }
             break;
     }
@@ -174,7 +182,6 @@ $lAdmin->AddHeaders(array(
     array(
         "id" => "DOCS",
         "content" => GetMessage("TN_DOCS_COL_DOCS"),
-        "sort" => "DOCS",
         "default" => true,
     ),
 ));
@@ -251,25 +258,6 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= "</tr>";
     }
     $docViewField .= "</table>";
-
-    // docs/status
-    // $html_docs = '';
-    // $array = $docs->getList();
-    // $html_signs = '';
-    // foreach ($array as &$doc) {
-    //     $doc = $doc->getLastDocument();
-    //     $docId = $doc->getId();
-    //     $html_docs .= "<input type='button' value='i' onclick='verify([" . $docId . "])' class='verify_button'/>";
-    //     $html_docs .= '<a class="tn_document" onclick="self.download(' . $docId . ')" data-id="' . $docId . '" >' . $doc->getName() . '</a> <br/><br/>';
-    //     $status = $doc->getStatus();
-    //     $str = "";
-    //     if ($status  == DOC_STATUS_BLOCKED) {
-    //         $str = GetMessage("TN_DOCS_DOC_BLOCKED");
-    //     } else {
-    //         $str = Docs\DocumentsByOrder::getRoleString($doc);
-    //     }
-    //     $html_signs .= $str . '<br/><br/>';
-    // }
 
     $row->AddViewField("ORDER", $orderViewField);
     $row->AddViewField("ORDER_STATUS", $order_status);

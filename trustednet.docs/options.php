@@ -3,7 +3,9 @@ use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
 
 include __DIR__ . "/config.php";
-CModule::IncludeModule(TN_DOCS_MODULE_ID);
+// Include only necessary utility functions from module
+include __DIR__ . "/classes/Utils.php";
+
 $saleModule = IsModuleInstalled("sale");
 if ($saleModule) {
     CModule::IncludeModule("sale");

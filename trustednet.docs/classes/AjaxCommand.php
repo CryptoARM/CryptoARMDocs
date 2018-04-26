@@ -51,7 +51,8 @@ class AjaxCommand
                 } elseif (!$doc->checkFile()) {
                     // Associated file was not found on the disk
                     $docsFileNotFound->add($doc);
-                } elseif ($params["extra"] && !Utils::checkDocByRole($doc, $params["extra"]["role"])) {
+                } elseif ($params["extra"] && !DocumentsByOrder::checkDocByRole($doc, $params["extra"]["role"])) {
+                    // TODO: probably should be moved to DocumentsByOrder class
                     // No need to sign doc based on it ROLES property
                     $docsRoleSigned->add($doc);
                 } else {
@@ -161,8 +162,10 @@ class AjaxCommand
                 $newDoc->setParent($doc);
                 $file = $_FILES["file"];
                 $extra = json_decode($params["extra"], true);
-                // TODO: move documents by order logic in separate functions
-                Utils::roleHandler($newDoc, $extra);
+                // Detect document by order signing
+                if (array_key_exists("role", $extra)) {
+                    DocumentsByOrder::upload($newDoc, $extra);
+                }
                 if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
                     $newDoc->setName($newDoc->getName() . '.sig');
                     $newDoc->setPath($newDoc->getPath() . '.sig');

@@ -51,65 +51,6 @@ class Utils
     }
 
     /**
-     * Handles CLIENT and SELLER signing roles.
-     *
-     * @param object Document $doc
-     * @param string JSON $extra
-     * @return void
-     */
-    public static function roleHandler($doc, $extra = null)
-    {
-        $role = $extra["role"];
-        $props = $doc->getProperties();
-        $roleProp = $props->getItemByType("ROLES");
-        if ($roleProp) {
-            if ($roleProp->getValue() == "CLIENT" && $role == "SELLER") {
-                $roleProp->setValue("BOTH");
-            }
-            if ($roleProp->getValue() == "SELLER" && $role == "CLIENT") {
-                $roleProp->setValue("BOTH");
-            }
-            if ($roleProp->getValue() == "NONE") {
-                if ($extra) {
-                    $roleProp->setValue($role);
-                }
-            }
-        }
-    }
-
-    /**
-     * Filter for documents that don't need to be signed,
-     * based on their ROLES property and EXTRA argument to the sign function.
-     *
-     * @param object Document $doc
-     * @param string JSON $extra
-     * @return boolean
-     */
-    public static function checkDocByRole($doc, $extra)
-    {
-        // TODO: rename function
-        $status = $doc->getProperties()->getItemByType("ROLES");
-        if (!$status) {
-            return true;
-        }
-        $statusValue = $status->getValue();
-        if ($extra == "CLIENT") {
-            if ($statusValue == "SELLER" || $statusValue == "NONE") {
-                return true;
-            } else {
-                return false;
-            }
-        } elseif ($extra == "SELLER") {
-            if ($statusValue == "CLIENT" || $statusValue == "NONE") {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Returns textual representation of document type
      *
      * @param object Document $doc
@@ -131,39 +72,6 @@ class Utils
     {
         $docStatus = $doc->getStatus();
         return GetMessage("TN_DOCS_STATUS_" . $docStatus);
-    }
-
-    /**
-     * Returns textual representation of role property
-     *
-     * @param object Document $doc
-     * @return string
-     */
-    public static function getRoleString($doc)
-    {
-        $state = $doc->getProperties()->getItemByType("ROLES");
-        $str = "";
-        if ($state) {
-            $state_value = $state->getValue();
-            switch ($state_value) {
-                case "CLIENT":
-                    $str = GetMessage("ROLES_CLIENT");
-                    break;
-                case "SELLER":
-                    $str = GetMessage("ROLES_SELLER");
-                    break;
-                case "BOTH":
-                    $str = GetMessage("ROLES_BOTH");
-                    break;
-                case "NONE":
-                    $str = GetMessage("ROLES_NONE");
-                    break;
-                default:
-            }
-        } else {
-            $str = GetMessage("ROLES_NONE");
-        }
-        return $str;
     }
 
     /**

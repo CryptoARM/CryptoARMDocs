@@ -30,7 +30,7 @@ $MESS["TN_DOCS_EVENTS_SIGNED_BY_BOTH"] = "Документ подписан об
 $MESS["TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS"] = "Ждать подписи всех прикрепленных документов";
 $MESS["TN_DOCS_EVENTS_EMAIL_SENT"] = "Письмо с документом отправлено";
 $MESS["TN_DOCS_EVENTS_EMAIL_READ"] = "Письмо с документом прочитано";
-$MESS["TN_DOCS_EVENTS_DO_NOTHING"] = "Ничего не делать";
+$MESS["TN_DOCS_EVENTS_DO_NOTHING"] = "Не изменять";
 
 $MESS["TN_DOCS_EMAIL_HEADING"] = "Настройки рассылки писем с документами по заказам";
 $MESS["TN_DOCS_EMAIL_MAIL_EVENT_ID"] = "Почтовое событие";

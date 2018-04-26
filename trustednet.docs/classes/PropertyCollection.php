@@ -24,7 +24,7 @@ class PropertyCollection extends Collection
      * @param string $type
      * @return Property|null
      */
-    function getItemByType($type)
+    function getPropByType($type)
     {
         $list = $this->getList();
         $res = null;
