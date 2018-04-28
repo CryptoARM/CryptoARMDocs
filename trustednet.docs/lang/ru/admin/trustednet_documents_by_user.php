@@ -1,6 +1,6 @@
 <?php
 
-$MESS["TN_DOCS_TITLE"] = "Подписание документов по пользователям";
+$MESS["TN_DOCS_TITLE"] = "Подписание документов пользователей";
 
 $MESS["TN_DOCS_NAV_TEXT"] = "Пользователи";
 
@@ -29,5 +29,5 @@ $MESS["TN_DOCS_ACT_REMOVE"] = "Удалить";
 
 $MESS["TN_DOCS_DOC_STATUS"] = "Статус:";
 
-$MESS["TN_DOCS_ADD_DOC_BY_USER"] = "Добавить документы по пользователям";
+$MESS["TN_DOCS_ADD_DOC_BY_USER"] = "Добавить документы пользователей";
 
