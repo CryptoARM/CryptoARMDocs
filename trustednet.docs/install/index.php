@@ -1,5 +1,7 @@
 <?php
 
+use Bitrix\Main\Config\Option;
+
 IncludeModuleLangFile(__FILE__);
 
 Class trustednet_docs extends CModule
@@ -63,6 +65,7 @@ Class trustednet_docs extends CModule
             }
             $this->InstallFiles();
             $this->CreateDocsDir();
+            $this->InstallModuleOptions();
             $this->InstallDB();
             RegisterModule($this->MODULE_ID);
         }
@@ -104,6 +107,13 @@ Class trustednet_docs extends CModule
         $docsDir = $_SERVER["DOCUMENT_ROOT"] . "/docs/";
         if (!file_exists($docsDir)) {
             mkdir($docsDir);
+        }
+    }
+
+    function InstallModuleOptions()
+    {
+        if (!Option::get("trustednet.docs", "DOCUMENTS_DIR", "")) {
+            Option::set("trustednet.docs", "DOCUMENTS_DIR", "/docs/");
         }
     }
 
