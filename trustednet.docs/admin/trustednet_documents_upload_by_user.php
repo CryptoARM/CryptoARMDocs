@@ -184,16 +184,18 @@ function dirSelectorAct(filename, path, site)
                 <input type="hidden" name="nums" value="5">
                 <table id="bx-upload-tbl">
                     <tr class="heading">
-                        <td></td>
 
-                        <td style="text-align: left!important;">
-                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_DIR") ?>
-                        </td>
+                        <td></td>
 
                         <td style="text-align: left!important;">
                             <?= GetMessage("TN_DOCS_UPLOAD_FILE_USER_ID") ?>
                             <span class="required"><sup>*</sup></span>
                         </td>
+
+                        <td style="text-align: left!important;">
+                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_DIR") ?>
+                        </td>
+
                     </tr>
                     <? for ($i = 1; $i <= 5; $i++): ?>
                         <tr>
@@ -203,20 +205,19 @@ function dirSelectorAct(filename, path, site)
                                        maxlength="255" value="">
                             </td>
 
-                            <td class="adm-detail-content-cell-l; white-space: nowrap;">
-                                <div style="white-space: nowrap;">
-                                    <input class="adm_input" id="dir_<?= $i ?>" name="dir_<?= $i ?>"
-                                           value="<?= $DOCUMENTS_DIR ?>" style="width:220px;opacity:1;" type="text" readonly/>
-                                    <input id="dir_but_<?= $i ?>" value="..." title=""
-                                           onclick="dirSelectorWrapper(<?= $i ?>)" type="button">
-                                </div>
-                            </td>
-
                             <td class="adm-detail-content-cell-r">
                                 <input type="text" name="user_id_<?= $i ?>"
                                        placeholder=""
                                        autocomplete="off"
                                        size="15" maxlength="255" value="">
+                            </td>
+
+                            <td class="adm-detail-content-cell-l; white-space: nowrap;">
+                                <div style="white-space: nowrap;">
+                                    <input class="adm_input" id="dir_<?= $i ?>" name="dir_<?= $i ?>"
+                                           value="<?= $DOCUMENTS_DIR ?>" style="width:220px;opacity:0.7;cursor:pointer;"
+                                           onclick="dirSelectorWrapper(<?= $i ?>)" type="text" readonly/>
+                                </div>
                             </td>
 
                         </tr>
