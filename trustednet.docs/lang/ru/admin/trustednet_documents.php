@@ -27,5 +27,9 @@ $MESS["TN_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TN_DOCS_ACT_UNBLOCK"] = "Разблокировать";
 $MESS["TN_DOCS_ACT_REMOVE"] = "Удалить";
 
+// Hover titles
+$MESS["TN_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
+$MESS["TN_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
+
 $MESS["TN_DOCS_ADD_DOC"] = "Добавить документы";
 

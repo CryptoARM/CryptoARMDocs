@@ -117,8 +117,10 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $doc = Docs\Database::getDocumentById($f_ID);
     $docId = $doc->getId();
 
-    $docName = "<input type='button' value='i' onclick='verify([" . $docId . "])' class='verify_button'/>";
-    $docName .= '<a class="tn_document" onclick="self.download(' . $docId . ', true)" >' . $doc->getName() . '</a>';
+    $docName = "<input type='button' value='i' onclick='verify([";
+    $docName .= $docId . "])' class='verify_button' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+    $docName .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+    $docName .= $docId . ", true)' >" . $doc->getName() . "</a>";
 
     if ($doc->getSigners() == "") {
         $signers = array();
