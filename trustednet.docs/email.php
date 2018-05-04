@@ -30,7 +30,6 @@ if ($orderId) {
             Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailRead);
             $eventEmailRead = "";
         }
-
     }
 }
 

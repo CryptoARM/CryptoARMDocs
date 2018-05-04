@@ -3,7 +3,7 @@ use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
-echo SITE_SERVER_NAME;
+
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
 // TODO: Do not show page if module sale is unavailable
@@ -164,7 +164,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $message = GetMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . GetMessage("TN_DOCS_MAIL_ERROR_POST");
                 echo "<script>alert('" . $message . "')</script>";
             }
-            // Reload page to show changes
+            // Reload page to show changed order status
             if ($eventEmailSent) {
                 echo "<script>location.reload()</script>";
             }
