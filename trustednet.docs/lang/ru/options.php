@@ -16,10 +16,10 @@ $MESS["TN_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY"] = "Нет доступа к д�
 $MESS["TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY"] = "Нельзя сохранять файлы внутри системной директории.";
 
 $MESS["TN_DOCS_LICENSE_ENABLE"] = "Включить предоставление пользователям одноразовых лицензий на подпись документов";
-$MESS["TN_DOCS_LICENSE_USERNAME"] = "Имя пользователя на сервисе TrustedNet";
-$MESS["TN_DOCS_LICENSE_PASSWORD"] = "Пароль пользователя на сервисе TrustedNet";
-$MESS["TN_DOCS_LICENSE_CLIENT_ID"] = "ID приложения TrustedNet";
-$MESS["TN_DOCS_LICENSE_SECRET"] = "Пароль приложения TrustedNet";
+$MESS["TN_DOCS_LICENSE_TN_USERNAME"] = "Имя пользователя на сервисе TrustedNet";
+$MESS["TN_DOCS_LICENSE_TN_PASSWORD"] = "Пароль пользователя на сервисе TrustedNet";
+$MESS["TN_DOCS_LICENSE_TN_CLIENT_ID"] = "ID приложения TrustedNet";
+$MESS["TN_DOCS_LICENSE_TN_CLIENT_SECRET"] = "Пароль приложения TrustedNet";
 $MESS["TN_DOCS_LICENSE_NO_EMPTY_FIELDS"] = "Заполните все поля чтобы влючить предоставление лицензий.";
 
 $MESS["TN_DOCS_EVENTS_HEADING"] = "Настройки автоматического изменения статуса заказа";

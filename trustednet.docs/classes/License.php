@@ -16,10 +16,10 @@ class License
             "message" => "Unknown error in License::GetAccessToken",
             "accessToken" => "",
         );
-        $username = Option::get(TN_DOCS_MODULE_ID, "USERNAME", "");
-        $password = Option::get(TN_DOCS_MODULE_ID, "PASSWORD", "");
-        $client = Option::get(TN_DOCS_MODULE_ID, "CLIENT_ID", "");
-        $secret = Option::get(TN_DOCS_MODULE_ID, "SECRET", "");
+        $username = Option::get(TN_DOCS_MODULE_ID, "TN_USERNAME", "");
+        $password = Option::get(TN_DOCS_MODULE_ID, "TN_PASSWORD", "");
+        $id = Option::get(TN_DOCS_MODULE_ID, "TN_CLIENT_ID", "");
+        $secret = Option::get(TN_DOCS_MODULE_ID, "TN_CLIENT_SECRET", "");
 
         $curl = curl_init();
         curl_setopt_array(
@@ -34,7 +34,7 @@ class License
                 CURLOPT_CUSTOMREQUEST => "POST",
                 CURLOPT_POSTFIELDS => "grant_type=password&username=" . $username . "&password=" . $password,
                 CURLOPT_HTTPHEADER => ["content-type: application/x-www-form-urlencoded"],
-                CURLOPT_USERPWD => $client . ":" . $secret,
+                CURLOPT_USERPWD => $id . ":" . $secret,
             )
         );
 

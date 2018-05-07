@@ -67,7 +67,7 @@ function CheckDocumentsDir($dir) {
 
 $moduleOptions = array(
     "DOCUMENTS_DIR",
-    "PROVIDE_LICENSE", "USERNAME", "PASSWORD", "CLIENT_ID", "SECRET",
+    "PROVIDE_LICENSE", "TN_USERNAME", "TN_PASSWORD", "TN_CLIENT_ID", "TN_CLIENT_SECRET",
     "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
     "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
     "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ",
@@ -98,16 +98,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         }
         UpdateOption("PROVIDE_LICENSE");
         if (isset($_POST["PROVIDE_LICENSE"])) {
-            if (!$_POST["USERNAME"] ||
-                !$_POST["PASSWORD"] ||
-                !$_POST["CLIENT_ID"] ||
-                !$_POST["SECRET"]) {
+            if (!$_POST["TN_USERNAME"] ||
+                !$_POST["TN_PASSWORD"] ||
+                !$_POST["TN_CLIENT_ID"] ||
+                !$_POST["TN_CLIENT_SECRET"]) {
                 CAdminMessage::ShowMessage(GetMessage("TN_DOCS_LICENSE_NO_EMPTY_FIELDS"));
             } else {
-                UpdateOption("USERNAME");
-                UpdateOption("PASSWORD");
-                UpdateOption("CLIENT_ID");
-                UpdateOption("SECRET");
+                UpdateOption("TN_USERNAME");
+                UpdateOption("TN_PASSWORD");
+                UpdateOption("TN_CLIENT_ID");
+                UpdateOption("TN_CLIENT_SECRET");
             }
         }
         UpdateOption("EVENT_SIGNED_BY_CLIENT");
@@ -173,50 +173,50 @@ $tabControl->Begin();
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_USERNAME") ?> </td>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_USERNAME") ?> </td>
         <td>
-            <input name="USERNAME"
-                   id="USERNAME"
+            <input name="TN_USERNAME"
+                   id="TN_USERNAME"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
                    type="text"
-                   value="<?= $USERNAME ?>"/>
+                   value="<?= $TN_USERNAME ?>"/>
         </td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_PASSWORD") ?> </td>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_PASSWORD") ?> </td>
         <td>
-            <input name="PASSWORD"
-                   id="PASSWORD"
+            <input name="TN_PASSWORD"
+                   id="TN_PASSWORD"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
                    type="password"
-                   value="<?= $PASSWORD ?>"/>
+                   value="<?= $TN_PASSWORD ?>"/>
         </td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_CLIENT_ID") ?> </td>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_CLIENT_ID") ?> </td>
         <td>
-            <input name="CLIENT_ID"
-                   id="CLIENT_ID"
+            <input name="TN_CLIENT_ID"
+                   id="TN_CLIENT_ID"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
                    type="text"
-                   value="<?= $CLIENT_ID ?>"/>
+                   value="<?= $TN_CLIENT_ID ?>"/>
         </td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_SECRET") ?> </td>
+        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_CLIENT_SECRET") ?> </td>
         <td>
-            <input name="SECRET"
-                   id="SECRET"
+            <input name="TN_CLIENT_SECRET"
+                   id="TN_CLIENT_SECRET"
                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                    style="width: 300px;"
                    type="password"
-                   value="<?= $SECRET ?>"/>
+                   value="<?= $TN_CLIENT_SECRET ?>"/>
         </td>
     </tr>
 
@@ -474,10 +474,10 @@ $tabControl->Begin();
 <script>
 
 function toggleInputs (state) {
-    document.getElementById("USERNAME").disabled = state;
-    document.getElementById("PASSWORD").disabled = state;
-    document.getElementById("CLIENT_ID").disabled = state;
-    document.getElementById("SECRET").disabled = state;
+    document.getElementById("TN_USERNAME").disabled = state;
+    document.getElementById("TN_PASSWORD").disabled = state;
+    document.getElementById("TN_CLIENT_ID").disabled = state;
+    document.getElementById("TN_CLIENT_SECRET").disabled = state;
 }
 
 </script>

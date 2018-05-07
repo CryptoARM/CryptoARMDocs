@@ -127,6 +127,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                         $defaultSite = $site;
                     }
                 }
+                // TODO: use $_SERVER["HTTP_HOST"] instead of site["SERVER_NAME"]?
                 $arEventFields = array(
                     "EMAIL" => $user_email,
                     "ORDER_USER" => $user_name,
