@@ -52,7 +52,7 @@ class AjaxCommand
                     // Associated file was not found on the disk
                     $docsFileNotFound->add($doc);
                 } elseif ($params["extra"] && !DocumentsByOrder::checkDocByRole($doc, $params["extra"]["role"])) {
-                    // TODO: probably should be moved to DocumentsByOrder class
+                    // TODO: probably should be removed
                     // No need to sign doc based on it ROLES property
                     $docsRoleSigned->add($doc);
                 } else {

@@ -148,16 +148,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
-    // TODO: use Utils::getTypeString instead
     $docType = $doc->getType();
-    $docTypeString = GetMessage("TN_DOCS_TYPE_" . $docType);
+    $docTypeString = Docs\Utils::GetTypeString($doc);
 
     $docStatus = $doc->getStatus();
     if ($docStatus !== DOC_STATUS_NONE) {
         $docTypeString .=
             "<br>" .
             GetMessage("TN_DOCS_STATUS") .
-            GetMessage("TN_DOCS_STATUS_" . $docStatus);
+            Docs\Utils::GetStatusString($doc);
     }
 
     $arRes = array(

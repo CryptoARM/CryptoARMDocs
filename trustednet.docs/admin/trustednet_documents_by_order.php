@@ -6,7 +6,13 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_ad
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
-// TODO: Do not show page if module sale is unavailable
+
+// Do not show page if module sale is unavailable
+if (!IsModuleInstalled("sale")) {
+    echo "SALE_MODULE_NOT_INSTALLED";
+    require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
+    die();
+}
 CModule::IncludeModule("sale");
 
 IncludeModuleLangFile(__FILE__);

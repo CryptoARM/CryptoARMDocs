@@ -9,6 +9,13 @@ if (!$USER->CanDoOperation('fileman_upload_files')) {
 }
 
 CModule::IncludeModule("fileman");
+
+// Do not show page if module sale is unavailable
+if (!IsModuleInstalled("sale")) {
+    echo "SALE_MODULE_NOT_INSTALLED";
+    require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
+    die();
+}
 CModule::IncludeModule("sale");
 
 $module_id = "trustednet.docs";
