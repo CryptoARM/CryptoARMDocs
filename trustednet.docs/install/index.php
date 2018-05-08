@@ -68,6 +68,7 @@ Class trustednet_docs extends CModule
             $this->InstallModuleOptions();
             $this->InstallDB();
             $this->InstallMailEvent();
+            // TODO: switch to D7 ModuleManager::RegisterModule
             RegisterModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -172,10 +173,15 @@ Class trustednet_docs extends CModule
             "DESCRIPTION" => GetMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION")
         ));
         $obEventMessage = new CEventMessage;
+        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+        $siteIds = array();
+        while ($site = $sites->Fetch()) {
+            $siteIds[] = $site["ID"];
+        }
         $obEventMessage->add(array(
             "ACTIVE" => "Y",
             "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
-            "LID" => array("s1", "4d"),
+            "LID" => $siteIds,
             "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
             "EMAIL_TO" => "#EMAIL#",
             "SUBJECT" => GetMessage("TN_DOCS_MAIL_TEMPLATE_SUBJECT"),
