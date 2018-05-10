@@ -204,21 +204,21 @@ class DocumentsByOrder
             $state_value = $state->getValue();
             switch ($state_value) {
                 case "CLIENT":
-                    $str = Loc::getMessage("ROLES_CLIENT");
+                    $str = Loc::getMessage("TN_DOCS_ROLES_CLIENT");
                     break;
                 case "SELLER":
-                    $str = Loc::getMessage("ROLES_SELLER");
+                    $str = Loc::getMessage("TN_DOCS_ROLES_SELLER");
                     break;
                 case "BOTH":
-                    $str = Loc::getMessage("ROLES_BOTH");
+                    $str = Loc::getMessage("TN_DOCS_ROLES_BOTH");
                     break;
                 case "NONE":
-                    $str = Loc::getMessage("ROLES_NONE");
+                    $str = Loc::getMessage("TN_DOCS_ROLES_NONE");
                     break;
                 default:
             }
         } else {
-            $str = Loc::getMessage("ROLES_NONE");
+            $str = Loc::getMessage("TN_DOCS_ROLES_NONE");
         }
         return $str;
     }

@@ -1,4 +1,5 @@
 <?php
+
 $MESS["TN_DOCS_INSTALL_TITLE"] = "Установка модуля TrustedNet Sign";
 $MESS["TN_DOCS_MISSING_FILES"] = "Некоторые файлы не были обнаружены в хранилище.";
 $MESS["TN_DOCS_MISSING_FILES_LIST"] = "При продолжении установки модуля записи о следующих файлах будут удалены: ";
