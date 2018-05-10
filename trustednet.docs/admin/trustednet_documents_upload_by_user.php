@@ -1,18 +1,19 @@
 <?php
+use Bitrix\Main\Localization\Loc;
 use TrustedNet\Docs;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
 
 if (!$USER->CanDoOperation('fileman_upload_files')) {
-    $APPLICATION->AuthForm(GetMessage("ACCESS_DENIED"));
+    $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
 }
 
 CModule::IncludeModule("fileman");
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
 $addUrl = 'lang=' . LANGUAGE_ID . ($logical == "Y" ? '&logical=Y' : '');
 
@@ -34,7 +35,7 @@ $bCan = false;
 if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
     // Check permissions
     if (!$USER->CanDoFileOperation('fm_upload_file', $arPath)) {
-        $strWarning = GetMessage("ACCESS_DENIED");
+        $strWarning = Loc::getMessage("ACCESS_DENIED");
     } else {
         $bCan = true;
         $nums = IntVal($nums);
@@ -60,21 +61,21 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
 
                 $pathto = Rel2Abs($uniqpath, $filename);
                 if (!$USER->CanDoFileOperation('fm_upload_file', Array($site, $pathto)))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_ACCESS_DENIED") . " \"" . $pathto . "\"\n";
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_ACCESS_DENIED") . " \"" . $pathto . "\"\n";
                 elseif ($arFile["error"] == 1 || $arFile["error"] == 2)
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_SIZE_ERROR", Array('#FILE_NAME#' => $pathto)) . "\n";
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_SIZE_ERROR", Array('#FILE_NAME#' => $pathto)) . "\n";
                 elseif (($mess = CFileMan::CheckFileName(str_replace('/', '', $pathto))) !== true)
                     $strWarning .= $mess . ".\n";
                 elseif ($io->FileExists($DOC_ROOT . $pathto))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_FILE_EXISTS1") . " \"" . $pathto . "\" " . GetMessage("TN_DOCS_UPLOAD_FILE_EXISTS2") . ".\n";
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_FILE_EXISTS1") . " \"" . $pathto . "\" " . Loc::getMessage("TN_DOCS_UPLOAD_FILE_EXISTS2") . ".\n";
                 elseif (!$USER->IsAdmin() && (HasScriptExtension($pathto) || substr(CFileman::GetFileName($pathto), 0, 1) == "."))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_PHPERROR") . " \"" . $pathto . "\".\n";
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_PHPERROR") . " \"" . $pathto . "\".\n";
                 elseif (!Docs\Utils::propertyNumericalIdValidation($arUserId))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_USER_ID") . "\n";
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_INVALID_USER_ID") . "\n";
                 elseif (!CUser::GetByID((int)$arUserId)->Fetch())
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_USER_ID_DOESNT_EXIST");
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_USER_ID_DOESNT_EXIST");
                 elseif (preg_match("/^\/bitrix\/.*/", $pathto))
-                    $strWarning .= GetMessage("TN_DOCS_UPLOAD_INVALID_DIR");
+                    $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_INVALID_DIR");
                 else {
                     $bQuota = true;
                     if (COption::GetOptionInt("main", "disk_space") > 0) {
@@ -87,8 +88,8 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
 
                     if ($bQuota) {
                         if (!$io->Copy($arFile["tmp_name"], $DOC_ROOT . $pathto)) {
-                            $strWarning .= GetMessage("TN_DOCS_UPLOAD_FILE_CREATE_ERROR") . " \"" . $pathto . "\". ";
-                            $strWarning .= GetMessage("TN_DOCS_UPLOAD_FILE_CREATE_ERROR_NO_ACCESS") . "\n";
+                            $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_FILE_CREATE_ERROR") . " \"" . $pathto . "\". ";
+                            $strWarning .= Loc::getMessage("TN_DOCS_UPLOAD_FILE_CREATE_ERROR_NO_ACCESS") . "\n";
                         } else {
                             if (COption::GetOptionInt("main", "disk_space") > 0)
                                 CDiskQuota::updateDiskQuota("file", $size, "copy");
@@ -113,7 +114,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
     }
 }
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_UPLOAD_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_UPLOAD_TITLE"));
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php";
 ?>
 
@@ -173,7 +174,7 @@ function dirSelectorAct(filename, path, site)
         <?= bitrix_sessid_post(); ?>
 
         <?
-        $aTabs = array(array("DIV" => "edit1", "TAB" => GetMessage("TN_DOCS_UPLOAD_TAB_TITLE"), "ICON" => "fileman", "TITLE" => ''),);
+        $aTabs = array(array("DIV" => "edit1", "TAB" => Loc::getMessage("TN_DOCS_UPLOAD_TAB_TITLE"), "ICON" => "fileman", "TITLE" => ''),);
         $tabControl = new CAdminTabControl("tabControl", $aTabs, true, true);
         $tabControl->Begin();
         $tabControl->BeginNextTab();
@@ -188,12 +189,12 @@ function dirSelectorAct(filename, path, site)
                         <td></td>
 
                         <td style="text-align: left!important;">
-                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_USER_ID") ?>
+                            <?= Loc::getMessage("TN_DOCS_UPLOAD_FILE_USER_ID") ?>
                             <span class="required"><sup>*</sup></span>
                         </td>
 
                         <td style="text-align: left!important;">
-                            <?= GetMessage("TN_DOCS_UPLOAD_FILE_DIR") ?>
+                            <?= Loc::getMessage("TN_DOCS_UPLOAD_FILE_DIR") ?>
                         </td>
 
                     </tr>
@@ -240,7 +241,7 @@ function dirSelectorAct(filename, path, site)
     </form>
 
     <?echo BeginNote();?>
-    <span class="required"><sup>*</sup></span><?echo GetMessage("TN_DOCS_UPLOAD_USER_ID_NOTE")?>
+    <span class="required"><sup>*</sup></span><?echo Loc::getMessage("TN_DOCS_UPLOAD_USER_ID_NOTE")?>
     <?echo EndNote();?>
 
 <? endif; ?>

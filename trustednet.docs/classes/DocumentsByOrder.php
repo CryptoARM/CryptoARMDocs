@@ -1,7 +1,10 @@
 <?php
 namespace TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 use Bitrix\Sale;
+
+Loc::loadMessages(__FILE__);
 
 \Bitrix\Main\Loader::includeModule("sale");
 
@@ -201,21 +204,21 @@ class DocumentsByOrder
             $state_value = $state->getValue();
             switch ($state_value) {
                 case "CLIENT":
-                    $str = GetMessage("ROLES_CLIENT");
+                    $str = Loc::getMessage("ROLES_CLIENT");
                     break;
                 case "SELLER":
-                    $str = GetMessage("ROLES_SELLER");
+                    $str = Loc::getMessage("ROLES_SELLER");
                     break;
                 case "BOTH":
-                    $str = GetMessage("ROLES_BOTH");
+                    $str = Loc::getMessage("ROLES_BOTH");
                     break;
                 case "NONE":
-                    $str = GetMessage("ROLES_NONE");
+                    $str = Loc::getMessage("ROLES_NONE");
                     break;
                 default:
             }
         } else {
-            $str = GetMessage("ROLES_NONE");
+            $str = Loc::getMessage("ROLES_NONE");
         }
         return $str;
     }

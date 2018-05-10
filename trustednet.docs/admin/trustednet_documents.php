@@ -1,11 +1,12 @@
 <?php
+use Bitrix\Main\Localization\Loc;
 use TrustedNet\Docs;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
@@ -83,30 +84,30 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 $docs = Docs\Database::getDocumentIdsByFilter(array($by => $order), $arFilter);
 $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
-$lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_TITLE")));
+$lAdmin->NavText($rsData->GetNavPrint(Loc::getMessage("TN_DOCS_TITLE")));
 
 $lAdmin->AddHeaders(array(
     array(
         "id" => "DOC",
-        "content" => GetMessage("TN_DOCS_COL_ID"),
+        "content" => Loc::getMessage("TN_DOCS_COL_ID"),
         "sort" => "DOC",
         "default" => true
     ),
     array(
         "id" => "FILE_NAME",
-        "content" => GetMessage("TN_DOCS_COL_FILENAME"),
+        "content" => Loc::getMessage("TN_DOCS_COL_FILENAME"),
         "sort" => "FILE_NAME",
         "default" => true
     ),
     array(
         "id" => "SIGN",
-        "content" => GetMessage("TN_DOCS_COL_SIGN"),
+        "content" => Loc::getMessage("TN_DOCS_COL_SIGN"),
         "sort" => "SIGN",
         "default" => true
     ),
     array(
         "id" => "TYPE",
-        "content" => GetMessage("TN_DOCS_COL_TYPE"),
+        "content" => Loc::getMessage("TN_DOCS_COL_TYPE"),
         "sort" => "TYPE",
         "default" => true
     ),
@@ -118,8 +119,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docId = $doc->getId();
 
     $docName = "<input type='button' value='i' onclick='verify([";
-    $docName .= $docId . "])' class='verify_button' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
-    $docName .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+    $docName .= $docId . "])' class='verify_button' title='" . Loc::getMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+    $docName .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
     $docName .= $docId . ", true)' >" . $doc->getName() . "</a>";
 
     if ($doc->getSigners() == "") {
@@ -131,15 +132,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     foreach ($signers as $key => $signer) {
 
-        $signingTime = GetMessage("TN_DOCS_SIGN_TIME")
+        $signingTime = Loc::getMessage("TN_DOCS_SIGN_TIME")
             . date("d:m:o H:i", round($signer[signingTime] / 1000));
 
-        $subjectName = GetMessage("TN_DOCS_SIGN_NAME");
+        $subjectName = Loc::getMessage("TN_DOCS_SIGN_NAME");
         if ($signer[subject_name]) $subjectName .= $signer[subject_name];
         else $subjectName .= $signer[subjectFriendlyName];
 
         if ($signer[subjectName][O])
-            $subjectCompany = GetMessage("TN_DOCS_SIGN_ORG") . $signer[subjectName][O];
+            $subjectCompany = Loc::getMessage("TN_DOCS_SIGN_ORG") . $signer[subjectName][O];
 
         $signersString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectCompany . "</td></tr>";
     }
@@ -155,7 +156,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     if ($docStatus !== DOC_STATUS_NONE) {
         $docTypeString .=
             "<br>" .
-            GetMessage("TN_DOCS_STATUS") .
+            Loc::getMessage("TN_DOCS_STATUS") .
             Docs\Utils::GetStatusString($doc);
     }
 
@@ -181,7 +182,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $arActions[] = array(
             "ICON" => "edit",
             "DEFAULT" => true,
-            "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
+            "TEXT" => Loc::getMessage("TN_DOCS_ACT_SIGN"),
             "ACTION" => "sign(" . json_encode($arId) . ")"
         );
         $arActions[] = array("SEPARATOR" => true);
@@ -192,7 +193,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $arActions[] = array(
             "ICON" => "access",
             "DEFAULT" => false,
-            "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+            "TEXT" => Loc::getMessage("TN_DOCS_ACT_UNBLOCK"),
             "ACTION" => "unblock(" . json_encode($arId) . ")"
         );
         $arActions[] = array("SEPARATOR" => true);
@@ -201,7 +202,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
-        "TEXT" => GetMessage("TN_DOCS_ACT_REMOVE"),
+        "TEXT" => Loc::getMessage("TN_DOCS_ACT_REMOVE"),
         "ACTION" => "remove(" . json_encode($arId) . ")"
     );
 
@@ -217,29 +218,29 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
 $lAdmin->AddFooter(array(
     array(
-        "title" => GetMessage("MAIN_ADMIN_LIST_SELECTED"),
+        "title" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
         "value" => $rsData->SelectedRowsCount()
     ),
     array(
         "counter" => true,
-        "title" => GetMessage("MAIN_ADMIN_LIST_CHECKED"),
+        "title" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
         "value" => "0"
     )
 )
 );
 
 $lAdmin->AddGroupActionTable(Array(
-    "sign" => GetMessage("TN_DOCS_ACT_SIGN"),
-    "unblock" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
-    "remove" => GetMessage("TN_DOCS_ACT_REMOVE"),
+    "sign" => Loc::getMessage("TN_DOCS_ACT_SIGN"),
+    "unblock" => Loc::getMessage("TN_DOCS_ACT_UNBLOCK"),
+    "remove" => Loc::getMessage("TN_DOCS_ACT_REMOVE"),
 )
 );
 
 $contextMenu = array(
     array(
         "ICON" => "btn_new",
-        "TEXT" => GetMessage("TN_DOCS_ADD_DOC"),
-        "TITLE" => GetMessage("TN_DOCS_ADD_DOC"),
+        "TEXT" => Loc::getMessage("TN_DOCS_ADD_DOC"),
+        "TITLE" => Loc::getMessage("TN_DOCS_ADD_DOC"),
         "LINK" => "trustednet_documents_upload.php?lang=ru",
     )
 );
@@ -248,17 +249,17 @@ $lAdmin->AddAdminContextMenu($contextMenu);
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 $oFilter = new CAdminFilter($sTableID . "_filter", array(
-    GetMessage("TN_DOCS_COL_ID"),
-    GetMessage("TN_DOCS_COL_FILENAME"),
-    GetMessage("TN_DOCS_COL_SIGN"),
-    GetMessage("TN_DOCS_COL_TYPE"),
-    GetMessage("TN_DOCS_COL_STATUS")
+    Loc::getMessage("TN_DOCS_COL_ID"),
+    Loc::getMessage("TN_DOCS_COL_FILENAME"),
+    Loc::getMessage("TN_DOCS_COL_SIGN"),
+    Loc::getMessage("TN_DOCS_COL_TYPE"),
+    Loc::getMessage("TN_DOCS_COL_STATUS")
 ));
 ?>
 
@@ -267,22 +268,22 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
     <?php $oFilter->Begin(); ?>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_COL_ID") . ":" ?></td>
+        <td> <?= Loc::getMessage("TN_DOCS_COL_ID") . ":" ?></td>
         <td><input type="text" name="find_docId" size="47" value="<?= htmlspecialchars($find_docId) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_COL_FILENAME") . ":" ?></td>
+        <td> <?= Loc::getMessage("TN_DOCS_COL_FILENAME") . ":" ?></td>
         <td><input type="text" name="find_fileName" size="47" value="<?= htmlspecialchars($find_fileName) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_COL_SIGN") . ":" ?></td>
+        <td> <?= Loc::getMessage("TN_DOCS_COL_SIGN") . ":" ?></td>
         <td><input type="text" name="find_signInfo" size="47" value="<?= htmlspecialchars($find_signInfo) ?>"></td>
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_COL_TYPE") . ":" ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_COL_TYPE") . ":" ?> </td>
         <td>
             <?php
             $arr = array(
@@ -293,16 +294,16 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
                 ),
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_TYPE_" . DOC_TYPE_FILE),
-                    GetMessage("TN_DOCS_TYPE_" . DOC_TYPE_SIGNED_FILE),
+                    Loc::getMessage("TN_DOCS_TYPE_" . DOC_TYPE_FILE),
+                    Loc::getMessage("TN_DOCS_TYPE_" . DOC_TYPE_SIGNED_FILE),
                 ),
             );
-            echo SelectBoxFromArray("find_type", $arr, $find_type, GetMessage("POST_ALL"), "");
+            echo SelectBoxFromArray("find_type", $arr, $find_type, Loc::getMessage("POST_ALL"), "");
             ?>
         </td>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_COL_STATUS") . ":" ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_COL_STATUS") . ":" ?> </td>
         <td>
             <?php
             $arr = array(
@@ -314,12 +315,12 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
                 ),
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_BLOCKED),
-                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_CANCEL),
-                    GetMessage("TN_DOCS_STATUS_" . DOC_STATUS_ERROR),
+                    Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_BLOCKED),
+                    Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_CANCEL),
+                    Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_ERROR),
                 ),
             );
-            echo SelectBoxFromArray("find_status", $arr, $find_status, GetMessage("POST_ALL"), "");
+            echo SelectBoxFromArray("find_status", $arr, $find_status, Loc::getMessage("POST_ALL"), "");
             ?>
         </td>
     </tr>

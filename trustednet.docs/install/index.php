@@ -1,8 +1,8 @@
 <?php
-
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
 Class trustednet_docs extends CModule
 {
@@ -19,12 +19,12 @@ Class trustednet_docs extends CModule
     {
         $arModuleVersion = array();
         include __DIR__ . "/version.php";
-        $this->MODULE_NAME = GetMessage("TN_DOCS_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = GetMessage("TN_DOCS_MODULE_DESCRIPTION");
+        $this->MODULE_NAME = Loc::getMessage("TN_DOCS_MODULE_NAME");
+        $this->MODULE_DESCRIPTION = Loc::getMessage("TN_DOCS_MODULE_DESCRIPTION");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->PARTNER_NAME = GetMessage("TN_DOCS_PARTNER_NAME");
-        $this->PARTNER_URI = GetMessage("TN_DOCS_PARTNER_URI");
+        $this->PARTNER_NAME = Loc::getMessage("TN_DOCS_PARTNER_NAME");
+        $this->PARTNER_URI = Loc::getMessage("TN_DOCS_PARTNER_URI");
     }
 
     function DoInstall()
@@ -33,24 +33,24 @@ Class trustednet_docs extends CModule
 
         $step = intval($step);
         $continue = true;
-        if ($_REQUEST["choice"] == GetMessage("TN_DOCS_CANCEL_INSTALL")) {
+        if ($_REQUEST["choice"] == Loc::getMessage("TN_DOCS_CANCEL_INSTALL")) {
             $continue = false;
         }
         if ($step < 2 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_INSTALL_TITLE"),
+                Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step1.php"
             );
         }
         if ($step == 2 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_INSTALL_TITLE"),
+                Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step2.php"
             );
         }
         if ($step == 3 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_INSTALL_TITLE"),
+                Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step3.php"
             );
         }
@@ -73,7 +73,7 @@ Class trustednet_docs extends CModule
         }
         if (!$continue) {
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_INSTALL_TITLE"),
+                Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step4.php"
             );
         }
@@ -169,8 +169,8 @@ Class trustednet_docs extends CModule
         $obEventType->add(array(
             "LID" => "ru",
             "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
-            "NAME" => GetMessage("TN_DOCS_MAIL_EVENT_NAME"),
-            "DESCRIPTION" => GetMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION")
+            "NAME" => Loc::getMessage("TN_DOCS_MAIL_EVENT_NAME"),
+            "DESCRIPTION" => Loc::getMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION")
         ));
         $obEventMessage = new CEventMessage;
         $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
@@ -184,9 +184,9 @@ Class trustednet_docs extends CModule
             "LID" => $siteIds,
             "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
             "EMAIL_TO" => "#EMAIL#",
-            "SUBJECT" => GetMessage("TN_DOCS_MAIL_TEMPLATE_SUBJECT"),
+            "SUBJECT" => Loc::getMessage("TN_DOCS_MAIL_TEMPLATE_SUBJECT"),
             "BODY_TYPE" => "html",
-            "MESSAGE" => GetMessage("TN_DOCS_MAIL_TEMPLATE_BODY"),
+            "MESSAGE" => Loc::getMessage("TN_DOCS_MAIL_TEMPLATE_BODY"),
         ));
     }
 
@@ -197,7 +197,7 @@ Class trustednet_docs extends CModule
         $step = intval($step);
         if ($step < 2) {
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_UNINSTALL_TITLE"),
+                Loc::getMessage("MOD_UNINSTALL_TITLE"),
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep1.php"
             );
         }
@@ -210,7 +210,7 @@ Class trustednet_docs extends CModule
             $this->UnInstallMailEvent();
             UnRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
-                GetMessage("MOD_UNINSTALL_TITLE"),
+                Loc::getMessage("MOD_UNINSTALL_TITLE"),
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep2.php"
             );
         }

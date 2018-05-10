@@ -1,5 +1,8 @@
 <?php
 namespace TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
+
+Loc::loadMessages(__FILE__);
 
 /**
  * Various utility functions
@@ -59,7 +62,7 @@ class Utils
     public static function getTypeString($doc)
     {
         $docType = $doc->getType();
-        return GetMessage("TN_DOCS_TYPE_" . $docType);
+        return Loc::getMessage("TN_DOCS_TYPE_" . $docType);
     }
 
     /**
@@ -71,7 +74,7 @@ class Utils
     public static function getStatusString($doc)
     {
         $docStatus = $doc->getStatus();
-        return GetMessage("TN_DOCS_STATUS_" . $docStatus);
+        return Loc::getMessage("TN_DOCS_STATUS_" . $docStatus);
     }
 
     /**
@@ -112,7 +115,7 @@ class Utils
         $len = mb_strlen($type, "UTF-8");
         if ($len = 0 || $len > 50)
             $res = false;
-        $cyr = GetMessage("TN_DOCS_CYR");
+        $cyr = Loc::getMessage("TN_DOCS_CYR");
         $pattern = "/^[A-Za-z" . $cyr . "0-9\-\_\.]*$/u";
         if (!preg_match($pattern, $type))
             $res = false;

@@ -1,12 +1,13 @@
 <?php
+use Bitrix\Main\Localization\Loc;
 
 if (!check_bitrix_sessid()) {
     return;
 }
 
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_INSTALL_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_INSTALL_TITLE"));
 
 function checkDB()
 {
@@ -40,18 +41,18 @@ function checkDB()
     $fullDB = $tablesNotInDB ? false : true;
 
     if ($emptyDB) {
-        echo CAdminMessage::ShowNote(GetMessage("TN_DOCS_NO_DB_TABLES"));
+        echo CAdminMessage::ShowNote(Loc::getMessage("TN_DOCS_NO_DB_TABLES"));
         echo '<input type="hidden" name="step" value="4">';
     } elseif ($fullDB) {
-        echo CAdminMessage::ShowNote(GetMessage("TN_DOCS_ALL_DB_TABLES"));
+        echo CAdminMessage::ShowNote(Loc::getMessage("TN_DOCS_ALL_DB_TABLES"));
         echo '<input type="hidden" name="step" value="2">';
     } else {
-        echo CAdminMessage::ShowMessage(GetMessage("TN_DOCS_DAMAGED_DB") . implode(", ",$tablesNotInDB));
+        echo CAdminMessage::ShowMessage(Loc::getMessage("TN_DOCS_DAMAGED_DB") . implode(", ",$tablesNotInDB));
         echo '<input type="hidden" name="step" value="4">';
         echo '<input type="hidden" name="dropDB" value="Y">';
     }
     ?>
-    <input type="submit" name="choice" value="<?= GetMessage("TN_DOCS_CONTINUE_INSTALL") ?>">
-    <input type="submit" name="choice" value="<?= GetMessage("TN_DOCS_CANCEL_INSTALL") ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage("TN_DOCS_CONTINUE_INSTALL") ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage("TN_DOCS_CANCEL_INSTALL") ?>">
 </form>
 

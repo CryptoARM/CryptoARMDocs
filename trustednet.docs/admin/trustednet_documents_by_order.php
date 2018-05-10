@@ -1,11 +1,13 @@
 <?php
-use TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
+use TrustedNet\Docs;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 $module_id = "trustednet.docs";
 CModule::IncludeModule($module_id);
+Loc::loadMessages(__FILE__);
 
 // Do not show page if module sale is unavailable
 if (!IsModuleInstalled("sale")) {
@@ -14,8 +16,6 @@ if (!IsModuleInstalled("sale")) {
     die();
 }
 CModule::IncludeModule("sale");
-
-IncludeModuleLangFile(__FILE__);
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
@@ -105,7 +105,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             break;
         case "send_mail":
             if (!$MAIL_EVENT_ID || !$MAIL_TEMPLATE_ID) {
-                echo "<script>alert('" . GetMessage("TN_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
+                echo "<script>alert('" . Loc::getMessage("TN_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
                 break;
             }
             $i = 0;
@@ -175,10 +175,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 // Remove temporary archive file
                 unlink($archivePath);
             }
-            $message = GetMessage("TN_DOCS_MAIL_SENT_PRE") . $i . GetMessage("TN_DOCS_MAIL_SENT_POST");
+            $message = Loc::getMessage("TN_DOCS_MAIL_SENT_PRE") . $i . Loc::getMessage("TN_DOCS_MAIL_SENT_POST");
             echo "<script>alert('" . $message . "')</script>";
             if ($e > 0) {
-                $message = GetMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . GetMessage("TN_DOCS_MAIL_ERROR_POST");
+                $message = Loc::getMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . Loc::getMessage("TN_DOCS_MAIL_ERROR_POST");
                 echo "<script>alert('" . $message . "')</script>";
             }
             // Reload page to show changed order status
@@ -198,30 +198,30 @@ $rsData = new CAdminResult($orders, $sTableID);
 $rsData->NavStart();
 
 // send page selector to the main object $lAdmin
-$lAdmin->NavText($rsData->GetNavPrint(GetMessage("TN_DOCS_NAV_TEXT")));
+$lAdmin->NavText($rsData->GetNavPrint(Loc::getMessage("TN_DOCS_NAV_TEXT")));
 
 $lAdmin->AddHeaders(array(
     array(
         "id" => "ORDER",
-        "content" => GetMessage("TN_DOCS_COL_ORDER"),
+        "content" => Loc::getMessage("TN_DOCS_COL_ORDER"),
         "sort" => "ORDER",
         "default" => true,
     ),
     array(
         "id" => "ORDER_STATUS",
-        "content" => GetMessage("TN_DOCS_COL_ORDER_STATUS"),
+        "content" => Loc::getMessage("TN_DOCS_COL_ORDER_STATUS"),
         "sort" => "ORDER_STATUS",
         "default" => true,
     ),
     array(
         "id" => "BUYER",
-        "content" => GetMessage("TN_DOCS_COL_BUYER"),
+        "content" => Loc::getMessage("TN_DOCS_COL_BUYER"),
         "sort" => "CLIENT_NAME",
         "default" => true,
     ),
     array(
         "id" => "DOCS",
-        "content" => GetMessage("TN_DOCS_COL_DOCS"),
+        "content" => Loc::getMessage("TN_DOCS_COL_DOCS"),
         "default" => true,
     ),
 ));
@@ -258,19 +258,19 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $orderViewField = "[<a href='";
     $orderViewField .= "/bitrix/admin/sale_order_edit.php?ID=" . $order_id . "'";
-    $orderViewField .= "title='" . GetMessage("TN_DOCS_EDIT_ORDER") . "'>";
+    $orderViewField .= "title='" . Loc::getMessage("TN_DOCS_EDIT_ORDER") . "'>";
     $orderViewField .= $order_id;
     $orderViewField .= "</a>]";
 
     $buyerViewField = $user_name . " " . $user_last_name . "<br />";
     $buyerViewField .= "[<a href='";
     $buyerViewField .= "/bitrix/admin/user_edit.php?ID=" . $user_id . "'";
-    $buyerViewField .= "title='" . GetMessage("TN_DOCS_BUYER_PROFILE") . "'>";
+    $buyerViewField .= "title='" . Loc::getMessage("TN_DOCS_BUYER_PROFILE") . "'>";
     $buyerViewField .= $user_login;
     $buyerViewField .= "</a>]<br />";
     $buyerViewField .= "<small><a href='mailto:";
     $buyerViewField .= $user_email;
-    $buyerViewField .= "' title='" . GetMessage("TN_DOCS_MAILTO") . "'>";
+    $buyerViewField .= "' title='" . Loc::getMessage("TN_DOCS_MAILTO") . "'>";
     $buyerViewField .= $user_email;
     $buyerViewField .= "</a></small>";
 
@@ -280,30 +280,30 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docName = $doc->getName();
         $docEmailProp = $doc->getProperties()->getPropByType("EMAIL");
         $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_not_sent.png"';
-        $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_NOT_SENT") . '">';
+        $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_NOT_SENT") . '">';
         if ($docEmailProp) {
             $docEmailPropValue = $docEmailProp->getValue();
             if ($docEmailPropValue == "SENT") {
                 $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_sent.png"';
-                $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_SENT") . '">';
+                $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_SENT") . '">';
             }
             if ($docEmailPropValue == "READ") {
                 $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_read.png"';
-                $docEmailIcon .= ' class="email_icon" title="' . GetMessage("TN_DOCS_EMAIL_READ") . '">';
+                $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_READ") . '">';
             }
         }
         $docRoleStatus = Docs\DocumentsByOrder::getRoleString($doc);
         if ($doc->getStatus() == DOC_STATUS_NONE) {
             $docStatus = "";
         } else {
-            $docStatus = "<b>" . GetMessage("TN_DOCS_STATUS") . "</b> " . Docs\Utils::getStatusString($doc);
+            $docStatus = "<b>" . Loc::getMessage("TN_DOCS_STATUS") . "</b> " . Docs\Utils::getStatusString($doc);
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
         $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
-        $docViewField .= $docId . "])' title='" . GetMessage("TN_DOCS_VERIFY_DOC") . "'/>";
+        $docViewField .= $docId . "])' title='" . Loc::getMessage("TN_DOCS_VERIFY_DOC") . "'/>";
         $docViewField .= $docEmailIcon;
-        $docViewField .= "<a class='tn_document' title='" . GetMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
         $docViewField .= $docId;
         $docViewField .= ", true)'>";
         $docViewField .= $docName . "</a>";
@@ -329,7 +329,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             $arActions[] = array(
                 "ICON" => "edit",
                 "DEFAULT" => true,
-                "TEXT" => GetMessage("TN_DOCS_ACT_SIGN"),
+                "TEXT" => Loc::getMessage("TN_DOCS_ACT_SIGN"),
                 //"ACTION" => "sign(" . json_encode($ids) . ")"
                 "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
             );
@@ -347,7 +347,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             $arActions[] = array(
                 "ICON" => "access",
                 "DEFAULT" => false,
-                "TEXT" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
+                "TEXT" => Loc::getMessage("TN_DOCS_ACT_UNBLOCK"),
                 "ACTION" => $lAdmin->ActionDoGroup($f_ID, "unblock"),
             );
 
@@ -360,7 +360,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arActions[] = array(
         "ICON" => "move",
         "DEFAULT" => false,
-        "TEXT" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
+        "TEXT" => Loc::getMessage("TN_DOCS_ACT_SEND_MAIL"),
         "ACTION" => $lAdmin->ActionDoGroup($f_ID, "send_mail"),
     );
 
@@ -369,7 +369,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
-        "TEXT" => GetMessage("TN_DOCS_ACT_REMOVE"),
+        "TEXT" => Loc::getMessage("TN_DOCS_ACT_REMOVE"),
         "ACTION" => $lAdmin->ActionDoGroup($f_ID, "remove"),
     );
 
@@ -381,29 +381,29 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 $lAdmin->AddFooter(
     array(
         array(
-            "title" => GetMessage("MAIN_ADMIN_LIST_SELECTED"),
+            "title" => Loc::getMessage("MAIN_ADMIN_LIST_SELECTED"),
             "value" => $rsData->SelectedRowsCount()
         ),
         array(
             "counter" => true,
-            "title" => GetMessage("MAIN_ADMIN_LIST_CHECKED"),
+            "title" => Loc::getMessage("MAIN_ADMIN_LIST_CHECKED"),
             "value" => "0"
         ),
     )
 );
 
 $lAdmin->AddGroupActionTable(Array(
-    "sign" => GetMessage("TN_DOCS_ACT_SIGN"),
-    "unblock" => GetMessage("TN_DOCS_ACT_UNBLOCK"),
-    "send_mail" => GetMessage("TN_DOCS_ACT_SEND_MAIL"),
-    "remove" => GetMessage("TN_DOCS_ACT_REMOVE"),
+    "sign" => Loc::getMessage("TN_DOCS_ACT_SIGN"),
+    "unblock" => Loc::getMessage("TN_DOCS_ACT_UNBLOCK"),
+    "send_mail" => Loc::getMessage("TN_DOCS_ACT_SEND_MAIL"),
+    "remove" => Loc::getMessage("TN_DOCS_ACT_REMOVE"),
 ));
 
 $contextMenu = array(
     array(
         "ICON" => "btn_new",
-        "TEXT" => GetMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
-        "TITLE" => GetMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
+        "TEXT" => Loc::getMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
+        "TITLE" => Loc::getMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
         "LINK" => "trustednet_documents_upload_by_order.php?lang=ru",
     )
 );
@@ -412,19 +412,19 @@ $lAdmin->AddAdminContextMenu($contextMenu);
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
 
 $oFilter = new CAdminFilter(
     $sTableID . "_filter", array(
-        GetMessage("TN_DOCS_COL_ORDER"),
-        GetMessage("TN_DOCS_COL_ORDER_STATUS"),
-        GetMessage("TN_DOCS_FILTER_BUYER_EMAIL"),
-        GetMessage("TN_DOCS_FILTER_BUYER_NAME"),
-        GetMessage("TN_DOCS_FILTER_BUYER_LAST_NAME"),
-        GetMessage("TN_DOCS_COL_STATUS")
+        Loc::getMessage("TN_DOCS_COL_ORDER"),
+        Loc::getMessage("TN_DOCS_COL_ORDER_STATUS"),
+        Loc::getMessage("TN_DOCS_FILTER_BUYER_EMAIL"),
+        Loc::getMessage("TN_DOCS_FILTER_BUYER_NAME"),
+        Loc::getMessage("TN_DOCS_FILTER_BUYER_LAST_NAME"),
+        Loc::getMessage("TN_DOCS_COL_STATUS")
     )
 );
 ?>
@@ -432,13 +432,13 @@ $oFilter = new CAdminFilter(
 <form name="find_form" method="get" action="<?= $APPLICATION->GetCurPage() ?>">
     <?php $oFilter->Begin(); ?>
     <tr>
-        <td><?= GetMessage("TN_DOCS_COL_ORDER") . ":" ?></td>
+        <td><?= Loc::getMessage("TN_DOCS_COL_ORDER") . ":" ?></td>
         <td>
             <input type="text" name="find_order" size="47" value="<?= htmlspecialchars($find_order) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("TN_DOCS_COL_ORDER_STATUS") . ":" ?>  </td>
+        <td><?= Loc::getMessage("TN_DOCS_COL_ORDER_STATUS") . ":" ?>  </td>
         <td>
             <?php
             $res = CSaleStatus::GetList(array("SORT" => "ASC"), array("LID" => LANGUAGE_ID), false, false, array('ID', 'NAME'));
@@ -455,40 +455,40 @@ $oFilter = new CAdminFilter(
                 "reference_id" => $arr_ref_id
             );
 
-            echo SelectBoxFromArray("find_order_status", $arr, $find_order_status, GetMessage("POST_ALL"), "");
+            echo SelectBoxFromArray("find_order_status", $arr, $find_order_status, Loc::getMessage("POST_ALL"), "");
             ?>
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_EMAIL") . ":" ?></td>
+        <td><?= Loc::getMessage("TN_DOCS_FILTER_BUYER_EMAIL") . ":" ?></td>
         <td>
             <input type="text" name="find_clientEmail" size="47" value="<?= htmlspecialchars($find_clientEmail) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_NAME") . ":" ?></td>
+        <td><?= Loc::getMessage("TN_DOCS_FILTER_BUYER_NAME") . ":" ?></td>
         <td>
             <input type="text" name="find_clientName" size="47" value="<?= htmlspecialchars($find_clientName) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("TN_DOCS_FILTER_BUYER_LAST_NAME") . ":" ?></td>
+        <td><?= Loc::getMessage("TN_DOCS_FILTER_BUYER_LAST_NAME") . ":" ?></td>
         <td>
             <input type="text" name="find_clientLastName" size="47"
                    value="<?= htmlspecialchars($find_clientLastName) ?>">
         </td>
     </tr>
     <tr>
-        <td><?= GetMessage("TN_DOCS_COL_STATUS") . ":" ?>  </td>
+        <td><?= Loc::getMessage("TN_DOCS_COL_STATUS") . ":" ?>  </td>
         <td>
             <?php
             $arr = array(
                 "reference" => array(
                     "",
-                    GetMessage("TN_DOCS_ROLES_CLIENT"),
-                    GetMessage("TN_DOCS_ROLES_SELLER"),
-                    GetMessage("TN_DOCS_ROLES_BOTH"),
-                    GetMessage("TN_DOCS_ROLES_NONE"),
+                    Loc::getMessage("TN_DOCS_ROLES_CLIENT"),
+                    Loc::getMessage("TN_DOCS_ROLES_SELLER"),
+                    Loc::getMessage("TN_DOCS_ROLES_BOTH"),
+                    Loc::getMessage("TN_DOCS_ROLES_NONE"),
                 ),
                 "reference_id" => array(
                     "",
@@ -498,7 +498,7 @@ $oFilter = new CAdminFilter(
                     "NONE",
                 )
             );
-            echo SelectBoxFromArray("find_docState", $arr, $find_docState, GetMessage("POST_ALL"), "");
+            echo SelectBoxFromArray("find_docState", $arr, $find_docState, Loc::getMessage("POST_ALL"), "");
             ?>
         </td>
     </tr>

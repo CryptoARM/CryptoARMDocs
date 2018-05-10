@@ -1,6 +1,7 @@
 <?php
-use TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
+use TrustedNet\Docs;
 
 include __DIR__ . "/config.php";
 // Include only necessary utility functions from module
@@ -11,30 +12,30 @@ if ($saleModule) {
     CModule::IncludeModule("sale");
 }
 
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
 $aTabs = array();
 $aTabs[] = array(
     "DIV" => "tn_docs_options",
-    "TAB" => GetMessage("TN_DOCS_OPT_TAB"),
-    "TITLE" => GetMessage("TN_DOCS_OPT_TAB_TITLE")
+    "TAB" => Loc::getMessage("TN_DOCS_OPT_TAB"),
+    "TITLE" => Loc::getMessage("TN_DOCS_OPT_TAB_TITLE")
 );
 $aTabs[] = array(
     "DIV" => "tn_docs_license",
-    "TAB" => GetMessage("TN_DOCS_LICENSE_TAB"),
-    "TITLE" => GetMessage("TN_DOCS_LICENSE_TAB_TITLE")
+    "TAB" => Loc::getMessage("TN_DOCS_LICENSE_TAB"),
+    "TITLE" => Loc::getMessage("TN_DOCS_LICENSE_TAB_TITLE")
 );
 if($saleModule) {
     $aTabs[] = array(
         "DIV" => "tn_docs_order",
-        "TAB" => GetMessage("TN_DOCS_ORDER_TAB"),
-        "TITLE" => GetMessage("TN_DOCS_ORDER_TAB_TITLE")
+        "TAB" => Loc::getMessage("TN_DOCS_ORDER_TAB"),
+        "TITLE" => Loc::getMessage("TN_DOCS_ORDER_TAB_TITLE")
     );
 }
 $aTabs[] = array(
     "DIV" => "tn_docs_logs",
-    "TAB" => GetMessage("TN_DOCS_LOGS_TAB"),
-    "TITLE" => GetMessage("TN_DOCS_LOGS_TAB_TITLE")
+    "TAB" => Loc::getMessage("TN_DOCS_LOGS_TAB"),
+    "TITLE" => Loc::getMessage("TN_DOCS_LOGS_TAB_TITLE")
 );
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
@@ -49,17 +50,17 @@ function CheckDocumentsDir($dir) {
     // Check if we are in bitrix root
     $len = strlen($docRoot);
     if (strncmp($fullPath, $docRoot, $len) < 0 || strcmp($fullPath, $docRoot) == 0) {
-        return GetMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+        return Loc::getMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
     }
 
     // Check for entering bitrix system directory
     if (preg_match("/^bitrix($|\/*)/", $dir)) {
-        return GetMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+        return Loc::getMessage("TN_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
     }
 
     // Check for permissions
     if (!is_readable($fullPath) && !is_writable($fullPath)) {
-        return GetMessage("TN_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
+        return Loc::getMessage("TN_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
     }
 
     return true;
@@ -102,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
                 !$_POST["TN_PASSWORD"] ||
                 !$_POST["TN_CLIENT_ID"] ||
                 !$_POST["TN_CLIENT_SECRET"]) {
-                CAdminMessage::ShowMessage(GetMessage("TN_DOCS_LICENSE_NO_EMPTY_FIELDS"));
+                CAdminMessage::ShowMessage(Loc::getMessage("TN_DOCS_LICENSE_NO_EMPTY_FIELDS"));
             } else {
                 UpdateOption("TN_USERNAME");
                 UpdateOption("TN_PASSWORD");
@@ -141,7 +142,7 @@ $tabControl->Begin();
 
     <tr>
         <td width="20%">
-            <?= GetMessage("TN_DOCS_DOCS_DIR") ?>
+            <?= Loc::getMessage("TN_DOCS_DOCS_DIR") ?>
         </td>
         <td width="80%">
             <input name="DOCUMENTS_DIR"
@@ -152,7 +153,7 @@ $tabControl->Begin();
                    value="<?= $DOCUMENTS_DIR ?>"/>
             <input id="dir_but"
                    type="button"
-                   value="<?= GetMessage("TN_DOCS_DOCS_DIR_SELECT") ?>"
+                   value="<?= Loc::getMessage("TN_DOCS_DOCS_DIR_SELECT") ?>"
                    onclick="dirSelector()">
         </td>
     </tr>
@@ -161,7 +162,7 @@ $tabControl->Begin();
 
     <tr>
         <td width="40%">
-            <?= GetMessage("TN_DOCS_LICENSE_ENABLE") ?>
+            <?= Loc::getMessage("TN_DOCS_LICENSE_ENABLE") ?>
         </td>
         <td width="60%">
             <input type="checkbox"
@@ -173,7 +174,7 @@ $tabControl->Begin();
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_USERNAME") ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_LICENSE_TN_USERNAME") ?> </td>
         <td>
             <input name="TN_USERNAME"
                    id="TN_USERNAME"
@@ -185,7 +186,7 @@ $tabControl->Begin();
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_PASSWORD") ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_LICENSE_TN_PASSWORD") ?> </td>
         <td>
             <input name="TN_PASSWORD"
                    id="TN_PASSWORD"
@@ -197,7 +198,7 @@ $tabControl->Begin();
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_CLIENT_ID") ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_LICENSE_TN_CLIENT_ID") ?> </td>
         <td>
             <input name="TN_CLIENT_ID"
                    id="TN_CLIENT_ID"
@@ -209,7 +210,7 @@ $tabControl->Begin();
     </tr>
 
     <tr>
-        <td> <?= GetMessage("TN_DOCS_LICENSE_TN_CLIENT_SECRET") ?> </td>
+        <td> <?= Loc::getMessage("TN_DOCS_LICENSE_TN_CLIENT_SECRET") ?> </td>
         <td>
             <input name="TN_CLIENT_SECRET"
                    id="TN_CLIENT_SECRET"
@@ -224,13 +225,13 @@ $tabControl->Begin();
         <?= $tabControl->BeginNextTab(); ?>
 
         <tr class="heading">
-            <td colspan="2"><?= GetMessage("TN_DOCS_EVENTS_HEADING") ?></td>
+            <td colspan="2"><?= Loc::getMessage("TN_DOCS_EVENTS_HEADING") ?></td>
         </tr>
 
         <tr>
             <td colspan="2">
                 <?
-                echo BeginNote(), GetMessage("TN_DOCS_EVENTS_DESCRIPTION"), EndNote();
+                echo BeginNote(), Loc::getMessage("TN_DOCS_EVENTS_DESCRIPTION"), EndNote();
                 ?>
             </td>
         </tr>
@@ -253,10 +254,10 @@ $tabControl->Begin();
         ?>
 
         <tr>
-            <td width="30%" class="trustednetdocs_opt_multiline_cell"> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_CLIENT") ?> </td>
+            <td width="30%" class="trustednetdocs_opt_multiline_cell"> <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_BY_CLIENT") ?> </td>
             <td width="70%">
                 <select name="EVENT_SIGNED_BY_CLIENT" id="EVENT_SIGNED_BY_CLIENT">
-                    <option value="" <?= $EVENT_SIGNED_BY_CLIENT ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <option value="" <?= $EVENT_SIGNED_BY_CLIENT ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
                     <?
                     foreach ($orderStatuses as $status) {
                         $statusId = htmlspecialcharsbx($status["ID"]);
@@ -275,15 +276,15 @@ $tabControl->Begin();
                        <?= (($EVENT_SIGNED_BY_CLIENT_ALL_DOCS) ? "checked='checked'" : "") ?>
                        name="EVENT_SIGNED_BY_CLIENT_ALL_DOCS"
                        value="true"/>
-                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
             </td>
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_SELLER") ?> </td>
+            <td> <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_BY_SELLER") ?> </td>
             <td>
                 <select name="EVENT_SIGNED_BY_SELLER" id="EVENT_SIGNED_BY_SELLER">
-                    <option value="" <?= $EVENT_SIGNED_BY_SELLER ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <option value="" <?= $EVENT_SIGNED_BY_SELLER ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
                     <?
                     foreach ($orderStatuses as $status) {
                         $statusId = htmlspecialcharsbx($status["ID"]);
@@ -302,15 +303,15 @@ $tabControl->Begin();
                        <?= (($EVENT_SIGNED_BY_SELLER_ALL_DOCS) ? "checked='checked'" : "") ?>
                        name="EVENT_SIGNED_BY_SELLER_ALL_DOCS"
                        value="true"/>
-                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
             </td>
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EVENTS_SIGNED_BY_BOTH") ?> </td>
+            <td> <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_BY_BOTH") ?> </td>
             <td>
                 <select name="EVENT_SIGNED_BY_BOTH" id="EVENT_SIGNED_BY_BOTH">
-                    <option value="" <?= $EVENT_SIGNED_BY_BOTH ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <option value="" <?= $EVENT_SIGNED_BY_BOTH ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
                     <?
                     foreach ($orderStatuses as $status) {
                         $statusId = htmlspecialcharsbx($status["ID"]);
@@ -329,15 +330,15 @@ $tabControl->Begin();
                        <?= (($EVENT_SIGNED_BY_BOTH_ALL_DOCS) ? "checked='checked'" : "") ?>
                        name="EVENT_SIGNED_BY_BOTH_ALL_DOCS"
                        value="true"/>
-                <?= GetMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                <?= Loc::getMessage("TN_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
             </td>
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EVENTS_EMAIL_SENT") ?> </td>
+            <td> <?= Loc::getMessage("TN_DOCS_EVENTS_EMAIL_SENT") ?> </td>
             <td>
                 <select name="EVENT_EMAIL_SENT" id="EVENT_EMAIL_SENT">
-                    <option value="" <?= $EVENT_EMAIL_SENT ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <option value="" <?= $EVENT_EMAIL_SENT ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
                     <?
                     foreach ($orderStatuses as $status) {
                         $statusId = htmlspecialcharsbx($status["ID"]);
@@ -351,10 +352,10 @@ $tabControl->Begin();
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EVENTS_EMAIL_READ") ?> </td>
+            <td> <?= Loc::getMessage("TN_DOCS_EVENTS_EMAIL_READ") ?> </td>
             <td>
                 <select name="EVENT_EMAIL_READ" id="EVENT_EMAIL_READ">
-                    <option value="" <?= $EVENT_EMAIL_READ ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
+                    <option value="" <?= $EVENT_EMAIL_READ ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EVENTS_DO_NOTHING") ?></option>
                     <?
                     foreach ($orderStatuses as $status) {
                         $statusId = htmlspecialcharsbx($status["ID"]);
@@ -368,24 +369,24 @@ $tabControl->Begin();
         </tr>
 
         <tr class="heading">
-            <td colspan="2"><?= GetMessage("TN_DOCS_EMAIL_HEADING") ?></td>
+            <td colspan="2"><?= Loc::getMessage("TN_DOCS_EMAIL_HEADING") ?></td>
         </tr>
 
         <tr>
             <td colspan="2">
                 <?
-                echo BeginNote(), GetMessage("TN_DOCS_EMAIL_DESCRIPTION"), EndNote();
+                echo BeginNote(), Loc::getMessage("TN_DOCS_EMAIL_DESCRIPTION"), EndNote();
                 ?>
             </td>
         </tr>
 
         <tr>
             <td>
-                <?= GetMessage("TN_DOCS_EMAIL_MAIL_EVENT_ID") ?>
+                <?= Loc::getMessage("TN_DOCS_EMAIL_MAIL_EVENT_ID") ?>
             </td>
             <td>
                 <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
-                    <option value="" <?= $MAIL_EVENT_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                    <option value="" <?= $MAIL_EVENT_ID ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
                     <?
                     $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
                     while ($event = $events->Fetch()) {
@@ -401,10 +402,10 @@ $tabControl->Begin();
         </tr>
 
         <tr>
-            <td> <?= GetMessage("TN_DOCS_EMAIL_TEMPLATE_ID") ?> </td>
+            <td> <?= Loc::getMessage("TN_DOCS_EMAIL_TEMPLATE_ID") ?> </td>
             <td>
                 <select name="MAIL_TEMPLATE_ID" id="MAIL_TEMPLATE_ID">
-                    <option value="" <?= $MAIL_TEMPLATE_ID ? "" : "selected" ?>><?= GetMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                    <option value="" <?= $MAIL_TEMPLATE_ID ? "" : "selected" ?>><?= Loc::getMessage("TN_DOCS_EMAIL_NOT_SELECTED") ?></option>
                     <?
                     $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID));
                     while ($template = $templates->Fetch()) {
@@ -432,13 +433,13 @@ $tabControl->Begin();
     }
     if (file_exists(TN_DOCS_LOG_FILE)) {
     ?>
-        <p><?= GetMessage("TN_DOCS_LOGS_LAST_100") ?></p>
+        <p><?= Loc::getMessage("TN_DOCS_LOGS_LAST_100") ?></p>
         <pre><? print_r(Docs\Utils::tail(TN_DOCS_LOG_FILE, 100)) ?></pre>
-        <input name="download_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_DOWNLOAD") ?>" style="margin-right:5px;"/>
-        <input name="purge_logs" type="submit" value="<?= GetMessage("TN_DOCS_LOGS_PURGE") ?>"/>
+        <input name="download_logs" type="submit" value="<?= Loc::getMessage("TN_DOCS_LOGS_DOWNLOAD") ?>" style="margin-right:5px;"/>
+        <input name="purge_logs" type="submit" value="<?= Loc::getMessage("TN_DOCS_LOGS_PURGE") ?>"/>
     <?
     } else {
-        echo GetMessage("TN_DOCS_LOGS_NO_LOG_FILE");
+        echo Loc::getMessage("TN_DOCS_LOGS_NO_LOG_FILE");
     }
     ?>
 
@@ -446,7 +447,7 @@ $tabControl->Begin();
 
     <?php $tabControl->End(); ?>
 
-    <input type="submit" name="Update" value="<?= GetMessage("TN_DOCS_OPT_SAVE") ?>"/>
+    <input type="submit" name="Update" value="<?= Loc::getMessage("TN_DOCS_OPT_SAVE") ?>"/>
 
 </form>
 

@@ -1,11 +1,13 @@
 <?php
+use Bitrix\Main\Localization\Loc;
+
 if (!check_bitrix_sessid()) {
     return;
 }
 
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_INSTALL_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_INSTALL_TITLE"));
 
 // Finds records in DB for which files were deleted
 function getLostDocs()
@@ -43,17 +45,17 @@ function getLostDocs()
             $lostDocsNames[] = $doc["PATH"];
             $lostDocsIds[] = $doc["ID"];
         }
-        CAdminMessage::ShowMessage(GetMessage("TN_DOCS_MISSING_FILES"));
+        CAdminMessage::ShowMessage(Loc::getMessage("TN_DOCS_MISSING_FILES"));
         echo "<p>";
-        echo GetMessage("TN_DOCS_MISSING_FILES_LIST") . "<br>";
+        echo Loc::getMessage("TN_DOCS_MISSING_FILES_LIST") . "<br>";
         echo implode("<br>", array_map("urldecode", $lostDocsNames));
         echo "</p>";
         echo '<input type="hidden" name="dropLostDocs" value="' . htmlentities(serialize($lostDocsIds)) . '">';
     } else {
-        CAdminMessage::ShowNote(GetMessage("TN_DOCS_ALL_FILES_FOUND"));
+        CAdminMessage::ShowNote(Loc::getMessage("TN_DOCS_ALL_FILES_FOUND"));
     }
     ?>
-    <input type="submit" name="choice" value="<?= GetMessage("TN_DOCS_CONTINUE") ?>">
-    <input type="submit" name="choice" value="<?= GetMessage("TN_DOCS_CANCEL") ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage("TN_DOCS_CONTINUE") ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage("TN_DOCS_CANCEL") ?>">
 </form>
 

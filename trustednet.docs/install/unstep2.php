@@ -1,16 +1,17 @@
 <?php
+use Bitrix\Main\Localization\Loc;
 
 if (!check_bitrix_sessid()) {
     return;
 }
 
-IncludeModuleLangFile(__FILE__);
+Loc::loadMessages(__FILE__);
 
-$APPLICATION->SetTitle(GetMessage("TN_DOCS_UNINSTALL_TITLE"));
-echo CAdminMessage::ShowNote(GetMessage("MOD_UNINST_OK"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_UNINSTALL_TITLE"));
+echo CAdminMessage::ShowNote(Loc::getMessage("MOD_UNINST_OK"));
 ?>
 <form action="<?= $APPLICATION->GetCurPage() ?>">
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <input type="submit" name="" value="<?= GetMessage("MOD_BACK") ?>">
+    <input type="submit" name="" value="<?= Loc::getMessage("MOD_BACK") ?>">
 </form>
 
