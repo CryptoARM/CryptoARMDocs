@@ -123,25 +123,32 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $user_name = $user["NAME"];
 
                 $doc = Docs\Database::getDocumentById($id);
-                $link = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
+                $docLink = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
 
                 $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
                 $siteIds = array();
                 while ($site = $sites->Fetch()) {
                     $siteIds[] = $site["ID"];
-                    if ($site["DEF"] == "Y") {
-                        $defaultSite = $site;
-                    }
                 }
-                // TODO: use $_SERVER["HTTP_HOST"] instead of site["SERVER_NAME"]?
                 $arEventFields = array(
                     "EMAIL" => $user_email,
                     "ORDER_USER" => $user_name,
                     "ORDER_ID" => $order_ID,
                     "FILE_NAME" => $doc->getName(),
-                    "SITE_URL" => "http://" . $defaultSite["SERVER_NAME"],
+                    "SITE_URL" => "http://" . $_SERVER["HTTP_HOST"],
                 );
-                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($link))) {
+
+                // Create archive with the document file
+                $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $doc->getName() . ".zip";
+                $archiveObject = CBXArchive::GetArchive($archivePath);
+                $archiveObject->SetOptions(
+                    array(
+                        "REMOVE_PATH" => $_SERVER["DOCUMENT_ROOT"] . dirname($doc->getPath()),
+                    )
+                );
+                $archiveObject->Pack(array($docLink));
+
+                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($archivePath))) {
                     $i++;
 
                     if ($eventEmailSent) {
@@ -164,6 +171,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 } else {
                     $e++;
                 };
+
+                // Remove temporary archive file
+                unlink($archivePath);
             }
             $message = GetMessage("TN_DOCS_MAIL_SENT_PRE") . $i . GetMessage("TN_DOCS_MAIL_SENT_POST");
             echo "<script>alert('" . $message . "')</script>";

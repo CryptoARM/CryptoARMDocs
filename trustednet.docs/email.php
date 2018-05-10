@@ -5,7 +5,8 @@ use Bitrix\Main\Config\Option;
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/bx_root.php");
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
-CModule::IncludeModule("trustednet.docs");
+$module_id = "trustednet.docs";
+CModule::IncludeModule($module_id);
 
 define("NO_KEEP_STATISTIC", true);
 define("BX_STATISTIC_BUFFER_USED", false);
