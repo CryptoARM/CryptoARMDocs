@@ -8,12 +8,13 @@ Loc::loadMessages(__FILE__);
 
 Class trustednet_docs extends CModule
 {
+    // Required by the marketplace standards
+    var $MODULE_ID = "trustednet.docs";
 
     function __construct()
     {
         $arModuleVersion = array();
         include __DIR__ . "/version.php";
-        $this->MODULE_ID = "trustednet.docs";
         $this->MODULE_NAME = Loc::getMessage("TN_DOCS_MODULE_NAME");
         $this->MODULE_DESCRIPTION = Loc::getMessage("TN_DOCS_MODULE_DESCRIPTION");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
