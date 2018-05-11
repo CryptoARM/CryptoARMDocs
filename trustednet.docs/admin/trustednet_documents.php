@@ -1,11 +1,12 @@
 <?php
-use Bitrix\Main\Localization\Loc;
 use TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Loader;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 
 $module_id = "trustednet.docs";
-CModule::IncludeModule($module_id);
+Loader::includeModule($module_id);
 Loc::loadMessages(__FILE__);
 
 // current user rights for the module

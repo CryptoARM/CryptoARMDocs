@@ -1,24 +1,19 @@
 <?php
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Application;
+use Bitrix\Main\ModuleManager;
 
 Loc::loadMessages(__FILE__);
 
 Class trustednet_docs extends CModule
 {
 
-    var $MODULE_ID = "trustednet.docs";
-    var $MODULE_NAME;
-    var $MODULE_DESCRIPTION;
-    var $MODULE_VERSION;
-    var $MODULE_VERSION_DATE;
-    var $PARTNER_NAME;
-    var $PARTNER_URI;
-
-    function trustednet_docs()
+    function __construct()
     {
         $arModuleVersion = array();
         include __DIR__ . "/version.php";
+        $this->MODULE_ID = "trustednet.docs";
         $this->MODULE_NAME = Loc::getMessage("TN_DOCS_MODULE_NAME");
         $this->MODULE_DESCRIPTION = Loc::getMessage("TN_DOCS_MODULE_DESCRIPTION");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
@@ -29,11 +24,21 @@ Class trustednet_docs extends CModule
 
     function DoInstall()
     {
-        global $DOCUMENT_ROOT, $APPLICATION, $step;
+        global $DOCUMENT_ROOT, $APPLICATION;
 
-        $step = intval($step);
+        $context = Application::getInstance()->getContext();
+        $request = $context->getRequest();
+        $step = (int)$request["step"];
+
+        if (!$this->d7Support()) {
+            $APPLICATION->IncludeAdminFile(
+                Loc::getMessage("MOD_INSTALL_TITLE"),
+                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_d7.php"
+            );
+        }
+
         $continue = true;
-        if ($_REQUEST["choice"] == Loc::getMessage("TN_DOCS_CANCEL_INSTALL")) {
+        if ($request["choice"] == Loc::getMessage("TN_DOCS_CANCEL_INSTALL")) {
             $continue = false;
         }
         if ($step < 2 && $continue) {
@@ -55,10 +60,10 @@ Class trustednet_docs extends CModule
             );
         }
         if ($step == 4 && $continue) {
-            if ($_REQUEST["dropDB"] == "Y") {
+            if ($request["dropDB"] == "Y") {
                 $this->UnInstallDB();
-            } elseif ($_REQUEST["dropLostDocs"]) {
-                $lostDocs = unserialize($_REQUEST["dropLostDocs"]);
+            } elseif ($request["dropLostDocs"]) {
+                $lostDocs = unserialize($request["dropLostDocs"]);
                 foreach ($lostDocs as $id) {
                     $this->dropDocumentChain($id);
                 }
@@ -68,15 +73,19 @@ Class trustednet_docs extends CModule
             $this->InstallModuleOptions();
             $this->InstallDB();
             $this->InstallMailEvent();
-            // TODO: switch to D7 ModuleManager::RegisterModule
-            RegisterModule($this->MODULE_ID);
+            ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step4.php"
+                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_cancel.php"
             );
         }
+    }
+
+    function d7Support()
+    {
+        return CheckVersion(ModuleManager::getVersion("main"), "14.00.00");
     }
 
     function InstallFiles()
@@ -192,9 +201,12 @@ Class trustednet_docs extends CModule
 
     function DoUninstall()
     {
-        global $DOCUMENT_ROOT, $APPLICATION, $step;
+        global $DOCUMENT_ROOT, $APPLICATION;
 
-        $step = intval($step);
+        $context = Application::getInstance()->getContext();
+        $request = $context->getRequest();
+        $step = (int)$request["step"];
+
         if ($step < 2) {
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
@@ -203,12 +215,12 @@ Class trustednet_docs extends CModule
         }
         if ($step == 2) {
             $this->UnInstallFiles();
-            $savedata = $_REQUEST["savedata"];
+            $savedata = $request["savedata"];
             if ($savedata != "Y") {
                 $this->UnInstallDB();
             }
             $this->UnInstallMailEvent();
-            UnRegisterModule($this->MODULE_ID);
+            ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep2.php"

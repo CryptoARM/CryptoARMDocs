@@ -20,18 +20,7 @@ class Utils
      */
     public static function createDocument($file, $propertyType = null, $propertyValue = null)
     {
-        $name = Directory::getFileName($file);
-        // TODO: remove copy argument?
-        // if ($copy && Directory::exists($file) && !is_dir($file)) {
-        //     $order_folder = TRUSTED_PROJECT_UPLOAD . '/' . $propertyType;
-        //     $order_local_folder = $_SERVER['DOCUMENT_ROOT']. '/' . $order_folder;
-        //     if (!Directory::exists($order_local_folder)) {
-        //         Directory::create($order_folder);
-        //     }
-        //     $new_path = $order_local_folder . '/' . $name;
-        //     move_uploaded_file($file, $new_path);
-        //     $file = $new_path;
-        // }
+        $name = basename($file);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);

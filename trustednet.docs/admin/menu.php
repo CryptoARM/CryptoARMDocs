@@ -1,11 +1,13 @@
 <?php
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Loader;
+use Bitrix\Main\ModuleManager;
 
 Loc::loadMessages(__FILE__);
 
 if ($APPLICATION->GetGroupRight("trustednet.docs") >= "R") {
 
-    if (\Bitrix\Main\ModuleManager::isModuleInstalled('trustednet.docs')) {
+    if (ModuleManager::isModuleInstalled('trustednet.docs')) {
         $aMenu = array(
             "parent_menu" => "global_menu_services",
             "section" => "trustednet_docs",
@@ -33,12 +35,13 @@ if ($APPLICATION->GetGroupRight("trustednet.docs") >= "R") {
             "title" => Loc::getMessage("TN_DOCS_MENU_DOCUMENTS_BY_USER")
         );
 
-        if (CModule::IncludeModule("sale"))
+        if (Loader::includeModule("sale")) {
             $menuItems[] = array("text" => Loc::getMessage("TN_DOCS_MENU_DOCUMENTS_BY_ORDER"),
                 "url" => "trustednet_documents_by_order.php?lang=" . LANGUAGE_ID,
                 "more_url" => array("trustednet_documents_upload_by_order.php"),
                 "title" => Loc::getMessage("TN_DOCS_MENU_DOCUMENTS_BY_ORDER")
             );
+        }
 
 
         $aMenu["items"] = $menuItems;

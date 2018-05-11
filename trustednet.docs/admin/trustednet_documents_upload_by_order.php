@@ -1,6 +1,8 @@
 <?php
-use Bitrix\Main\Localization\Loc;
 use TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Loader;
+use Bitrix\Main\ModuleManager;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
@@ -9,18 +11,18 @@ if (!$USER->CanDoOperation('fileman_upload_files')) {
     $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
 }
 
-CModule::IncludeModule("fileman");
+Loader::includeModule("fileman");
 
 // Do not show page if module sale is unavailable
-if (!IsModuleInstalled("sale")) {
+if (!ModuleManager::isModuleInstalled("sale")) {
     echo "SALE_MODULE_NOT_INSTALLED";
     require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
     die();
 }
-CModule::IncludeModule("sale");
+Loader::includeModule("sale");
 
 $module_id = "trustednet.docs";
-CModule::IncludeModule($module_id);
+Loader::includeModule($module_id);
 Loc::loadMessages(__FILE__);
 
 $addUrl = 'lang=' . LANGUAGE_ID . ($logical == "Y" ? '&logical=Y' : '');

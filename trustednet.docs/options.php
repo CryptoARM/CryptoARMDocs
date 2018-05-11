@@ -1,15 +1,20 @@
 <?php
-use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\Config\Option;
 use TrustedNet\Docs;
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\IO\File;
+use Bitrix\Main\Config\Option;
+use Bitrix\Main\Loader;
+use Bitrix\Main\ModuleManager;
 
 include __DIR__ . "/config.php";
 // Include only necessary utility functions from module
 include __DIR__ . "/classes/Utils.php";
 
-$saleModule = IsModuleInstalled("sale");
+$module_id = TN_DOCS_MODULE_ID;
+
+$saleModule = ModuleManager::isModuleInstalled("sale");
 if ($saleModule) {
-    CModule::IncludeModule("sale");
+    Loader::includeModule("sale");
 }
 
 Loc::loadMessages(__FILE__);
@@ -426,7 +431,7 @@ $tabControl->Begin();
 
     <?
     if ($_POST["purge_logs"]) {
-        unlink(TN_DOCS_LOG_FILE);
+        File::deleteFile(TN_DOCS_LOG_FILE);
     }
     if ($_POST["download_logs"]) {
         Docs\Utils::download(TN_DOCS_LOG_FILE, "tn_docs_log_" . date("Y-m-d") . ".txt");

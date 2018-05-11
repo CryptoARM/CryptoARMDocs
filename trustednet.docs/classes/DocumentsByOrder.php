@@ -2,11 +2,12 @@
 namespace TrustedNet\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Loader;
 use Bitrix\Sale;
 
 Loc::loadMessages(__FILE__);
 
-\Bitrix\Main\Loader::includeModule("sale");
+Loader::includeModule("sale");
 
 /**
  * Helper functions and event handlers for documents by order functionality.

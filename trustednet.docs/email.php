@@ -1,12 +1,13 @@
 <?php
 use TrustedNet\Docs;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Loader;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/bx_root.php");
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php";
 
 $module_id = "trustednet.docs";
-CModule::IncludeModule($module_id);
+Loader::includeModule($module_id);
 
 define("NO_KEEP_STATISTIC", true);
 define("BX_STATISTIC_BUFFER_USED", false);

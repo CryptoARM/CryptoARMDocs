@@ -1,5 +1,7 @@
 <?php
 namespace TrustedNet\Docs;
+use Bitrix\Main\IO\File;
+use Bitrix\Main\IO\Directory;
 
 /**
  * Represents a single document
@@ -548,21 +550,21 @@ class Document implements IEntity, ISave
         $file = $_SERVER["DOCUMENT_ROOT"] . $this->getPath();
         $file = rawurldecode($file);
         if (file_exists($file)) {
-            unlink($file);
+            File::deleteFile($file);
         }
         // Remove unsigned file if it exists
         if ($this->getType() == DOC_TYPE_SIGNED_FILE) {
             $unsignedFile = preg_replace("/\.sig$/", "", $file);
             if (file_exists($unsignedFile)) {
-                unlink($unsignedFile);
+                File::deleteFile($unsignedFile);
             }
         }
         // Remove unique document directory if it's empty
         $dir = dirname($file);
         if (is_readable($dir)) {
             if (preg_match("/^([\dabcdef]){13}$/", basename($dir))) {
-                if (count(scandir($dir)) == 2) {
-                    rmdir($dir);
+                if (count(array_diff(scandir($dir), array(".", ".."))) == 0) {
+                    Directory::deleteDirectory($dir);
                 }
             }
         }

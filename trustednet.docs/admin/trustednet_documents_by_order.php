@@ -1,21 +1,24 @@
 <?php
+use TrustedNet\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
-use TrustedNet\Docs;
+use Bitrix\Main\IO\File;
+use Bitrix\Main\Loader;
+use Bitrix\Main\ModuleManager;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 $module_id = "trustednet.docs";
-CModule::IncludeModule($module_id);
+Loader::includeModule($module_id);
 Loc::loadMessages(__FILE__);
 
 // Do not show page if module sale is unavailable
-if (!IsModuleInstalled("sale")) {
+if (!ModuleManager::isModuleInstalled("sale")) {
     echo "SALE_MODULE_NOT_INSTALLED";
     require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
     die();
 }
-CModule::IncludeModule("sale");
+Loader::includeModule("sale");
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
@@ -173,7 +176,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 };
 
                 // Remove temporary archive file
-                unlink($archivePath);
+                File::deleteFile($archivePath);
             }
             $message = Loc::getMessage("TN_DOCS_MAIL_SENT_PRE") . $i . Loc::getMessage("TN_DOCS_MAIL_SENT_POST");
             echo "<script>alert('" . $message . "')</script>";
