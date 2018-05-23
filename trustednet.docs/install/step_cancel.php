@@ -1,6 +1,9 @@
 <?php
 use Bitrix\Main\Localization\Loc;
 
+# TODO: Use single cancel page for all terminations
+# TODO: Add curl check during installation
+
 if (!check_bitrix_sessid()) {
     return;
 }

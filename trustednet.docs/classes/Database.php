@@ -288,13 +288,69 @@ class Database
 
     /**
      * Gets property collection from DB by document ID.
-     * @param integer $documentId Documend ID
+     * @param integer $documentId Document ID
      * @param string $tableName DB table name
      * @return PropertyCollection
      */
     static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY)
     {
         return Database::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
+    }
+
+    /**
+     * Returns all documents which have specified property attached to them.
+     * @param string $type Property type
+     * @return DocumentCollection
+     */
+    static function getDocumentsByPropertyType($type)
+    {
+        global $DB;
+        $sql = "
+            SELECT
+                TD.*
+            FROM
+                " . DB_TABLE_DOCUMENTS . " as TD,
+                " . DB_TABLE_PROPERTY . " as TDP
+            WHERE
+                isnull(TD.CHILD_ID) AND
+                TD.ID = TDP.DOCUMENT_ID AND
+                TDP.TYPE = '" . $type . "'
+        ";
+        $rows = $DB->Query($sql);
+        $docs = new DocumentCollection;
+        while($row = $rows->Fetch()) {
+            $docs->add(Document::fromArray($row));
+        }
+        return $docs;
+    }
+
+    /**
+     * Returns all documents which have specified property with specified value
+     * attached to them.
+     * @param string $type Property type
+     * @return DocumentCollection
+     */
+    static function getDocumentsByPropertyTypeAndValue($type, $value)
+    {
+        global $DB;
+        $sql = "
+            SELECT
+                TD.*
+            FROM
+                " . DB_TABLE_DOCUMENTS . " as TD,
+                " . DB_TABLE_PROPERTY . " as TDP
+            WHERE
+                isnull(TD.CHILD_ID) AND
+                TD.ID = TDP.DOCUMENT_ID AND
+                TDP.TYPE = '" . $type . "' AND
+                TDP.VALUE = '" . $value . "'
+        ";
+        $rows = $DB->Query($sql);
+        $docs = new DocumentCollection;
+        while($row = $rows->Fetch()) {
+            $docs->add(Document::fromArray($row));
+        }
+        return $docs;
     }
 
     /**
