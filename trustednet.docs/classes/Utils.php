@@ -20,7 +20,7 @@ class Utils
      */
     public static function createDocument($file, $propertyType = null, $propertyValue = null)
     {
-        $name = basename($file);
+        $name = Utils::mb_basename($file);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
@@ -40,6 +40,20 @@ class Utils
             "docs" => $doc,
         ));
         return $doc;
+    }
+
+    /**
+     * Version of basename which correctly handles cyrillic letters and spaces.
+     *
+     * @param string $path
+     */
+    public static function mb_basename($path) {
+        if (preg_match('@^.*[\\\\/]([^\\\\/]+)$@s', $path, $matches)) {
+            return $matches[1];
+        } else if (preg_match('@^([^\\\\/]+)$@s', $path, $matches)) {
+            return $matches[1];
+        }
+        return '';
     }
 
     /**
