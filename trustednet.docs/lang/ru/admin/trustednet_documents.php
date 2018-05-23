@@ -2,6 +2,8 @@
 
 $MESS["TN_DOCS_TITLE"] = "Документы";
 
+$MESS["TN_DOCS_MODULE_DEMO_EXPIRED"] = "Срок работы демо-режима модуля истек.";
+
 // Columns
 $MESS["TN_DOCS_COL_ID"] = "ID";
 $MESS["TN_DOCS_COL_FILENAME"] = "Название документа";

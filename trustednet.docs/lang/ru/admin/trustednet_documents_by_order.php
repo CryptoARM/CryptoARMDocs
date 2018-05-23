@@ -2,6 +2,8 @@
 
 $MESS["TN_DOCS_TITLE"] = "Подписание документов по заказам";
 
+$MESS["TN_DOCS_MODULE_DEMO_EXPIRED"] = "Срок работы демо-режима модуля истек.";
+
 $MESS["TN_DOCS_NAV_TEXT"] = "Заказ";
 
 $MESS["TN_DOCS_MAIL_NOT_CONFIGURED"] = "Задайте параметры отправки сообщений в настройках модуля.";

@@ -9,6 +9,12 @@ use Bitrix\Main\ModuleManager;
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 $module_id = "trustednet.docs";
+
+if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
+    echo GetMessage("TN_DOCS_MODULE_DEMO_EXPIRED");
+    die();
+};
+
 Loader::includeModule($module_id);
 Loc::loadMessages(__FILE__);
 

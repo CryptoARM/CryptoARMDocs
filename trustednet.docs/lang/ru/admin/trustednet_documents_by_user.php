@@ -2,6 +2,8 @@
 
 $MESS["TN_DOCS_TITLE"] = "Подписание документов пользователей";
 
+$MESS["TN_DOCS_MODULE_DEMO_EXPIRED"] = "Срок работы демо-режима модуля истек.";
+
 $MESS["TN_DOCS_NAV_TEXT"] = "Пользователи";
 
 // Fields names
