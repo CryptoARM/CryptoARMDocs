@@ -109,7 +109,22 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                                 $res_log['path'] = substr($pathto, 1);
                                 CEventLog::Log("content", "FILE_ADD", "main", "", serialize($res_log));
                             }
-                            if (Docs\Utils::createDocument($pathto, "ORDER", $arOrderId));
+                            $orderUser = CSaleOrder::GetByID((int)$arOrderId)["USER_ID"];
+                            $props = array(
+                                array(
+                                    "TYPE" => "ORDER",
+                                    "VALUE" => (string)$arOrderId,
+                                ),
+                                array(
+                                    "TYPE" => "ROLES",
+                                    "VALUE" => "NONE",
+                                ),
+                                array(
+                                    "TYPE" => "USER",
+                                    "VALUE" => (string)$orderUser,
+                                ),
+                            );
+                            if (Docs\Utils::createDocument($pathto, $props));
                             else $strWarning .= 'Error creating file';
                         }
                     } else $strWarning .= $quota->LAST_ERROR . "\n";

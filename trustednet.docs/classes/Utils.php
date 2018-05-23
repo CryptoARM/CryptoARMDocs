@@ -14,23 +14,24 @@ class Utils
      * Creates new document
      *
      * @param string $file Path to file
-     * @param string $propertyType User-set property (ORDER)
-     * @param string $propertyValue User-set property value (order number)
+     * @param array $properties Array of user-set properties
      * @return object Document
      */
-    public static function createDocument($file, $propertyType = null, $propertyValue = null)
+    public static function createDocument($file, $properties)
     {
         $name = Utils::mb_basename($file);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
         $docId = $doc->getId();
-        $props = $doc->getProperties();
-        if ($propertyType) {
-            $props->add(new Property($docId, $propertyType, $propertyValue));
-            // Documents by order need an additional parameter
-            if ($propertyType == "ORDER") {
-                $props->add(new Property($docId, "ROLES", "NONE"));
+        $docProps = $doc->getProperties();
+        if ($properties) {
+            foreach ($properties as $property){
+                $type = (string)$property["TYPE"];
+                $value = (string)$property["VALUE"];
+                if ($type !== "" and $value !== "") {
+                    $docProps->add(new Property($docId, $type, $value));
+                }
             }
         }
         $doc->save();
