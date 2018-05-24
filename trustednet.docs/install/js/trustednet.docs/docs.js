@@ -4,6 +4,10 @@ var REMOVE_ACTION_CONFIRM = BX.message('TN_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
 var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TN_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
 var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TN_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
 var LOST_DOC= BX.message('TN_DOCS_ALERT_LOST_DOC');
+var ERROR_FILE_NOT_FOUND = BX.message('TN_DOCS_ERROR_FILE_NOT_FOUND');
+var ERROR_DOC_NOT_FOUND = BX.message('TN_DOCS_ERROR_DOC_NOT_FOUND');
+var ERROR_DOC_BLOCKED = BX.message('TN_DOCS_ERROR_DOC_BLOCKED');
+var ERROR_DOC_ROLE_SIGNED = BX.message('TN_DOCS_ERROR_DOC_ROLE_SIGNED');
 
 var socket = io('https://localhost:4040');
 
@@ -63,6 +67,7 @@ function sign(ids, extra = null) {
             } else {
                 console.log(d);
             }
+            show_messages(d);
         },
         error: function (e) {
             console.error(e);
@@ -76,6 +81,37 @@ function sign(ids, extra = null) {
             }
         }
     });
+}
+
+function show_messages(sign_res) {
+    if (sign_res.docsFileNotFound) {
+        message = ERROR_FILE_NOT_FOUND;
+        sign_res.docsFileNotFound.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (sign_res.docsNotFound) {
+        message = ERROR_DOC_NOT_FOUND;
+        sign_res.docsNotFound.forEach(function (elem) {
+            message += '\n' + elem;
+        });
+        alert(message);
+    }
+    if (sign_res.docsBlocked) {
+        message = ERROR_DOC_BLOCKED;
+        sign_res.docsBlocked.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (sign_res.docsRoleSigned) {
+        message = ERROR_DOC_ROLE_SIGNED;
+        sign_res.docsSigned.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
 }
 
 function verify(ids) {
