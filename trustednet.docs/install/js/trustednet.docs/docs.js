@@ -107,7 +107,7 @@ function show_messages(sign_res) {
     }
     if (sign_res.docsRoleSigned) {
         message = ERROR_DOC_ROLE_SIGNED;
-        sign_res.docsSigned.forEach(function (elem) {
+        sign_res.docsRoleSigned.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);

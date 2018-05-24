@@ -502,7 +502,7 @@ class Document implements IEntity, ISave
         $new->setType($this->getType());
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {
-            $newProp = new Property(null, $prop->getType(), $prop->getValue());
+            $newProp = new Property($prop->getType(), $prop->getValue());
             $new->getProperties()->add($newProp);
         }
         return $new;
