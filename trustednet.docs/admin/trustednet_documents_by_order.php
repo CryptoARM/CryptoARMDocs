@@ -139,12 +139,15 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 while ($site = $sites->Fetch()) {
                     $siteIds[] = $site["ID"];
                 }
+                $siteUrl = $_SERVER["HTTP_HOST"];
+                // HTTP_HOST with protocol and without port number
+                $siteUrl = "https://" . explode(":", $siteUrl)[0];
                 $arEventFields = array(
                     "EMAIL" => $user_email,
                     "ORDER_USER" => $user_name,
                     "ORDER_ID" => $order_ID,
                     "FILE_NAME" => $doc->getName(),
-                    "SITE_URL" => "http://" . $_SERVER["HTTP_HOST"],
+                    "SITE_URL" => $siteUrl,
                 );
 
                 // Create archive with the document file
