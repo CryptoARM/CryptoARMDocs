@@ -37,14 +37,12 @@ class Property implements IEntity, ISave
     protected $value;
 
     /**
-     * @param integer $id Document ID
      * @param string $type Property type
      * @param string $value Property value
      * @return void
      */
-    function __construct($id = null, $type = null, $value = '')
+    function __construct($type = null, $value = '')
     {
-        $this->documentId = $id;
         $this->type = $type;
         $this->value = $value;
     }

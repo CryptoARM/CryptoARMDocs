@@ -14,25 +14,17 @@ class Utils
      * Creates new document
      *
      * @param string $file Path to file
-     * @param array $properties Array of user-set properties
+     * @param PropertyCollection $properties User-set properties
      * @return object Document
      */
-    public static function createDocument($file, $properties)
+    public static function createDocument($file, $properties = null)
     {
         $name = Utils::mb_basename($file);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
-        $docId = $doc->getId();
-        $docProps = $doc->getProperties();
         if ($properties) {
-            foreach ($properties as $property){
-                $type = (string)$property["TYPE"];
-                $value = (string)$property["VALUE"];
-                if ($type !== "" and $value !== "") {
-                    $docProps->add(new Property($docId, $type, $value));
-                }
-            }
+            $doc->setProperties($properties);
         }
         $doc->save();
         // TODO: log document properties

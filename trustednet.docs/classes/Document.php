@@ -464,6 +464,16 @@ class Document implements IEntity, ISave
     }
 
     /**
+     * Sets document properties
+     * @param PropertyCollection $properties
+     * @return void
+     */
+    function setProperties($properties)
+    {
+        $this->properties = $properties;
+    }
+
+    /**
      * Saves changed document in DB or creates new record if id is null.
      * @return void
      */

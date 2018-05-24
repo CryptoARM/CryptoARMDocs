@@ -100,12 +100,8 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                                 $res_log['path'] = substr($pathto, 1);
                                 CEventLog::Log("content", "FILE_ADD", "main", "", serialize($res_log));
                             }
-                            $props = array(
-                                array(
-                                    "TYPE" => "USER",
-                                    "VALUE" => $arUserId,
-                                ),
-                            );
+                            $props = new Docs\PropertyCollection();
+                            $props->add(new Docs\Property("USER", (string)$arUserId));
                             if (Docs\Utils::createDocument($pathto, $props));
                             else $strWarning .= 'Error creating file';
                         }

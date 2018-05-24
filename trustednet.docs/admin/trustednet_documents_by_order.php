@@ -169,7 +169,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                     if ($emailProp = $docProps->getPropByType("EMAIL")) {
                         $emailProp->setValue("SENT");
                     } else {
-                        $docProps->add(new Docs\Property($id, "EMAIL", "SENT"));
+                        $docProps->add(new Docs\Property("EMAIL", "SENT"));
                     }
                     $doc->save();
 
