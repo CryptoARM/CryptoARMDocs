@@ -356,13 +356,13 @@ $oFilter = new CAdminFilter(
                 "reference_id" => array(
                     "",
                     DOC_STATUS_BLOCKED,
-                    DOC_STATUS_CANCEL,
+                    DOC_STATUS_CANCELED,
                     DOC_STATUS_ERROR,
                 ),
                 "reference" => array(
                     "",
                     Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_BLOCKED),
-                    Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_CANCEL),
+                    Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_CANCELED),
                     Loc::getMessage("TN_DOCS_STATUS_" . DOC_STATUS_ERROR),
                 ),
             );

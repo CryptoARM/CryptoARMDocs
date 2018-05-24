@@ -24,7 +24,7 @@ define("DOC_TYPE_SIGNED_FILE", 1);
 // Document statuses
 define("DOC_STATUS_NONE", 0);
 define("DOC_STATUS_BLOCKED", 1);
-define("DOC_STATUS_CANCEL", 2);
+define("DOC_STATUS_CANCELED", 2);
 define("DOC_STATUS_ERROR", 3);
 
 // License request url
