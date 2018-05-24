@@ -29,7 +29,7 @@ CJSCore::RegisterExt(
 
 CUtil::InitJSCore(array('socketio'));
 CUtil::InitJSCore(array('trustednet_docs'));
-CUtil::InitJSCore(array("jquery2"));
+CUtil::InitJSCore(array("jquery"));
 
 // End tag should be here because it's required by the bitrix marketplace demo mode
 ?>
