@@ -150,17 +150,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                     "SITE_URL" => $siteUrl,
                 );
 
-                // Create archive with the document file
-                $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $doc->getName() . ".zip";
-                $archiveObject = CBXArchive::GetArchive($archivePath);
-                $archiveObject->SetOptions(
-                    array(
-                        "REMOVE_PATH" => $_SERVER["DOCUMENT_ROOT"] . dirname($doc->getPath()),
-                    )
-                );
-                $archiveObject->Pack(array($docLink));
-
-                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($archivePath))) {
+                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($docLink))) {
                     $i++;
 
                     if ($eventEmailSent) {
@@ -183,9 +173,6 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 } else {
                     $e++;
                 };
-
-                // Remove temporary archive file
-                File::deleteFile($archivePath);
             }
             $message = Loc::getMessage("TN_DOCS_MAIL_SENT_PRE") . $i . Loc::getMessage("TN_DOCS_MAIL_SENT_POST");
             echo "<script>alert('" . $message . "')</script>";
