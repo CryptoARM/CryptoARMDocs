@@ -414,7 +414,6 @@ $tabControl->Begin();
                     <?
                     $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID));
                     while ($template = $templates->Fetch()) {
-                        print_r($template);
                         $templateId = htmlspecialcharsbx($template["ID"]);
                         $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
                         $sel = $MAIL_TEMPLATE_ID == $templateId ? " selected" : "";

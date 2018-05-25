@@ -10,11 +10,11 @@ $MESS["TN_DOCS_MAIL_EVENT_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #ORDER_USER# - имя пользователя совершившего заказ
 #ORDER_ID# - номер заказа
-#FILE_NAME# - название документа
+#FILE_NAMES# - список названий документов
 ";
-$MESS["TN_DOCS_MAIL_TEMPLATE_SUBJECT"] = "#SITE_NAME#: Документ по заказу №#ORDER_ID#";
+$MESS["TN_DOCS_MAIL_TEMPLATE_SUBJECT"] = "#SITE_NAME#: Документы по заказу №#ORDER_ID#";
 $MESS["TN_DOCS_MAIL_TEMPLATE_BODY"] = "
-Документ #FILE_NAME# по заказу №#ORDER_ID# для #ORDER_USER#.
+Документы: #FILE_NAMES# по заказу №#ORDER_ID# для #ORDER_USER#.
 <img src=\"#SITE_URL#/bitrix/components/trustednet/trustednet.docs/email.php?order_id=#ORDER_ID#\" alt=\"\">
 ";
 

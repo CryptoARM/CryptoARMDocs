@@ -609,21 +609,22 @@ class Database
 
         global $DB;
         $sql = "
-    SELECT
-        OrderList.VALUE as `ORDER`
-    FROM
-        " . DB_TABLE_DOCUMENTS . " TD,
-        " . DB_TABLE_PROPERTY . " TDP,
-        (SELECT * FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
-        b_sale_order BO,
-        b_user BU
-    WHERE
-        BO.USER_ID = BU.ID
-        AND BO.ID = OrderList.VALUE
-        AND TD.ID = TDP.DOCUMENT_ID
-        AND TD.ID = OrderList.DOCUMENT_ID
-        AND TDP.TYPE = 'ORDER'
-        AND isnull(TD.CHILD_ID)";
+            SELECT
+                OrderList.VALUE as `ORDER`
+            FROM
+                " . DB_TABLE_DOCUMENTS . " TD,
+                " . DB_TABLE_PROPERTY . " TDP,
+                (SELECT * FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
+                b_sale_order BO,
+                b_user BU
+            WHERE
+                BO.USER_ID = BU.ID
+                AND BO.ID = OrderList.VALUE
+                AND TD.ID = TDP.DOCUMENT_ID
+                AND TD.ID = OrderList.DOCUMENT_ID
+                AND TDP.TYPE = 'ORDER'
+                AND isnull(TD.CHILD_ID)";
+
         if ($find_order !== "")
             $sql .= " AND OrderList.VALUE = '" . $find_order . "'";
         if ($find_order_status !== "")
@@ -654,7 +655,6 @@ class Database
                     $sOrder .= $arFields[$k]['FIELD_NAME'] . ' ' . $v;
                 }
             }
-
 
             if (strlen($sOrder) > 0) {
                 $sql .= ' ORDER BY ' . $sOrder . ';';

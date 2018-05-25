@@ -117,64 +117,71 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 echo "<script>alert('" . Loc::getMessage("TN_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
                 break;
             }
+
             $i = 0;
             $e = 0;
+
             $eventEmailSent = Option::get($module_id, "EVENT_EMAIL_SENT", "");
 
-            foreach ($ids as $id) {
+            $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+            $siteIds = array();
+            while ($site = $sites->Fetch()) {
+                $siteIds[] = $site["ID"];
+            }
+            $siteUrl = $_SERVER["HTTP_HOST"];
+            // HTTP_HOST with protocol and without port number
+            $siteUrl = "https://" . explode(":", $siteUrl)[0];
 
-                $order_ID = Docs\Database::getOrderByDocumentId($id);
-                $order_ID = implode($order_ID);
-                $order = CSaleOrder::GetByID(intval($order_ID));
-                $user_id = $order["USER_ID"];
-                $user = CUser::GetByID($user_id)->Fetch();
-                $user_email = $user["EMAIL"];
-                $user_name = $user["NAME"];
-
-                $doc = Docs\Database::getDocumentById($id);
-                $docLink = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
-
-                $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
-                $siteIds = array();
-                while ($site = $sites->Fetch()) {
-                    $siteIds[] = $site["ID"];
+            foreach ($arID as $orderId) {
+                $order = CSaleOrder::GetByID((int)$orderId);
+                $userId = $order["USER_ID"];
+                $user = CUser::GetByID($userId)->Fetch();
+                $userEmail = $user["EMAIL"];
+                $userName = $user["NAME"];
+                $docs = Docs\Database::getDocumentsByOrder($orderId);
+                $docLinks = array();
+                $docFilenames = array();
+                foreach ($docs->getList() as $doc) {
+                    $docLinks[] = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
+                    $docFilenames[] = $doc->getName();
                 }
-                $siteUrl = $_SERVER["HTTP_HOST"];
-                // HTTP_HOST with protocol and without port number
-                $siteUrl = "https://" . explode(":", $siteUrl)[0];
+
                 $arEventFields = array(
-                    "EMAIL" => $user_email,
-                    "ORDER_USER" => $user_name,
-                    "ORDER_ID" => $order_ID,
-                    "FILE_NAME" => $doc->getName(),
+                    "EMAIL" => $userEmail,
+                    "ORDER_USER" => $userName,
+                    "ORDER_ID" => $orderId,
+                    "FILE_NAMES" => implode(", ", $docFilenames),
                     "SITE_URL" => $siteUrl,
                 );
+                Docs\Utils::debug($docLinks);
 
-                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, array($docLink))) {
+                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, $docLinks)) {
                     $i++;
 
-                    if ($eventEmailSent) {
-                        Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
+                    foreach ($docs->getList() as $doc) {
+                        if ($eventEmailSent) {
+                            Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
+                        }
+                        // Add email tracking property
+                        $docProps = $doc->getProperties();
+                        if ($emailProp = $docProps->getPropByType("EMAIL")) {
+                            $emailProp->setValue("SENT");
+                        } else {
+                            $docProps->add(new Docs\Property("EMAIL", "SENT"));
+                        }
+                        $doc->save();
                     }
-
-                    // Add email tracking property
-                    $docProps = $doc->getProperties();
-                    if ($emailProp = $docProps->getPropByType("EMAIL")) {
-                        $emailProp->setValue("SENT");
-                    } else {
-                        $docProps->add(new Docs\Property("EMAIL", "SENT"));
-                    }
-                    $doc->save();
 
                     Docs\Utils::log(array(
                         "action" => "email_sent",
-                        "docs" => $doc,
+                        "docs" => $docs,
                     ));
                 } else {
                     $e++;
                 };
             }
-            $message = Loc::getMessage("TN_DOCS_MAIL_SENT_PRE") . $i . Loc::getMessage("TN_DOCS_MAIL_SENT_POST");
+
+            $message = Loc::getMessage("TN_DOCS_MAIL_SENT") . $i;
             echo "<script>alert('" . $message . "')</script>";
             if ($e > 0) {
                 $message = Loc::getMessage("TN_DOCS_MAIL_ERROR_PRE") . $e . Loc::getMessage("TN_DOCS_MAIL_ERROR_POST");
