@@ -153,7 +153,6 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                     "FILE_NAMES" => implode(", ", $docFilenames),
                     "SITE_URL" => $siteUrl,
                 );
-                Docs\Utils::debug($docLinks);
 
                 if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, $docLinks)) {
                     $i++;
