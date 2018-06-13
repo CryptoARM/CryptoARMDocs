@@ -31,5 +31,5 @@ $MESS["TN_DOCS_ACT_REMOVE"] = "Удалить";
 
 $MESS["TN_DOCS_DOC_STATUS"] = "Статус:";
 
-$MESS["TN_DOCS_ADD_DOC_BY_USER"] = "Добавить документы пользователей";
+$MESS["TN_DOCS_ADD_DOC_BY_USER"] = "Добавить документы пользователям";
 
