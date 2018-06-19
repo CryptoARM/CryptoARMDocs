@@ -614,7 +614,7 @@ class Database
             FROM
                 " . DB_TABLE_DOCUMENTS . " TD,
                 " . DB_TABLE_PROPERTY . " TDP,
-                (SELECT * FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
+                (SELECT ID, DOCUMENT_ID, TYPE, CAST(VALUE AS SIGNED) AS VALUE FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
                 b_sale_order BO,
                 b_user BU
             WHERE
