@@ -16,6 +16,7 @@ $MESS["TN_DOCS_MAIL_ERROR_POST"] = " письма/писем. Проверьте
 $MESS["TN_DOCS_COL_ORDER"] = "№ заказа";
 $MESS["TN_DOCS_COL_ORDER_STATUS"] = "Статус заказа";
 $MESS["TN_DOCS_COL_BUYER"] = "Покупатель";
+$MESS["TN_DOCS_COL_MAIL"] = "Статус письма";
 $MESS["TN_DOCS_COL_DOCS"] = "Документы";
 $MESS["TN_DOCS_COL_STATUS"] = "Текущий статус";
 
@@ -30,9 +31,9 @@ $MESS["TN_DOCS_BUYER_PROFILE"] = "Профиль покупателя";
 $MESS["TN_DOCS_MAILTO"] = "Написать письмо покумателю";
 $MESS["TN_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
 $MESS["TN_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
-$MESS["TN_DOCS_EMAIL_NOT_SENT"] = "Письмо с документом не отправлено";
-$MESS["TN_DOCS_EMAIL_SENT"] = "Письмо с документом отправлено";
-$MESS["TN_DOCS_EMAIL_READ"] = "Письмо с документом прочитано";
+$MESS["TN_DOCS_EMAIL_NOT_SENT"] = "Письмо не отправлено";
+$MESS["TN_DOCS_EMAIL_SENT"] = "Письмо отправлено";
+$MESS["TN_DOCS_EMAIL_READ"] = "Письмо отправлено и прочитано";
 
 $MESS["TN_DOCS_STATUS"] = "Статус:";
 

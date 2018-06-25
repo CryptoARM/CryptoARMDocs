@@ -595,6 +595,9 @@ class Database
             'DOCS' => array(
                 'FIELD_NAME' => 'OrderList.VALUE',
             ),
+            'ORDER_EMAIL_STATUS' => array(
+                'FIELD_NAME' => 'OrderList.EMAIL',
+            ),
             'DOC_STATE' => array(
                 'FIELD_NAME' => 'TDP.VALUE',
             ),
@@ -605,16 +608,53 @@ class Database
         $find_clientEmail = (string)$filter['CLIENT_EMAIL'];
         $find_clientName = (string)$filter['CLIENT_NAME'];
         $find_clientLastName = (string)$filter['CLIENT_LASTNAME'];
+        $find_orderEmailStatus = (string)$filter['ORDER_EMAIL_STATUS'];
         $find_docState = (string)$filter['DOC_STATE'];
+
+        // EmailProps - all TYPE=EMAIL in DB_TABLE_PROPERTY
+        // AllDocs - all docs and their EMAIL props
+        // OrderLastDoc - last uploaded doc of each order and its EMAIL prop
+        // OrderList - ids of orders and EMAIL prop of its last uploaded doc
+        // EMAIL prop of the last uploaded doc of each order serves as the final EMAIL status of order
 
         global $DB;
         $sql = "
             SELECT
-                OrderList.VALUE as `ORDER`
+                OrderList.VALUE as `ORDER`, OrderList.EMAIL as `EMAIL`
             FROM
                 " . DB_TABLE_DOCUMENTS . " TD,
                 " . DB_TABLE_PROPERTY . " TDP,
-                (SELECT ID, DOCUMENT_ID, TYPE, CAST(VALUE AS SIGNED) AS VALUE FROM " . DB_TABLE_PROPERTY . " WHERE TYPE = 'ORDER') as OrderList,
+                (SELECT
+                    OrderEmailValue.DOCUMENT_ID, OrderEmailValue.TYPE, Cast(OrderEmailValue.VALUE as signed) as VALUE, OrderLastDoc.VALUE as EMAIL
+                FROM
+                    " . DB_TABLE_PROPERTY . " as OrderEmailValue
+                 RIGHT JOIN(
+                    SELECT
+                        MAX(Properties.DOCUMENT_ID) as DOCUMENT_ID, AllDocs.VALUE
+                    FROM
+                        " . DB_TABLE_PROPERTY . " as Properties
+                    LEFT JOIN (
+                        SELECT
+                            ID, EmailProps.VALUE
+                        FROM
+                            " . DB_TABLE_DOCUMENTS . "
+                        LEFT JOIN (
+                            SELECT
+                                DOCUMENT_ID, TYPE, VALUE
+                            FROM
+                                " . DB_TABLE_PROPERTY . "
+                            WHERE
+                                TYPE = 'EMAIL') as EmailProps
+                          ON ID = EmailProps.DOCUMENT_ID
+                        WHERE
+                            isnull(CHILD_ID)
+                        GROUP BY ID) as AllDocs
+                      ON Properties.DOCUMENT_ID = AllDocs.ID
+                    WHERE
+                        TYPE = 'ORDER'
+                    GROUP BY Properties.VALUE) as OrderLastDoc
+                  ON OrderEmailValue.DOCUMENT_ID = OrderLastDoc.DOCUMENT_ID) as OrderList,
+
                 b_sale_order BO,
                 b_user BU
             WHERE
@@ -622,7 +662,7 @@ class Database
                 AND BO.ID = OrderList.VALUE
                 AND TD.ID = TDP.DOCUMENT_ID
                 AND TD.ID = OrderList.DOCUMENT_ID
-                AND TDP.TYPE = 'ORDER'
+                AND OrderList.Type = 'ORDER'
                 AND isnull(TD.CHILD_ID)";
 
         if ($find_order !== "")
@@ -635,6 +675,13 @@ class Database
             $sql .= " AND BU.LAST_NAME LIKE '%" . $find_clientLastName . "%'";
         if ($find_clientEmail !== "")
             $sql .= " AND BU.EMAIL LIKE '%" . $find_clientEmail . "%'";
+        if ($find_orderEmailStatus !== "") {
+            if ($find_orderEmailStatus == "NOT_SENT") {
+                $sql .= " AND isnull(OrderList.EMAIL) ";
+            } else {
+                $sql .= " AND OrderList.EMAIL = '" . $find_orderEmailStatus . "'";
+            }
+        }
         if ($find_docState !== "")
             $sql .= " AND TDP.VALUE ='" . $find_docState . "'";
 

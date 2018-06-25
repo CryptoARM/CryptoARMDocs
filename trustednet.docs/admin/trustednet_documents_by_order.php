@@ -53,6 +53,7 @@ $FilterArr = Array(
     "find_clientEmail",
     "find_clientName",
     "find_clientLastName",
+    "find_orderEmailStatus",
     "find_docState"
 );
 
@@ -66,10 +67,10 @@ if (CheckFilter()) {
         "CLIENT_EMAIL" => $find_clientEmail,
         "CLIENT_NAME" => $find_clientName,
         "CLIENT_LASTNAME" => $find_clientLastName,
+        "ORDER_EMAIL_STATUS" => $find_orderEmailStatus,
         "DOC_STATE" => $find_docState
     );
 }
-
 
 if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
@@ -230,6 +231,12 @@ $lAdmin->AddHeaders(array(
         "default" => true,
     ),
     array(
+        "id" => "ORDER_EMAIL_STATUS",
+        "content" => Loc::getMessage("TN_DOCS_COL_MAIL"),
+        "sort" => "ORDER_EMAIL_STATUS",
+        "default" => true,
+    ),
+    array(
         "id" => "DOCS",
         "content" => Loc::getMessage("TN_DOCS_COL_DOCS"),
         "default" => true,
@@ -262,6 +269,23 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $user_email = $user["EMAIL"];
     $user_login = $user["LOGIN"];
 
+    // get email status
+    $emailStatus = $arRes["EMAIL"];
+    if (!$emailStatus) {
+        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_not_sent.png"';
+        $docEmailIcon .= ' class="email_icon">';
+        $docEmailStatus = Loc::getMessage("TN_DOCS_EMAIL_NOT_SENT");
+    } elseif ($emailStatus == "SENT") {
+        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_sent.png"';
+        $docEmailIcon .= ' class="email_icon">';
+        $docEmailStatus = Loc::getMessage("TN_DOCS_EMAIL_SENT");
+    } elseif ($emailStatus == "READ") {
+        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_read.png"';
+        $docEmailIcon .= ' class="email_icon">';
+        $docEmailStatus = Loc::getMessage("TN_DOCS_EMAIL_READ");
+    }
+    $emailViewField = $docEmailIcon . $docEmailStatus;
+
     // get docs by order
     $docs = Docs\Database::getDocumentsByOrder($order_id);
     $docList = $docs->getList();
@@ -288,20 +312,6 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     foreach ($docList as $doc) {
         $docId = $doc->getId();
         $docName = $doc->getName();
-        $docEmailProp = $doc->getProperties()->getPropByType("EMAIL");
-        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_not_sent.png"';
-        $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_NOT_SENT") . '">';
-        if ($docEmailProp) {
-            $docEmailPropValue = $docEmailProp->getValue();
-            if ($docEmailPropValue == "SENT") {
-                $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_sent.png"';
-                $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_SENT") . '">';
-            }
-            if ($docEmailPropValue == "READ") {
-                $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trustednet.docs/email_read.png"';
-                $docEmailIcon .= ' class="email_icon" title="' . Loc::getMessage("TN_DOCS_EMAIL_READ") . '">';
-            }
-        }
         $docRoleStatus = Docs\DocumentsByOrder::getRoleString($doc);
         if ($doc->getStatus() == DOC_STATUS_NONE) {
             $docStatus = "";
@@ -312,7 +322,6 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= "<td>";
         $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TN_DOCS_VERIFY_DOC") . "'/>";
-        $docViewField .= $docEmailIcon;
         $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
         $docViewField .= $docId;
         $docViewField .= ", true)'>";
@@ -327,6 +336,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("ORDER", $orderViewField);
     $row->AddViewField("ORDER_STATUS", $order_status);
     $row->AddViewField("BUYER", $buyerViewField);
+    $row->AddViewField("ORDER_EMAIL_STATUS", "<small>" . $emailViewField . "</small>");
     $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
     // context menu
@@ -434,6 +444,7 @@ $oFilter = new CAdminFilter(
         Loc::getMessage("TN_DOCS_FILTER_BUYER_EMAIL"),
         Loc::getMessage("TN_DOCS_FILTER_BUYER_NAME"),
         Loc::getMessage("TN_DOCS_FILTER_BUYER_LAST_NAME"),
+        Loc::getMessage("TN_DOCS_COL_MAIL"),
         Loc::getMessage("TN_DOCS_COL_STATUS")
     )
 );
@@ -444,7 +455,6 @@ if (!Docs\Utils::isSecure()) {
     echo BeginNote(), Loc::getMessage("TM_DOCS_MODULE_HTTP_WARNING"), EndNote();
 }
 ?>
-
 
 <form name="find_form" method="get" action="<?= $APPLICATION->GetCurPage() ?>">
     <?php $oFilter->Begin(); ?>
@@ -493,6 +503,28 @@ if (!Docs\Utils::isSecure()) {
         <td>
             <input type="text" name="find_clientLastName" size="47"
                    value="<?= htmlspecialchars($find_clientLastName) ?>">
+        </td>
+    </tr>
+    <tr>
+        <td><?= Loc::getMessage("TN_DOCS_COL_MAIL") . ":" ?>  </td>
+        <td>
+            <?php
+            $arr = array(
+                "reference" => array(
+                    "",
+                    Loc::getMessage("TN_DOCS_EMAIL_NOT_SENT"),
+                    Loc::getMessage("TN_DOCS_EMAIL_SENT"),
+                    Loc::getMessage("TN_DOCS_EMAIL_READ"),
+                ),
+                "reference_id" => array(
+                    "",
+                    "NOT_SENT",
+                    "SENT",
+                    "READ",
+                )
+            );
+            echo SelectBoxFromArray("find_orderEmailStatus", $arr, $find_orderEmailStatus, Loc::getMessage("POST_ALL"), "");
+            ?>
         </td>
     </tr>
     <tr>
