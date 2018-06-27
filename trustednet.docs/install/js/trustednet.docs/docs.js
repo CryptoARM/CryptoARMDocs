@@ -1,5 +1,6 @@
 var AJAX_CONTROLLER = BX.message('TN_DOCS_AJAX_CONTROLLER');
 var NO_CLIENT = BX.message('TN_DOCS_ALERT_NO_CLIENT');
+var HTTP_WARNING = BX.message('TN_DOCS_ALERT_HTTP_WARNING');
 var REMOVE_ACTION_CONFIRM = BX.message('TN_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
 var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TN_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
 var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TN_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
@@ -37,6 +38,10 @@ socket.on('cancelled', function (data) {
 });
 
 function sign(ids, extra = null) {
+    if (location.protocol === 'http:') {
+        alert(HTTP_WARNING);
+        return;
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=sign',
         type: 'post',

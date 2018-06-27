@@ -3,6 +3,7 @@
 $MESS["TN_DOCS_TITLE"] = "Подписание документов пользователей";
 
 $MESS["TN_DOCS_MODULE_DEMO_EXPIRED"] = "Срок работы демо-режима модуля истек.";
+$MESS["TM_DOCS_MODULE_HTTP_WARNING"] = "<span class=\"required\">Внимание!</span><br>Подпись документа невозможна на незащищенном соединении (\"HTTP\" протокол).";
 
 $MESS["TN_DOCS_NAV_TEXT"] = "Пользователи";
 

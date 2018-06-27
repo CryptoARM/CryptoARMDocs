@@ -270,6 +270,12 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
 ));
 ?>
 
+<?php
+if (!Docs\Utils::isSecure()) {
+    echo BeginNote(), Loc::getMessage("TM_DOCS_MODULE_HTTP_WARNING"), EndNote();
+}
+?>
+
 <form name="find_form" method="get" action="<?= $APPLICATION->GetCurPage() ?>">
 
     <?php $oFilter->Begin(); ?>
