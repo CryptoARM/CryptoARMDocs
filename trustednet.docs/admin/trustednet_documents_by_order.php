@@ -130,11 +130,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $siteIds[] = $site["ID"];
             }
             $siteUrl = $_SERVER["HTTP_HOST"];
-            if (Docs\Utils::isSecure()) {
-                $protocol = "https://";
-            } else {
-                $protocol = "http://";
-            }
+            Docs\Utils::isSecure() ? $protocol = "https://" : $protocol = "http://";
             // HTTP_HOST with protocol and without port number
             $siteUrl = $protocol . explode(":", $siteUrl)[0];
 
