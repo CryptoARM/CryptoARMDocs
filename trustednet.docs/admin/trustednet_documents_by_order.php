@@ -129,8 +129,13 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $siteIds[] = $site["ID"];
             }
             $siteUrl = $_SERVER["HTTP_HOST"];
+            if (Docs\Utils::isSecure()) {
+                $protocol = "https://";
+            } else {
+                $protocol = "http://";
+            }
             // HTTP_HOST with protocol and without port number
-            $siteUrl = "https://" . explode(":", $siteUrl)[0];
+            $siteUrl = $protocol . explode(":", $siteUrl)[0];
 
             foreach ($arID as $orderId) {
                 $order = CSaleOrder::GetByID((int)$orderId);
