@@ -107,7 +107,7 @@ $rsData = new CAdminResult($users, $sTableID);
 $rsData->NavStart();
 
 // send page selector to the main object $lAdmin
-$lAdmin->NavText("<p>" . $rsData->GetNavPrint(Loc::getMessage("TN_DOCS_NAV_TEXT")) . "</p>");
+$lAdmin->NavText("<p>" . $rsData->GetNavPrint(Loc::getMessage("TN_DOCS_NAV_TEXT_BY_USER")) . "</p>");
 
 $lAdmin->AddHeaders(
     array(
@@ -119,7 +119,7 @@ $lAdmin->AddHeaders(
         ),
         array(
             "id" => "USER_NAME",
-            "content" => Loc::getMessage("TN_DOCS_FIELDS_USER_NAME"),
+            "content" => Loc::getMessage("TN_DOCS_FILTER_USER_NAME"),
             "sort" => "USER_NAME",
             "default" => true,
         ),
@@ -151,7 +151,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $userNameViewField .= "</a>]<br />";
     $userNameViewField .= "<small><a href='mailto:";
     $userNameViewField .= $f_EMAIL;
-    $userNameViewField .= "' title='" . Loc::getMessage("TN_DOCS_MAILTO") . "'>";
+    $userNameViewField .= "' title='" . Loc::getMessage("TN_DOCS_MAILTO_USER") . "'>";
     $userNameViewField .= $f_EMAIL;
     $userNameViewField .= "</a></small>";
 
@@ -163,7 +163,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         if ($doc->getStatus() === DOC_STATUS_NONE) {
             $docStatus = "";
         } else {
-            $docStatus = "<b>" . Loc::getMessage("TN_DOCS_DOC_STATUS") . "</b> " . Docs\Utils::getStatusString($doc);
+            $docStatus = Loc::getMessage("TN_DOCS_STATUS") . Docs\Utils::getStatusString($doc);
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
@@ -266,7 +266,7 @@ $lAdmin->AddAdminContextMenu($contextMenu);
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE_BY_USER"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
@@ -274,12 +274,12 @@ require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_a
 $oFilter = new CAdminFilter(
     $sTableID . "_filter",
     array(
-        Loc::getMessage("TN_DOCS_FIELDS_USER_ID"),
-        Loc::getMessage("TN_DOCS_FIELDS_USER_NAME"),
-        Loc::getMessage("TN_DOCS_FIELDS_USER_EMAIL"),
-        Loc::getMessage("TN_DOCS_FIELDS_DOC_NAME"),
-        Loc::getMessage("TN_DOCS_FIELDS_DOC_TYPE"),
-        Loc::getMessage("TN_DOCS_FIELDS_DOC_STATUS"),
+        Loc::getMessage("TN_DOCS_FILTER_USER_ID"),
+        Loc::getMessage("TN_DOCS_FILTER_USER_NAME"),
+        Loc::getMessage("TN_DOCS_FILTER_USER_EMAIL"),
+        Loc::getMessage("TN_DOCS_FILTER_DOC_NAME"),
+        Loc::getMessage("TN_DOCS_FILTER_DOC_TYPE"),
+        Loc::getMessage("TN_DOCS_FILTER_DOC_STATUS"),
     )
 );
 ?>
@@ -295,7 +295,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_USER_ID") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_USER_ID") . ":" ?>
         </td>
         <td>
             <input type="text" name="find_user_id" size="47" value="<?= htmlspecialchars($find_user_id) ?>">
@@ -304,7 +304,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_USER_NAME") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_USER_NAME") . ":" ?>
         </td>
         <td>
             <input type="text" name="find_user_name" size="47" value="<?= htmlspecialchars($find_user_name) ?>">
@@ -313,7 +313,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_USER_EMAIL") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_USER_EMAIL") . ":" ?>
         </td>
         <td>
             <input type="text" name="find_user_email" size="47" value="<?= htmlspecialchars($find_user_email) ?>">
@@ -322,7 +322,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_DOC_NAME") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_DOC_NAME") . ":" ?>
         </td>
         <td>
             <input type="text" name="find_doc_name" size="47" value="<?= htmlspecialchars($find_doc_name) ?>">
@@ -331,7 +331,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_DOC_TYPE") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_DOC_TYPE") . ":" ?>
         </td>
         <td>
             <?php
@@ -354,7 +354,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td>
-            <?= Loc::getMessage("TN_DOCS_FIELDS_DOC_STATUS") . ":" ?>
+            <?= Loc::getMessage("TN_DOCS_FILTER_DOC_STATUS") . ":" ?>
         </td>
         <td>
             <?php

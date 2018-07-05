@@ -129,7 +129,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
     }
 }
 
-$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_UPLOAD_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_UPLOAD_BY_ORDER_TITLE"));
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php";
 ?>
 

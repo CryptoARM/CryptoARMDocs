@@ -176,12 +176,22 @@ Class trustednet_docs extends CModule
     function InstallMailEvent()
     {
         $obEventType = new CEventType;
-        $obEventType->add(array(
-            "LID" => "ru",
-            "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
-            "NAME" => Loc::getMessage("TN_DOCS_MAIL_EVENT_NAME"),
-            "DESCRIPTION" => Loc::getMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION")
-        ));
+        $obEventType->add(
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
+                "NAME" => Loc::getMessage("TN_DOCS_MAIL_EVENT_NAME_RU"),
+                "DESCRIPTION" => Loc::getMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION_RU"),
+            )
+        );
+        $obEventType->add(
+            array(
+                "LID" => "en",
+                "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
+                "NAME" => Loc::getMessage("TN_DOCS_MAIL_EVENT_NAME_EN"),
+                "DESCRIPTION" => Loc::getMessage("TN_DOCS_MAIL_EVENT_DESCRIPTION_EN"),
+            )
+        );
         $obEventMessage = new CEventMessage;
         $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
         $siteIds = array();

@@ -205,7 +205,7 @@ $rsData = new CAdminResult($orders, $sTableID);
 $rsData->NavStart();
 
 // send page selector to the main object $lAdmin
-$lAdmin->NavText($rsData->GetNavPrint(Loc::getMessage("TN_DOCS_NAV_TEXT")));
+$lAdmin->NavText($rsData->GetNavPrint(Loc::getMessage("TN_DOCS_NAV_TEXT_BY_ORDER")));
 
 $lAdmin->AddHeaders(array(
     array(
@@ -300,7 +300,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $buyerViewField .= "</a>]<br />";
     $buyerViewField .= "<small><a href='mailto:";
     $buyerViewField .= $user_email;
-    $buyerViewField .= "' title='" . Loc::getMessage("TN_DOCS_MAILTO") . "'>";
+    $buyerViewField .= "' title='" . Loc::getMessage("TN_DOCS_MAILTO_BUYER") . "'>";
     $buyerViewField .= $user_email;
     $buyerViewField .= "</a></small>";
 
@@ -428,7 +428,7 @@ $lAdmin->AddAdminContextMenu($contextMenu);
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage("TN_DOCS_TITLE_BY_ORDER"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
