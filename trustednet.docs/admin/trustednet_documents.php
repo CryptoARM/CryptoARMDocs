@@ -248,7 +248,7 @@ $contextMenu = array(
         "ICON" => "btn_new",
         "TEXT" => Loc::getMessage("TN_DOCS_ADD_DOC"),
         "TITLE" => Loc::getMessage("TN_DOCS_ADD_DOC"),
-        "LINK" => "trustednet_documents_upload.php?lang=ru",
+        "LINK" => "trustednet_documents_upload.php?lang=" . LANGUAGE_ID,
     )
 );
 $lAdmin->AddAdminContextMenu($contextMenu);

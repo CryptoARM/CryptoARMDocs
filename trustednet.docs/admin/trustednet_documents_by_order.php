@@ -420,7 +420,7 @@ $contextMenu = array(
         "ICON" => "btn_new",
         "TEXT" => Loc::getMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
         "TITLE" => Loc::getMessage("TN_DOCS_ADD_DOC_BY_ORDER"),
-        "LINK" => "trustednet_documents_upload_by_order.php?lang=ru",
+        "LINK" => "trustednet_documents_upload_by_order.php?lang=" . LANGUAGE_ID,
     )
 );
 $lAdmin->AddAdminContextMenu($contextMenu);
