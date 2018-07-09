@@ -198,7 +198,7 @@ Class trustednet_docs extends CModule
         while ($site = $sites->Fetch()) {
             $siteIds[] = $site["ID"];
         }
-        $obEventMessage->add(array(
+        $templateId = $obEventMessage->add(array(
             "ACTIVE" => "Y",
             "EVENT_NAME" => "TN_DOCS_MAIL_BY_ORDER",
             "LID" => $siteIds,
@@ -208,6 +208,7 @@ Class trustednet_docs extends CModule
             "BODY_TYPE" => "html",
             "MESSAGE" => Loc::getMessage("TN_DOCS_MAIL_TEMPLATE_BODY"),
         ));
+        Option::set("trustednet.docs", "MAIL_TEMPLATE_ID", $templateId);
     }
 
     function DoUninstall()
@@ -226,6 +227,7 @@ Class trustednet_docs extends CModule
         }
         if ($step == 2) {
             $this->UnInstallFiles();
+            $this->UnInstallModuleOptions();
             $savedata = $request["savedata"];
             if ($savedata != "Y") {
                 $this->UnInstallDB();
@@ -253,6 +255,18 @@ Class trustednet_docs extends CModule
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
         return true;
+    }
+
+    function UnInstallModuleOptions()
+    {
+        Option::delete(
+            "trustednet.docs",
+            array("name" => "MAIL_EVENT_ID")
+        );
+        Option::delete(
+            "trustednet.docs",
+            array("name" => "MAIL_TEMPLATE_ID")
+        );
     }
 
     function UnInstallDB()
