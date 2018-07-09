@@ -22,6 +22,11 @@ $MESS["TN_DOCS_FILTER_BUYER_EMAIL"] = "Buyer email";
 $MESS["TN_DOCS_FILTER_BUYER_NAME"] = "Buyer first name";
 $MESS["TN_DOCS_FILTER_BUYER_LAST_NAME"] = "Buyer last name";
 
+$MESS["TN_DOCS_FILTER_ROLES_CLIENT"] = "Signed by client";
+$MESS["TN_DOCS_FILTER_ROLES_SELLER"] = "Signed by seller";
+$MESS["TN_DOCS_FILTER_ROLES_BOTH"] = "Signed by both sides";
+$MESS["TN_DOCS_FILTER_ROLES_NONE"] = "Not signed";
+
 // Columns
 $MESS["TN_DOCS_COL_ID"] = "ID";
 $MESS["TN_DOCS_COL_FILENAME"] = "Document name";

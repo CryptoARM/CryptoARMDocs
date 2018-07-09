@@ -23,7 +23,7 @@ CJSCore::RegisterExt(
     "trustednet_docs",
     array(
         "js" => "/bitrix/js/trustednet.docs/docs.js",
-        "lang" => "/bitrix/modules/trustednet.docs/lang/ru/javascript.php",
+        "lang" => "/bitrix/modules/trustednet.docs/lang/" . LANGUAGE_ID . "/javascript.php",
     )
 );
 

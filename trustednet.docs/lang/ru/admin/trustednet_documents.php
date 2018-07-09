@@ -22,6 +22,11 @@ $MESS["TN_DOCS_FILTER_BUYER_EMAIL"] = "E-Mail покупателя";
 $MESS["TN_DOCS_FILTER_BUYER_NAME"] = "Имя покупателя";
 $MESS["TN_DOCS_FILTER_BUYER_LAST_NAME"] = "Фамилия покупателя";
 
+$MESS["TN_DOCS_FILTER_ROLES_CLIENT"] = "Подписан клиентом";
+$MESS["TN_DOCS_FILTER_ROLES_SELLER"] = "Подписан продавцом";
+$MESS["TN_DOCS_FILTER_ROLES_BOTH"] = "Подписан обеими сторонами";
+$MESS["TN_DOCS_FILTER_ROLES_NONE"] = "Требуется подпись";
+
 // Columns
 $MESS["TN_DOCS_COL_ID"] = "ID";
 $MESS["TN_DOCS_COL_FILENAME"] = "Название документа";

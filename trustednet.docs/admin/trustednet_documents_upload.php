@@ -117,7 +117,7 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
         }
 
         if (strlen($strWarning) <= 0) {
-            $backurl = '/bitrix/admin/trustednet_documents.php?PAGEN_1=1&SIZEN_1=20&lang=ru';
+            $backurl = '/bitrix/admin/trustednet_documents.php?PAGEN_1=1&SIZEN_1=20&lang=' . LANGUAGE_ID;
             if (!empty($_POST["apply"])) LocalRedirect($ret); else LocalRedirect($ret);
         }
     }

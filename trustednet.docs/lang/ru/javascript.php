@@ -9,7 +9,6 @@ if (Docs\Utils::isSecure()) {
     $MESS["TN_DOCS_AJAX_CONTROLLER"] = "http://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/trustednet.docs/ajax.php";
 }
 
-
 $MESS["TN_DOCS_ERROR_FILE_NOT_FOUND"] = "Не найдены файлы соответствующие следующим документам:";
 $MESS["TN_DOCS_ERROR_DOC_NOT_FOUND"] = "Нет найдены документы со следующими идентификаторами: ";
 $MESS["TN_DOCS_ERROR_DOC_BLOCKED"] = "Некоторые документы заблокированы с связи с отправкой на подпись:";

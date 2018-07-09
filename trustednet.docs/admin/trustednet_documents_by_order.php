@@ -530,10 +530,10 @@ if (!Docs\Utils::isSecure()) {
             $arr = array(
                 "reference" => array(
                     "",
-                    Loc::getMessage("TN_DOCS_ROLES_CLIENT"),
-                    Loc::getMessage("TN_DOCS_ROLES_SELLER"),
-                    Loc::getMessage("TN_DOCS_ROLES_BOTH"),
-                    Loc::getMessage("TN_DOCS_ROLES_NONE"),
+                    Loc::getMessage("TN_DOCS_FILTER_ROLES_CLIENT"),
+                    Loc::getMessage("TN_DOCS_FILTER_ROLES_SELLER"),
+                    Loc::getMessage("TN_DOCS_FILTER_ROLES_BOTH"),
+                    Loc::getMessage("TN_DOCS_FILTER_ROLES_NONE"),
                 ),
                 "reference_id" => array(
                     "",
