@@ -77,11 +77,12 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     // selected = checkbox "for all"
     if ($_REQUEST['action_target'] == 'selected') {
         $orders = Docs\Database::getOrdersByFilter(array($by => $order), $arFilter);
+        $arID = array();
         while ($order = $orders->Fetch()) {
-            $arOrders[] = $order["ORDER"];
+            $arID[] = $order["ORDER"];
         }
         $ids = array();
-        foreach ($arOrders as $order) {
+        foreach ($arID as $order) {
             $idsOrder = Docs\Database::getIdsByOrder($order);
             foreach ($idsOrder as $id) {
                 $ids[] = $id;
