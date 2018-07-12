@@ -190,9 +190,12 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 echo "<script>alert('" . $message . "')</script>";
             }
             // Reload page to show changed order status
-            if ($eventEmailSent) {
+            // Just now its useless, cause bitrix have bug with action_button on header(!!!BUG in BITRIX)
+            /*if ($eventEmailSent) {
                 echo "<script>location.reload()</script>";
-            }
+            }*/
+            // Reload page to show change
+            echo "<script>window.parent.location.reload()</script>";
             break;
     }
 }
