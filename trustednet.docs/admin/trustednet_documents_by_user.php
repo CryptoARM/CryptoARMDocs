@@ -2,9 +2,15 @@
 use TrustedNet\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;
+use Bitrix\Main\Application;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
+
 $module_id = "trustednet.docs";
+
+$app = Application::getInstance();
+$context = $app->getContext();
+$docRoot = $context->getServer()->getDocumentRoot();
 
 if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     echo GetMessage("TN_DOCS_MODULE_DEMO_EXPIRED");
@@ -12,7 +18,7 @@ if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
 };
 
 Loader::includeModule($module_id);
-Loc::loadMessages(__FILE__);
+Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trustednet_documents.php");
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);

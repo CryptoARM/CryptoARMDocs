@@ -3,9 +3,14 @@ use TrustedNet\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Application;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 //require_once ($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/sale/include.php");
+
+$app = Application::getInstance();
+$context = $app->getContext();
+$docRoot = $context->getServer()->getDocumentRoot();
 
 if (!$USER->CanDoOperation('fileman_upload_files')) {
     $APPLICATION->AuthForm(Loc::getMessage("ACCESS_DENIED"));
@@ -23,7 +28,7 @@ Loader::includeModule("sale");
 
 $module_id = "trustednet.docs";
 Loader::includeModule($module_id);
-Loc::loadMessages(__FILE__);
+Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trustednet_documents_upload.php");
 
 $addUrl = 'lang=' . LANGUAGE_ID . ($logical == "Y" ? '&logical=Y' : '');
 

@@ -5,10 +5,15 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Application;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
 $module_id = "trustednet.docs";
+
+$app = Application::getInstance();
+$context = $app->getContext();
+$docRoot = $context->getServer()->getDocumentRoot();
 
 if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     echo GetMessage("TN_DOCS_MODULE_DEMO_EXPIRED");
@@ -16,7 +21,7 @@ if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
 };
 
 Loader::includeModule($module_id);
-Loc::loadMessages(__FILE__);
+Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trustednet_documents.php");
 
 // Do not show page if module sale is unavailable
 if (!ModuleManager::isModuleInstalled("sale")) {
