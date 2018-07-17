@@ -611,12 +611,6 @@ class Database
         $find_orderEmailStatus = (string)$filter['ORDER_EMAIL_STATUS'];
         $find_docState = (string)$filter['DOC_STATE'];
 
-        // EmailProps - all TYPE=EMAIL in DB_TABLE_PROPERTY
-        // AllDocs - all docs and their EMAIL props
-        // OrderLastDoc - last uploaded doc of each order and its EMAIL prop
-        // OrderList - ids of orders and EMAIL prop of its last uploaded doc
-        // EMAIL prop of the last uploaded doc of each order serves as the final EMAIL status of order
-
         global $DB;
         $sql = "
             SELECT
@@ -624,46 +618,26 @@ class Database
             FROM
                 " . DB_TABLE_DOCUMENTS . " TD,
                 " . DB_TABLE_PROPERTY . " TDP,
-                (SELECT
-                    OrderEmailValue.DOCUMENT_ID, OrderEmailValue.TYPE, Cast(OrderEmailValue.VALUE as signed) as VALUE, OrderLastDoc.VALUE as EMAIL
+                (SELECT 
+                    OrderID.VALUE, OrderID.DOCUMENT_ID, Property.VALUE AS EMAIL
                 FROM
-                    " . DB_TABLE_PROPERTY . " as OrderEmailValue
-                 RIGHT JOIN(
-                    SELECT
-                        MAX(Properties.DOCUMENT_ID) as DOCUMENT_ID, AllDocs.VALUE
+                    " . DB_TABLE_PROPERTY . "  AS Property
+                RIGHT JOIN
+                    (SELECT 
+                        MAX(DOCUMENT_ID) AS DOCUMENT_ID, TYPE, VALUE
                     FROM
-                        " . DB_TABLE_PROPERTY . " as Properties
-                    LEFT JOIN (
-                        SELECT
-                            ID, EmailProps.VALUE
-                        FROM
-                            " . DB_TABLE_DOCUMENTS . "
-                        LEFT JOIN (
-                            SELECT
-                                DOCUMENT_ID, TYPE, VALUE
-                            FROM
-                                " . DB_TABLE_PROPERTY . "
-                            WHERE
-                                TYPE = 'EMAIL') as EmailProps
-                          ON ID = EmailProps.DOCUMENT_ID
-                        WHERE
-                            isnull(CHILD_ID)
-                        GROUP BY ID) as AllDocs
-                      ON Properties.DOCUMENT_ID = AllDocs.ID
+                        " . DB_TABLE_PROPERTY . " 
                     WHERE
                         TYPE = 'ORDER'
-                    GROUP BY Properties.VALUE) as OrderLastDoc
-                  ON OrderEmailValue.DOCUMENT_ID = OrderLastDoc.DOCUMENT_ID) as OrderList,
-
+                    GROUP BY VALUE) AS OrderID ON OrderID.DOCUMENT_ID = Property.DOCUMENT_ID
+                        AND Property.TYPE = 'EMAIL') as OrderList,
                 b_sale_order BO,
                 b_user BU
             WHERE
                 BO.USER_ID = BU.ID
                 AND BO.ID = OrderList.VALUE
                 AND TD.ID = TDP.DOCUMENT_ID
-                AND TD.ID = OrderList.DOCUMENT_ID
-                AND OrderList.Type = 'ORDER'
-                AND isnull(TD.CHILD_ID)";
+                AND TD.ID = OrderList.DOCUMENT_ID";
 
         if ($find_order !== "")
             $sql .= " AND OrderList.VALUE = '" . $find_order . "'";
