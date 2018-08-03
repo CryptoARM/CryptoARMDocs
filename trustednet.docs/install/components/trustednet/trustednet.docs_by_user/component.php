@@ -12,11 +12,15 @@ $docList = $docs->getList();
 $docsInfo = array();
 
 foreach ($docList as $doc) {
-    $docsInfo[] = array(
-        "ID" => $doc->getId(),
-        "NAME" => $doc->getName(),
-        "STATUS" => $doc->getStatus(),
-    );
+    if ($arParams["CHECK_ORDER_PROPERTY"] === "Y" &&  $doc->getProperties()->getPropByType("ORDER")) {
+            continue;
+    } else {
+        $docsInfo[] = array(
+            "ID" => $doc->getId(),
+            "NAME" => $doc->getName(),
+            "STATUS" => $doc->getStatus(),
+        );
+    }
 }
 
 $arResult = new \CDBResult;

@@ -21,10 +21,10 @@ use Bitrix\Main\Localization\Loc;
                     </thead>
                     <?
                     $i = 0;
-                    while ($doc = $arResult->NavNext()) { ?>
+                    while ($doc = $arResult->Fetch()) { ?>
                     <tbody>
                     <tr>
-                        <td><?= $doc["ID"] ?> - <?= $doc['NAME'] ?> </td>
+                        <td><?= $doc['NAME'] ?> </td>
                         <td> <?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($doc["ID"])) ?></td>
                         <?
                         $i++;

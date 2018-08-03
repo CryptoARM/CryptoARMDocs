@@ -11,7 +11,7 @@ use Bitrix\Main\Localization\Loc;
 </head>
 <?
 $all_ids = array();
-while ($docsList = $arResult->NavNext()) {
+while ($docsList = $arResult->Fetch()) {
     $docs_info[] = array(
         "ID" => $docsList["ID"],
         "NAME" => $docsList["NAME"],
@@ -52,12 +52,6 @@ while ($docsList = $arResult->NavNext()) {
                                 </div>
                                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD_ALL"); ?>
                             </div>
-                            <div onclick="remove(<?= json_encode($all_ids) ?>)">
-                                <div class="material-icons">
-                                    delete
-                                </div>
-                                <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DELETE_ALL"); ?>
-                            </div>
                         </ul>
                     </div>
                 <? } else { ?>
@@ -66,8 +60,8 @@ while ($docsList = $arResult->NavNext()) {
             } else { ?>
                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_ERROR"); ?>
             <? } ?>
-
         </header>
+
         <div class="document-card__content">
             <? if (array_key_exists('ORDER', $arParams)) {
                 if ($USER->IsAuthorized()) {
@@ -78,7 +72,6 @@ while ($docsList = $arResult->NavNext()) {
                         <div class="document-content__item">
                             <div class="document-item__left">
                                 <?
-                                echo $doc["ID"];
                                 $doc_id = $doc["ID"];
                                 $doc_name = $doc["NAME"];
                                 $doc_status = $doc["STATUS"];
@@ -156,11 +149,6 @@ while ($docsList = $arResult->NavNext()) {
                                         save_alt
                                     </i>
                                 </div>
-                                <div class="icon-wrapper" onclick="window.parent.remove([<?= $doc_id ?>])">
-                                    <i class="material-icons">
-                                        delete
-                                    </i>
-                                </div>
                             </div>
                         </div>
                     <? }
@@ -204,38 +192,6 @@ while ($docsList = $arResult->NavNext()) {
                 </div>
             <? } ?>
         </div>
-        <? if (array_key_exists('ORDER', $arParams)) {
-            if ($USER->IsAuthorized()) { ?>
-                <footer class="document-card__footer">
-                    <form enctype="multipart/form-data" method="POST">
-                        <div class="document-footer__action">
-                            <input class="document-footer__input" name="userfile" type="file" style="font-size: 0" onchange=this.form.submit()>
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_ADD"); ?>
-                        </div>
-                    </form>
-                    <? if (!empty($_POST["docdir"])) {
-                        $DOCUMENTS_DIR = $_POST["docdir"];
-                    } else {
-                        $DOCUMENTS_DIR = COption::GetOptionString("trustednet.docs", "DOCUMENTS_DIR", "docs");
-                    }
-                    if (!empty($_FILES["userfile"]["name"])) {
-                        $uniqid = (string)uniqid();
-                        $new_doc_dir = $_SERVER["DOCUMENT_ROOT"] . "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/";
-                        mkdir($new_doc_dir);
-                        $new_doc_filename = basename($_FILES["userfile"]["name"]);
-                        $absolute_path = $new_doc_dir . $new_doc_filename;
-                        $relative_path = "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/" . $new_doc_filename;
-                        if (move_uploaded_file($_FILES["userfile"]["tmp_name"], $absolute_path)) {
-                            $props = new Docs\PropertyCollection();
-                            $props->add(new Docs\Property("ORDER", (string)$arParams["ORDER"]));
-                            $props->add(new Docs\Property("ROLES", "NONE"));
-                            $props->add(new Docs\Property("USER", (string)$USER->GetID()));
-                            $doc = Docs\Utils::createDocument($relative_path, $props);
-                        }
-                    } ?>
-                </footer>
-            <? }
-        } ?>
     </main>
 </div>
 </body>

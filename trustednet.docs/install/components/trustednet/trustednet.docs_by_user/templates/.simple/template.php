@@ -11,7 +11,7 @@ use Bitrix\Main\Localization\Loc;
         <td></td>
         <?
         $i = 0;
-        while ($doc = $arResult->NavNext()) { ?>
+        while ($doc = $arResult->Fetch()) { ?>
             <tr>
                 <td> <?= $doc["ID"] ?> </td>
                 <td> <?= $doc["NAME"] ?> </td>
@@ -20,7 +20,7 @@ use Bitrix\Main\Localization\Loc;
                 $i++;
                 if ($doc["STATUS"] === DOC_STATUS_NONE) {
                     ?>
-                    <td><a href="#" class="button15"
+                    <td><a href="#" class="button"
                            onclick="window.parent.sign([<?= $doc["ID"] ?>], {role: 'CLIENT'})"><?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOC_SIGN"); ?></a>
                     </td>
                     <?

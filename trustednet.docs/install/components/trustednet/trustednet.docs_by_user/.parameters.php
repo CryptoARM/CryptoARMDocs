@@ -8,6 +8,12 @@ $arComponentParameters = array(
         ),
     ),
     'PARAMETERS' => array(
+        'CHECK_ORDER_PROPERTY' => array(
+            'PARENT' => 'SETTINGS',
+            'NAME' => Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_CHECK_ORDER_PROPERTY"),
+            'TYPE' => 'CHECKBOX',
+            'DEFAULT' => 'Y',
+        ),
         /*'ELEMENTS_ON_PAGE' => array(
             'PARENT' => 'SETTINGS',
             'NAME' => Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_NAME"),

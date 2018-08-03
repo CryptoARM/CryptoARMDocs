@@ -12,7 +12,7 @@ use Bitrix\Main\Localization\Loc;
 
 <?
 $all_ids = array();
-while ($docsList = $arResult->NavNext()) {
+while ($docsList = $arResult->Fetch()) {
     $docs_info[] = array(
         "ID" => $docsList["ID"],
         "NAME" => $docsList["NAME"],

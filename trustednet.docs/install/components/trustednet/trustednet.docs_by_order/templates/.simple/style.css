@@ -59,11 +59,6 @@ tbody tr td{
     border-collapse: collapse;
 }
 
-orderr{
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e8e8e8;
-}
 thead{
     line-height: 20px;
     color: #7c7c7c;
