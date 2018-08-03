@@ -20,7 +20,7 @@ while ($docsList = $arResult->Fetch()) {
     $all_ids[] = $docsList["ID"];
 }
 ?>
-<body>
+<body ">
 <div id="main-document">
     <main class="document-card">
         <header class="document-card__title">
@@ -29,24 +29,24 @@ while ($docsList = $arResult->Fetch()) {
                     <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER"); ?>
                     <div id="sweeties" class="menu">
                         <div class="icon-wrapper">
-                            <div class="material-icons title">
+                            <div class="material-icons title" onclick="closed_by_order()">
                                 more_vert
                             </div>
                         </div>
-                        <ul>
-                            <div onclick="sign(<?= json_encode($all_ids) ?>, {role:'CLIENT'})">
+                        <ul id="ul_by_order">
+                            <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
                                 <div class="material-icons">
                                     create
                                 </div>
                                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>
                             </div>
-                            <div onclick="verify(<?= json_encode($all_ids) ?>)">
+                            <div onclick="verify(<?= json_encode($all_ids) ?>) || closed()">
                                 <div class="material-icons">
                                     info
                                 </div>
                                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_VERIFY_ALL"); ?>
                             </div>
-                            <div onclick="download_all(<?= json_encode($all_ids) ?>)">
+                            <div onclick="download_all_by_order(<?= json_encode($all_ids) ?>) || closed()">
                                 <div class="material-icons">
                                     save_alt
                                 </div>
@@ -133,18 +133,17 @@ while ($docsList = $arResult->Fetch()) {
                                 </div>
                             </div>
                             <div class="document-item__right">
-                                <div class="icon-wrapper"
-                                     onclick="window.parent.sign([<?= $doc_id ?>], {role: 'CLIENT'})">
+                                <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>" onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'} )">
                                     <i class="material-icons">
                                         create
                                     </i>
                                 </div>
-                                <div class="icon-wrapper" onclick="verify([<?= $doc_id ?>])">
+                                <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>" onclick="verify([<?= $doc_id ?>])">
                                     <i class="material-icons">
                                         info
                                     </i>
                                 </div>
-                                <div class="icon-wrapper" onclick="self.download(<?= $doc_id ?>, true)">
+                                <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>" onclick="self.download(<?= $doc_id ?>, true)">
                                     <i class="material-icons">
                                         save_alt
                                     </i>
@@ -199,15 +198,35 @@ while ($docsList = $arResult->Fetch()) {
 <script>
     var menuElem = document.getElementById('sweeties');
     var titleElem = menuElem.querySelector('.title');
-    titleElem.onclick = function () {
-        menuElem.classList.toggle('open');
-    };
+    var ulByOrder = document.getElementById('ul_by_order');
 
-    function download_all(ids) {
+
+    /* titleElem.onclick = function () {
+         if (ulBlock.style.display === "none") {
+
+             // menuElem.classList.toggle('open');
+             ulBlock.style.display = "block"
+         } else {
+             closed();
+         }
+     };*/
+
+    function download_all_by_order(ids) {
         var i = 0;
         ids.forEach(function (id) {
             window.setTimeout(self.download, i, id);
             i += 200;
         });
     }
+    //
+    function closed_by_order(){
+        if (ulByOrder.style.display === "none") {
+            ulByOrder.style.display = "block";
+        } else {
+            ulByOrder.style.display = "none";
+        }
+    }
+
+
+
 </script>

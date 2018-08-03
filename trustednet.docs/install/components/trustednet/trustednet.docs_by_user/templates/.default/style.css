@@ -129,12 +129,14 @@ div#sweeties ul > div > div {
     margin-right: 24px;
 }
 
-.menu.open ul {
-    display: block;
+#ul_by_user {
+    display: none;
     position: absolute;
     width: 191.672px;
     height: 224px;
     margin: -15px -150px;
+    z-index: 9999;
+    box-shadow: 0 0 0 99999px rgba(0,0,0,.6);
 }
 
 .document-card__content .document-item__left i {
@@ -147,7 +149,7 @@ div#sweeties ul > div > div {
     /*.material-icons {*/
     padding: 0 16px;
     font-size: 36px;
-    /*width: 42px;*/
+    width: 64px;
     height: 40px;
 
 }

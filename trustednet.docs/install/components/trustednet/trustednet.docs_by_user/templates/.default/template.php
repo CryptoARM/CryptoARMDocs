@@ -51,30 +51,30 @@ if (!empty($_FILES["userfile"]["name"])) {
                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"); ?>
                 <div id="sweeties" class="menu">
                     <div class="icon-wrapper">
-                        <div class="material-icons title">
+                        <div class="material-icons title" onclick="closed_by_user()">
                             more_vert
                         </div>
                     </div>
-                    <ul>
-                        <div onclick="sign(<?= json_encode($all_ids) ?>, {role:'CLIENT'})">
+                    <ul id="ul_by_user">
+                        <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
                             <div class="material-icons">
                                 create
                             </div>
                             <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
                         </div>
-                        <div onclick="verify(<?= json_encode($all_ids) ?>)">
+                        <div onclick="verify(<?= json_encode($all_ids) ?>) || closed()">
                             <div class="material-icons">
                                 info
                             </div>
                             <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
                         </div>
-                        <div onclick="download_all(<?= json_encode($all_ids) ?>)">
+                        <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
                             <div class="material-icons">
                                 save_alt
                             </div>
                             <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
                         </div>
-                        <div onclick="remove(<?= json_encode($all_ids) ?>)">
+                        <div onclick="remove(<?= json_encode($all_ids) ?>) || closed()">
                             <div class="material-icons">
                                 delete
                             </div>
@@ -154,27 +154,31 @@ if (!empty($_FILES["userfile"]["name"])) {
                                     <?= $doc_name ?>
                                 </div>
                                 <div class="document-text__description">
-                                    <?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($doc_id)) ?>
+                                    <? if ($doc_sign_status === DOC_STATUS_BLOCKED) {
+                                        echo Docs\Utils::getStatusString($doc_info);
+                                    } else {
+                                        echo Docs\Utils::getTypeString($doc_info);
+                                    } ?>
                                 </div>
                             </div>
                         </div>
                         <div class="document-item__right">
-                            <div class="icon-wrapper" onclick="window.parent.sign([<?= $doc_id ?>], {role: 'CLIENT'})">
+                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>" onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
                                 <i class="material-icons">
                                     create
                                 </i>
                             </div>
-                            <div class="icon-wrapper" onclick="verify([<?= $doc_id ?>])">
+                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>" onclick="verify([<?= $doc_id ?>])">
                                 <i class="material-icons">
                                     info
                                 </i>
                             </div>
-                            <div class="icon-wrapper" onclick="self.download(<?= $doc_id ?>, true)">
+                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>" onclick="self.download(<?= $doc_id ?>, true)">
                                 <i class="material-icons">
                                     save_alt
                                 </i>
                             </div>
-                            <div class="icon-wrapper" onclick="window.parent.remove([<?= $doc_id ?>])">
+                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>" onclick="window.parent.remove([<?= $doc_id ?>])">
                                 <i class="material-icons">
                                     delete
                                 </i>
@@ -228,20 +232,30 @@ if (!empty($_FILES["userfile"]["name"])) {
 <script>
     var menuElem = document.getElementById('sweeties');
     var titleElem = menuElem.querySelector('.title');
-    titleElem.onclick = function () {
+    var ulByUser = document.getElementById('ul_by_user');
+
+    /*titleElem.onclick = function () {
         menuElem.classList.toggle('open');
-    };
+    };*/
 
     //close sweeties elem when u click on another place
     /*function closed() {
            document.getElementById("UL").style.display = "none";
     }*/
 
-    function download_all(ids) {
+    function download_all_by_user(ids) {
         var i = 0;
         ids.forEach(function (id) {
             window.setTimeout(self.download, i, id);
             i += 200;
         });
+    }
+
+    function closed_by_user(){
+        if (ulByUser.style.display === "none") {
+            ulByUser.style.display = "block";
+        } else {
+            ulByUser.style.display = "none";
+        }
     }
 </script>

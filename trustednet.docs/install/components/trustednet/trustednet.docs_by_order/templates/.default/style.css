@@ -126,8 +126,8 @@ div#sweeties ul > div > div {
     margin-right: 24px;
 }
 
-.menu.open ul {
-    display: block;
+#ul_by_order {
+    display: none;
     position: absolute;
     width: 191.672px;
     height: 224px;
@@ -144,7 +144,7 @@ div#sweeties ul > div > div {
     /*.material-icons {*/
     padding: 0 16px;
     font-size: 36px;
-    /*width: 42px;*/
+    width: 64px;
     height: 40px;
 
 }

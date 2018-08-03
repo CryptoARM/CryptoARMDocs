@@ -7,6 +7,11 @@ $MESS["TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Verify all";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"] = "Download all";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"] = "Delete all";
 
+$MESS["TN_DOCS_COMP_DOCS_BY_USER_SIGN"] = "Sign document";
+$MESS["TN_DOCS_COMP_DOCS_BY_USER_VERIFY"] = "Verify sign";
+$MESS["TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"] = "Download document";
+$MESS["TN_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Delete document";
+
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_ERROR"] = "Error";
 
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_NO_DOC_EXIST"] = "No attached documents";
