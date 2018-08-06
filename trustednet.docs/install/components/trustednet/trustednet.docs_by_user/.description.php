@@ -5,7 +5,7 @@ $arComponentDescription = array(
     'NAME' => Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_USER"),
     'DESCRIPTION' => Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_LIST"),
     'PATH' => array(
-        'ID' => 'DocsByUser',
+        'ID' => 'TrustedNet Documents',
         "NAME" => Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOC"),
     ),
     'CACHE_PATH' => 'Y',

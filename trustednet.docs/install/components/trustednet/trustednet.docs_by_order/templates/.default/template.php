@@ -205,7 +205,7 @@ while ($docsList = $arResult->Fetch()) {
     }
 
     $(".document-card").click(function() {
-        $('#ul_by_user').toggle();
+        $('#ul_by_order').toggle();
     });
     $(document).on('click', function(e) {
         if (!$(e.target).closest(".title").length) {

@@ -21,12 +21,26 @@ header.document-card__title {
     align-items: center;
 }
 
+.document-item__text {
+    width: 60%;
+}
+
 .document-item__text .document-text__title {
     color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: auto;
+    height: auto;
 }
 
 .document-item__text .document-text__description {
     color: rgba(0, 0, 0, 0.38);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: auto;
+    height: auto;
 }
 
 .document-card__content .document-content__item {
@@ -54,11 +68,13 @@ header.document-card__title {
 
 .document-content__item .document-item__left {
     justify-content: flex-start;
+    width: 68%;
 }
 
 .document-content__item .document-item__right {
     flex-wrap: wrap;
     justify-content: center;
+    width: 32%;
 }
 
 .document-card__content .document-item__text {
