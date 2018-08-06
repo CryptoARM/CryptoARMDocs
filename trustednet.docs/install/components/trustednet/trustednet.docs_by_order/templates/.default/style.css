@@ -3,7 +3,7 @@
     justify-content: center;
     display: flex;
     background-color: rgb(238, 238, 238);
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 main.document-card {
@@ -118,6 +118,7 @@ div#sweeties ul > div {
 div#sweeties ul > div:hover {
     background-color: rgb(238,238,238);
     cursor: pointer;
+    z-index: 9999;
 }
 
 div#sweeties ul > div > div {
@@ -132,6 +133,8 @@ div#sweeties ul > div > div {
     width: 191.672px;
     height: 224px;
     margin: -15px -150px;
+    z-index: 9999;
+    box-shadow: 0 0 0 99999px rgba(0,0,0,.6);
 }
 
 .document-card__content .document-item__left i {
@@ -205,7 +208,7 @@ div#sweeties ul > div > div {
 
 p {
     margin: 0;
-    font-family: 'Roboto Condensed', sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .document-item__text {

@@ -6,7 +6,7 @@ use Bitrix\Main\Localization\Loc;
 ?>
 
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
@@ -51,7 +51,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                 <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"); ?>
                 <div id="sweeties" class="menu">
                     <div class="icon-wrapper">
-                        <div class="material-icons title" onclick="closed_by_user()">
+                        <div class="material-icons title">
                             more_vert
                         </div>
                     </div>
@@ -230,19 +230,6 @@ if (!empty($_FILES["userfile"]["name"])) {
 </body>
 
 <script>
-    var menuElem = document.getElementById('sweeties');
-    var titleElem = menuElem.querySelector('.title');
-    var ulByUser = document.getElementById('ul_by_user');
-
-    /*titleElem.onclick = function () {
-        menuElem.classList.toggle('open');
-    };*/
-
-    //close sweeties elem when u click on another place
-    /*function closed() {
-           document.getElementById("UL").style.display = "none";
-    }*/
-
     function download_all_by_user(ids) {
         var i = 0;
         ids.forEach(function (id) {
@@ -251,11 +238,13 @@ if (!empty($_FILES["userfile"]["name"])) {
         });
     }
 
-    function closed_by_user(){
-        if (ulByUser.style.display === "none") {
-            ulByUser.style.display = "block";
-        } else {
-            ulByUser.style.display = "none";
+    $(".document-card").click(function() {
+        $('#ul_by_user').toggle();
+    });
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest(".title").length) {
+            $('#ul_by_user').hide();
         }
-    }
+        e.stopPropagation();
+    });
 </script>

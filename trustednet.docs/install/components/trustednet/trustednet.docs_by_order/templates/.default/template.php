@@ -6,7 +6,7 @@ use Bitrix\Main\Localization\Loc;
 ?>
 
 <head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <?
@@ -29,7 +29,7 @@ while ($docsList = $arResult->Fetch()) {
                     <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER"); ?>
                     <div id="sweeties" class="menu">
                         <div class="icon-wrapper">
-                            <div class="material-icons title" onclick="closed_by_order()">
+                            <div class="material-icons title">
                                 more_vert
                             </div>
                         </div>
@@ -196,21 +196,6 @@ while ($docsList = $arResult->Fetch()) {
 </body>
 
 <script>
-    var menuElem = document.getElementById('sweeties');
-    var titleElem = menuElem.querySelector('.title');
-    var ulByOrder = document.getElementById('ul_by_order');
-
-
-    /* titleElem.onclick = function () {
-         if (ulBlock.style.display === "none") {
-
-             // menuElem.classList.toggle('open');
-             ulBlock.style.display = "block"
-         } else {
-             closed();
-         }
-     };*/
-
     function download_all_by_order(ids) {
         var i = 0;
         ids.forEach(function (id) {
@@ -218,15 +203,14 @@ while ($docsList = $arResult->Fetch()) {
             i += 200;
         });
     }
-    //
-    function closed_by_order(){
-        if (ulByOrder.style.display === "none") {
-            ulByOrder.style.display = "block";
-        } else {
-            ulByOrder.style.display = "none";
+
+    $(".document-card").click(function() {
+        $('#ul_by_user').toggle();
+    });
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest(".title").length) {
+            $('#ul_by_order').hide();
         }
-    }
-
-
-
+        e.stopPropagation();
+    });
 </script>
