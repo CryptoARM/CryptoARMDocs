@@ -12,7 +12,7 @@ $docList = $docs->getList();
 $docsInfo = array();
 
 foreach ($docList as $doc) {
-    if ($arParams["CHECK_ORDER_PROPERTY"] === "Y" &&  $doc->getProperties()->getPropByType("ORDER")) {
+    if ($arParams["CHECK_ORDER_PROPERTY"] === "N" &&  $doc->getProperties()->getPropByType("ORDER")) {
             continue;
     } else {
         $docsInfo[] = array(

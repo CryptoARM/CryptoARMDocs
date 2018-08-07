@@ -1,6 +1,6 @@
 <?php
 
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"] = "Document by user";
+$MESS["TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"] = "Document by user ";
 
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"] = "Sign all";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Verify all";
@@ -11,12 +11,5 @@ $MESS["TN_DOCS_COMP_DOCS_BY_USER_SIGN"] = "Sign document";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_VERIFY"] = "Verify sign";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"] = "Download document";
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Delete document";
-
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_ERROR"] = "Error";
-
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_NO_DOC_EXIST"] = "No attached documents";
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_ADD_DOC"] = "Add document";
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_NOT_AUTORIZED"] = "Not authorized";
-$MESS["TN_DOCS_COMP_DOCS_BY_USER_FIX_AUTORIZED"] = "Authorize in system";
 
 $MESS["TN_DOCS_COMP_DOCS_BY_USER_ADD"] = "ADD";

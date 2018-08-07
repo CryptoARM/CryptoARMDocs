@@ -1,5 +1,6 @@
 <?php
 
+$MESS["TN_DOCS_COMP_DOCS_BY_ORDER_NUMBER"] = "Documents by order №";
 $MESS["TN_DOCS_COMP_DOCS_BY_ORDER_DOCS"] = "Document name";
 $MESS["TN_DOCS_COMP_DOCS_BY_ORDER_STATUS"] = "Document status";
 

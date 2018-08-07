@@ -10,20 +10,18 @@ use Bitrix\Main\Localization\Loc;
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
-<?
-$all_ids = array();
+<? $all_ids = array();
 while ($docsList = $arResult->Fetch()) {
     $docs_info[] = array(
         "ID" => $docsList["ID"],
         "NAME" => $docsList["NAME"],
         "STATUS" => $docsList["STATUS"],
+        "LINK" => $docsList["LINK"]
     );
     $all_ids[] = $docsList["ID"];
-}
-?>
+} ?>
 
-<?
-$DOCUMENTS_DIR = COption::GetOptionString("trustednet.docs", "DOCUMENTS_DIR", "docs");
+<? $DOCUMENTS_DIR = COption::GetOptionString("trustednet.docs", "DOCUMENTS_DIR", "docs");
 if (!empty($_FILES["userfile"]["name"])) {
     {
         $uniqid = (string)uniqid();
@@ -47,168 +45,131 @@ if (!empty($_FILES["userfile"]["name"])) {
 <div id="main-document">
     <main class="document-card">
         <header class="document-card__title">
-            <? if ($USER->IsAuthorized()) { ?>
-                <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"); ?>
-                <div id="sweeties" class="menu">
-                    <div class="icon-wrapper">
-                        <div class="material-icons title">
-                            more_vert
-                        </div>
+            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"); ?><?= $USER->GetFullName() ?>
+            <div id="sweeties" class="menu">
+                <div class="icon-wrapper">
+                    <div class="material-icons title">
+                        more_vert
                     </div>
-                    <ul id="ul_by_user">
-                        <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
-                            <div class="material-icons">
-                                create
-                            </div>
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
-                        </div>
-                        <div onclick="verify(<?= json_encode($all_ids) ?>) || closed()">
-                            <div class="material-icons">
-                                info
-                            </div>
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
-                        </div>
-                        <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
-                            <div class="material-icons">
-                                save_alt
-                            </div>
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
-                        </div>
-                        <div onclick="remove(<?= json_encode($all_ids) ?>) || closed()">
-                            <div class="material-icons">
-                                delete
-                            </div>
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
-                        </div>
-                    </ul>
                 </div>
-            <? } else { ?>
-                <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_ERROR"); ?>
-            <? } ?>
+                <ul id="ul_by_user">
+                    <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
+                        <div class="material-icons">
+                            create
+                        </div>
+                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
+                    </div>
+                    <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
+                        <div class="material-icons">
+                            info
+                        </div>
+                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
+                    </div>
+                    <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
+                        <div class="material-icons">
+                            save_alt
+                        </div>
+                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
+                    </div>
+                    <div onclick="remove(<?= json_encode($all_ids) ?>) || closed()">
+                        <div class="material-icons">
+                            delete
+                        </div>
+                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
+                    </div>
+                </ul>
+            </div>
         </header>
 
         <div class="document-card__content">
-            <? if ($USER->IsAuthorized()) {
-                $i = 0;
-                foreach ($docs_info as $doc) {
-                    $i++
-                    ?>
-                    <div class="document-content__item">
-                        <div class="document-item__left">
-                            <?
-                            $doc_id = $doc["ID"];
-                            $doc_name = $doc["NAME"];
-                            $doc_status = $doc["STATUS"];
-                            $doc_info = Docs\Database::getDocumentById($doc_id);
-                            $doc_sign_type = $doc_info->getType();
-                            $doc_sign_status = NULL;
-                            $doc_sign_status = $doc_info->getStatus();
-                            if ($doc_sign_type == DOC_TYPE_SIGNED_FILE) {
-                                ?>
-                                <div class="material-icons" style="color: rgb(33, 150, 243);">
-                                    check_circles
-                                </div>
-                                <?
-                            } else {
-                                switch ($doc_sign_status) {
-                                    case DOC_STATUS_NONE:
-                                        {
-                                            ?>
-                                            <div class="material-icons" style="color: green">
-                                                insert_drive_file
-                                            </div>
-                                            <?
-                                            break;
-                                        }
-                                    case DOC_STATUS_BLOCKED:
-                                        {
-                                            ?>
-                                            <div class="material-icons" style="color: red">
-                                                lock
-                                            </div>
-                                            <?
-                                            break;
-                                        }
-                                    case DOC_STATUS_CANCELED:
-                                        {
-                                            ?>
-                                            <div class="material-icons" style="color: red">
-                                                insert_drive_file
-                                            </div>
-                                            <?
-                                            break;
-                                        }
-                                    case DOC_STATUS_ERROR:
-                                        {
-                                            ?>
-                                            <div class="material-icons" style="color: red">
-                                                error
-                                            </div>
-                                            <?
-                                            break;
-                                        }
-                                }
-                            } ?>
-                            <div class="document-item__text">
-                                <div class="document-text__title">
-                                    <?= $doc_name ?>
-                                </div>
-                                <div class="document-text__description">
-                                    <? if ($doc_sign_status === DOC_STATUS_BLOCKED) {
-                                        echo Docs\Utils::getStatusString($doc_info);
-                                    } else {
-                                        echo Docs\Utils::getTypeString($doc_info);
-                                    } ?>
-                                </div>
+            <? foreach ($docs_info as $doc) { ?>
+                <div class="document-content__item">
+                    <div class="document-item__left">
+                        <?
+                        $doc_id = $doc["ID"];
+                        $doc_name = $doc["NAME"];
+                        $doc_status = $doc["STATUS"];
+                        $doc_info = Docs\Database::getDocumentById($doc_id);
+                        $doc_sign_type = $doc_info->getType();
+                        $doc_sign_status = NULL;
+                        $doc_sign_status = $doc_info->getStatus();
+                        if ($doc_sign_type == DOC_TYPE_SIGNED_FILE) { ?>
+                            <div class="material-icons" style="color: rgb(33, 150, 243);">
+                                check_circles
                             </div>
-                        </div>
-                        <div class="document-item__right">
-                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>" onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
-                                <i class="material-icons">
-                                    create
-                                </i>
+                        <? } else {
+                            switch ($doc_sign_status) {
+                                case DOC_STATUS_NONE:
+                                    { ?>
+                                        <div class="material-icons" style="color: green">
+                                            insert_drive_file
+                                        </div>
+                                        <? break;
+                                    }
+                                case DOC_STATUS_BLOCKED:
+                                    { ?>
+                                        <div class="material-icons" style="color: red">
+                                            lock
+                                        </div>
+                                        <? break;
+                                    }
+                                case DOC_STATUS_CANCELED:
+                                    { ?>
+                                        <div class="material-icons" style="color: red">
+                                            insert_drive_file
+                                        </div>
+                                        <? break;
+                                    }
+                                case DOC_STATUS_ERROR:
+                                    { ?>
+                                        <div class="material-icons" style="color: red">
+                                            error
+                                        </div>
+                                        <? break;
+                                    }
+                            }
+                        } ?>
+                        <div class="document-item__text">
+                            <div class="document-text__title">
+                                <?= $doc_name ?>
                             </div>
-                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>" onclick="verify([<?= $doc_id ?>])">
-                                <i class="material-icons">
-                                    info
-                                </i>
-                            </div>
-                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>" onclick="self.download(<?= $doc_id ?>, true)">
-                                <i class="material-icons">
-                                    save_alt
-                                </i>
-                            </div>
-                            <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>" onclick="window.parent.remove([<?= $doc_id ?>])">
-                                <i class="material-icons">
-                                    delete
-                                </i>
+                            <div class="document-text__description">
+                                <? if ($doc_sign_status === DOC_STATUS_BLOCKED) {
+                                    echo Docs\Utils::getStatusString($doc_info);
+                                } else {
+                                    echo Docs\Utils::getTypeString($doc_info);
+                                } ?>
                             </div>
                         </div>
                     </div>
-                <? }
-                if ($i == 0) { ?>
-                    <div class="document_is_authorized">
-                        <div class="error-message">
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_NO_DOC_EXIST"); ?>
+                    <div class="document-item__right">
+                        <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
+                             onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
+                            <i class="material-icons">
+                                create
+                            </i>
                         </div>
-                        <div class="material-icons large-icon">
-                            sentiment_very_dissatisfied
+                        <div class="icon-wrapper"
+                             title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
+                             onclick="verify([<?= $doc_id ?>])">
+                            <i class="material-icons">
+                                info
+                            </i>
                         </div>
-                        <div class="description">
-                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_ADD_DOC"); ?>
+                        <div class="icon-wrapper"
+                             title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
+                             onclick="self.download(<?= $doc_id ?>, true)">
+                            <i class="material-icons">
+                                save_alt
+                            </i>
                         </div>
-                    </div>
-                <? }
-            } else { ?>
-                <div class="document_is_authorized">
-                    <div class="error-message">
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_NOT_AUTORIZED"); ?>
-                    </div>
-                    <div class="material-icons large-icon">
-                        sentiment_very_dissatisfied
-                    </div>
-                    <div class="description">
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_FIX_AUTORIZED"); ?>
+                        <div class="icon-wrapper"
+                             title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
+                             onclick="window.parent.remove([<?= $doc_id ?>])">
+                            <i class="material-icons">
+                                delete
+                            </i>
+                        </div>
                     </div>
                 </div>
             <? } ?>
@@ -238,10 +199,10 @@ if (!empty($_FILES["userfile"]["name"])) {
         });
     }
 
-    $(".document-card").click(function() {
+    $(".document-card").click(function () {
         $('#ul_by_user').toggle();
     });
-    $(document).on('click', function(e) {
+    $(document).on('click', function (e) {
         if (!$(e.target).closest(".title").length) {
             $('#ul_by_user').hide();
         }

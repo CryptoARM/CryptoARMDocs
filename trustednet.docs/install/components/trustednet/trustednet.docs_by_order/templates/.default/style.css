@@ -68,13 +68,13 @@ header.document-card__title {
 
 .document-content__item .document-item__left {
     justify-content: flex-start;
-    width: 68%;
+    width: 73%;
 }
 
 .document-content__item .document-item__right {
     flex-wrap: wrap;
     justify-content: center;
-    width: 32%;
+    width: 175px;
 }
 
 .document-card__content .document-item__text {
@@ -166,33 +166,6 @@ div#sweeties ul > div > div {
     width: 64px;
     height: 40px;
 
-}
-
-.document_is_authorized {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 66px;
-    flex-direction: column;
-}
-
-.document_is_authorized div {
-    padding: 8px 0;
-}
-
-.document_is_authorized .error-message {
-    font-size: 24px;
-    color: rgba(0, 0, 0, 0.54);
-}
-
-.document_is_authorized .description {
-    font-size: 15px;
-    color: rgba(0, 0, 0, 0.87);
-}
-
-.document_is_authorized .large-icon {
-    font-size: 88px;
-    color: rgba(0, 0, 0, 0.54);
 }
 
 .icon-wrapper {
