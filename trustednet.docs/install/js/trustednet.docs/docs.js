@@ -258,7 +258,9 @@ function download(id, del = false) {
                     var removeMessage = LOST_DOC_REMOVE_CONFIRM_PRE;
                     removeMessage += '\n' + d.filename + '\n';
                     removeMessage += LOST_DOC_REMOVE_CONFIRM_POST;
-                    remove({id}, removeMessage);
+                    if (confirm(removeMessage)) {
+                        remove({id}, removeMessage);
+                    }
                 } else {
                     var alertMessage = LOST_DOC;
                     alertMessage += '\n' + d.filename;
