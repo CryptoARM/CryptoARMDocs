@@ -1,4 +1,5 @@
 <?php
+
 namespace TrustedNet\Docs;
 
 /**
@@ -70,7 +71,7 @@ class AjaxCommand
             $res["docsNotFound"] = $docsNotFound;
         }
         if ($docsFileNotFound->count()) {
-            foreach($docsFileNotFound->getList() as $doc) {
+            foreach ($docsFileNotFound->getList() as $doc) {
                 $res["docsFileNotFound"][] = array(
                     "filename" => $doc->getName(),
                     "id" => $doc->getId(),
@@ -78,7 +79,7 @@ class AjaxCommand
             }
         }
         if ($docsBlocked->count()) {
-            foreach($docsBlocked->getList() as $doc) {
+            foreach ($docsBlocked->getList() as $doc) {
                 $res["docsBlocked"][] = array(
                     "filename" => $doc->getName(),
                     "id" => $doc->getId(),
@@ -86,7 +87,7 @@ class AjaxCommand
             }
         }
         if ($docsRoleSigned->count()) {
-            foreach($docsRoleSigned->getList() as $doc) {
+            foreach ($docsRoleSigned->getList() as $doc) {
                 $res["docsRoleSigned"][] = array(
                     "filename" => $doc->getName(),
                     "id" => $doc->getId(),
@@ -149,7 +150,7 @@ class AjaxCommand
         // TODO: add security check
         if (true) {
             $doc = Database::getDocumentById($params['id']);
-            $lastDoc =$doc->getLastDocument();
+            $lastDoc = $doc->getLastDocument();
             if ($lastDoc->getId() != $doc->getId()) {
                 $res["message"] = "Document already has child.";
                 return $res;
@@ -302,9 +303,9 @@ class AjaxCommand
     }
 
     /**
-     * Checks if file exists on the disk
+     * Checks if files exist on the disk
      *
-     * @param array $params [id]: document id,
+     * @param array $params [ids]: document ids
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
@@ -314,22 +315,72 @@ class AjaxCommand
         $res = array(
             "success" => false,
             "message" => "Unknown error in Ajax.download",
-            "filename" => ""
         );
-        $doc = Database::getDocumentById($params['id']);
-        if ($doc) {
-            $last = $doc->getLastDocument();
-            $res["filename"] = $last->getName();
-            if ($last->checkFile()) {
-                $res["success"] = true;
-                $res["message"] = "File found";
-                return $res;
+
+        $ids = $params["ids"];
+
+        $docsFound = new DocumentCollection();
+        $docsNotFound = array();
+        $docsFileNotFound = new DocumentCollection();
+
+        foreach ($ids as $id) {
+            $doc = Database::getDocumentById($id);
+            if ($doc) {
+                $doc = $doc->getLastDocument();
+                if ($doc->checkFile()) {
+                    $docsFound->add($doc);
+                } else {
+                    $docsFileNotFound->add($doc);
+                }
             } else {
-                $res["message"] = "File not found";
+                $docsNotFound[] = $id;
             }
-        } else {
-            $res["message"] = "Document no found";
         }
+
+        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TrnDocsTmp/")) {
+            mkdir($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TrnDocsTmp/", 0744);
+        }
+
+        if ($docsFound->count()) {
+            $archiveName = $params["archiveName"] ? $params["archiveName"] . ".zip" : "TrnDocs.zip";
+            $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $archiveName;
+            $archiveObject = \CBXArchive::GetArchive($archivePath);
+            $archiveObject->SetOptions(
+                array(
+                    "REMOVE_PATH" => $_SERVER["DOCUMENT_ROOT"],
+                )
+            );
+            $docsFoundPaths = array();
+            foreach ($docsFound->getList() as $doc) {
+                $docPath = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
+                $docsFoundPaths[] = $docPath;
+            }
+            $archiveObject->Pack($docsFoundPaths);
+        }
+
+        if ($docsNotFound) {
+            $res["docsNotFound"] = $docsNotFound;
+        }
+
+        if ($docsFileNotFound->count()) {
+            $res["docsFileNotFound"] = array();
+            foreach ($docsFileNotFound->getList() as $doc) {
+                $res["docsFileNotFound"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+
+        rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TrnDocsTmp/" . $archiveName);
+
+        if ($docsFound->count()) {
+            $res["success"] = true;
+            $res["message"] = "Some document files were found";
+        } else {
+            $res["message"] = "Nothing to download";
+        }
+        $res["content"] = $archiveName;
         return $res;
     }
 
@@ -337,6 +388,7 @@ class AjaxCommand
      * Sends document file
      *
      * @param array $params [id]: document id
+     *                      [file]: path to file
      * @return void
      */
     static function content($params)
@@ -345,14 +397,22 @@ class AjaxCommand
             "success" => false,
             "message" => "Unknown error in Ajax.content",
         );
-        $doc = Database::getDocumentById($params['id']);
-        if ($doc) {
-            $last = $doc->getLastDocument();
-            $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
-            Utils::download($file, $doc->getName());
+        if ($params["id"]) {
+            $doc = Database::getDocumentById($params['id']);
+            if ($doc) {
+                $last = $doc->getLastDocument();
+                $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
+                Utils::download($file, $doc->getName());
+            } else {
+                header("HTTP/1.1 500 Internal Server Error");
+                $res["message"] = "Document is not found";
+                echo json_encode($res);
+                die();
+            }
+        } elseif ($params["file"]) {
+            Utils::download($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TrnDocsTmp/" . $params["file"], $params["file"]);
         } else {
-            header("HTTP/1.1 500 Internal Server Error");
-            $res["message"] = "Document is not found";
+            $res["message"] = "No argument given";
             echo json_encode($res);
             die();
         }

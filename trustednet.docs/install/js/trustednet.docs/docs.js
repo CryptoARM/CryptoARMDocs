@@ -88,31 +88,31 @@ function sign(ids, extra = null) {
     });
 }
 
-function show_messages(sign_res) {
-    if (sign_res.docsFileNotFound) {
+function show_messages(response) {
+    if (response.docsFileNotFound) {
         message = ERROR_FILE_NOT_FOUND;
-        sign_res.docsFileNotFound.forEach(function (elem) {
+        response.docsFileNotFound.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
     }
-    if (sign_res.docsNotFound) {
+    if (response.docsNotFound) {
         message = ERROR_DOC_NOT_FOUND;
-        sign_res.docsNotFound.forEach(function (elem) {
+        response.docsNotFound.forEach(function (elem) {
             message += '\n' + elem;
         });
         alert(message);
     }
-    if (sign_res.docsBlocked) {
+    if (response.docsBlocked) {
         message = ERROR_DOC_BLOCKED;
-        sign_res.docsBlocked.forEach(function (elem) {
+        response.docsBlocked.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
     }
-    if (sign_res.docsRoleSigned) {
+    if (response.docsRoleSigned) {
         message = ERROR_DOC_ROLE_SIGNED;
-        sign_res.docsRoleSigned.forEach(function (elem) {
+        response.docsRoleSigned.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
@@ -211,6 +211,7 @@ function unblock(ids) {
 }
 
 function remove(ids, force = false, message = REMOVE_ACTION_CONFIRM) {
+    // TODO: simplify
     if (force) {
         var conf = true;
     } else {
@@ -244,27 +245,30 @@ function remove(ids, force = false, message = REMOVE_ACTION_CONFIRM) {
     }
 }
 
-function download(id, del = false) {
+function download(ids, del = false, archiveName = null) {
     $.ajax({
         url: AJAX_CONTROLLER + '?command=download',
         type: 'post',
-        data: {id: id},
+        data: {ids: ids, archiveName: archiveName},
         success: function(d) {
             console.log(d);
+            if (d.docsFileNotFound || d.docsNotFound) {
+                show_messages(d);
+            }
             if (d.success === true) {
-                window.location.href = AJAX_CONTROLLER + '?command=content&id=' + id;
+                if (ids.length === 1) {
+                    window.location.href = AJAX_CONTROLLER + '?command=content&id=' + ids[0];
+                } else {
+                    window.location.href = AJAX_CONTROLLER + '?command=content&file=' + d.content;
+                }
             } else {
                 if (del) {
                     var removeMessage = LOST_DOC_REMOVE_CONFIRM_PRE;
                     removeMessage += '\n' + d.filename + '\n';
                     removeMessage += LOST_DOC_REMOVE_CONFIRM_POST;
                     if (confirm(removeMessage)) {
-                        remove({id}, removeMessage);
+                        remove({ids}, removeMessage);
                     }
-                } else {
-                    var alertMessage = LOST_DOC;
-                    alertMessage += '\n' + d.filename;
-                    alert(alertMessage);
                 }
             }
         },

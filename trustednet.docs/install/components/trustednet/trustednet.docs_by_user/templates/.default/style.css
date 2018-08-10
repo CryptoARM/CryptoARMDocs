@@ -14,7 +14,7 @@ main.document-card {
     border-radius: 2px;
 }
 
-header.document-card__title {
+header.document-card__title_user {
     border-radius: 2px 2px 0 0;
     display: flex;
     justify-content: space-between;
@@ -61,7 +61,7 @@ header.document-card__title {
 }
 
 .document-content__item .document-item__left,
-.document-content__item .document-item__right {
+.document-content__item .document-item__right_user {
     display: flex;
     align-items: center;
 }
@@ -71,7 +71,7 @@ header.document-card__title {
     width: 73%;
 }
 
-.document-content__item .document-item__right {
+.document-content__item .document-item__right_user {
     flex-wrap: wrap;
     justify-content: center;
     width: 228px;
@@ -84,7 +84,7 @@ header.document-card__title {
     line-height: 1.2;
 }
 
-.document-card__title {
+.document-card__title_user {
     background-color: rgb(33, 150, 243);
     font-size: 24px;
     font-weight: 300;
@@ -99,7 +99,7 @@ header.document-card__title {
     align-items: center;
 }
 
-.document-card .document-card__title i {
+.document-card .document-card__title_user i {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -182,15 +182,15 @@ div#sweeties ul > div > div {
     align-items: center;
 }
 
-.document-card__title .icon-wrapper:hover {
+.document-card__title_user .icon-wrapper:hover {
     background-color: rgba(255, 255, 255, 0.12);
 }
 
-.document-item__right .icon-wrapper:hover {
+.document-item__right_user .icon-wrapper:hover {
     background-color: rgba(33, 150, 243, 0.12);
 }
 
-.document-card__content .document-item__right i {
+.document-card__content .document-item__right_user i {
     align-self: center;
     width: 24px;
     height: 24px;
@@ -207,7 +207,7 @@ p {
     padding: 16px 0;
 }
 
-.document-item__right {
+.document-item__right_user {
     padding: 4px 8px;
 }
 

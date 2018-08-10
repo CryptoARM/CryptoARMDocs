@@ -127,8 +127,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $docName = "<input type='button' value='i' onclick='verify([";
     $docName .= $docId . "])' class='verify_button' title='" . Loc::getMessage("TN_DOCS_VERIFY_DOC") . "'/>";
-    $docName .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
-    $docName .= $docId . ", true)' >" . $doc->getName() . "</a>";
+    $docName .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download([";
+    $docName .= $docId . "], true)' >" . $doc->getName() . "</a>";
 
     if ($doc->getSigners() == "") {
         $signers = array();

@@ -20,40 +20,44 @@ while ($docsList = $arResult->Fetch()) {
     );
     $all_ids[] = $docsList["ID"];
 }
+$title = Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER") . $arParams["ORDER"];
+$zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
 ?>
 
 <body>
 <div id="main-document">
     <main class="document-card">
         <header class="document-card__title">
-            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER"); ?><?= $arParams["ORDER"] ?>
-            <div id="sweeties" class="menu">
-                <div class="icon-wrapper">
-                    <div class="material-icons title">
-                        more_vert
+            <?= $title ?>
+            <? if (!empty($all_ids)) { ?>
+                <div id="sweeties" class="menu">
+                    <div class="icon-wrapper">
+                        <div class="material-icons title">
+                            more_vert
+                        </div>
                     </div>
+                    <ul id="ul_by_order">
+                        <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} )">
+                            <div class="material-icons">
+                                create
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>
+                        </div>
+                        <div onclick="verify(<?= json_encode($all_ids) ?>)">
+                            <div class="material-icons">
+                                info
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_VERIFY_ALL"); ?>
+                        </div>
+                        <div onclick="self.download(<?= json_encode($all_ids) ?>, true, '<?= $zipName ?>')">
+                            <div class="material-icons">
+                                save_alt
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD_ALL"); ?>
+                        </div>
+                    </ul>
                 </div>
-                <ul id="ul_by_order">
-                    <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
-                        <div class="material-icons">
-                            create
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>
-                    </div>
-                    <div onclick="verify(<?= json_encode($all_ids) ?>) || closed()">
-                        <div class="material-icons">
-                            info
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_VERIFY_ALL"); ?>
-                    </div>
-                    <div onclick="download_all_by_order(<?= json_encode($all_ids) ?>) || closed()">
-                        <div class="material-icons">
-                            save_alt
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD_ALL"); ?>
-                    </div>
-                </ul>
-            </div>
+            <? } ?>
         </header>
 
         <div class="document-card__content">
@@ -129,7 +133,7 @@ while ($docsList = $arResult->Fetch()) {
                             </i>
                         </div>
                         <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
-                             onclick="self.download(<?= $doc_id ?>, true)">
+                             onclick="self.download([<?= $doc_id ?>], true)">
                             <i class="material-icons">
                                 save_alt
                             </i>
@@ -143,15 +147,7 @@ while ($docsList = $arResult->Fetch()) {
 </body>
 
 <script>
-    function download_all_by_order(ids) {
-        var i = 0;
-        ids.forEach(function (id) {
-            window.setTimeout(self.download, i, id);
-            i += 200;
-        });
-    }
-
-    $(".document-card").click(function () {
+    $(".document-card__title").click(function () {
         $('#ul_by_order').toggle();
     });
     $(document).on('click', function (e) {

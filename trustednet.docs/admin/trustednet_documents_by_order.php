@@ -327,9 +327,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= "<td>";
         $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TN_DOCS_VERIFY_DOC") . "'/>";
-        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download(";
+        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TN_DOCS_DOWNLOAD_DOC") . "' onclick='self.download([";
         $docViewField .= $docId;
-        $docViewField .= ", true)'>";
+        $docViewField .= "], true)'>";
         $docViewField .= $docName . "</a>";
         $docViewField .= "</td>";
         $docViewField .= "<td>" . $docRoleStatus . "<br />";

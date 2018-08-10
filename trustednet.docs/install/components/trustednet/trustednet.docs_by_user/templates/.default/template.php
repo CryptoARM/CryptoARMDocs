@@ -16,12 +16,14 @@ while ($docsList = $arResult->Fetch()) {
         "ID" => $docsList["ID"],
         "NAME" => $docsList["NAME"],
         "STATUS" => $docsList["STATUS"],
-        "LINK" => $docsList["LINK"]
     );
     $all_ids[] = $docsList["ID"];
-} ?>
+}
 
-<? $DOCUMENTS_DIR = COption::GetOptionString("trustednet.docs", "DOCUMENTS_DIR", "docs");
+$title = Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
+$zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
+
+$DOCUMENTS_DIR = COption::GetOptionString("trustednet.docs", "DOCUMENTS_DIR", "docs");
 if (!empty($_FILES["userfile"]["name"])) {
     {
         $uniqid = (string)uniqid();
@@ -44,41 +46,43 @@ if (!empty($_FILES["userfile"]["name"])) {
 <body>
 <div id="main-document">
     <main class="document-card">
-        <header class="document-card__title">
-            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"); ?><?= $USER->GetFullName() ?>
-            <div id="sweeties" class="menu">
-                <div class="icon-wrapper">
-                    <div class="material-icons title">
-                        more_vert
+        <header class="document-card__title_user">
+            <?= $title ?>
+            <? if (!empty($all_ids)) { ?>
+                <div id="sweeties" class="menu">
+                    <div class="icon-wrapper">
+                        <div class="material-icons title">
+                            more_vert
+                        </div>
                     </div>
+                    <ul id="ul_by_user">
+                        <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} )">
+                            <div class="material-icons">
+                                create
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
+                        </div>
+                        <div onclick="verify(<?= json_encode($all_ids) ?>)">
+                            <div class="material-icons">
+                                info
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
+                        </div>
+                        <div onclick="self.download(<?= json_encode($all_ids) ?>, true, '<?= $zipName ?>')">
+                            <div class="material-icons">
+                                save_alt
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
+                        </div>
+                        <div onclick="remove(<?= json_encode($all_ids) ?>)">
+                            <div class="material-icons">
+                                delete
+                            </div>
+                            <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
+                        </div>
+                    </ul>
                 </div>
-                <ul id="ul_by_user">
-                    <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} ) || closed()">
-                        <div class="material-icons">
-                            create
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
-                    </div>
-                    <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
-                        <div class="material-icons">
-                            info
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
-                    </div>
-                    <div onclick="download_all_by_user(<?= json_encode($all_ids) ?>) || closed()">
-                        <div class="material-icons">
-                            save_alt
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
-                    </div>
-                    <div onclick="remove(<?= json_encode($all_ids) ?>) || closed()">
-                        <div class="material-icons">
-                            delete
-                        </div>
-                        <?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
-                    </div>
-                </ul>
-            </div>
+            <? } ?>
         </header>
 
         <div class="document-card__content">
@@ -142,7 +146,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                             </div>
                         </div>
                     </div>
-                    <div class="document-item__right">
+                    <div class="document-item__right_user">
                         <div class="icon-wrapper" title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
                              onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
                             <i class="material-icons">
@@ -158,7 +162,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                         <div class="icon-wrapper"
                              title="<?= Loc::getMessage("TN_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
-                             onclick="self.download(<?= $doc_id ?>, true)">
+                             onclick="self.download([<?= $doc_id ?>], true)">
                             <i class="material-icons">
                                 save_alt
                             </i>
@@ -191,15 +195,7 @@ if (!empty($_FILES["userfile"]["name"])) {
 </body>
 
 <script>
-    function download_all_by_user(ids) {
-        var i = 0;
-        ids.forEach(function (id) {
-            window.setTimeout(self.download, i, id);
-            i += 200;
-        });
-    }
-
-    $(".document-card").click(function () {
+    $(".document-card__title_user").click(function () {
         $('#ul_by_user').toggle();
     });
     $(document).on('click', function (e) {
