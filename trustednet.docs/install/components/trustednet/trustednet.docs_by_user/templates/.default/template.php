@@ -29,7 +29,7 @@ if (!empty($_FILES["userfile"]["name"])) {
         $uniqid = (string)uniqid();
         $new_doc_dir = $_SERVER["DOCUMENT_ROOT"] . "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/";
         mkdir($new_doc_dir);
-        $new_doc_filename = basename($_FILES["userfile"]["name"]);
+        $new_doc_filename = Docs\Utils::mb_basename($_FILES["userfile"]["name"]);
         $absolute_path = $new_doc_dir . $new_doc_filename;
         $relative_path = "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/" . $new_doc_filename;
         if (move_uploaded_file($_FILES["userfile"]["tmp_name"], $absolute_path)) {
