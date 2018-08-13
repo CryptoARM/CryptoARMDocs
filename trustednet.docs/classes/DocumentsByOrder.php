@@ -224,30 +224,5 @@ class DocumentsByOrder
         return $str;
     }
 
-    function onBeforeMailSendHandler(\Bitrix\Main\Event $event) {
-        $arEventParams = $event->getParameters();
-
-        foreach($arEventParams as $iMailKey=>$arMailParams) {
-            if($arMailParams['HEADER']['X-EVENT_NAME'] === 'MAIL_TYPE_CODE') {
-                foreach($arMailParams['ATTACHMENT'] as $iAttacmentKey=>$arAttachment) {
-                    $arFileData = pathinfo($arAttachment['NAME']);
-
-                    if($arFileData['extension'] === 'xls') {
-                        $arEventParams[$iMailKey]['ATTACHMENT'][$iAttacmentKey]['CONTENT_TYPE']
-                            = 'application/vnd.ms-excel';
-                    }
-                }
-            }
-        }
-
-        foreach($arEventParams as $iMailKey=>$arMailParams) {
-            $event->addResult(
-                new \Bitrix\Main\EventResult(
-                    \Bitrix\Main\EventResult::SUCCESS, $arMailParams
-                )
-            );
-        }
-    }
-
 }
 

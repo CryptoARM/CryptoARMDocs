@@ -6,6 +6,7 @@ use Bitrix\Main\IO\File;
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Application;
+use Bitrix\Main\EventManager;
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 
@@ -36,6 +37,33 @@ $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
 
 $MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
 $MAIL_TEMPLATE_ID = Option::get($module_id, "MAIL_TEMPLATE_ID", "");
+
+$eventManager = EventManager::getInstance();
+
+// Replacing MIME in mail
+$eventManager->addEventHandler(
+    "main",
+    "OnBeforeMailSend",
+    function(&$event) {
+        $eventParams = $event->getParameters();
+        foreach ($eventParams as $mailKey => $mailParams) {
+            // Check if mail is using module event type
+            if ($mailParams['HEADER']['X-EVENT_NAME'] === 'TN_DOCS_MAIL_BY_ORDER') {
+                foreach ($mailParams['ATTACHMENT'] as $attachKey => $attachParam) {
+                    // Replace CONTENT_TYPE
+                    $eventParams[$mailKey]['ATTACHMENT'][$attachKey]['CONTENT_TYPE'] = 'application/octet-stream';
+                }
+            }
+        }
+        foreach ($eventParams as $mailKey => $mailParams) {
+            $event->addResult(
+                new \Bitrix\Main\EventResult(
+                    \Bitrix\Main\EventResult::SUCCESS, $mailParams
+                )
+            );
+        }
+    }
+);
 
 $sTableID = "Order_ID";
 $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');

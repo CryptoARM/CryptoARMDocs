@@ -211,12 +211,7 @@ Class trustednet_docs extends CModule
         Option::set("trustednet.docs", "MAIL_TEMPLATE_ID", $templateId);
     }
 
-    function RegisterEventHandlers()
-    {
-        RegisterModuleDependences('main', 'OnBeforeMailSend', $this->MODULE_ID, 'DocumentsByOrder', 'OnBeforeMailSendHandler');
-    }
-
-        function DoUninstall()
+    function DoUninstall()
     {
         global $DOCUMENT_ROOT, $APPLICATION;
 
@@ -306,11 +301,6 @@ Class trustednet_docs extends CModule
         }
         $obEventType = new CEventType;
         $obEventType->Delete("TN_DOCS_MAIL_BY_ORDER");
-    }
-
-    function UnRegisterEventHandlers()
-    {
-        UnRegisterModuleDependences('main', 'OnBeforeMailSend', $this->MODULE_ID, 'DocumentsByOrder');
     }
 
     function dropDocumentChain($id)
