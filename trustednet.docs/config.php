@@ -10,8 +10,8 @@ define("TN_DOCS_MODULE_DIR_CLASSES_GENERAL", TN_DOCS_MODULE_DIR . "classes/gener
 // Operations log file
 define("TN_DOCS_LOG_FILE", TN_DOCS_MODULE_DIR . "log.txt");
 
-// AJAX controller is also defined in lang/ru/javascript.php
-define("TN_DOCS_AJAX_CONTROLLER", "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/trustednet.docs/ajax.php");
+// AJAX controller is also defined in lang/ru/javascript.php & lang/en/javascript.php
+define("TN_DOCS_AJAX_CONTROLLER", "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/docs/ajax.php");
 
 // DB tables
 define("DB_TABLE_DOCUMENTS", "trn_docs");

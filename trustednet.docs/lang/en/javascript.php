@@ -4,9 +4,9 @@ use Bitrix\Main\Loader;
 Loader::includeModule("trustednet.docs");
 
 if (Docs\Utils::isSecure()) {
-    $MESS["TN_DOCS_AJAX_CONTROLLER"] = "https://" . $_SERVER["HTTP_HOST"] . "/bitrix/components/trustednet/trustednet.docs/ajax.php";
+    $MESS["TN_DOCS_AJAX_CONTROLLER"] = "https://" . $_SERVER["HTTP_HOST"] . "/bitrix/components/trustednet/docs/ajax.php";
 } else {
-    $MESS["TN_DOCS_AJAX_CONTROLLER"] = "http://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/trustednet.docs/ajax.php";
+    $MESS["TN_DOCS_AJAX_CONTROLLER"] = "http://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trustednet/docs/ajax.php";
 }
 
 $MESS["TN_DOCS_ERROR_FILE_NOT_FOUND"] = "Files not found for the following documents:";
