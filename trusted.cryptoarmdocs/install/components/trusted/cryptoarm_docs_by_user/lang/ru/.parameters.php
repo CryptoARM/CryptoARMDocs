@@ -1,0 +1,5 @@
+<?php
+
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_GROUP_NAME"] = "Настройки";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_CHECK_ORDER_PROPERTY"] = "Отображать документы заказов";
+//$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_NAME"] = "Количество документов на странице";

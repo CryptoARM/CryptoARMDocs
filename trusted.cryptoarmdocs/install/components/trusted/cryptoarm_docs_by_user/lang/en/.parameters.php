@@ -1,0 +1,5 @@
+<?php
+
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_GROUP_NAME"] = "Settings";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_CHECK_ORDER_PROPERTY"] = "Show documents attached to the orders";
+//$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_NAME"] = "Number of documents on the page";
