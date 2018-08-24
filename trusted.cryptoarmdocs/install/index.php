@@ -243,7 +243,9 @@ Class trusted_cryptoarmdocs extends CModule
 
     function UnInstallFiles()
     {
-        DeleteDirFilesEx("/bitrix/components/trusted/" . $this->MODULE_ID);
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
+        DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin"
