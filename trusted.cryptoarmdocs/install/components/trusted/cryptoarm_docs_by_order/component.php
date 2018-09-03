@@ -9,13 +9,12 @@ $docList = $docs->getList();
 
 $docsInfo = array();
 
-global $arParams;
-
 foreach ($docList as $doc) {
     $docsInfo[] = array(
         "ID" => $doc->getId(),
         "NAME" => $doc->getName(),
         "STATUS" => $doc->getStatus(),
+        "ORDER" => $arParams["ORDER"],
     );
 }
 

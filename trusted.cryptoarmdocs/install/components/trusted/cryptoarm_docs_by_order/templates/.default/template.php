@@ -19,6 +19,7 @@ while ($docsList = $arResult->Fetch()) {
         "STATUS" => $docsList["STATUS"],
     );
     $all_ids[] = $docsList["ID"];
+    $arParams["ORDER"] = $docsList["ORDER"];
 }
 $title = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER") . $arParams["ORDER"];
 $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
@@ -126,13 +127,15 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                                 create
                             </i>
                         </div>
-                        <div class="icon-wrapper" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
+                        <div class="icon-wrapper"
+                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
                              onclick="verify([<?= $doc_id ?>])">
                             <i class="material-icons">
                                 info
                             </i>
                         </div>
-                        <div class="icon-wrapper" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
+                        <div class="icon-wrapper"
+                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
                              onclick="self.download([<?= $doc_id ?>], true)">
                             <i class="material-icons">
                                 save_alt

@@ -14,6 +14,18 @@ $arComponentParameters = array(
             'TYPE' => 'CHECKBOX',
             'DEFAULT' => 'N',
         ),
+        'POSSIBILITY_OF_REMOVAL' => array(
+            'PARENT' => 'SETTINGS',
+            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_POSSIBILITY_OF_REMOVAL"),
+            'TYPE' => 'CHECKBOX',
+            'DEFAULT' => 'N',
+        ),
+        'POSSIBILITY_OF_ADDING' => array(
+            'PARENT' => 'SETTINGS',
+            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_POSSIBILITY_OF_ADDING"),
+            'TYPE' => 'CHECKBOX',
+            'DEFAULT' => 'N',
+        ),
         /*'ELEMENTS_ON_PAGE' => array(
             'PARENT' => 'SETTINGS',
             'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_NAME"),

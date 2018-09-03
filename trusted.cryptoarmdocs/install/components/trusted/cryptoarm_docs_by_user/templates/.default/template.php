@@ -18,6 +18,9 @@ while ($docsList = $arResult->Fetch()) {
         "STATUS" => $docsList["STATUS"],
     );
     $all_ids[] = $docsList["ID"];
+    $USER = $docsList["USER"];
+    $ParamOfRemoval = $docsList["ParamOfRemoval"];
+    $ParamOfAdding = $docsList["ParamOfAdding"];
 }
 
 $title = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
@@ -74,12 +77,14 @@ if (!empty($_FILES["userfile"]["name"])) {
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
                         </div>
-                        <div onclick="remove(<?= json_encode($all_ids) ?>)">
-                            <div class="material-icons">
-                                delete
+                        <? if ($ParamOfRemoval === "Y") { ?>
+                            <div onclick="remove(<?= json_encode($all_ids) ?>)">
+                                <div class="material-icons">
+                                    delete
+                                </div>
+                                <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
                             </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
-                        </div>
+                        <? } ?>
                     </ul>
                 </div>
             <? } ?>
@@ -167,29 +172,32 @@ if (!empty($_FILES["userfile"]["name"])) {
                                 save_alt
                             </i>
                         </div>
-                        <div class="icon-wrapper"
-                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
-                             onclick="window.parent.remove([<?= $doc_id ?>])">
-                            <i class="material-icons">
-                                delete
-                            </i>
-                        </div>
+                        <? if ($ParamOfRemoval === "Y") { ?>
+                            <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
+                                 onclick="window.parent.remove([<?= $doc_id ?>])">
+                                <i class="material-icons">
+                                    delete
+                                </i>
+                            </div>
+                        <? } ?>
                     </div>
                 </div>
             <? } ?>
         </div>
-        <? if ($USER->IsAuthorized()) { ?>
-            <footer class="document-card__footer">
-                <form enctype="multipart/form-data" method="POST">
-                    <div class="document-footer__action">
-                        <input class="document-footer__input" name="userfile" type="file" style="font-size: 0"
-                               onchange=this.form.submit()>
-                        <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
-                    </div>
-                </form>
-
-            </footer>
-        <? } ?>
+        <? if ($ParamOfAdding === "Y") {
+            if ($USER->IsAuthorized()) { ?>
+                <footer class="document-card__footer">
+                    <form enctype="multipart/form-data" method="POST">
+                        <div class="document-footer__action">
+                            <input class="document-footer__input" name="userfile" type="file" style="font-size: 0"
+                                   onchange=this.form.submit()>
+                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
+                        </div>
+                    </form>
+                </footer>
+            <? }
+        } ?>
     </main>
 </div>
 </body>
