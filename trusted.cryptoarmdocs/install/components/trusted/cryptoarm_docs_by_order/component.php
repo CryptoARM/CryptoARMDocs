@@ -14,7 +14,6 @@ foreach ($docList as $doc) {
         "ID" => $doc->getId(),
         "NAME" => $doc->getName(),
         "STATUS" => $doc->getStatus(),
-        "ORDER" => $arParams["ORDER"],
     );
 }
 

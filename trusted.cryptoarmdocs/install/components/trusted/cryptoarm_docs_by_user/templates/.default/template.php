@@ -18,9 +18,6 @@ while ($docsList = $arResult->Fetch()) {
         "STATUS" => $docsList["STATUS"],
     );
     $all_ids[] = $docsList["ID"];
-    $USER = $docsList["USER"];
-    $ParamOfRemoval = $docsList["ParamOfRemoval"];
-    $ParamOfAdding = $docsList["ParamOfAdding"];
 }
 
 $title = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
@@ -42,8 +39,11 @@ if (!empty($_FILES["userfile"]["name"])) {
 
         }
         unset ($_FILES["userfile"]["name"]);
-        header("Refresh:0");
-    }
+        ?>
+        <script>
+            window.location = window.location.href;
+        </script>
+    <? }
 } ?>
 
 <body>
@@ -77,7 +77,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
                         </div>
-                        <? if ($ParamOfRemoval === "Y") { ?>
+                        <? if ($arParams["POSSIBILITY_OF_REMOVAL"] === 'Y') { ?>
                             <div onclick="remove(<?= json_encode($all_ids) ?>)">
                                 <div class="material-icons">
                                     delete
@@ -152,40 +152,43 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                     </div>
                     <div class="document-item__right_user">
-                        <div class="icon-wrapper" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
-                             onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
-                            <i class="material-icons">
-                                create
-                            </i>
-                        </div>
-                        <div class="icon-wrapper"
-                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
-                             onclick="verify([<?= $doc_id ?>])">
-                            <i class="material-icons">
-                                info
-                            </i>
-                        </div>
-                        <div class="icon-wrapper"
-                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
-                             onclick="self.download([<?= $doc_id ?>], true)">
-                            <i class="material-icons">
-                                save_alt
-                            </i>
-                        </div>
-                        <? if ($ParamOfRemoval === "Y") { ?>
+                        <div class="icon_content">
                             <div class="icon-wrapper"
-                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
-                                 onclick="window.parent.remove([<?= $doc_id ?>])">
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
+                                 onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
                                 <i class="material-icons">
-                                    delete
+                                    create
                                 </i>
                             </div>
-                        <? } ?>
+                            <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
+                                 onclick="verify([<?= $doc_id ?>])">
+                                <i class="material-icons">
+                                    info
+                                </i>
+                            </div>
+                            <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
+                                 onclick="self.download([<?= $doc_id ?>], true)">
+                                <i class="material-icons">
+                                    save_alt
+                                </i>
+                            </div>
+                            <? if ($arParams["POSSIBILITY_OF_REMOVAL"] === 'Y') { ?>
+                                <div class="icon-wrapper"
+                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
+                                     onclick="window.parent.remove([<?= $doc_id ?>])">
+                                    <i class="material-icons">
+                                        delete
+                                    </i>
+                                </div>
+                            <? } ?>
+                        </div>
                     </div>
                 </div>
             <? } ?>
         </div>
-        <? if ($ParamOfAdding === "Y") {
+        <? if ($arParams["POSSIBILITY_OF_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) { ?>
                 <footer class="document-card__footer">
                     <form enctype="multipart/form-data" method="POST">

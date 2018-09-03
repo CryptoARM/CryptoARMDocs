@@ -17,9 +17,6 @@ foreach ($docList as $doc) {
             "ID" => $doc->getId(),
             "NAME" => $doc->getName(),
             "STATUS" => $doc->getStatus(),
-            "USER" => $USER,
-            "ParamOfRemoval" => $arParams["POSSIBILITY_OF_REMOVAL"],
-            "ParamOfAdding" => $arParams["POSSIBILITY_OF_ADDING"],
         );
     }
 }

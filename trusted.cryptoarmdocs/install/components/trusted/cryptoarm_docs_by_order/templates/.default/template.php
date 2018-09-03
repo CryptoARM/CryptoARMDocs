@@ -19,7 +19,6 @@ while ($docsList = $arResult->Fetch()) {
         "STATUS" => $docsList["STATUS"],
     );
     $all_ids[] = $docsList["ID"];
-    $arParams["ORDER"] = $docsList["ORDER"];
 }
 $title = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER") . $arParams["ORDER"];
 $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());

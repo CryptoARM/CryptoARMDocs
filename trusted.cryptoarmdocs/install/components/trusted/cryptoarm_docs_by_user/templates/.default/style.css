@@ -73,7 +73,7 @@ header.document-card__title_user {
 
 .document-content__item .document-item__right_user {
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-end;
     width: 228px;
 }
 
@@ -180,6 +180,12 @@ div#sweeties ul > div > div {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.icon_content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .document-card__title_user .icon-wrapper:hover {
