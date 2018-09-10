@@ -10,7 +10,9 @@ var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
 var ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
 var ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
 
-var socket = io('https://localhost:4040');
+if (location.protocol === 'https:') {
+    var socket = io('https://localhost:4040');
+}
 
 socket.on('connect', function () {
 	console.log('Event: connect');
@@ -120,6 +122,10 @@ function show_messages(response) {
 }
 
 function verify(ids) {
+    if (location.protocol === 'http:') {
+        alert(HTTP_WARNING);
+        return;
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=verify',
         type: 'post',
