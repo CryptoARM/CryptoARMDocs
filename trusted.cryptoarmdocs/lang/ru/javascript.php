@@ -1,7 +1,7 @@
 <?php
 use Trusted\CryptoARM\Docs;
 
-include __DIR__ . "../../classes/Utils.php";
+require_once __DIR__ . "/../../classes/Utils.php";
 
 if (Docs\Utils::isSecure()) {
     $MESS["TR_CA_DOCS_AJAX_CONTROLLER"] = "https://" . $_SERVER["HTTP_HOST"] . "/bitrix/components/trusted/docs/ajax.php";
