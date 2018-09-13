@@ -93,7 +93,9 @@ if (!empty($_FILES["userfile"]["name"])) {
         </header>
 
         <div class="document-card__content">
-            <? foreach ($docs_info as $doc) { ?>
+            <?
+            if (is_array($docs_info)) {
+                foreach ($docs_info as $doc) { ?>
                 <div class="document-content__item">
                     <div class="document-item__left">
                         <?
@@ -188,7 +190,10 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                     </div>
                 </div>
-            <? } ?>
+            <?
+                }
+            }
+            ?>
         </div>
         <? if ($arParams["POSSIBILITY_OF_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) { ?>

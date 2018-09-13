@@ -64,87 +64,91 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
 
         <div class="document-card__content">
             <?
-            foreach ($docs_info as $doc) {
-                ?>
-                <div class="document-content__item">
-                    <div class="document-item__left">
-                        <?
-                        $doc_id = $doc["ID"];
-                        $doc_name = $doc["NAME"];
-                        $doc_status = $doc["STATUS"];
-                        $doc_info = Docs\Database::getDocumentById($doc_id);
-                        $doc_sign_type = $doc_info->getType();
-                        $doc_sign_status = NULL;
-                        $doc_sign_status = $doc_info->getStatus();
-                        if ($doc_sign_type === DOC_TYPE_SIGNED_FILE) { ?>
-                            <div class="material-icons" style="color: rgb(33, 150, 243);">
-                                check_circles
+            if (is_array($docs_info)) {
+                foreach ($docs_info as $doc) {
+                    ?>
+                    <div class="document-content__item">
+                        <div class="document-item__left">
+                            <?
+                            $doc_id = $doc["ID"];
+                            $doc_name = $doc["NAME"];
+                            $doc_status = $doc["STATUS"];
+                            $doc_info = Docs\Database::getDocumentById($doc_id);
+                            $doc_sign_type = $doc_info->getType();
+                            $doc_sign_status = NULL;
+                            $doc_sign_status = $doc_info->getStatus();
+                            if ($doc_sign_type === DOC_TYPE_SIGNED_FILE) { ?>
+                                <div class="material-icons" style="color: rgb(33, 150, 243);">
+                                    check_circles
+                                </div>
+                            <? } else {
+                                switch ($doc_sign_status) {
+                                    case DOC_STATUS_NONE:
+                                        { ?>
+                                            <div class="material-icons" style="color: green">
+                                                insert_drive_file
+                                            </div>
+                                            <? break;
+                                        }
+                                    case DOC_STATUS_BLOCKED:
+                                        { ?>
+                                            <div class="material-icons" style="color: red">
+                                                lock
+                                            </div>
+                                            <? break;
+                                        }
+                                    case DOC_STATUS_CANCELED:
+                                        { ?>
+                                            <div class="material-icons" style="color: red">
+                                                insert_drive_file
+                                            </div>
+                                            <? break;
+                                        }
+                                    case DOC_STATUS_ERROR:
+                                        { ?>
+                                            <div class="material-icons" style="color: red">
+                                                error
+                                            </div>
+                                            <? break;
+                                        }
+                                }
+                            } ?>
+                            <div class="document-item__text">
+                                <div class="document-text__title">
+                                    <?= $doc_name ?>
+                                </div>
+                                <div class="document-text__description">
+                                    <?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($doc_id)) ?>
+                                </div>
                             </div>
-                        <? } else {
-                            switch ($doc_sign_status) {
-                                case DOC_STATUS_NONE:
-                                    { ?>
-                                        <div class="material-icons" style="color: green">
-                                            insert_drive_file
-                                        </div>
-                                        <? break;
-                                    }
-                                case DOC_STATUS_BLOCKED:
-                                    { ?>
-                                        <div class="material-icons" style="color: red">
-                                            lock
-                                        </div>
-                                        <? break;
-                                    }
-                                case DOC_STATUS_CANCELED:
-                                    { ?>
-                                        <div class="material-icons" style="color: red">
-                                            insert_drive_file
-                                        </div>
-                                        <? break;
-                                    }
-                                case DOC_STATUS_ERROR:
-                                    { ?>
-                                        <div class="material-icons" style="color: red">
-                                            error
-                                        </div>
-                                        <? break;
-                                    }
-                            }
-                        } ?>
-                        <div class="document-item__text">
-                            <div class="document-text__title">
-                                <?= $doc_name ?>
+                        </div>
+                        <div class="document-item__right">
+                            <div class="icon-wrapper" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>"
+                                 onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'} )">
+                                <i class="material-icons">
+                                    create
+                                </i>
                             </div>
-                            <div class="document-text__description">
-                                <?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($doc_id)) ?>
+                            <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
+                                 onclick="verify([<?= $doc_id ?>])">
+                                <i class="material-icons">
+                                    info
+                                </i>
+                            </div>
+                            <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
+                                 onclick="self.download([<?= $doc_id ?>], true)">
+                                <i class="material-icons">
+                                    save_alt
+                                </i>
                             </div>
                         </div>
                     </div>
-                    <div class="document-item__right">
-                        <div class="icon-wrapper" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>"
-                             onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'} )">
-                            <i class="material-icons">
-                                create
-                            </i>
-                        </div>
-                        <div class="icon-wrapper"
-                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
-                             onclick="verify([<?= $doc_id ?>])">
-                            <i class="material-icons">
-                                info
-                            </i>
-                        </div>
-                        <div class="icon-wrapper"
-                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
-                             onclick="self.download([<?= $doc_id ?>], true)">
-                            <i class="material-icons">
-                                save_alt
-                            </i>
-                        </div>
-                    </div>
-                </div>
-            <? } ?>
+            <?
+               }
+            }
+            ?>
         </div>
     </main>
 </div>
