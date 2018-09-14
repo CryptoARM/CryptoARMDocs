@@ -44,7 +44,7 @@ $eventManager = EventManager::getInstance();
 $eventManager->addEventHandler(
     "main",
     "OnBeforeMailSend",
-    function(&$event) {
+    function($event) {
         $eventParams = $event->getParameters();
         foreach ($eventParams as $mailKey => $mailParams) {
             // Check if mail is using module event type
