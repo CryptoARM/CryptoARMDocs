@@ -150,41 +150,42 @@ class AjaxCommand
         // TODO: add security check
         if (true) {
             $doc = Database::getDocumentById($params['id']);
-            $lastDoc = $doc->getLastDocument();
+            if ($doc) {
+                $lastDoc = $doc->getLastDocument();
+            } else {
+                $res["message"] = "Document is not found";
+                return $res;
+            }
             if ($lastDoc->getId() != $doc->getId()) {
                 $res["message"] = "Document already has child.";
                 return $res;
             }
-            if ($doc) {
-                $newDoc = $doc->copy();
-                $signers = urldecode($params["signers"]);
-                $newDoc->setSigners($signers);
-                $newDoc->setType(DOC_TYPE_SIGNED_FILE);
-                $newDoc->setParent($doc);
-                $file = $_FILES["file"];
-                $extra = json_decode($params["extra"], true);
-                // Detect document by order signing
-                if (array_key_exists("role", $extra)) {
-                    DocumentsByOrder::upload($newDoc, $extra);
-                }
-                if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
-                    $newDoc->setName($newDoc->getName() . '.sig');
-                    $newDoc->setPath($newDoc->getPath() . '.sig');
-                }
-                $newDoc->save();
-                move_uploaded_file(
-                    $file['tmp_name'],
-                    $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
-                );
-                // Drop "blocked" status of original doc
-                $doc = Database::getDocumentById($params['id']);
-                $doc->setStatus(DOC_STATUS_NONE);
-                $doc->save();
-                $res["success"] = true;
-                $res["message"] = "File uploaded";
-            } else {
-                $res["message"] = "Document is not found";
+            $newDoc = $doc->copy();
+            $signers = urldecode($params["signers"]);
+            $newDoc->setSigners($signers);
+            $newDoc->setType(DOC_TYPE_SIGNED_FILE);
+            $newDoc->setParent($doc);
+            $file = $_FILES["file"];
+            $extra = json_decode($params["extra"], true);
+            // Detect document by order signing
+            if (array_key_exists("role", $extra)) {
+                DocumentsByOrder::upload($newDoc, $extra);
             }
+            if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
+                $newDoc->setName($newDoc->getName() . '.sig');
+                $newDoc->setPath($newDoc->getPath() . '.sig');
+            }
+            $newDoc->save();
+            move_uploaded_file(
+                $file['tmp_name'],
+                $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
+            );
+            // Drop "blocked" status of original doc
+            $doc = Database::getDocumentById($params['id']);
+            $doc->setStatus(DOC_STATUS_NONE);
+            $doc->save();
+            $res["success"] = true;
+            $res["message"] = "File uploaded";
         } else {
             $res["message"] = "Access denied";
         }
