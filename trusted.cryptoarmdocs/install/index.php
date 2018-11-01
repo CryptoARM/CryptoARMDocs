@@ -146,7 +146,7 @@ Class trusted_cryptoarmdocs extends CModule
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
                     `NAME` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                     `DESCRIPTION` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                    `PATH` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `PATH` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `TYPE` tinyint(1) DEFAULT '0',
                     `STATUS` tinyint(1) DEFAULT '0',
                     `SIGNERS` text COLLATE utf8_unicode_ci,
