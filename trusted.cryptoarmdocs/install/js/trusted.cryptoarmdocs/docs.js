@@ -49,32 +49,58 @@ function sign(ids, extra = null) {
         type: 'post',
         data: {id: ids, extra: extra},
         success: function (d) {
-            if (d.success) {
+            // mobile CryptoArm support START
+            if (/iphone/i.test(navigator.userAgent)) {
+                let filenameArr = [];
+                let idArr = [];
                 docs = JSON.parse(d.docsToSign);
-                req = {};
-                req.jsonrpc = '2.0';
-                req.method = 'sign';
-                req.params = {};
-                req.params.token = '';
-                req.params.files = docs;
-                req.params.extra = extra;
-                req.params.uploader = AJAX_CONTROLLER + '?command=upload';
-                if (socket.connected) {
-                    socket.emit('sign', req);
-                    ids = [];
-                    docs.forEach(function(elem) {
-                        ids.push(elem.id);
-                    });
-                    block(ids, function(){
-                        location.reload();
-                    });
+                docs.forEach(function (elem) {
+                    filenameArr.push(elem.name);
+                    idArr.push(elem.id);
+                });
+                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + extra.role + "&url="
+                    + JSON.parse(d.docsToSign)[0].url + "&filename=" + filenameArr + "&href="
+                    + window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&browser=";
+                if (/CriOS/i.test(navigator.userAgent)) {
+                    window.location = url + "chrome";
                 } else {
-                    alert(NO_CLIENT);
+                    window.location = url + "default";
                 }
+                ids = [];
+                docs.forEach(function (elem) {
+                    ids.push(elem.id);
+                });
+                block(ids);
+                setTimeout(() => location.reload(), 1000);
+                // mobile CryptoArm support END
             } else {
-                console.log(d);
+                if (d.success) {
+                    docs = JSON.parse(d.docsToSign);
+                    req = {};
+                    req.jsonrpc = '2.0';
+                    req.method = 'sign';
+                    req.params = {};
+                    req.params.token = '';
+                    req.params.files = docs;
+                    req.params.extra = extra;
+                    req.params.uploader = AJAX_CONTROLLER + '?command=upload';
+                    if (socket.connected) {
+                        socket.emit('sign', req);
+                        ids = [];
+                        docs.forEach(function (elem) {
+                            ids.push(elem.id);
+                        });
+                        block(ids, function () {
+                            location.reload();
+                        });
+                    } else {
+                        alert(NO_CLIENT);
+                    }
+                } else {
+                    console.log(d);
+                }
+                show_messages(d);
             }
-            show_messages(d);
         },
         error: function (e) {
             console.error(e);
@@ -131,21 +157,32 @@ function verify(ids) {
         type: 'post',
         data: {id: ids},
         success: function (d) {
-            if (d.success) {
-                docs = JSON.parse(d.docs);
-                req = {};
-                req.jsonrpc = '2.0';
-                req.method = 'verify';
-                req.params = {};
-                req.params.token = '';
-                req.params.files = docs;
-                if (socket.connected) {
-                    socket.emit('verify', req);
+            // mobile CryptoArm support START
+            if (/iphone/i.test(navigator.userAgent)) {
+                let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docs)[0].url + "&command=verify";
+                if (/CriOS/i.test(navigator.userAgent || '')) {
+                    window.location = url + "&browser=chrome";
                 } else {
-                    alert(NO_CLIENT);
+                    window.location = url + "&browser=default";
                 }
+            // mobile CryptoArm support END
             } else {
-                console.log(d);
+                if (d.success) {
+                    docs = JSON.parse(d.docs);
+                    req = {};
+                    req.jsonrpc = '2.0';
+                    req.method = 'verify';
+                    req.params = {};
+                    req.params.token = '';
+                    req.params.files = docs;
+                    if (socket.connected) {
+                        socket.emit('verify', req);
+                    } else {
+                        alert(NO_CLIENT);
+                    }
+                } else {
+                    console.log(d);
+                }
             }
         },
         error: function (e) {
@@ -297,4 +334,3 @@ function view(id) {
         }
     });
 }
-
