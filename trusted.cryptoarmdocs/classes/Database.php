@@ -624,7 +624,7 @@ class Database
                     " . DB_TABLE_PROPERTY . "  AS Property
                 RIGHT JOIN
                     (SELECT 
-                        MAX(DOCUMENT_ID) AS DOCUMENT_ID, TYPE, VALUE
+                        MAX(DOCUMENT_ID) AS DOCUMENT_ID, TYPE, CAST(VALUE AS UNSIGNED) as VALUE
                     FROM
                         " . DB_TABLE_PROPERTY . " 
                     WHERE
