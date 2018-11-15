@@ -10,6 +10,17 @@ Class trusted_cryptoarmdocs extends CModule
 {
     // Required by the marketplace standards
     var $MODULE_ID = "trusted.cryptoarmdocs";
+    var $MODULE_NAME;
+    var $MODULE_DESCRIPTION;
+    var $MODULE_VERSION;
+    var $MODULE_VERSION_DATE;
+    var $PARTNER_NAME;
+    var $PARTNER_URI;
+
+    function trusted_cryptoarmdocs()
+    {
+        self::__construct();
+    }
 
     function __construct()
     {
@@ -19,8 +30,8 @@ Class trusted_cryptoarmdocs extends CModule
         $this->MODULE_DESCRIPTION = Loc::getMessage("TR_CA_DOCS_MODULE_DESCRIPTION");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];
         $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->PARTNER_NAME = Loc::getMessage("TR_CA_DOCS_PARTNER_NAME");
-        $this->PARTNER_URI = Loc::getMessage("TR_CA_DOCS_PARTNER_URI");
+        $this->PARTNER_NAME = GetMessage("TR_CA_DOCS_PARTNER_NAME");
+        $this->PARTNER_URI = GetMessage("TR_CA_DOCS_PARTNER_URI");
     }
 
     function DoInstall()
