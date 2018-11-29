@@ -16,11 +16,22 @@ $MESS["TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY"] = "Нет доступа к 
 $MESS["TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY"] = "Нельзя сохранять файлы внутри системной директории.";
 
 $MESS["TR_CA_DOCS_LICENSE_ENABLE"] = "Включить предоставление пользователям одноразовых лицензий на подпись документов";
-$MESS["TR_CA_DOCS_LICENSE_TN_USERNAME"] = "Имя пользователя на сервисе TrustedNet";
-$MESS["TR_CA_DOCS_LICENSE_TN_PASSWORD"] = "Пароль пользователя на сервисе TrustedNet";
-$MESS["TR_CA_DOCS_LICENSE_TN_CLIENT_ID"] = "ID приложения TrustedNet";
-$MESS["TR_CA_DOCS_LICENSE_TN_CLIENT_SECRET"] = "Пароль приложения TrustedNet";
+$MESS["TR_CA_DOCS_LICENSE_ACCOUNT_NUMBER"] = "Номер счета:";
+$MESS["TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER"] = "Ввести новый счет";
+$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER"] = "Создать новый счет";
+$MESS["TR_CA_DOCS_LICENSE_DELETE_ACCOUNT_NUMBER"] = "Удалить связку";
+$MESS["TR_CA_DOCS_LICENSE_JWT_TOKEN"] = "Ключ активации дополнительных операций на счете";
+$MESS["TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN"] = "Скопируйте сюда ключ активации";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN"] = "Активировать ключ";
+$MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION"] = "Количество доступных операций на счете";
 $MESS["TR_CA_DOCS_LICENSE_NO_EMPTY_FIELDS"] = "Заполните все поля чтобы влючить предоставление лицензий.";
+
+$MESS["TR_CA_DOCS_LICENSE_BACK"] = "Назад";
+
+$MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы действительно хотите удалить привязку?";
+$MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Вы действительно хотите активировать токен?";
+$MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_ACTIVATED_JWT_TOKEN"] = "Активировано ";
+$MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_ACTIVATED_JWT_TOKEN2"] = " токен(ов)";
 
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Настройки автоматического изменения статуса заказа";
 $MESS["TR_CA_DOCS_EVENTS_DESCRIPTION"] = "Заказ с прикрепленными документами можно автоматически переводить в другой статус при совершении некоторых действий.";

@@ -137,94 +137,133 @@ $tabControl->Begin();
 
 ?>
 
-<form method="POST" enctype="multipart/form-data"
-      action="<?= $APPLICATION->GetCurPage() ?>?lang=<?= LANGUAGE_ID ?>&mid=<?= TR_CA_DOCS_MODULE_ID ?>"
-      name="trustedcryptoarmdocs_settings">
+    <form method="POST" enctype="multipart/form-data"
+          action="<?= $APPLICATION->GetCurPage() ?>?lang=<?= LANGUAGE_ID ?>&mid=<?= TR_CA_DOCS_MODULE_ID ?>"
+          name="trustedcryptoarmdocs_settings">
 
-    <?= bitrix_sessid_post(); ?>
+        <?= bitrix_sessid_post(); ?>
 
-    <?= $tabControl->BeginNextTab(); ?>
+        <?= $tabControl->BeginNextTab(); ?>
 
-    <tr>
-        <td width="20%">
-            <?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR") ?>
-        </td>
-        <td width="80%">
-            <input name="DOCUMENTS_DIR"
-                   class="adm-detail-content-cell-r"
-                   size="40"
-                   readonly
-                   style="opacity:1;"
-                   value="<?= $DOCUMENTS_DIR ?>"/>
-            <input id="dir_but"
-                   type="button"
-                   value="<?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR_SELECT") ?>"
-                   onclick="dirSelector()">
-        </td>
-    </tr>
+        <tr>
+            <td width="20%">
+                <?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR") ?>
+            </td>
+            <td width="80%">
+                <input name="DOCUMENTS_DIR"
+                       class="adm-detail-content-cell-r"
+                       size="40"
+                       readonly
+                       style="opacity:1;"
+                       value="<?= $DOCUMENTS_DIR ?>"/>
+                <input id="dir_but"
+                       type="button"
+                       value="<?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR_SELECT") ?>"
+                       onclick="dirSelector()">
+            </td>
+        </tr>
 
-    <?= $tabControl->BeginNextTab(); ?>
+        <?= $tabControl->BeginNextTab(); ?>
 
-    <tr>
-        <td width="40%">
-            <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ENABLE") ?>
-        </td>
-        <td width="60%">
-            <input type="checkbox"
-                   <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
-                   name="PROVIDE_LICENSE"
-                   value="true"
-                   onchange="toggleInputs(!this.checked)"/>
-        </td>
-    </tr>
+        <tr>
+            <td width="40%">
+                <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ENABLE") ?>
+            </td>
+            <td width="60%">
+                <input type="checkbox"
+                    <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
+                       name="PROVIDE_LICENSE"
+                       value="true"
+                       onchange="toggleInputs(!this.checked)"/>
+            </td>
+        </tr>
 
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_LICENSE_TN_USERNAME") ?> </td>
-        <td>
-            <input name="TN_USERNAME"
-                   id="TN_USERNAME"
-                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                   style="width: 300px;"
-                   type="text"
-                   value="<?= $TN_USERNAME ?>"/>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ACCOUNT_NUMBER") ?>
+            </td>
+            <td>
+                <div id="DIV_BTN_CREATE_NEW_ACCOUNT">
+                    <input type="button"
+                           id="INPUT_ACCOUNT_NUMBER"
+                           class="adm-workarea adm-btn"
+                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           onclick="inputAccountNumber();"
+                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER") ?>"/>
+                    <input type="button"
+                           id="CREATE_NEW_ACCOUNT_NUMBER"
+                           class="adm-workarea adm-btn"
+                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           onclick="createAccountNumber();"
+                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
+                </div>
+                <div id="DIV_INPUT_ACCOUNT_NUMBER" hidden>
+                    <input id="ACCOUNT_NUMBER"
+                           name="ACCOUNT_NUMBER"
+                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           style="width: 300px;"
+                           type="text"/>
+                    <input type="button"
+                           id="BACK_TO_BTN_CREATE_NEW_ACCOUNT"
+                           class="adm-workarea adm-btn"
+                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           onclick="backToBtnCreateNewAccountNumber();"
+                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_BACK") ?>"/>
+                </div>
+                <div id="DIV_ACCOUNT_NUMBER" hidden>
+                    <?= 'schet' ?>
+                </div>
+            </td>
+        </tr>
 
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_LICENSE_TN_PASSWORD") ?> </td>
-        <td>
-            <input name="TN_PASSWORD"
-                   id="TN_PASSWORD"
-                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                   style="width: 300px;"
-                   type="password"
-                   value="<?= $TN_PASSWORD ?>"/>
-        </td>
-    </tr>
+        <tr>
+            <td></td>
+            <td>
+                <div id="DIV_DELETE_ACCOUNT_NUMBER" hidden>
+                    <input type="button"
+                           id="DELETE_ACCOUNT_NUMBER"
+                           class="adm-workarea adm-btn"
+                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           onclick="deleteAccountNumber();"
+                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_DELETE_ACCOUNT_NUMBER") ?>"/>
+                </div>
+            </td>
+        </tr>
 
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_LICENSE_TN_CLIENT_ID") ?> </td>
-        <td>
-            <input name="TN_CLIENT_ID"
-                   id="TN_CLIENT_ID"
-                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                   style="width: 300px;"
-                   type="text"
-                   value="<?= $TN_CLIENT_ID ?>"/>
-        </td>
-    </tr>
+        <tr>
+            <td>
+                <?= Loc::getMessage("TR_CA_DOCS_LICENSE_JWT_TOKEN") ?>
+            </td>
+            <td>
+            <textarea id="JWT_TOKEN"
+                      name="JWT_TOKEN"
+                      rows="4"
+                <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                      placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN") ?>"
+                      style="width: 300px;"></textarea>
+            </td>
+        </tr>
 
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_LICENSE_TN_CLIENT_SECRET") ?> </td>
-        <td>
-            <input name="TN_CLIENT_SECRET"
-                   id="TN_CLIENT_SECRET"
-                   <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                   style="width: 300px;"
-                   type="password"
-                   value="<?= $TN_CLIENT_SECRET ?>"/>
-        </td>
-    </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="button"
+                       id="ACTIVATE_JWT_TOKEN"
+                       class="adm-workarea adm-btn"
+                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                       onclick="activateJwtToken();"
+                       value="<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN") ?>"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= GetMessage("TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION") ?>
+            </td>
+            <td>
+                <!-- кол-во операций -->
+            </td>
+        </tr>
 
     <? if ($saleModule): ?>
         <?= $tabControl->BeginNextTab(); ?>
@@ -476,14 +515,47 @@ $tabControl->Begin();
     );
 ?>
 
-<script>
+    <script>
+        function inputAccountNumber() {
+            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
+            document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").removeAttribute("hidden");
+        }
 
-function toggleInputs (state) {
-    document.getElementById("TN_USERNAME").disabled = state;
-    document.getElementById("TN_PASSWORD").disabled = state;
-    document.getElementById("TN_CLIENT_ID").disabled = state;
-    document.getElementById("TN_CLIENT_SECRET").disabled = state;
-}
+        function createAccountNumber() {
+            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
+            document.getElementById("DIV_ACCOUNT_NUMBER").removeAttribute("hidden");
+            document.getElementById("DIV_DELETE_ACCOUNT_NUMBER").removeAttribute("hidden");
+        }
 
-</script>
+        function backToBtnCreateNewAccountNumber() {
+            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
+            document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
+        }
 
+        function deleteAccountNumber() {
+            if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"); ?>')) {
+                document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
+                document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
+                document.getElementById("DIV_ACCOUNT_NUMBER").setAttribute('hidden', null);
+                document.getElementById("DIV_DELETE_ACCOUNT_NUMBER").setAttribute('hidden', null);
+            }
+        }
+
+        function activateJwtToken() {
+            if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"); ?>')) {
+                alert(1);
+            }
+        }
+
+        function toggleInputs(state) {
+            document.getElementById("ACCOUNT_NUMBER").disabled = state;
+            document.getElementById("INPUT_ACCOUNT_NUMBER").disabled = state;
+            document.getElementById("CREATE_NEW_ACCOUNT_NUMBER").disabled = state;
+            document.getElementById("BACK_TO_BTN_CREATE_NEW_ACCOUNT").disabled = state;
+            document.getElementById("DELETE_ACCOUNT_NUMBER").disabled = state;
+            document.getElementById("JWT_TOKEN").disabled = state;
+            document.getElementById("ACTIVATE_JWT_TOKEN").disabled = state;
+        }
+    </script>
+<?
+CJSCore::Init(array('ajax', 'window'));
