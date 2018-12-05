@@ -24,7 +24,6 @@ $MESS["TR_CA_DOCS_LICENSE_JWT_TOKEN"] = "Ключ активации допол�
 $MESS["TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN"] = "Скопируйте сюда ключ активации";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN"] = "Активировать ключ";
 $MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION"] = "Количество доступных операций на счете";
-$MESS["TR_CA_DOCS_LICENSE_NO_EMPTY_FIELDS"] = "Заполните все поля чтобы влючить предоставление лицензий.";
 
 $MESS["TR_CA_DOCS_LICENSE_BACK"] = "Назад";
 

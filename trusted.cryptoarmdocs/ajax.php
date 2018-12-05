@@ -1,4 +1,5 @@
 <?php
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
@@ -20,6 +21,12 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "registerAccountNumber":
+            $res = Docs\AjaxCommand::registerAccountNumber();
+            break;
+        case "checkAccountBalance":
+            $res = Docs\AjaxCommand::checkAccountBalance($params);
+            break;
         case "sign":
             $res = Docs\AjaxCommand::sign($params);
             break;

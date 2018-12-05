@@ -419,22 +419,43 @@ class AjaxCommand
         }
     }
 
-    //static function token($params)
-    //{
-    //    $res = array("success" => true, "message" => "");
-    //    try {
-    //        $token = OAuth2::getFromSession();
-    //        //$refreshToken = $token->getRefreshToken();
-    //        //$token->refresh();
-    //        $accessToken = $token->getAccessToken();
-    //        $res["message"] = $accessToken;
-    //    } catch (OAuth2Exception $ex) {
-    //        header("HTTP/1.1 500 Internal Server Error");
-    //        $res["message"] = $ex->message;
-    //        echo json_encode($res);
-    //        die();
-    //    }
-    //    return $res;
-    //}
+    static function registerAccountNumber() {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.registerAccountNumber",
+        );
+
+        $accountNumberData = License::registerAccountNumber();
+
+        if ($accountNumberData['success']) {
+            $res = array(
+                "success" => true,
+                "data" => $accountNumberData['data'],
+                "message" => "OK",
+            );
+        }
+
+        return $res;
+    }
+
+    static function checkAccountBalance($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.checkAccountBalance",
+        );
+
+        $accountNumber = $params['accountNumber'];
+        $balanceData = License::checkAccountBalance($accountNumber);
+
+        if ($balanceData['success']) {
+            $res = array(
+                "success" => true,
+                "data" => $balanceData['data'],
+                "message" => "OK",
+            );
+        }
+
+        return $res;
+    }
 }
 

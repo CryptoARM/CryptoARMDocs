@@ -9,6 +9,7 @@ use Bitrix\Main\ModuleManager;
 include __DIR__ . "/config.php";
 // Include only necessary utility functions from module
 include __DIR__ . "/classes/Utils.php";
+include __DIR__ . "/classes/License.php";
 
 $module_id = TR_CA_DOCS_MODULE_ID;
 
@@ -73,7 +74,7 @@ function CheckDocumentsDir($dir) {
 
 $moduleOptions = array(
     "DOCUMENTS_DIR",
-    "PROVIDE_LICENSE", "TN_USERNAME", "TN_PASSWORD", "TN_CLIENT_ID", "TN_CLIENT_SECRET",
+    "PROVIDE_LICENSE", "LICENSE_ACCOUNT_NUMBER",
     "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
     "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
     "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ",
@@ -103,19 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
             CAdminMessage::ShowMessage($docsDirCheck);
         }
         UpdateOption("PROVIDE_LICENSE");
-        if (isset($_POST["PROVIDE_LICENSE"])) {
-            if (!$_POST["TN_USERNAME"] ||
-                !$_POST["TN_PASSWORD"] ||
-                !$_POST["TN_CLIENT_ID"] ||
-                !$_POST["TN_CLIENT_SECRET"]) {
-                CAdminMessage::ShowMessage(Loc::getMessage("TR_CA_DOCS_LICENSE_NO_EMPTY_FIELDS"));
-            } else {
-                UpdateOption("TN_USERNAME");
-                UpdateOption("TN_PASSWORD");
-                UpdateOption("TN_CLIENT_ID");
-                UpdateOption("TN_CLIENT_SECRET");
-            }
-        }
+        UpdateOption("LICENSE_ACCOUNT_NUMBER");
         UpdateOption("EVENT_SIGNED_BY_CLIENT");
         UpdateOption("EVENT_SIGNED_BY_SELLER");
         UpdateOption("EVENT_SIGNED_BY_BOTH");
@@ -183,35 +172,36 @@ $tabControl->Begin();
                 <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ACCOUNT_NUMBER") ?>
             </td>
             <td>
-                <div id="DIV_BTN_CREATE_NEW_ACCOUNT">
+                <div id="DIV_BTN_CREATE_NEW_ACCOUNT" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "hidden" : "" ?>>
                     <input type="button"
                            id="INPUT_ACCOUNT_NUMBER"
                            class="adm-workarea adm-btn"
-                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="inputAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER") ?>"/>
                     <input type="button"
                            id="CREATE_NEW_ACCOUNT_NUMBER"
                            class="adm-workarea adm-btn"
-                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="createAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
                 </div>
                 <div id="DIV_INPUT_ACCOUNT_NUMBER" hidden>
-                    <input id="ACCOUNT_NUMBER"
-                           name="ACCOUNT_NUMBER"
-                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                    <input id="LICENSE_ACCOUNT_NUMBER"
+                           name="LICENSE_ACCOUNT_NUMBER"
+                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            style="width: 300px;"
+                           value="<?= $LICENSE_ACCOUNT_NUMBER ?>"
                            type="text"/>
                     <input type="button"
                            id="BACK_TO_BTN_CREATE_NEW_ACCOUNT"
                            class="adm-workarea adm-btn"
-                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="backToBtnCreateNewAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_BACK") ?>"/>
                 </div>
-                <div id="DIV_ACCOUNT_NUMBER" hidden>
-                    <?= 'schet' ?>
+                <div id="DIV_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "" : "hidden" ?>>
+                    <?= $LICENSE_ACCOUNT_NUMBER ?>
                 </div>
             </td>
         </tr>
@@ -219,11 +209,11 @@ $tabControl->Begin();
         <tr>
             <td></td>
             <td>
-                <div id="DIV_DELETE_ACCOUNT_NUMBER" hidden>
+                <div id="DIV_DELETE_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER != "" ? "" : "hidden" ?>>
                     <input type="button"
                            id="DELETE_ACCOUNT_NUMBER"
                            class="adm-workarea adm-btn"
-                        <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="deleteAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_DELETE_ACCOUNT_NUMBER") ?>"/>
                 </div>
@@ -238,7 +228,7 @@ $tabControl->Begin();
             <textarea id="JWT_TOKEN"
                       name="JWT_TOKEN"
                       rows="4"
-                <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                      <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                       placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN") ?>"
                       style="width: 300px;"></textarea>
             </td>
@@ -250,7 +240,7 @@ $tabControl->Begin();
                 <input type="button"
                        id="ACTIVATE_JWT_TOKEN"
                        class="adm-workarea adm-btn"
-                    <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                       <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                        onclick="activateJwtToken();"
                        value="<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN") ?>"/>
             </td>
@@ -261,7 +251,8 @@ $tabControl->Begin();
                 <?= GetMessage("TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION") ?>
             </td>
             <td>
-                <!-- кол-во операций -->
+                <div id="DIV_ACCOUNT_BALANCE">
+                </div>
             </td>
         </tr>
 
@@ -521,10 +512,15 @@ $tabControl->Begin();
             document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").removeAttribute("hidden");
         }
 
-        function createAccountNumber() {
+        function createAccountNumber () {
+            document.getElementById("DIV_ACCOUNT_NUMBER").innerHTML = "";
             document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
             document.getElementById("DIV_ACCOUNT_NUMBER").removeAttribute("hidden");
             document.getElementById("DIV_DELETE_ACCOUNT_NUMBER").removeAttribute("hidden");
+            createNewAccountNumber((data) =>  {
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").value = data;
+                document.getElementById("DIV_ACCOUNT_NUMBER").innerHTML = data;
+            });
         }
 
         function backToBtnCreateNewAccountNumber() {
@@ -534,6 +530,7 @@ $tabControl->Begin();
 
         function deleteAccountNumber() {
             if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"); ?>')) {
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
                 document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
                 document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
                 document.getElementById("DIV_ACCOUNT_NUMBER").setAttribute('hidden', null);
@@ -556,6 +553,44 @@ $tabControl->Begin();
             document.getElementById("JWT_TOKEN").disabled = state;
             document.getElementById("ACTIVATE_JWT_TOKEN").disabled = state;
         }
+
+        function createNewAccountNumber(cb) {
+            BX.ajax({
+                    url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . '?command=registerAccountNumber' ?>',
+                    method: 'POST',
+                    onsuccess: function (response) {
+                        const data = JSON.parse(response);
+                        let number = "error";
+                        if (data.success === true) {
+                            number = data.data
+                        }
+                        return cb(number);
+                    },
+                    onfailure: function (err) {
+                        return false;
+                    }
+                }
+            );
+        }
+
+        window.onload = function checkAccountBalance() {
+            BX.ajax({
+                    url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=checkAccountBalance" ?>',
+                    data: {accountNumber: '<?= $LICENSE_ACCOUNT_NUMBER ?>'},
+                    method: 'POST',
+                    onsuccess: function (response) {
+                        const data = JSON.parse(response);
+                        let balance = "-";
+                        if (data.success === true) {
+                            balance = data.data;
+                        }
+                        document.getElementById("DIV_ACCOUNT_BALANCE").innerHTML = balance;
+                    },
+                    onfailure: function (err) {
+                        return false;
+                    }
+                }
+            );
+        };
     </script>
 <?
-CJSCore::Init(array('ajax', 'window'));
