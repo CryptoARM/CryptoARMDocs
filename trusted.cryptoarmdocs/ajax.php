@@ -21,6 +21,9 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "activateJwtToken":
+            $res = Docs\AjaxCommand::activateJwtToken($params);
+            break;
         case "registerAccountNumber":
             $res = Docs\AjaxCommand::registerAccountNumber();
             break;

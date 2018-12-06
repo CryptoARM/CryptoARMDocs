@@ -25,6 +25,15 @@ $MESS["TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN"] = "Скопируйте сюда 
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN"] = "Активировать ключ";
 $MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION"] = "Количество доступных операций на счете";
 
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST"] = "Номера счета не существует";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY"] = "Ключ активации пустой";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Данный ключ активации уже использован";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Неверный формат ключа активации";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Неизвестная ошибка";
+
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS"] = "На ваш счет начислено ";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2"] = " операций";
+
 $MESS["TR_CA_DOCS_LICENSE_BACK"] = "Назад";
 
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы действительно хотите удалить привязку?";

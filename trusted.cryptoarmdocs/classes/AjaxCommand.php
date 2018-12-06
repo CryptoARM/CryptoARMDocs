@@ -457,5 +457,26 @@ class AjaxCommand
 
         return $res;
     }
+
+    static function activateJwtToken($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.activateJwtToken",
+        );
+
+        $accountNumber = $params['accountNumber'];
+        $jwt = $params['jwt'];
+        $balanceData = License::activateJwtToken($accountNumber, $jwt);
+
+        if ($balanceData['success']) {
+            $res = array(
+                "success" => true,
+                "data" => $balanceData['data'],
+                "message" => "OK",
+            );
+        }
+
+        return $res;
+    }
 }
 

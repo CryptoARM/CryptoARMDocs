@@ -220,6 +220,14 @@ $tabControl->Begin();
             </td>
         </tr>
 
+        <tr align="center" id="TR_INFO_MESSAGE_JWT" style="display: none;">
+            <td colspan="2" >
+                <div id="DIV_INFO_MESSAGE_JWT" class="adm-info-message">
+
+                </div>
+            </td>
+        </tr>
+
         <tr>
             <td>
                 <?= Loc::getMessage("TR_CA_DOCS_LICENSE_JWT_TOKEN") ?>
@@ -540,7 +548,48 @@ $tabControl->Begin();
 
         function activateJwtToken() {
             if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"); ?>')) {
-                alert(1);
+                let jwtToken = document.getElementById("JWT_TOKEN").value;
+                BX.ajax({
+                        url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . '?command=activateJwtToken' ?>',
+                        data: {accountNumber: '<?= $LICENSE_ACCOUNT_NUMBER ?>', jwt: jwtToken},
+                        method: 'POST',
+                        onsuccess: function (response) {
+                            let res = JSON.parse(response);
+                            document.getElementById("TR_INFO_MESSAGE_JWT").style.display = "table-row";
+                            let infoMessage = document.getElementById("DIV_INFO_MESSAGE_JWT");
+                            if (!res.success) {
+                                infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
+                            }
+                            if (res.data.amount) {
+                                infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS") ?>' + res.data.amount + '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2") ?>';
+                            } else {
+                                switch (res.data) {
+                                    case 1000:
+                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST") ?>';
+                                        break;
+                                    case 1001:
+                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY") ?>';
+                                        break;
+                                    case 1002:
+                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED") ?>';
+                                        break;
+                                    case 1003:
+                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR") ?>';
+                                        break;
+                                    default:
+                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
+                                }
+                            }
+                            checkAccountBalance();
+                            return true;
+                        },
+
+                        onfailure: function (err) {
+                            return false;
+                        }
+                    }
+                );
+                checkAccountBalance();
             }
         }
 
@@ -573,7 +622,7 @@ $tabControl->Begin();
             );
         }
 
-        window.onload = function checkAccountBalance() {
+        function checkAccountBalance() {
             BX.ajax({
                     url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=checkAccountBalance" ?>',
                     data: {accountNumber: '<?= $LICENSE_ACCOUNT_NUMBER ?>'},
@@ -585,12 +634,15 @@ $tabControl->Begin();
                             balance = data.data;
                         }
                         document.getElementById("DIV_ACCOUNT_BALANCE").innerHTML = balance;
+                        return true;
                     },
                     onfailure: function (err) {
                         return false;
                     }
                 }
             );
-        };
+        }
+
+        checkAccountBalance();
     </script>
 <?

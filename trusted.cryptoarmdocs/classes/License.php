@@ -5,7 +5,7 @@ use Bitrix\Main\Config\Option;
 class License
 {
 
-    public static function makeRequest($url) {
+    public static function makeRequest($url, $data = null) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in License::makeRequest",
@@ -19,6 +19,11 @@ class License
         curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        if ($data) {
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
 
         $response = curl_exec($curl);
         if (!curl_errno($curl)) {
@@ -47,10 +52,13 @@ class License
 
 
     public static function checkAccountBalance($accountNumber) {
-        $url = LICENSE_SERVICE_ACCOUNT_CHECK_BALANCE;
-        $url .= $accountNumber;
-
+        $url = LICENSE_SERVICE_ACCOUNT_CHECK_BALANCE . $accountNumber;
         return License::makeRequest($url);
+    }
+
+    public static function activateJwtToken($accountNumber, $jwt) {
+        $url = LICENSE_SERVICE_ACTIVATE_CODE . $accountNumber;
+        return License::makeRequest($url, array('jwt' => $jwt));
     }
 }
 
