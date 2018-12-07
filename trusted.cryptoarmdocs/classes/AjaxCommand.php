@@ -94,6 +94,17 @@ class AjaxCommand
                 );
             }
         }
+
+        if ($res['success'] && PROVIDE_LICENSE) {
+            $license = License::getOneTimeLicense();
+            if (!$license['success']) {
+                $res['message'] .= '. License fetch error';
+                $res['license'] = null;
+            } else {
+                $res['license'] = $license['data'];
+            }
+        }
+
         return $res;
     }
 

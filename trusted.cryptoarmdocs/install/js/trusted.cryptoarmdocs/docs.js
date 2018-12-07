@@ -80,6 +80,7 @@ function sign(ids, extra = null) {
                     req.jsonrpc = '2.0';
                     req.method = 'sign';
                     req.params = {};
+                    req.params.license = d.license;
                     req.params.token = '';
                     req.params.files = docs;
                     req.params.extra = extra;

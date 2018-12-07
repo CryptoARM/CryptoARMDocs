@@ -60,5 +60,10 @@ class License
         $url = LICENSE_SERVICE_ACTIVATE_CODE . $accountNumber;
         return License::makeRequest($url, array('jwt' => $jwt));
     }
+
+    public static function getOneTimeLicense() {
+        $url = LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN . LICENSE_ACCOUNT_NUMBER;
+        return License::makeRequest($url);
+    }
 }
 
