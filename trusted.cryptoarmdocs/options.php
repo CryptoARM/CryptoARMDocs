@@ -154,11 +154,15 @@ $tabControl->Begin();
 
         <?= $tabControl->BeginNextTab(); ?>
 
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_LICENSE_HEADER_SETTINGS") ?></td>
+        </tr>
+
         <tr>
-            <td width="40%">
+            <td width="50%">
                 <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ENABLE") ?>
             </td>
-            <td width="60%">
+            <td width="50%">
                 <input type="checkbox"
                     <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                        name="PROVIDE_LICENSE"
@@ -171,13 +175,20 @@ $tabControl->Begin();
             <td>
                 <?= Loc::getMessage("TR_CA_DOCS_LICENSE_ACCOUNT_NUMBER") ?>
             </td>
-            <td>
+            <td style="display: flex; align-items: center;">
+                <input id="LICENSE_ACCOUNT_NUMBER"
+                       name="LICENSE_ACCOUNT_NUMBER"
+                       <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
+                       value="<?= $LICENSE_ACCOUNT_NUMBER ?>"
+                       placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER_PLACEHOLDER") ?>"
+                       <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "disabled" : "" ?>
+                       maxlength="16"
+                       type="text"/>
                 <div id="DIV_BTN_CREATE_NEW_ACCOUNT" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "hidden" : "" ?>>
-                    <input type="button"
-                           id="INPUT_ACCOUNT_NUMBER"
+                    <input type="submit"
+                           id="INPUT_SUBMIT_UPDATE"
                            class="adm-workarea adm-btn"
-                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                           onclick="inputAccountNumber();"
+                           name="Update"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER") ?>"/>
                     <input type="button"
                            id="CREATE_NEW_ACCOUNT_NUMBER"
@@ -186,44 +197,23 @@ $tabControl->Begin();
                            onclick="createAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
                 </div>
-                <div id="DIV_INPUT_ACCOUNT_NUMBER" hidden>
-                    <input id="LICENSE_ACCOUNT_NUMBER"
-                           name="LICENSE_ACCOUNT_NUMBER"
-                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                           style="width: 300px;"
-                           value="<?= $LICENSE_ACCOUNT_NUMBER ?>"
-                           type="text"/>
+                <div id="DIV_INPUT_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "" : "hidden" ?>>
                     <input type="button"
                            id="BACK_TO_BTN_CREATE_NEW_ACCOUNT"
                            class="adm-workarea adm-btn"
                            <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                           onclick="backToBtnCreateNewAccountNumber();"
-                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_BACK") ?>"/>
-                </div>
-                <div id="DIV_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "" : "hidden" ?>>
-                    <?= $LICENSE_ACCOUNT_NUMBER ?>
+                           onclick="editAccountNumber();"
+                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_EDIT") ?>"/>
                 </div>
             </td>
         </tr>
 
         <tr>
-            <td></td>
             <td>
-                <div id="DIV_DELETE_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER != "" ? "" : "hidden" ?>>
-                    <input type="button"
-                           id="DELETE_ACCOUNT_NUMBER"
-                           class="adm-workarea adm-btn"
-                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
-                           onclick="deleteAccountNumber();"
-                           value="<?= GetMessage("TR_CA_DOCS_LICENSE_DELETE_ACCOUNT_NUMBER") ?>"/>
-                </div>
+                <?= GetMessage("TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION") ?>
             </td>
-        </tr>
-
-        <tr align="center" id="TR_INFO_MESSAGE_JWT" style="display: none;">
-            <td colspan="2" >
-                <div id="DIV_INFO_MESSAGE_JWT" class="adm-info-message">
-
+            <td>
+                <div id="DIV_ACCOUNT_BALANCE">
                 </div>
             </td>
         </tr>
@@ -254,17 +244,30 @@ $tabControl->Begin();
             </td>
         </tr>
 
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?></td>
+        </tr>
+
         <tr>
             <td>
-                <?= GetMessage("TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION") ?>
+                <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?>
             </td>
             <td>
-                <div id="DIV_ACCOUNT_BALANCE">
-                </div>
+                <a style="cursor: default;" onclick="getHistory();">
+                    <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_BTN") ?>
+                </a>
             </td>
         </tr>
 
-    <? if ($saleModule): ?>
+        <td>
+        <td colspan="2">
+            <pre id="DIV_HISTORY">
+            </pre>
+        </td>
+        </td>
+
+
+        <? if ($saleModule): ?>
         <?= $tabControl->BeginNextTab(); ?>
 
         <tr class="heading">
@@ -515,35 +518,29 @@ $tabControl->Begin();
 ?>
 
     <script>
-        function inputAccountNumber() {
+        function createAccountNumber () {
+            document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
             document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
             document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").removeAttribute("hidden");
-        }
-
-        function createAccountNumber () {
-            document.getElementById("DIV_ACCOUNT_NUMBER").innerHTML = "";
-            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
-            document.getElementById("DIV_ACCOUNT_NUMBER").removeAttribute("hidden");
-            document.getElementById("DIV_DELETE_ACCOUNT_NUMBER").removeAttribute("hidden");
             createNewAccountNumber((data) =>  {
                 document.getElementById("LICENSE_ACCOUNT_NUMBER").value = data;
-                document.getElementById("DIV_ACCOUNT_NUMBER").innerHTML = data;
+                alert('<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT") ?>' + data + '<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT2") ?>');
+                document.getElementById("INPUT_SUBMIT_UPDATE").click();
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").setAttribute('disabled', null);
             });
         }
 
-        function backToBtnCreateNewAccountNumber() {
-            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
-            document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
-        }
-
-        function deleteAccountNumber() {
+        function editAccountNumber() {
             if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"); ?>')) {
                 document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").removeAttribute("disabled");
                 document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
                 document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
-                document.getElementById("DIV_ACCOUNT_NUMBER").setAttribute('hidden', null);
-                document.getElementById("DIV_DELETE_ACCOUNT_NUMBER").setAttribute('hidden', null);
             }
+        }
+
+        function getHistory() {
+            document.getElementById("DIV_HISTORY").innerHTML = "";
         }
 
         function activateJwtToken() {
@@ -555,50 +552,46 @@ $tabControl->Begin();
                         method: 'POST',
                         onsuccess: function (response) {
                             let res = JSON.parse(response);
-                            document.getElementById("TR_INFO_MESSAGE_JWT").style.display = "table-row";
-                            let infoMessage = document.getElementById("DIV_INFO_MESSAGE_JWT");
+                            let infoMessage = "Unknown error.";
                             if (!res.success) {
-                                infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
+                                infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
                             }
                             if (res.data.amount) {
-                                infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS") ?>' + res.data.amount + '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2") ?>';
+                                infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS") ?>' + res.data.amount + '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2") ?>';
+                                checkAccountBalance(data.account.number);
                             } else {
                                 switch (res.data) {
                                     case 1000:
-                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST") ?>';
+                                        infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST") ?>';
                                         break;
                                     case 1001:
-                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY") ?>';
+                                        infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY") ?>';
                                         break;
                                     case 1002:
-                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED") ?>';
+                                        infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED") ?>';
                                         break;
                                     case 1003:
-                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR") ?>';
+                                        infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR") ?>';
                                         break;
                                     default:
-                                        infoMessage.innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
+                                        infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR") ?>';
                                 }
                             }
-                            checkAccountBalance();
+                            alert(infoMessage);
                             return true;
                         },
-
                         onfailure: function (err) {
                             return false;
                         }
                     }
                 );
-                checkAccountBalance();
             }
         }
 
         function toggleInputs(state) {
-            document.getElementById("ACCOUNT_NUMBER").disabled = state;
-            document.getElementById("INPUT_ACCOUNT_NUMBER").disabled = state;
+            document.getElementById("LICENSE_ACCOUNT_NUMBER").disabled = state;
             document.getElementById("CREATE_NEW_ACCOUNT_NUMBER").disabled = state;
             document.getElementById("BACK_TO_BTN_CREATE_NEW_ACCOUNT").disabled = state;
-            document.getElementById("DELETE_ACCOUNT_NUMBER").disabled = state;
             document.getElementById("JWT_TOKEN").disabled = state;
             document.getElementById("ACTIVATE_JWT_TOKEN").disabled = state;
         }
@@ -622,10 +615,10 @@ $tabControl->Begin();
             );
         }
 
-        function checkAccountBalance() {
+        function checkAccountBalance(accountNumber = '<?= $LICENSE_ACCOUNT_NUMBER ?>') {
             BX.ajax({
                     url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=checkAccountBalance" ?>',
-                    data: {accountNumber: '<?= $LICENSE_ACCOUNT_NUMBER ?>'},
+                    data: {accountNumber: accountNumber},
                     method: 'POST',
                     onsuccess: function (response) {
                         const data = JSON.parse(response);

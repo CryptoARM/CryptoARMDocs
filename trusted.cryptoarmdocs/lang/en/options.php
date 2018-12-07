@@ -15,29 +15,37 @@ $MESS["TR_CA_DOCS_DOCS_DIR_SELECT"] = "Select directory";
 $MESS["TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY"] = "No access to the directory.";
 $MESS["TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY"] = "Cannot save documents in system directory.";
 
+$MESS["TR_CA_DOCS_LICENSE_HEADER_SETTINGS"] = "Settings";
+$MESS["TR_CA_DOCS_LICENSE_HEADER_STATISTICS"] = "Statistics";
+
 $MESS["TR_CA_DOCS_LICENSE_ENABLE"] = "Enable license providing";
 $MESS["TR_CA_DOCS_LICENSE_ACCOUNT_NUMBER"] = "Account number:";
-$MESS["TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER"] = "Enter account number";
-$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER"] = "Create new account number";
-$MESS["TR_CA_DOCS_LICENSE_DELETE_ACCOUNT_NUMBER"] = "Delete account number";
-$MESS["TR_CA_DOCS_LICENSE_JWT_TOKEN"] = "Additional operation activation key";
+$MESS["TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER_PLACEHOLDER"] = "Enter account number here";
+$MESS["TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER"] = "Save";
+$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER"] = "Create new";
+$MESS["TR_CA_DOCS_LICENSE_JWT_TOKEN"] = "Activation key";
 $MESS["TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN"] = "Paste your activation key here";
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN"] = "Activate key";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN"] = "Activate";
 $MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_AVAILABLE_TRANSACTION"] = "Operations left on account";
 
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST"] = "Account does not exist";
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY"] = "Empty activation key";
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Activation key already used";
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Activation key format error";
-$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Errod during key activation";
+$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT"] = "New account: ";
+$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT2"] = " . Please save it somewhere before continuing.";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ACCOUNT_DOES_NOT_EXIST"] = "Invalid account number.";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY"] = "Empty license field.";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Activation key already used.";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Activation key format error.";
+$MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Error during key activation.";
 
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS"] = "";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2"] = " operations added to the account.";
 
-$MESS["TR_CA_DOCS_LICENSE_BACK"] = "Back";
+$MESS["TR_CA_DOCS_LICENSE_EDIT"] = "Edit";
 
-$MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Do you really want to delete an account?";
+$MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Do you really want to change an account? This is undoable operation.";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Do you really want to activate a key?";
+
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Account activity in the last 30 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_BTN"] = "Request";
 
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Automatic order status switching";
 $MESS["TR_CA_DOCS_EVENTS_DESCRIPTION"] = "Order status could be changed automatically when some operation is performed on the the attached documents.";
