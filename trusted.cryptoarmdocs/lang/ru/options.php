@@ -38,8 +38,6 @@ $MESS["TR_CA_DOCS_LICENSE_BACK"] = "Назад";
 
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы действительно хотите удалить привязку?";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Вы действительно хотите активировать токен?";
-$MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_ACTIVATED_JWT_TOKEN"] = "Активировано ";
-$MESS["TR_CA_DOCS_LICENSE_NUMBER_OF_ACTIVATED_JWT_TOKEN2"] = " токен(ов)";
 
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Настройки автоматического изменения статуса заказа";
 $MESS["TR_CA_DOCS_EVENTS_DESCRIPTION"] = "Заказ с прикрепленными документами можно автоматически переводить в другой статус при совершении некоторых действий.";
