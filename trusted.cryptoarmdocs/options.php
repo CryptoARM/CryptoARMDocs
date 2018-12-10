@@ -167,7 +167,6 @@ $tabControl->Begin();
                     <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                        name="PROVIDE_LICENSE"
                        value="true"
-                       onchange="toggleInputs(!this.checked)"/>
             </td>
         </tr>
 
@@ -178,10 +177,9 @@ $tabControl->Begin();
             <td style="display: flex; align-items: center;">
                 <input id="LICENSE_ACCOUNT_NUMBER"
                        name="LICENSE_ACCOUNT_NUMBER"
-                       <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                        value="<?= $LICENSE_ACCOUNT_NUMBER ?>"
                        placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER_PLACEHOLDER") ?>"
-                       <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "disabled" : "" ?>
+                       <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "readonly='true'" : "" ?>
                        maxlength="16"
                        type="text"/>
                 <div id="DIV_BTN_CREATE_NEW_ACCOUNT" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "hidden" : "" ?>>
@@ -193,7 +191,6 @@ $tabControl->Begin();
                     <input type="button"
                            id="CREATE_NEW_ACCOUNT_NUMBER"
                            class="adm-workarea adm-btn"
-                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="createAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
                 </div>
@@ -201,7 +198,6 @@ $tabControl->Begin();
                     <input type="button"
                            id="BACK_TO_BTN_CREATE_NEW_ACCOUNT"
                            class="adm-workarea adm-btn"
-                           <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                            onclick="editAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_EDIT") ?>"/>
                 </div>
@@ -226,7 +222,6 @@ $tabControl->Begin();
             <textarea id="JWT_TOKEN"
                       name="JWT_TOKEN"
                       rows="4"
-                      <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                       placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN") ?>"
                       style="width: 300px;"></textarea>
             </td>
@@ -238,7 +233,6 @@ $tabControl->Begin();
                 <input type="button"
                        id="ACTIVATE_JWT_TOKEN"
                        class="adm-workarea adm-btn"
-                       <?= $PROVIDE_LICENSE ? "" : "disabled='disabled'" ?>
                        onclick="activateJwtToken();"
                        value="<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN") ?>"/>
             </td>
@@ -526,14 +520,14 @@ $tabControl->Begin();
                 document.getElementById("LICENSE_ACCOUNT_NUMBER").value = data;
                 alert('<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT") ?>' + data + '<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT2") ?>');
                 document.getElementById("INPUT_SUBMIT_UPDATE").click();
-                document.getElementById("LICENSE_ACCOUNT_NUMBER").setAttribute('disabled', null);
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").setAttribute('readonly', true);
             });
         }
 
         function editAccountNumber() {
             if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"); ?>')) {
                 document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
-                document.getElementById("LICENSE_ACCOUNT_NUMBER").removeAttribute("disabled");
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").removeAttribute("readonly");
                 document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").removeAttribute("hidden");
                 document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").setAttribute('hidden', null);
             }
@@ -554,7 +548,7 @@ $tabControl->Begin();
                             }
                             if (res.data.amount) {
                                 infoMessage = '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS") ?>' + res.data.amount + '<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2") ?>';
-                                checkAccountBalance(data.account.number);
+                                checkAccountBalance();
                             } else {
                                 switch (res.data) {
                                     case 1000:
@@ -582,14 +576,6 @@ $tabControl->Begin();
                     }
                 );
             }
-        }
-
-        function toggleInputs(state) {
-            document.getElementById("LICENSE_ACCOUNT_NUMBER").disabled = state;
-            document.getElementById("CREATE_NEW_ACCOUNT_NUMBER").disabled = state;
-            document.getElementById("BACK_TO_BTN_CREATE_NEW_ACCOUNT").disabled = state;
-            document.getElementById("JWT_TOKEN").disabled = state;
-            document.getElementById("ACTIVATE_JWT_TOKEN").disabled = state;
         }
 
         function createNewAccountNumber(cb) {
