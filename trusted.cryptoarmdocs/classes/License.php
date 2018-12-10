@@ -65,5 +65,10 @@ class License
         $url = LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN . LICENSE_ACCOUNT_NUMBER;
         return License::makeRequest($url);
     }
+
+    public static function getAccountHistory($accountNumber) {
+        $url = LICENSE_SERVICE_ACCOUNT_HISTORY . $accountNumber;
+        return License::makeRequest($url, array('days' => '30'));
+    }
 }
 

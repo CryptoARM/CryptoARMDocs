@@ -36,6 +36,8 @@ $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Activation key alr
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Activation key format error.";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Error during key activation.";
 
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_EMPTY"] = "Your history is empty.";
+
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS"] = "";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2"] = " operations added to the account.";
 

@@ -36,6 +36,8 @@ $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Данная ли�
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Неверный формат лицензии.";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Неизвестная ошибка.";
 
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_EMPTY"] = "Ваша история пуста.";
+
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS"] = "На ваш счет было зачислено ";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2"] = " операций подписи.";
 

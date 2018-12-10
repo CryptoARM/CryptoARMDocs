@@ -30,6 +30,9 @@ if (isset($command)) {
         case "checkAccountBalance":
             $res = Docs\AjaxCommand::checkAccountBalance($params);
             break;
+        case "getAccountHistory":
+            $res = Docs\AjaxCommand::getAccountHistory($params);
+            break;
         case "sign":
             $res = Docs\AjaxCommand::sign($params);
             break;

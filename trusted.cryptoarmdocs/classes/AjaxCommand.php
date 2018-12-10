@@ -489,5 +489,25 @@ class AjaxCommand
 
         return $res;
     }
+
+    static function getAccountHistory($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.getAccountHistory",
+        );
+
+        $accountNumber = $params['accountNumber'];
+        $history = License::getAccountHistory($accountNumber);
+
+        if ($history['success']) {
+            $res = array(
+                "success" => true,
+                "data" => $history['data'],
+                "message" => "OK",
+            );
+        }
+
+        return $res;
+    }
 }
 

@@ -253,18 +253,18 @@ $tabControl->Begin();
                 <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?>
             </td>
             <td>
-                <a style="cursor: default;" onclick="getHistory();">
+                <a style="cursor: default;" onclick="getAccountHistory();">
                     <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_BTN") ?>
                 </a>
             </td>
         </tr>
 
-        <td>
-        <td colspan="2">
-            <pre id="DIV_HISTORY">
+        <tr>
+            <td colspan="2">
+            <pre id="PRE_HISTORY">
             </pre>
-        </td>
-        </td>
+            </td>
+        </tr>
 
 
         <? if ($saleModule): ?>
@@ -539,10 +539,6 @@ $tabControl->Begin();
             }
         }
 
-        function getHistory() {
-            document.getElementById("DIV_HISTORY").innerHTML = "";
-        }
-
         function activateJwtToken() {
             if (confirm('<?= Loc::getMessage("TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"); ?>')) {
                 let jwtToken = document.getElementById("JWT_TOKEN").value;
@@ -636,6 +632,38 @@ $tabControl->Begin();
             );
         }
 
-        checkAccountBalance();
+        window.onload = function (){
+            checkAccountBalance();
+        };
+
+        function getAccountHistory(accountNumber = '<?= $LICENSE_ACCOUNT_NUMBER ?>') {
+            BX.ajax({
+                    url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=getAccountHistory" ?>',
+                    data: {accountNumber: accountNumber},
+                    method: 'POST',
+                    onsuccess: function (response) {
+                        const res = JSON.parse(response);
+                        document.getElementById("PRE_HISTORY").innerHTML = "";
+                        if (res.success === true) {
+                            if (res.data !== "") {
+                                let historyElem = res['data'];
+                                historyElem.forEach(function (historyElem, elem){
+                                    document.getElementById("PRE_HISTORY").innerHTML += historyElem.timestamp + "" + historyElem.operation + '<br>';
+                                });
+                            } else {
+                                document.getElementById("PRE_HISTORY").innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_EMPTY") ?>';
+                            }
+                        } else {
+                            document.getElementById("PRE_HISTORY").innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_EMPTY") ?>';
+                        }
+                        return true;
+                    },
+                    onfailure: function (err) {
+                        return false;
+                    }
+                }
+            );
+        }
+
     </script>
 <?
