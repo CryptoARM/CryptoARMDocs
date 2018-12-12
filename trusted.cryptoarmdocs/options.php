@@ -634,7 +634,7 @@ $tabControl->Begin();
                             if (res.data !== "") {
                                 let historyElem = res['data'];
                                 historyElem.forEach(function (historyElem, elem){
-                                    document.getElementById("PRE_HISTORY").innerHTML += historyElem.timestamp + "" + historyElem.operation + '<br>';
+                                    document.getElementById("PRE_HISTORY").innerHTML += historyElem.timestamp + " " + historyElem.operation + '<br>';
                                 });
                             } else {
                                 document.getElementById("PRE_HISTORY").innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_EMPTY") ?>';
