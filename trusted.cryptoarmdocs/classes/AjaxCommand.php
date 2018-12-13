@@ -1,6 +1,7 @@
 <?php
 
 namespace Trusted\CryptoARM\Docs;
+use DateTime;
 
 /**
  * Controllers for AJAX requests.
@@ -491,23 +492,24 @@ class AjaxCommand
     }
 
     static function getAccountHistory($params) {
-        $res = array(
-            "success" => false,
-            "message" => "Unknown error in Ajax.getAccountHistory",
-        );
-
         $accountNumber = $params['accountNumber'];
-        $history = License::getAccountHistory($accountNumber);
+        $days = $params['days'];
+        $history = License::getAccountHistory($accountNumber, $days);
 
         if ($history['success']) {
-            $res = array(
-                "success" => true,
-                "data" => $history['data'],
-                "message" => "OK",
-            );
+            $strHistory = "";
+            foreach ($history['data'] as $elemHistory) {
+                $timeInUTC = $elemHistory['timestamp'];
+                $dt = new DateTime($timeInUTC, new \DateTimeZone('UTC'));
+                $dt->setTimezone(new \DateTimeZone($params['timeZone']));
+                $realTime = $dt->format('Y-m-d H:i:s T');
+                $strHistory .= $realTime . " ";
+                $strHistory .= $elemHistory['operation'] . " ";
+                $strHistory .= $elemHistory['userIP'] . " ";
+                $strHistory .= $elemHistory['userName'] . "\n";
+            }
         }
-
-        return $res;
+        return $strHistory;
     }
 }
 

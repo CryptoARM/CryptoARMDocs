@@ -46,7 +46,13 @@ $MESS["TR_CA_DOCS_LICENSE_EDIT"] = "Изменить";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы уверены что хотите изменить текущий счет? В случае утери номера счета, восстановление будет невозможно.";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Вы уверены что хотите активировать токен?";
 
-$MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Выписка счета за последние 30 дней";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Выписка счета за ";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_1_DAY"] = "1 день";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_3_DAYS"] = "3 дня";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_7_DAYS"] = "7 дней";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_14_DAYS"] = "14 дней";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_30_DAYS"] = "30 дней";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_INF_DAYS"] = "За все время";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_BTN"] = "Получить";
 
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Настройки автоматического изменения статуса заказа";

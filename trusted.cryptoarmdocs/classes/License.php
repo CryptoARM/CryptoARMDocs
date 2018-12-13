@@ -68,9 +68,9 @@ class License
         return License::makeRequest($url, array('user' => $userInfo));
     }
 
-    public static function getAccountHistory($accountNumber) {
+    public static function getAccountHistory($accountNumber, $days) {
         $url = LICENSE_SERVICE_ACCOUNT_HISTORY . $accountNumber;
-        return License::makeRequest($url, array('days' => '30'));
+        return License::makeRequest($url, array('days' => $days));
     }
 }
 
