@@ -266,7 +266,7 @@ $tabControl->Begin();
         <tr>
             <td>
                 <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?>
-                <? echo SelectBoxFromArray("", $daysInSelector, "", "", "id=\"SelectBoxValue\"", false, "trustedcryptoarmdocs_settings"); ?>
+                <? echo SelectBoxFromArray("", $daysInSelector, "", "", "id=\"numberOfDays\"", false, "trustedcryptoarmdocs_settings"); ?>
 
             </td>
             <td>
@@ -638,8 +638,9 @@ $tabControl->Begin();
         };
 
         function getAccountHistory(accountNumber = '<?= $LICENSE_ACCOUNT_NUMBER ?>') {
-            let days = document.getElementById("SelectBoxValue").value;
+            let days = document.getElementById("numberOfDays").value;
             let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
             BX.ajax({
                     url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=getAccountHistory" ?>',
                     data: {accountNumber: accountNumber, days: days, timeZone: timeZone},
@@ -647,8 +648,10 @@ $tabControl->Begin();
                     onsuccess: function (response) {
                         let res = JSON.parse(response);
                         let element = document.createElement('a');
+                        let today = new Date();
+                        let presentDay = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
                         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(res));
-                        element.setAttribute('download', 'log.txt');
+                        element.setAttribute('download', 'tr_events_log_' + presentDay + '.txt');
                         element.style.display = 'none';
                         document.body.appendChild(element);
                         element.click();
