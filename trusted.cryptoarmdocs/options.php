@@ -115,12 +115,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("EVENT_EMAIL_READ");
         UpdateOption("MAIL_EVENT_ID");
         UpdateOption("MAIL_TEMPLATE_ID");
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
     }
 }
 
 foreach ($moduleOptions as $option) {
     $$option = Option::get(TR_CA_DOCS_MODULE_ID, $option, "");
 }
+
+$daysInSelector = array(
+    "REFERENCE" => array(
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_1_DAY"),
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_3_DAYS"),
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_7_DAYS"),
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_14_DAYS"),
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_30_DAYS"),
+        GetMessage("TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_INF_DAYS"),
+    ),
+    "REFERENCE_ID" => array(
+        1,
+        3,
+        7,
+        14,
+        30,
+        99999,
+    ),
+);
 
 $tabControl->Begin();
 
@@ -239,12 +260,14 @@ $tabControl->Begin();
         </tr>
 
         <tr class="heading">
-            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?></td>
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_LICENSE_HEADER_STATISTICS") ?></td>
         </tr>
 
         <tr>
             <td>
                 <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?>
+                <? echo SelectBoxFromArray("", $daysInSelector, "", "", "id=\"numberOfDays\"", false, "trustedcryptoarmdocs_settings"); ?>
+
             </td>
             <td>
                 <a style="cursor: default;" onclick="getAccountHistory();">
@@ -252,14 +275,6 @@ $tabControl->Begin();
                 </a>
             </td>
         </tr>
-
-        <tr>
-            <td colspan="2">
-            <pre id="PRE_HISTORY">
-            </pre>
-            </td>
-        </tr>
-
 
         <? if ($saleModule): ?>
         <?= $tabControl->BeginNextTab(); ?>
@@ -623,25 +638,24 @@ $tabControl->Begin();
         };
 
         function getAccountHistory(accountNumber = '<?= $LICENSE_ACCOUNT_NUMBER ?>') {
+            let days = document.getElementById("numberOfDays").value;
+            let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
             BX.ajax({
                     url: '<?= TR_CA_DOCS_AJAX_CONTROLLER . "?command=getAccountHistory" ?>',
-                    data: {accountNumber: accountNumber},
+                    data: {accountNumber: accountNumber, days: days, timeZone: timeZone},
                     method: 'POST',
                     onsuccess: function (response) {
-                        const res = JSON.parse(response);
-                        document.getElementById("PRE_HISTORY").innerHTML = "";
-                        if (res.success === true) {
-                            if (res.data !== "") {
-                                let historyElem = res['data'];
-                                historyElem.forEach(function (historyElem, elem){
-                                    document.getElementById("PRE_HISTORY").innerHTML += historyElem.timestamp + " " + historyElem.operation + '<br>';
-                                });
-                            } else {
-                                document.getElementById("PRE_HISTORY").innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_EMPTY") ?>';
-                            }
-                        } else {
-                            document.getElementById("PRE_HISTORY").innerHTML = '<?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_EMPTY") ?>';
-                        }
+                        let res = JSON.parse(response);
+                        let element = document.createElement('a');
+                        let today = new Date();
+                        let presentDay = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+                        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(res));
+                        element.setAttribute('download', 'tr_events_log_' + presentDay + '.txt');
+                        element.style.display = 'none';
+                        document.body.appendChild(element);
+                        element.click();
+                        document.body.removeChild(element);
                         return true;
                     },
                     onfailure: function (err) {

@@ -46,7 +46,13 @@ $MESS["TR_CA_DOCS_LICENSE_EDIT"] = "Edit";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Do you really want to change an account? This is undoable operation.";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Do you really want to activate a key?";
 
-$MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Account activity in the last 30 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Account activity in the last ";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_1_DAY"] = "1 day";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_3_DAYS"] = "3 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_7_DAYS"] = "7 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_14_DAYS"] = "14 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_30_DAYS"] = "30 days";
+$MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_INF_DAYS"] = "All time";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_BTN"] = "Request";
 
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Automatic order status switching";
