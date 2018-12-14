@@ -431,6 +431,12 @@ class AjaxCommand
         }
     }
 
+
+    /**
+     * register new account in licensesvc
+     *
+     * @return array
+     */
     static function registerAccountNumber() {
         $res = array(
             "success" => false,
@@ -450,6 +456,12 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * check account balance
+     *
+     * @param $params  [accountNumber]
+     * @return array
+     */
     static function checkAccountBalance($params) {
         $res = array(
             "success" => false,
@@ -470,6 +482,12 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * activate licence with number of operation
+     *
+     * @param $params  [accountNumber]
+     * @return array
+     */
     static function activateJwtToken($params) {
         $res = array(
             "success" => false,
@@ -491,6 +509,14 @@ class AjaxCommand
         return $res;
     }
 
+    /**
+     * Get account history
+     *
+     * @param $params   [accountNumber]
+     *                  [days]
+     * @return string
+     * @throws \Exception
+     */
     static function getAccountHistory($params) {
         $accountNumber = $params['accountNumber'];
         $days = $params['days'];
