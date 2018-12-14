@@ -44,6 +44,14 @@ function sign(ids, extra = null) {
         alert(HTTP_WARNING);
         return;
     }
+    let iOS = /iphone/i.test(navigator.userAgent);
+    let android = /android/i.test(navigator.userAgent);
+    if (!iOS && !android) {
+        if (!socket.connected) {
+            alert(NO_CLIENT);
+            return;
+        }
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=sign',
         type: 'post',
@@ -85,18 +93,14 @@ function sign(ids, extra = null) {
                     req.params.files = docs;
                     req.params.extra = extra;
                     req.params.uploader = AJAX_CONTROLLER + '?command=upload';
-                    if (socket.connected) {
-                        socket.emit('sign', req);
-                        ids = [];
-                        docs.forEach(function (elem) {
-                            ids.push(elem.id);
-                        });
-                        block(ids, function () {
-                            location.reload();
-                        });
-                    } else {
-                        alert(NO_CLIENT);
-                    }
+                    socket.emit('sign', req);
+                    ids = [];
+                    docs.forEach(function (elem) {
+                        ids.push(elem.id);
+                    });
+                    block(ids, function () {
+                        location.reload();
+                    });
                 } else {
                     console.log(d);
                 }
