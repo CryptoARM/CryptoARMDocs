@@ -58,7 +58,7 @@ function sign(ids, extra = null) {
         data: {id: ids, extra: extra},
         success: function (d) {
             // mobile CryptoArm support START
-            if (iOS || android) {
+            if (/iphone/i.test(navigator.userAgent)) {
                 let filenameArr = [];
                 let idArr = [];
                 docs = JSON.parse(d.docsToSign);
