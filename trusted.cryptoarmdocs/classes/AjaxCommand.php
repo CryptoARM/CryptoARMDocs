@@ -433,9 +433,11 @@ class AjaxCommand
 
 
     /**
-     * register new account in licensesvc
+     * Registers new account in licensesvc.
      *
-     * @return array
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     *               [data]: string ascii, account number
      */
     static function registerAccountNumber() {
         $res = array(
@@ -457,10 +459,12 @@ class AjaxCommand
     }
 
     /**
-     * check account balance
+     * Returns number of operations on the account.
      *
-     * @param $params  [accountNumber]
-     * @return array
+     * @param $params [accountNumber]: string ascii
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     *               [data]: int, number of operations on the account
      */
     static function checkAccountBalance($params) {
         $res = array(
@@ -483,10 +487,13 @@ class AjaxCommand
     }
 
     /**
-     * activate licence with number of operation
+     * Adds operation to the account.
      *
-     * @param $params  [accountNumber]
-     * @return array
+     * @param $params [accountNumber]: string ascii
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     *               [data]: error code on result false
+     *               [data][amount]: number of added operations
      */
     static function activateJwtToken($params) {
         $res = array(
@@ -510,12 +517,12 @@ class AjaxCommand
     }
 
     /**
-     * Get account history
+     * Returns formatted log of all operation in n days
+     * of the specified account.
      *
-     * @param $params   [accountNumber]
-     *                  [days]
+     * @param $params [accountNumber]: string ascii
+     *                [days]: int, number of days
      * @return string
-     * @throws \Exception
      */
     static function getAccountHistory($params) {
         $accountNumber = $params['accountNumber'];
