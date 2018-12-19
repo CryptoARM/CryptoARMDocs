@@ -219,6 +219,18 @@ function dirSelectorAct(filename, path, site)
                                        placeholder=""
                                        autocomplete="off"
                                        size="15" maxlength="255" value="">
+
+                            <?
+                            $userSelectionJs = "window.open('/bitrix/admin/user_search.php?lang=ru&FN=ffilemanupload" .
+                                "&FC=user_id_" . $i . "',''" . ", 'scrollbars=yes,resizable=yes,width=760,height=500," .
+                                " top=' + Math.floor((screen.height - 560) / 2 - 14) + '," .
+                                "left=' + Math.floor((screen.width - 760) / 2 - 5))";
+                            ?>
+
+                            <input type="button"
+                                   class="adm-workarea adm-btn"
+                                   onclick="<?= $userSelectionJs ?>"
+                                   value="..."/>
                             </td>
 
                             <td class="adm-detail-content-cell-l; white-space: nowrap;">
