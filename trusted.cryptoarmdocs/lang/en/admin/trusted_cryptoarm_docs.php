@@ -30,6 +30,8 @@ $MESS["TR_CA_DOCS_FILTER_ROLES_NONE"] = "Not signed";
 // Columns
 $MESS["TR_CA_DOCS_COL_ID"] = "ID";
 $MESS["TR_CA_DOCS_COL_FILENAME"] = "Document name";
+$MESS["TR_CA_DOCS_COL_PARENT_CREATED"] = "Document upload date";
+$MESS["TR_CA_DOCS_COL_CREATED"] = "Document last sign date";
 $MESS["TR_CA_DOCS_COL_SIGN"] = "Signature certificate information";
 $MESS["TR_CA_DOCS_COL_TYPE"] = "Document type";
 $MESS["TR_CA_DOCS_COL_STATUS"] = "Document status";

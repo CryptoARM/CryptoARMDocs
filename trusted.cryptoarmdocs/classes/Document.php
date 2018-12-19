@@ -388,6 +388,18 @@ class Document implements IEntity, ISave
     }
 
     /**
+     * Find original document.
+     * @return Document
+     */
+    function getFirstParent() {
+        if ($parent = $this->getParent()) {
+            return $parent->getFirstParent();
+        } else {
+            return $this;
+        }
+    }
+
+    /**
      * Sets parent id by passed document.
      * @param Document $parent
      * @return void

@@ -30,6 +30,8 @@ $MESS["TR_CA_DOCS_FILTER_ROLES_NONE"] = "Требуется подпись";
 // Columns
 $MESS["TR_CA_DOCS_COL_ID"] = "ID";
 $MESS["TR_CA_DOCS_COL_FILENAME"] = "Название документа";
+$MESS["TR_CA_DOCS_COL_PARENT_CREATED"] = "Дата загрузки документа";
+$MESS["TR_CA_DOCS_COL_CREATED"] = "Дата последней подписи";
 $MESS["TR_CA_DOCS_COL_SIGN"] = "Информация о сертификате подписи";
 $MESS["TR_CA_DOCS_COL_TYPE"] = "Тип документа";
 $MESS["TR_CA_DOCS_COL_STATUS"] = "Статус документа";

@@ -107,6 +107,16 @@ $lAdmin->AddHeaders(array(
         "default" => true
     ),
     array(
+        "id" => "PARENT_CREATED",
+        "content" => Loc::getMessage("TR_CA_DOCS_COL_PARENT_CREATED"),
+        "default" => false
+    ),
+    array(
+        "id" => "CREATED",
+        "content" => Loc::getMessage("TR_CA_DOCS_COL_CREATED"),
+        "default" => false
+    ),
+    array(
         "id" => "SIGN",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_SIGN"),
         "sort" => "SIGN",
@@ -156,6 +166,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
+    $docCreated = $doc->getCreated();
+    $docParentCreated = $doc->getFirstParent()->getCreated();
+
     $docType = $doc->getType();
     $docTypeString = Docs\Utils::GetTypeString($doc);
 
@@ -170,6 +183,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arRes = array(
         "DOC" => $doc->getId(),
         "FILE_NAME" => $docName,
+        "PARENT_CREATED" => $docParentCreated,
+        "CREATED" => $docCreated,
         "SIGN" => $signersString,
         "TYPE" => $docType,
     );
@@ -178,6 +193,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $row->AddViewField("DOC", $doc->getId());
     $row->AddViewField("FILE_NAME", $docName);
+    $row->AddViewField("PARENT_CREATED", $docParentCreated);
+    $row->AddViewField("CREATED", $docCreated);
     $row->AddViewField("SIGN", $signersString);
     $row->AddViewField("TYPE", $docTypeString);
 
