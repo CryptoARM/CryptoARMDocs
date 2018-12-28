@@ -169,10 +169,9 @@ class Database
      */
     static function getDocumentsByName($name)
     {
-        // TODO: fuzzy finding
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
-            . ' WHERE NAME = "' . $DB->ForSql($name) . '"'
+            . ' WHERE NAME LIKE CONCAT("%", TRIM("' . $DB->ForSql($name) . '"), "%")'
             . ' AND CHILD_ID is null';
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection();
