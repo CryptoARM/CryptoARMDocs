@@ -234,10 +234,10 @@ class Utils
         $logExtra = $logArray["extra"];
         if ($logDocs) {
             $logDocsParsed = array();
-            if (get_class($logDocs) === "Trusted\Docs\Document") {
+            if (get_class($logDocs) === "Trusted\CryptoARM\Docs\Document") {
                 $logDocsParsed[] = $logDocs->getId() . "(" . $logDocs->getName() . ")";
             }
-            if (get_class($logDocs) === "Trusted\Docs\DocumentCollection") {
+            if (get_class($logDocs) === "Trusted\CryptoARM\Docs\DocumentCollection") {
                 foreach ($logDocs->getList() as $doc) {
                     $logDocsParsed[] = $doc->getId() . "(" .$doc->getName() . ")";
                 }
