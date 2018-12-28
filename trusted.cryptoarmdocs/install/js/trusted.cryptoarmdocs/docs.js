@@ -259,13 +259,7 @@ function unblock(ids) {
 }
 
 function remove(ids, force = false, message = REMOVE_ACTION_CONFIRM) {
-    // TODO: simplify
-    if (force) {
-        var conf = true;
-    } else {
-        var conf = confirm(message);
-    }
-    if (conf == true) {
+    if (force ? true : confirm(message)) {
         $.ajax({
             url: AJAX_CONTROLLER + '?command=remove',
             type: 'post',
