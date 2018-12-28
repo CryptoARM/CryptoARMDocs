@@ -298,5 +298,33 @@ class Utils
             || $_SERVER['SERVER_PORT'] == 443);
     }
 
+    /**
+     * @param $dir Document directory
+     * @return bool Return Y/N
+     */
+    public static function CheckDocumentsDir($dir) {
+        $docRoot = $_SERVER["DOCUMENT_ROOT"];
+        $fullPath = $docRoot . $dir;
+        // Expand extra /../
+        $fullPath = realpath($fullPath);
+
+        // Check if we are in bitrix root
+        $len = strlen($docRoot);
+        if (strncmp($fullPath, $docRoot, $len) < 0 || strcmp($fullPath, $docRoot) == 0) {
+            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+        }
+
+        // Check for entering bitrix system directory
+        if (preg_match("/^bitrix($|\/*)/", $dir)) {
+            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+        }
+
+        // Check for permissions
+        if (!is_readable($fullPath) && !is_writable($fullPath)) {
+            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
+        }
+        return true;
+    }
+
 }
 

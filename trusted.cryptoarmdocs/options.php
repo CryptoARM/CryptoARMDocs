@@ -46,32 +46,6 @@ $aTabs[] = array(
 
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
 
-// TODO: move to Utils
-function CheckDocumentsDir($dir) {
-    $docRoot = $_SERVER["DOCUMENT_ROOT"];
-    $fullPath = $docRoot . $dir;
-    // Expand extra /../
-    $fullPath = realpath($fullPath);
-
-    // Check if we are in bitrix root
-    $len = strlen($docRoot);
-    if (strncmp($fullPath, $docRoot, $len) < 0 || strcmp($fullPath, $docRoot) == 0) {
-        return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
-    }
-
-    // Check for entering bitrix system directory
-    if (preg_match("/^bitrix($|\/*)/", $dir)) {
-        return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
-    }
-
-    // Check for permissions
-    if (!is_readable($fullPath) && !is_writable($fullPath)) {
-        return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
-    }
-
-    return true;
-}
-
 $moduleOptions = array(
     "DOCUMENTS_DIR",
     "PROVIDE_LICENSE", "LICENSE_ACCOUNT_NUMBER",
@@ -97,7 +71,7 @@ function UpdateOption($option, $value = false) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
     if (isset($_POST["Update"])) {
-        $docsDirCheck = CheckDocumentsDir($_POST["DOCUMENTS_DIR"]);
+        $docsDirCheck = Docs\Utils::CheckDocumentsDir($_POST["DOCUMENTS_DIR"]);
         if ($docsDirCheck === true) {
             UpdateOption("DOCUMENTS_DIR");
         } else {
