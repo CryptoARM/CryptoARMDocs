@@ -4,6 +4,8 @@ use Bitrix\Main\Config\Option;
 
 define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocs");
 
+define("TR_CA_HOST", preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
+
 // Module directories
 define("TR_CA_DOCS_MODULE_DIR", $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . TR_CA_DOCS_MODULE_ID . "/");
 define("TR_CA_DOCS_MODULE_DIR_CLASSES", TR_CA_DOCS_MODULE_DIR . "classes/");
@@ -13,7 +15,7 @@ define("TR_CA_DOCS_MODULE_DIR_CLASSES_GENERAL", TR_CA_DOCS_MODULE_DIR . "classes
 define("TR_CA_DOCS_LOG_FILE", TR_CA_DOCS_MODULE_DIR . "log.txt");
 
 // AJAX controller is also defined in lang/ru/javascript.php & lang/en/javascript.php
-define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trusted/docs/ajax.php");
+define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . TR_CA_HOST . "/bitrix/components/trusted/docs/ajax.php");
 
 // DB tables
 define("DB_TABLE_DOCUMENTS", "tr_ca_docs");
