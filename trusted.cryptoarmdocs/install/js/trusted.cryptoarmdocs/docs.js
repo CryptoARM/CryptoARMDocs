@@ -68,7 +68,7 @@ function sign(ids, extra = null) {
                 });
                 let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + (extra === null ? "null" : extra.role)
                     + "&url=" + JSON.parse(d.docsToSign)[0].url + "&filename=" + filenameArr + "&href="
-                    + window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&browser=";
+                    + window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
                 if (/CriOS/i.test(navigator.userAgent)) {
                     window.location = url + "chrome";
                 } else {
