@@ -1,4 +1,5 @@
 <?php
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;

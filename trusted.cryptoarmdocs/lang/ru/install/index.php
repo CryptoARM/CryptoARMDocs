@@ -13,8 +13,8 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_DESCRIPTION_RU"] = "
 #ORDER_ID# - номер заказа
 #FILE_NAMES# - список названий документов
 ";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT_RU"] = "#SITE_NAME#: Документы по заказу №#ORDER_ID#";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_BODY_RU"] = "
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"] = "#SITE_NAME#: Документы по заказу №#ORDER_ID#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_BODY"] = "
 Документы: #FILE_NAMES# по заказу №#ORDER_ID# для #ORDER_USER#.
 <img src=\"#SITE_URL#/bitrix/components/trusted/trusted.cryptoarmdocs/email.php?order_id=#ORDER_ID#\" alt=\"\">
 ";

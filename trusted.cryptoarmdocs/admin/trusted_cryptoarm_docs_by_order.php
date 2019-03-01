@@ -1,4 +1,5 @@
 <?php
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
@@ -27,7 +28,7 @@ Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trusted_c
 // Do not show page if module sale is unavailable
 if (!ModuleManager::isModuleInstalled("sale")) {
     echo "SALE_MODULE_NOT_INSTALLED";
-    require($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/main/include/epilog_admin_after.php');
+    require($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/epilog_admin_after.php');
     die();
 }
 Loader::includeModule("sale");
@@ -44,7 +45,7 @@ $eventManager = EventManager::getInstance();
 $eventManager->addEventHandler(
     "main",
     "OnBeforeMailSend",
-    function($event) {
+    function ($event) {
         $eventParams = $event->getParameters();
         foreach ($eventParams as $mailKey => $mailParams) {
             // Check if mail is using module event type
@@ -70,8 +71,7 @@ $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
 // main list object
 $lAdmin = new CAdminList($sTableID, $oSort);
 
-function CheckFilter()
-{
+function CheckFilter() {
     global $FilterArr, $lAdmin;
     foreach ($FilterArr as $f)
         global $$f;

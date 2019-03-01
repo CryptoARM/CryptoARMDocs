@@ -8,8 +8,7 @@ use DateTime;
  *
  * Used for interaction of bitrix server with opened pages and signing client.
  */
-class AjaxCommand
-{
+class AjaxCommand {
     /**
      * Recieves array of document ids and checks them all before
      * determining which ones are ready to signed.
@@ -24,8 +23,7 @@ class AjaxCommand
      *               [docsBlocked]: documents blocked by previous operation
      *               [docsRoleSigned]: documents that were already signed by provided ROLE
      */
-    static function sign($params)
-    {
+    static function sign($params) {
         $res = array(
             "success" => false,
             "message" => "Nothing to sign",
@@ -118,8 +116,7 @@ class AjaxCommand
      *               [message]: operation result message
      *               [docs]: document info in JSON format
      */
-    static function verify($params)
-    {
+    static function verify($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.getDocJSON",
@@ -153,8 +150,7 @@ class AjaxCommand
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    static function upload($params)
-    {
+    static function upload($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.upload",
@@ -216,8 +212,7 @@ class AjaxCommand
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function block($params)
-    {
+    function block($params) {
         $res = array(
             "success" => true,
             "message" => "",
@@ -243,8 +238,7 @@ class AjaxCommand
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function unblock($params)
-    {
+    function unblock($params) {
         $res = array("success" => true,
             "message" => "",
         );
@@ -269,8 +263,7 @@ class AjaxCommand
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function remove($params)
-    {
+    function remove($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.remove",
@@ -322,8 +315,7 @@ class AjaxCommand
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    static function download($params)
-    {
+    static function download($params) {
         // TODO: rename or merge with content
         $res = array(
             "success" => false,
@@ -404,8 +396,7 @@ class AjaxCommand
      *                      [file]: path to file
      * @return void
      */
-    static function content($params)
-    {
+    static function content($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in Ajax.content",
