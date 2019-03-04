@@ -74,7 +74,7 @@ header.document-card__title_user {
 .document-content__item .document-item__right_user {
     flex-wrap: wrap;
     justify-content: flex-end;
-    width: 228px;
+    width: 280px;
 }
 
 .document-card__content .document-item__text {

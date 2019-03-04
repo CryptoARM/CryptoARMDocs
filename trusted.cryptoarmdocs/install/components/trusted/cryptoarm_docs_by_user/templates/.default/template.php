@@ -61,6 +61,12 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                     </div>
                     <ul id="ul_by_user">
+                        <div onclick="sendEmailTo(<?= json_encode($all_ids) ?>)">
+                            <div class="material-icons">
+                                email
+                            </div>
+                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>
+                        </div>
                         <div onclick="sign(<?= json_encode($all_ids) ?>, {'role': 'CLIENT'} )">
                             <div class="material-icons">
                                 create
@@ -158,6 +164,13 @@ if (!empty($_FILES["userfile"]["name"])) {
                     <div class="document-item__right_user">
                         <div class="icon_content">
                             <div class="icon-wrapper"
+                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>"
+                                 onclick="sendEmailTo([<?= $doc_id ?>])">
+                                <i class="material-icons">
+                                    email
+                                </i>
+                            </div>
+                            <div class="icon-wrapper"
                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
                                  onclick="window.parent.sign([<?= $doc_id ?>], {'role': 'CLIENT'})">
                                 <i class="material-icons">
@@ -222,4 +235,15 @@ if (!empty($_FILES["userfile"]["name"])) {
         }
         e.stopPropagation();
     });
+
+    function sendEmailTo(docsIds) {
+        var emailAddress = window.parent.promptEmail("<?= Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT") ?>");
+        var arEventFields = {
+            "EMAIL": emailAddress,
+        };
+
+        if (emailAddress) {
+            window.parent.sendEmail(docsIds, "MAIL_EVENT_ID_TO", arEventFields, "MAIL_TEMPLATE_ID_TO", '<?= Loc::getMessage("TR_CA_DOCS_MAIL_SENT") . " 1" ?>', '<?= Loc::getMessage("TR_CA_DOCS_MAIL_ERROR_PRE") ?>');
+        }
+    }
 </script>

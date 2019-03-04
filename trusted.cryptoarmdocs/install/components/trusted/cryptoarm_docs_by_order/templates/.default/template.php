@@ -178,7 +178,6 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
     });
 
     function sendEmailTo(docsIds) {
-        console.log(docsIds);
         var emailAddress = window.parent.promptEmail("<?= Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT") ?>");
         var arEventFields = {
             "EMAIL": emailAddress,
