@@ -21,6 +21,9 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "sendEmail":
+            $res = Docs\AjaxCommand::sendEmail($params);
+            break;
         case "activateJwtToken":
             $res = Docs\AjaxCommand::activateJwtToken($params);
             break;

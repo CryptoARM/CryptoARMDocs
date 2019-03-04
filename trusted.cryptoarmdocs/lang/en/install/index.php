@@ -16,8 +16,15 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_DESCRIPTION_EN"] = "
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"] = "#SITE_NAME#: Documents by order #ORDER_ID#";
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_BODY"] = "
 Documents: #FILE_NAMES# by order №#ORDER_ID# for #ORDER_USER#.
-<img src=\"#SITE_URL#/bitrix/components/trusted/trusted.cryptoarmdocs/email.php?order_id=#ORDER_ID#\" alt=\"\">
+<img src=\"#SITE_URL#/bitrix/components/trusted/docs/email.php?order_id=#ORDER_ID#\" alt=\"\">
 ";
 
-$MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Cancel installation";
+$MESS["TR_CA_DOCS_MAIL_EVENT_TO_NAME_EN"] = "CryptoARM Documents - documents";
+$MESS["TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_EN"] = "
+#EMAIL# - recipient email
+#FILE_NAMES# - list of document names
+";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Documents";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Documents: #FILE_NAMES#";
 
+$MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Cancel installation";

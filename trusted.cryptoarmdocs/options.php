@@ -51,7 +51,7 @@ $moduleOptions = array(
     "PROVIDE_LICENSE", "LICENSE_ACCOUNT_NUMBER",
     "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
     "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
-    "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ",
+    "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ", "MAIL_EVENT_ID_TO", "MAIL_TEMPLATE_ID_TO",
     "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID",
 );
 
@@ -89,6 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("EVENT_EMAIL_READ");
         UpdateOption("MAIL_EVENT_ID");
         UpdateOption("MAIL_TEMPLATE_ID");
+        UpdateOption("MAIL_EVENT_ID_TO");
+        UpdateOption("MAIL_TEMPLATE_ID_TO");
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -144,6 +146,57 @@ $tabControl->Begin();
                        type="button"
                        value="<?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR_SELECT") ?>"
                        onclick="dirSelector()">
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_MAIL_EVENT_ID") ?>
+            </td>
+            <td>
+                <select name="MAIL_EVENT_ID_TO" id="MAIL_EVENT_ID_TO">
+                    <option value="" <?= $MAIL_EVENT_ID_TO ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
+                    while ($event = $events->Fetch()) {
+                        $eventId = htmlspecialcharsbx($event["ID"]);
+                        $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                        $eventName = htmlspecialcharsbx($event["NAME"]);
+                        $sel = $MAIL_EVENT_ID_TO == $eventTypeName ? " selected" : "";
+                        echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_TEMPLATE_ID") ?> </td>
+            <td>
+                <select name="MAIL_TEMPLATE_ID_TO" id="MAIL_TEMPLATE_ID_TO">
+                    <option value="" <?= $MAIL_TEMPLATE_ID_TO ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_TO));
+                    while ($template = $templates->Fetch()) {
+                        $templateId = htmlspecialcharsbx($template["ID"]);
+                        $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                        $sel = $MAIL_TEMPLATE_ID_TO == $templateId ? " selected" : "";
+                        echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
+                    }
+                    ?>
+                </select>
             </td>
         </tr>
 

@@ -56,7 +56,9 @@ $MESS["TR_CA_DOCS_ACT_SIGN"] = "Sign";
 $MESS["TR_CA_DOCS_ACT_UNBLOCK"] = "Unblock";
 $MESS["TR_CA_DOCS_ACT_REMOVE"] = "Remove";
 
-$MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Send email";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Send documents to buyer";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Send documents by email";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Enter e-mail to which you want to send documents:";
 
 // Hover titles
 $MESS["TR_CA_DOCS_USER_PROFILE"] = "User profile";
@@ -72,7 +74,6 @@ $MESS["TR_CA_DOCS_MAILTO_BUYER"] = "Compose a message to the buyer";
 $MESS["TR_CA_DOCS_EMAIL_NOT_SENT"] = "Email is not sent";
 $MESS["TR_CA_DOCS_EMAIL_SENT"] = "Email is sent";
 $MESS["TR_CA_DOCS_EMAIL_READ"] = "Email is sent and read";
-$MESS["TR_CA_DOCS_MAIL_NOT_CONFIGURED"] = "Select email event type and template in the module settings.";
 $MESS["TR_CA_DOCS_MAIL_SENT"] = "Emails sent: ";
 $MESS["TR_CA_DOCS_MAIL_ERROR_PRE"] = "";
 $MESS["TR_CA_DOCS_MAIL_ERROR_POST"] = " emails were not sent. Check module settings.";

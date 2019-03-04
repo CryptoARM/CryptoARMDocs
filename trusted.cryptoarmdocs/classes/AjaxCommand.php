@@ -535,5 +535,31 @@ class AjaxCommand {
         }
         return $strHistory;
     }
+
+
+    static function sendEmail($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.sendEmail",
+        );
+
+	    $docsList = $params['docsList'];
+        $event = $params['event'];
+	    $arEventFields = $params['arEventFields'];
+        $message_id = $params['message_id'];
+
+        $sendStatus = Email::sendEmail($docsList, $event, $arEventFields, $message_id);
+
+        if ($sendStatus['success']) {
+            $res = array(
+                "success" => true,
+                "message" => "Email sent successfully",
+            );
+        } else {
+            $res["message"] = $sendStatus["message"];
+        }
+
+        return $res;
+    }
 }
 

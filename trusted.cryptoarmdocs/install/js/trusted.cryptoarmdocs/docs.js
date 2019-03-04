@@ -333,3 +333,32 @@ function view(id) {
         }
     });
 }
+
+function sendEmail(docsList, event, arEventFields, message_id) {
+    BX.ajax({
+            url: AJAX_CONTROLLER + '?command=sendEmail',
+            data: {docsList: docsList, event: event, arEventFields: arEventFields, message_id: message_id},
+            method: 'post',
+            onsuccess: function (d) {
+                console.log(d);
+            },
+            onfailure: function (e) {
+                console.log(e);
+            }
+        }
+    );
+}
+
+function validateEmail(email) {
+    let re = /\S+@\S+\.\S+/;
+    return re.test(email);
+}
+
+
+function promptEmail(msg) {
+    do {
+        var emailAddress = prompt(msg, '');
+        var validatedEmail = validateEmail(emailAddress);
+    } while (emailAddress && validatedEmail !== true);
+    return emailAddress;
+}

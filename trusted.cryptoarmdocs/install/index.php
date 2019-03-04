@@ -141,6 +141,9 @@ Class trusted_cryptoarmdocs extends CModule
         if (!Option::get("trusted.cryptoarmdocs", "MAIL_EVENT_ID", "")) {
             Option::set("trusted.cryptoarmdocs", "MAIL_EVENT_ID", "TR_CA_DOCS_MAIL_BY_ORDER");
         }
+        if (!Option::get("trusted.cryptoarmdocs", "MAIL_EVENT_ID_TO", "")) {
+            Option::set("trusted.cryptoarmdocs", "MAIL_EVENT_ID_TO", "TR_CA_DOCS_MAIL_TO");
+        }
     }
 
     function InstallDB()
@@ -186,6 +189,11 @@ Class trusted_cryptoarmdocs extends CModule
 
     function InstallMailEvent()
     {
+        $this->createMailEventByOrder();
+        $this->createMailEventTo();
+    }
+
+    function createMailEventByOrder() {
         $obEventType = new CEventType;
         $obEventType->add(
             array(
@@ -220,6 +228,43 @@ Class trusted_cryptoarmdocs extends CModule
             "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_BODY"),
         ));
         Option::set("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID", $templateId);
+    }
+
+    function createMailEventTo() {
+        $obEventType = new CEventType;
+        $obEventType->add(
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME_RU"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_RU"),
+            )
+        );
+        $obEventType->add(
+            array(
+                "LID" => "en",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME_EN"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_EN"),
+            )
+        );
+        $obEventMessage = new CEventMessage;
+        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+        $siteIds = array();
+        while ($site = $sites->Fetch()) {
+            $siteIds[] = $site["ID"];
+        }
+        $templateId = $obEventMessage->add(array(
+            "ACTIVE" => "Y",
+            "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
+            "LID" => $siteIds,
+            "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+            "EMAIL_TO" => "#EMAIL#",
+            "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"),
+            "BODY_TYPE" => "html",
+            "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"),
+        ));
+        Option::set("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID_TO", $templateId);
     }
 
     function DoUninstall()
@@ -280,6 +325,14 @@ Class trusted_cryptoarmdocs extends CModule
             "trusted.cryptoarmdocs",
             array("name" => "MAIL_TEMPLATE_ID")
         );
+        Option::delete(
+            "trusted.cryptoarmdocs",
+            array("name" => "MAIL_EVENT_ID_TO")
+        );
+        Option::delete(
+            "trusted.cryptoarmdocs",
+            array("name" => "MAIL_TEMPLATE_ID_TO")
+        );
     }
 
     function UnInstallDB()
@@ -305,6 +358,11 @@ Class trusted_cryptoarmdocs extends CModule
 
     function UnInstallMailEvent()
     {
+        $this->UnInstallMailEventByOrder();
+        $this->UnInstallMailEventTo();
+    }
+
+    function UnInstallMailEventByOrder() {
         $by = "id";
         $order = "desc";
         $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TR_CA_DOCS_MAIL_BY_ORDER"));
@@ -314,6 +372,18 @@ Class trusted_cryptoarmdocs extends CModule
         }
         $obEventType = new CEventType;
         $obEventType->Delete("TR_CA_DOCS_MAIL_BY_ORDER");
+    }
+
+    function UnInstallMailEventTo() {
+        $by = "id";
+        $order = "desc";
+        $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TR_CA_DOCS_MAIL_TO"));
+        $eventMessage = new CEventMessage;
+        while ($template = $eventMessages->Fetch()) {
+            $eventMessage->Delete((int)$template["ID"]);
+        }
+        $obEventType = new CEventType;
+        $obEventType->Delete("TR_CA_DOCS_MAIL_TO");
     }
 
     function dropDocumentChain($id)

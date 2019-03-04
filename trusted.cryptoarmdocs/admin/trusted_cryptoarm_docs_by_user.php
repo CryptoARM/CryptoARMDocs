@@ -29,8 +29,7 @@ $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
 // main list object
 $lAdmin = new CAdminList($sTableID, $oSort);
 
-function CheckFilter()
-{
+function CheckFilter() {
     global $FilterArr, $lAdmin;
     foreach ($FilterArr as $f)
         global $$f;
@@ -101,6 +100,21 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo '<script>';
             echo 'window.parent.remove(' . json_encode($ids) . ')';
             echo '</script>';
+            break;
+        case "send_mail":
+            ?>
+            <script>
+                var emailAddress = window.parent.promptEmail("<?= Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT") ?>");
+
+                var arEventFields = {
+                    "EMAIL": emailAddress,
+                };
+
+                if (emailAddress) {
+                    window.parent.sendEmail(<?= json_encode($ids) ?>, "MAIL_EVENT_ID_TO", arEventFields, "MAIL_TEMPLATE_ID_TO");
+                }
+            </script>
+            <?
             break;
     }
 }
@@ -227,6 +241,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     }
 
     $arActions[] = array(
+        "ICON" => "move",
+        "DEFAULT" => false,
+        "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO"),
+        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "send_mail"),
+    );
+
+    $arActions[] = array("SEPARATOR" => true);
+
+    $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
         "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
@@ -256,6 +279,7 @@ $lAdmin->AddGroupActionTable(
     array(
         "sign" => Loc::getMessage("TR_CA_DOCS_ACT_SIGN"),
         "unblock" => Loc::getMessage("TR_CA_DOCS_ACT_UNBLOCK"),
+        "send_mail" => Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO"),
         "remove" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
     )
 );

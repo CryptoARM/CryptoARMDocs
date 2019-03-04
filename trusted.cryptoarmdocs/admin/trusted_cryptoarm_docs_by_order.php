@@ -36,9 +36,6 @@ Loader::includeModule("sale");
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
 
-$MAIL_EVENT_ID = Option::get($module_id, "MAIL_EVENT_ID", "");
-$MAIL_TEMPLATE_ID = Option::get($module_id, "MAIL_TEMPLATE_ID", "");
-
 $eventManager = EventManager::getInstance();
 
 // Replacing MIME in mail
@@ -148,26 +145,8 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo '</script>';
             break;
         case "send_mail":
-            if (!$MAIL_EVENT_ID || !$MAIL_TEMPLATE_ID) {
-                echo "<script>alert('" . Loc::getMessage("TR_CA_DOCS_MAIL_NOT_CONFIGURED") . "')</script>";
-                break;
-            }
-
             $i = 0;
             $e = 0;
-
-            $eventEmailSent = Option::get($module_id, "EVENT_EMAIL_SENT", "");
-
-            $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
-            $siteIds = array();
-            while ($site = $sites->Fetch()) {
-                $siteIds[] = $site["ID"];
-            }
-            $siteUrl = $_SERVER["HTTP_HOST"];
-            Docs\Utils::isSecure() ? $protocol = "https://" : $protocol = "http://";
-            // HTTP_HOST with protocol and without port number
-            $siteUrl = $protocol . explode(":", $siteUrl)[0];
-
             foreach ($arID as $orderId) {
                 $order = CSaleOrder::GetByID((int)$orderId);
                 $userId = $order["USER_ID"];
@@ -175,45 +154,24 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 $userEmail = $user["EMAIL"];
                 $userName = $user["NAME"];
                 $docs = Docs\Database::getDocumentsByOrder($orderId);
-                $docLinks = array();
-                $docFilenames = array();
+                $docsIds = array();
+
                 foreach ($docs->getList() as $doc) {
-                    $docLinks[] = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
-                    $docFilenames[] = $doc->getName();
+                    $docsIds[] = $doc->getId();
                 }
 
                 $arEventFields = array(
                     "EMAIL" => $userEmail,
                     "ORDER_USER" => $userName,
                     "ORDER_ID" => $orderId,
-                    "FILE_NAMES" => implode(", ", $docFilenames),
-                    "SITE_URL" => $siteUrl,
                 );
 
-                if (CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, $docLinks)) {
+                $response = Docs\Email::sendEmail($docsIds, "MAIL_EVENT_ID", $arEventFields, "MAIL_TEMPLATE_ID");
+                if ($response['success']) {
                     $i++;
-
-                    foreach ($docs->getList() as $doc) {
-                        if ($eventEmailSent) {
-                            Docs\DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
-                        }
-                        // Add email tracking property
-                        $docProps = $doc->getProperties();
-                        if ($emailProp = $docProps->getPropByType("EMAIL")) {
-                            $emailProp->setValue("SENT");
-                        } else {
-                            $docProps->add(new Docs\Property("EMAIL", "SENT"));
-                        }
-                        $doc->save();
-                    }
-
-                    Docs\Utils::log(array(
-                        "action" => "email_sent",
-                        "docs" => $docs,
-                    ));
                 } else {
                     $e++;
-                };
+                }
             }
 
             $message = Loc::getMessage("TR_CA_DOCS_MAIL_SENT") . $i;

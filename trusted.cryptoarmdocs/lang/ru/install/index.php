@@ -16,8 +16,15 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_DESCRIPTION_RU"] = "
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"] = "#SITE_NAME#: Документы по заказу №#ORDER_ID#";
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_BODY"] = "
 Документы: #FILE_NAMES# по заказу №#ORDER_ID# для #ORDER_USER#.
-<img src=\"#SITE_URL#/bitrix/components/trusted/trusted.cryptoarmdocs/email.php?order_id=#ORDER_ID#\" alt=\"\">
+<img src=\"#SITE_URL#/bitrix/components/trusted/docs/email.php?order_id=#ORDER_ID#\" alt=\"\">
 ";
 
-$MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";
+$MESS["TR_CA_DOCS_MAIL_EVENT_TO_NAME_RU"] = "КриптоАРМ Документы - отправка документов";
+$MESS["TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_RU"] = "
+#EMAIL# - EMail получателя сообщения
+#FILE_NAMES# - список названий документов
+";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Документы";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Документы: #FILE_NAMES#";
 
+$MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";

@@ -56,7 +56,9 @@ $MESS["TR_CA_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TR_CA_DOCS_ACT_UNBLOCK"] = "Разблокировать";
 $MESS["TR_CA_DOCS_ACT_REMOVE"] = "Удалить";
 
-$MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить письмо";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить документы покупателю";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Отправить документы на e-mail";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Укажите e-mail, на который вы хотите отправить документы:";
 
 // Hover titles
 $MESS["TR_CA_DOCS_USER_PROFILE"] = "Профиль пользователя";
@@ -72,7 +74,6 @@ $MESS["TR_CA_DOCS_MAILTO_BUYER"] = "Написать письмо покупат
 $MESS["TR_CA_DOCS_EMAIL_NOT_SENT"] = "Письмо не отправлено";
 $MESS["TR_CA_DOCS_EMAIL_SENT"] = "Письмо отправлено";
 $MESS["TR_CA_DOCS_EMAIL_READ"] = "Письмо отправлено и прочитано";
-$MESS["TR_CA_DOCS_MAIL_NOT_CONFIGURED"] = "Задайте параметры отправки сообщений в настройках модуля.";
 $MESS["TR_CA_DOCS_MAIL_SENT"] = "Отправлено писем: ";
 $MESS["TR_CA_DOCS_MAIL_ERROR_PRE"] = "Ошибка с отправкой ";
 $MESS["TR_CA_DOCS_MAIL_ERROR_POST"] = " письма/писем. Проверьте настройки отправки сообщений в настройках модуля.";
