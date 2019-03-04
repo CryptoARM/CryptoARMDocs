@@ -334,16 +334,18 @@ function view(id) {
     });
 }
 
-function sendEmail(docsList, event, arEventFields, message_id) {
+function sendEmail(docsList, event, arEventFields, message_id, msgSuccess, msgError) {
     BX.ajax({
             url: AJAX_CONTROLLER + '?command=sendEmail',
             data: {docsList: docsList, event: event, arEventFields: arEventFields, message_id: message_id},
             method: 'post',
             onsuccess: function (d) {
                 console.log(d);
+                alert(msgSuccess);
             },
             onfailure: function (e) {
                 console.log(e);
+                alert(msgError);
             }
         }
     );

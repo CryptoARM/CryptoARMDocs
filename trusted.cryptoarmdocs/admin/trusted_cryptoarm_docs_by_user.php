@@ -111,7 +111,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
                 };
 
                 if (emailAddress) {
-                    window.parent.sendEmail(<?= json_encode($ids) ?>, "MAIL_EVENT_ID_TO", arEventFields, "MAIL_TEMPLATE_ID_TO");
+                    window.parent.sendEmail(<?= json_encode($ids) ?>, "MAIL_EVENT_ID_TO", arEventFields, "MAIL_TEMPLATE_ID_TO", '<?= Loc::getMessage("TR_CA_DOCS_MAIL_SENT") . " 1" ?>', '<?= Loc::getMessage("TR_CA_DOCS_MAIL_ERROR_PRE") ?>');
                 }
             </script>
             <?
