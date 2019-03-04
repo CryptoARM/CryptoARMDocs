@@ -74,7 +74,7 @@ header.document-card__title {
 .document-content__item .document-item__right {
     flex-wrap: wrap;
     justify-content: center;
-    width: 175px;
+    width: 210px;
 }
 
 .document-card__content .document-item__text {
