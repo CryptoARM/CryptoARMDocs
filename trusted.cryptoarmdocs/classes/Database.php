@@ -226,6 +226,18 @@ class Database
     }
 
     /**
+     * Removes document property from the DB
+     * @param Property $property Property to be removed
+     */
+    static function removeProperty($property)
+    {
+        global $DB;
+        $sql = 'DELETE FROM ' . DB_TABLE_PROPERTY . '  '
+            . 'WHERE ID = ' . $property->getId();
+        $DB->Query($sql);
+    }
+
+    /**
      * Gets property collection from DB by specified type and value fields.
      * @global object $DB Bitrix global CDatabase object
      * @param string $type TYPE field

@@ -164,5 +164,14 @@ class Property implements IEntity, ISave
         Database::saveProperty($this, DB_TABLE_PROPERTY);
     }
 
+    /**
+     * Removes property
+     * @return void
+     */
+    public function remove()
+    {
+        Database::removeProperty($this);
+    }
+
 }
 
