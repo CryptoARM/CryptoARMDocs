@@ -15,28 +15,28 @@ if (location.protocol === 'https:') {
 }
 
 socket.on('connect', function () {
-	console.log('Event: connect');
+    console.log('Event: connect');
 });
 
 socket.on('disconnect', function (data) {
-	console.log('Event: disconnect, reason: ', data);
+    console.log('Event: disconnect, reason: ', data);
 });
 
 socket.on('verified', function (data) {
-	console.log('Event: verified', data);
+    console.log('Event: verified', data);
 });
 
 socket.on('signed', function (data) {
-	console.log('Event: signed, data: ', data);
+    console.log('Event: signed, data: ', data);
 });
 
 socket.on('uploaded', function (data) {
-	console.log('Event: uploaded, data: ', data);
+    console.log('Event: uploaded, data: ', data);
     location.reload()
 });
 
 socket.on('cancelled', function (data) {
-	console.log('Event: cancelled', data);
+    console.log('Event: cancelled', data);
 });
 
 function sign(ids, extra = null) {
@@ -356,7 +356,6 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-
 function promptEmail(msg) {
     do {
         var emailAddress = prompt(msg, '');
@@ -364,3 +363,4 @@ function promptEmail(msg) {
     } while (emailAddress && validatedEmail !== true);
     return emailAddress;
 }
+

@@ -543,9 +543,9 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.sendEmail",
         );
 
-	    $docsList = $params['docsList'];
+        $docsList = $params['docsList'];
         $event = $params['event'];
-	    $arEventFields = $params['arEventFields'];
+        $arEventFields = $params['arEventFields'];
         $message_id = $params['message_id'];
 
         $sendStatus = Email::sendEmail($docsList, $event, $arEventFields, $message_id);
