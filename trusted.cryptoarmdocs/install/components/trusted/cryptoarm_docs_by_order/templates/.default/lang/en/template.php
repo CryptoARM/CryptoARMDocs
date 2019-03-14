@@ -16,6 +16,3 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_ORDER_DELETE"] = "Delete document";
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_ORDER_ADD"] = "ADD";
 
-$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Enter e-mail to which you want to send documents:";
-$MESS["TR_CA_DOCS_MAIL_SENT"] = "Emails sent: ";
-$MESS["TR_CA_DOCS_MAIL_ERROR_PRE"] = "Error, couldn't send email.";

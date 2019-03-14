@@ -58,7 +58,6 @@ $MESS["TR_CA_DOCS_ACT_REMOVE"] = "Удалить";
 
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить документы покупателю";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Отправить документы на e-mail";
-$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Укажите e-mail, на который вы хотите отправить документы:";
 
 // Hover titles
 $MESS["TR_CA_DOCS_USER_PROFILE"] = "Профиль пользователя";

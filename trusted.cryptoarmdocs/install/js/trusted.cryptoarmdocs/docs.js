@@ -334,18 +334,18 @@ function view(id) {
     });
 }
 
-function sendEmail(docsList, event, arEventFields, message_id, msgSuccess, msgError) {
+function sendEmail(docsList, event, arEventFields, message_id) {
     BX.ajax({
             url: AJAX_CONTROLLER + '?command=sendEmail',
             data: {docsList: docsList, event: event, arEventFields: arEventFields, message_id: message_id},
             method: 'post',
             onsuccess: function (d) {
                 console.log(d);
-                alert(msgSuccess);
+                alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS'));
             },
             onfailure: function (e) {
                 console.log(e);
-                alert(msgError);
+                alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE'));
             }
         }
     );
@@ -356,11 +356,17 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function promptEmail(msg) {
+function promptEmail() {
     do {
-        var emailAddress = prompt(msg, '');
+        var emailAddress = prompt(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT'), '');
         var validatedEmail = validateEmail(emailAddress);
     } while (emailAddress && validatedEmail !== true);
     return emailAddress;
+}
+
+function promptAndSendEmail(docsList, event, arEventFields, message_id) {
+    let email = promptEmail();
+    arEventFields["EMAIL"] = email;
+    sendEmail(docsList, event, arEventFields, message_id);
 }
 

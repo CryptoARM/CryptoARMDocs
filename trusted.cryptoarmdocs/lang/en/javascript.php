@@ -23,3 +23,7 @@ $MESS["TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE"] = "Files not nound for fol
 $MESS["TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST"] = "Remove those entries?";
 $MESS["TR_CA_DOCS_ALERT_LOST_DOC"] = "Files not nound for following documents:";
 
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Enter e-mail to which you want to send documents:";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS"] = "Email is sent";
+$MESS["TR_CA_DOCS_ACT_SEND_MAIL_FAILURE"] = "Error email is sent";
+

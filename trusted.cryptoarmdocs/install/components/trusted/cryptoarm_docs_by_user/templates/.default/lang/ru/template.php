@@ -16,6 +16,3 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Удалить документ"
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"] = "Добавить";
 
-$MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Укажите e-mail, на который вы хотите отправить документы:";
-$MESS["TR_CA_DOCS_MAIL_SENT"] = "Отправлено писем: ";
-$MESS["TR_CA_DOCS_MAIL_ERROR_PRE"] = "Ошибка с отправкой документов";

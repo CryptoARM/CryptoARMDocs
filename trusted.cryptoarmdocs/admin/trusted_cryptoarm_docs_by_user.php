@@ -102,19 +102,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo '</script>';
             break;
         case "send_mail":
-            ?>
-            <script>
-                var emailAddress = window.parent.promptEmail("<?= Loc::getMessage("TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT") ?>");
-
-                var arEventFields = {
-                    "EMAIL": emailAddress,
-                };
-
-                if (emailAddress) {
-                    window.parent.sendEmail(<?= json_encode($ids) ?>, "MAIL_EVENT_ID_TO", arEventFields, "MAIL_TEMPLATE_ID_TO", '<?= Loc::getMessage("TR_CA_DOCS_MAIL_SENT") . " 1" ?>', '<?= Loc::getMessage("TR_CA_DOCS_MAIL_ERROR_PRE") ?>');
-                }
-            </script>
-            <?
+            echo '<script>';
+            echo 'window.parent.promptAndSendEmail(' . json_encode($ids) . ', "MAIL_EVENT_ID_TO", [], "MAIL_TEMPLATE_ID_TO")';
+            echo '</script>';
             break;
     }
 }
