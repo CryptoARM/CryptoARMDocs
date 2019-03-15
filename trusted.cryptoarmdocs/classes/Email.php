@@ -43,6 +43,9 @@ class Email {
         }
 
         // Add default fields
+        if (!$arEventFields) {
+            $arEventFields = array();
+        }
         $arEventFields = array_merge(
             array(
                 'SITE_URL' => TR_CA_HOST,

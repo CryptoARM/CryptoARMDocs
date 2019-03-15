@@ -326,5 +326,20 @@ class Utils
         return true;
     }
 
+    public static function checkAuthorization() {
+        global $USER;
+        return $USER->IsAuthorized();
+    }
+
+    public static function checkDocumentAccess($docId) {
+        global $USER;
+        if ($USER->IsAdmin()) {
+            return true;
+        }
+        $userId = $USER->GetID();
+        $propValues = Database::getPropertyValuesByDocumentIdAndType($docId, 'USER');
+        return in_array($userId, $propValues);
+    }
+
 }
 

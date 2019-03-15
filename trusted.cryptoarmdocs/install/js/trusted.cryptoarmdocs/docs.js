@@ -9,6 +9,7 @@ var ERROR_FILE_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_FILE_NOT_FOUND');
 var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
 var ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
 var ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
+var ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
 
 if (location.protocol === 'https:') {
     var socket = io('https://localhost:4040');
@@ -147,6 +148,13 @@ function show_messages(response) {
         message = ERROR_DOC_ROLE_SIGNED;
         response.docsRoleSigned.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (response.docsNoAccess) {
+        message = ERROR_DOC_NO_ACCESS;
+        response.docsNoAccess.forEach(function (elem) {
+            message += '\n' + elem;
         });
         alert(message);
     }
@@ -294,9 +302,7 @@ function download(ids, del = false, archiveName = null) {
         data: {ids: ids, archiveName: archiveName},
         success: function(d) {
             console.log(d);
-            if (d.docsFileNotFound || d.docsNotFound) {
-                show_messages(d);
-            }
+            show_messages(d);
             if (d.success === true) {
                 if (ids.length === 1) {
                     window.location.href = AJAX_CONTROLLER + '?command=content&id=' + ids[0];
@@ -340,14 +346,18 @@ function sendEmail(docsList, event, arEventFields, message_id) {
             data: {docsList: docsList, event: event, arEventFields: arEventFields, message_id: message_id},
             method: 'post',
             onsuccess: function (d) {
-                console.log(d);
-                alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS'));
+                d = JSON.parse(d);
+                if (d.success) {
+                    alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS'));
+                } else {
+                    console.log(d);
+                    alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE'));
+                }
             },
-            onfailure: function (e) {
-                console.log(e);
-                alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE'));
-            }
+        onfailure: function (e) {
+            console.log(e);
         }
+    }
     );
 }
 

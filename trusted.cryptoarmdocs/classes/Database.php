@@ -309,6 +309,23 @@ class Database
     }
 
     /**
+     * Gets property values of specified type of the specified document
+     * @param integer $documentId
+     * @param string $type Property type
+     * @return array
+     */
+    static function getPropertyValuesByDocumentIdAndType($documentId, $type) {
+        $props = Database::getPropertiesByDocumentId($documentId);
+        $res = array();
+        foreach ($props->getList() as $prop) {
+            if ($prop->getType() == $type) {
+                $res[] = $prop->getValue();
+            }
+        }
+        return $res;
+    }
+
+    /**
      * Returns all documents which have specified property attached to them.
      * @param string $type Property type
      * @return DocumentCollection

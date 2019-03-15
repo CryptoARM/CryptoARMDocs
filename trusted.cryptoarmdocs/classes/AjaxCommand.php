@@ -28,24 +28,36 @@ class AjaxCommand {
             "success" => false,
             "message" => "Nothing to sign",
         );
-        $docsId = $params["id"];
-        if (!isset($docsId)) {
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            return $res;
+        }
+
+        $docIds = $params["id"];
+        if (!$docIds) {
             $res["message"] = "No ids were given";
             return $res;
         }
+
         $docsToSign = new DocumentCollection();
         $docsNotFound = array();
         $docsFileNotFound = new DocumentCollection();
         $docsBlocked = new DocumentCollection();
         $docsRoleSigned = new DocumentCollection();
-        foreach ($docsId as &$id) {
+        $docsNoAccess = array();
+
+        foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
             if (!$doc) {
                 // No doc with that id is found
                 $docsNotFound[] = $id;
             } else {
                 $doc = $doc->getLastDocument();
-                if ($doc->getStatus() === DOC_STATUS_BLOCKED) {
+                if (!Utils::checkDocumentAccess($id)) {
+                    // Current user has no access to the doc
+                    $docsNoAccess[] = $id;
+                } elseif ($doc->getStatus() === DOC_STATUS_BLOCKED) {
                     // Doc is blocked by previous operation
                     $docsBlocked->add($doc);
                 } elseif (!$doc->checkFile()) {
@@ -61,6 +73,7 @@ class AjaxCommand {
                 }
             }
         }
+
         if ($docsToSign->count()) {
             $res["docsToSign"] = $docsToSign->toJSON();
             $res["message"] = "Some documents were sent for signing";
@@ -93,6 +106,9 @@ class AjaxCommand {
                 );
             }
         }
+        if ($docsNoAccess) {
+            $res["docsNoAccess"] = $docsNoAccess;
+        }
 
         if ($res['success'] && PROVIDE_LICENSE) {
             $license = License::getOneTimeLicense();
@@ -121,15 +137,24 @@ class AjaxCommand {
             "success" => false,
             "message" => "Unknown error in AjaxCommand.getDocJSON",
         );
-        $docsId = $params["id"];
-        if (!isset($docsId)) {
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
+        $docIds = $params["id"];
+        if (!$docIds) {
             $res["message"] = "No ids were given";
             return $res;
         }
+
         $docColl = new DocumentCollection();
-        foreach ($docsId as &$id) {
-            $doc = Database::getDocumentById($id)->getLastDocument();
-            $docColl->add($doc);
+        foreach ($docIds as &$id) {
+            $doc = Database::getDocumentById($id);
+            if ($doc && checkDocumentAccess($id)) {
+                $docColl->add($doc->getLastDocument());
+            }
         }
         if ($docColl->count()) {
             $res["docs"] = $docColl->toJSON();
@@ -155,6 +180,7 @@ class AjaxCommand {
             "success" => false,
             "message" => "Unknown error in AjaxCommand.upload",
         );
+
         // TODO: add security check
         if (true) {
             $doc = Database::getDocumentById($params['id']);
@@ -168,6 +194,7 @@ class AjaxCommand {
                 $res["message"] = "Document already has child.";
                 return $res;
             }
+
             $newDoc = $doc->copy();
             $signers = urldecode($params["signers"]);
             $newDoc->setSigners($signers);
@@ -214,19 +241,30 @@ class AjaxCommand {
      */
     function block($params) {
         $res = array(
-            "success" => true,
-            "message" => "",
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.block",
         );
-        $docsId = $params["id"];
-        if (isset($docsId)) {
-            foreach ($docsId as &$id) {
-                $doc = Database::getDocumentById($id);
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
+        $docIds = $params["id"];
+        if (!$docIds) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
+
+        $res["message"] = "No access";
+        foreach ($docIds as &$id) {
+            $doc = Database::getDocumentById($id);
+            if ($doc && Utils::checkDocumentAccess($id)) {
+                $res["success"] = true;
+                $res["message"] = "Some documents were blocked";
                 $doc->setStatus(DOC_STATUS_BLOCKED);
                 $doc->save();
             }
-        } else {
-            $res["message"] = "No ids were given";
-            $res["success"] = false;
         }
         return $res;
     }
@@ -239,19 +277,31 @@ class AjaxCommand {
      *               [message]: operation result message
      */
     function unblock($params) {
-        $res = array("success" => true,
-            "message" => "",
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.unblock",
         );
-        $docsId = $params["id"];
-        if (isset($docsId)) {
-            foreach ($docsId as &$id) {
-                $doc = Database::getDocumentById($id);
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
+        $docIds = $params["id"];
+        if (!$docIds) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
+
+        $res["message"] = "No access";
+        foreach ($docIds as &$id) {
+            $doc = Database::getDocumentById($id);
+            if ($doc && Utils::checkDocumentAccess($id)) {
+                $res["success"] = true;
+                $res["message"] = "Some documents were unblocked";
                 $doc->setStatus(DOC_STATUS_NONE);
                 $doc->save();
             }
-        } else {
-            $res["message"] = "No ids were given";
-            $res["success"] = false;
         }
         return $res;
     }
@@ -268,43 +318,50 @@ class AjaxCommand {
             "success" => false,
             "message" => "Unknown error in AjaxCommand.remove",
         );
-        $docsId = $params["id"];
-        if (!isset($docsId)) {
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
+        $docIds = $params["id"];
+        if (!$docIds) {
             $res["message"] = "No ids were given";
             return $res;
         }
-        if (isset($docsId)) {
-            // Try to find all docs in DB
-            foreach ($docsId as &$id) {
-                $doc = Database::getDocumentById($id);
-                if ($doc) {
-                    $lastDoc = $doc->getLastDocument();
-                    if (!$lastDoc) {
-                        $res["message"] = "No document with this ID";
-                        $res["success"] = false;
-                        return $res;
-                    }
-                } else {
-                    $res["message"] = "No document with this ID";
-                    $res["success"] = false;
-                    return $res;
-                }
+
+        // Check all docs before removing
+        foreach ($docIds as &$id) {
+            $doc = Database::getDocumentById($id);
+            if (!$doc) {
+                $res["message"] = "No access to some of the documents";
+                return $res;
             }
-            foreach ($docsId as &$id) {
-                $doc = Database::getDocumentById($id);
-                $lastDoc = $doc->getLastDocument();
-                $lastDoc->remove();
-                Utils::log(array(
-                    "action" => "removed",
-                    "docs" => $lastDoc,
-                ));
+
+            $lastDoc = $doc->getLastDocument();
+            if (!$lastDoc) {
+                $res["message"] = "No access to some of the documents";
+                return $res;
             }
-            $res["message"] = "Document was removed";
-            $res["success"] = true;
-        } else {
-            $res["message"] = "No ids were given";
-            $res["success"] = false;
+
+            if (Utils::checkDocumentAccess($lastDoc->getId())) {
+                $res["message"] = "No access to some of the documents";
+                return $res;
+            }
         }
+
+        foreach ($docIds as &$id) {
+            $doc = Database::getDocumentById($id);
+            $lastDoc = $doc->getLastDocument();
+            $lastDoc->remove();
+            Utils::log(array(
+                "action" => "removed",
+                "docs" => $lastDoc,
+            ));
+        }
+
+        $res["message"] = "Some documents were removed";
+        $res["success"] = true;
         return $res;
     }
 
@@ -322,17 +379,29 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.download",
         );
 
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
         $ids = $params["ids"];
+        if (!$ids) {
+            $res["message"] = "No ids were given";
+            return $res;
+        }
 
         $docsFound = new DocumentCollection();
         $docsNotFound = array();
         $docsFileNotFound = new DocumentCollection();
+        $docsNoAccess = array();
 
         foreach ($ids as $id) {
             $doc = Database::getDocumentById($id);
             if ($doc) {
                 $doc = $doc->getLastDocument();
-                if ($doc->checkFile()) {
+                if (!Utils::checkDocumentAccess($id)) {
+                    $docsNoAccess[] = $id;
+                } elseif ($doc->checkFile()) {
                     $docsFound->add($doc);
                 } else {
                     $docsFileNotFound->add($doc);
@@ -375,6 +444,10 @@ class AjaxCommand {
                     "id" => $doc->getId(),
                 );
             }
+        }
+
+        if ($docsNoAccess) {
+            $res["docsNoAccess"] = $docsNoAccess;
         }
 
         rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $archiveName);
@@ -543,10 +616,22 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.sendEmail",
         );
 
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
         $docsList = $params['docsList'];
         $event = $params['event'];
         $arEventFields = $params['arEventFields'];
         $message_id = $params['message_id'];
+
+        foreach ($docsList as $docId) {
+            if (!Utils::checkDocumentAccess($docId)) {
+                $res["message"] = "No access to some of the documents";
+                return $res;
+            }
+        }
 
         $sendStatus = Email::sendEmail($docsList, $event, $arEventFields, $message_id);
 

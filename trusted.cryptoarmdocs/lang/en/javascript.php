@@ -13,6 +13,7 @@ $MESS["TR_CA_DOCS_ERROR_FILE_NOT_FOUND"] = "Files not found for the following do
 $MESS["TR_CA_DOCS_ERROR_DOC_NOT_FOUND"] = "Documents with the following ids were not found: ";
 $MESS["TR_CA_DOCS_ERROR_DOC_BLOCKED"] = "The following documents are blocked:";
 $MESS["TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED"] = "The following documents are already signed:";
+$MESS["TR_CA_DOCS_ERROR_DOC_NO_ACCESS"] = "No access to the documents with the following ids: ";
 
 $MESS["TR_CA_DOCS_ALERT_NO_CLIENT"] = "Document signing requires installation of Trusted.eSign app. Visit our online shop for a download https://cryptoarm.ru/cryptoarm-gost";
 $MESS["TR_CA_DOCS_ALERT_HTTP_WARNING"] = "Document signing cannot not be performed without encrypted connection. Install SSL certificate and switch your site to the HTTPS.";
