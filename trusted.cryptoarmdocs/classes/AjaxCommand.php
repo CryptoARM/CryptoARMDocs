@@ -54,7 +54,7 @@ class AjaxCommand {
                 $docsNotFound[] = $id;
             } else {
                 $doc = $doc->getLastDocument();
-                if (!Utils::checkDocumentAccess($id)) {
+                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
                     // Current user has no access to the doc
                     $docsNoAccess[] = $id;
                 } elseif ($doc->getStatus() === DOC_STATUS_BLOCKED) {
@@ -135,7 +135,7 @@ class AjaxCommand {
     static function verify($params) {
         $res = array(
             "success" => false,
-            "message" => "Unknown error in AjaxCommand.getDocJSON",
+            "message" => "Unknown error in AjaxCommand.verify",
         );
 
         if (!Utils::checkAuthorization()) {
@@ -152,7 +152,7 @@ class AjaxCommand {
         $docColl = new DocumentCollection();
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
-            if ($doc && checkDocumentAccess($id)) {
+            if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
                 $docColl->add($doc->getLastDocument());
             }
         }
@@ -160,6 +160,8 @@ class AjaxCommand {
             $res["docs"] = $docColl->toJSON();
             $res["message"] = "Found documents";
             $res["success"] = true;
+        } else {
+            $res["message"] = "Nothing to verify";
         }
         return $res;
     }
@@ -239,7 +241,7 @@ class AjaxCommand {
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function block($params) {
+    static function block($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.block",
@@ -259,7 +261,7 @@ class AjaxCommand {
         $res["message"] = "No access";
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
-            if ($doc && Utils::checkDocumentAccess($id)) {
+            if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
                 $res["success"] = true;
                 $res["message"] = "Some documents were blocked";
                 $doc->setStatus(DOC_STATUS_BLOCKED);
@@ -276,7 +278,7 @@ class AjaxCommand {
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function unblock($params) {
+    static function unblock($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.unblock",
@@ -296,7 +298,7 @@ class AjaxCommand {
         $res["message"] = "No access";
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
-            if ($doc && Utils::checkDocumentAccess($id)) {
+            if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
                 $res["success"] = true;
                 $res["message"] = "Some documents were unblocked";
                 $doc->setStatus(DOC_STATUS_NONE);
@@ -313,7 +315,7 @@ class AjaxCommand {
      * @return array [success]: operation result status
      *               [message]: operation result message
      */
-    function remove($params) {
+    static function remove($params) {
         $res = array(
             "success" => false,
             "message" => "Unknown error in AjaxCommand.remove",
@@ -344,7 +346,7 @@ class AjaxCommand {
                 return $res;
             }
 
-            if (Utils::checkDocumentAccess($lastDoc->getId())) {
+            if (!$lastDoc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
@@ -399,7 +401,7 @@ class AjaxCommand {
             $doc = Database::getDocumentById($id);
             if ($doc) {
                 $doc = $doc->getLastDocument();
-                if (!Utils::checkDocumentAccess($id)) {
+                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
                     $docsNoAccess[] = $id;
                 } elseif ($doc->checkFile()) {
                     $docsFound->add($doc);
@@ -450,7 +452,9 @@ class AjaxCommand {
             $res["docsNoAccess"] = $docsNoAccess;
         }
 
-        rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $archiveName);
+        if (file_exists($archivePath)) {
+            rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $archiveName);
+        }
 
         if ($docsFound->count()) {
             $res["success"] = true;
@@ -627,7 +631,8 @@ class AjaxCommand {
         $message_id = $params['message_id'];
 
         foreach ($docsList as $docId) {
-            if (!Utils::checkDocumentAccess($docId)) {
+            $doc = Database::getDocumentById($docId);
+            if (!$doc || !$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }

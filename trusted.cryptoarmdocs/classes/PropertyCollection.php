@@ -37,5 +37,40 @@ class PropertyCollection extends Collection
         return $res;
     }
 
+    /**
+     * Returns property collection by type.
+     * @param string $type
+     * @return PropertyCollection|null
+     */
+    function getPropsByType($type)
+    {
+        $list = $this->getList();
+        $res = new PropertyCollection();
+        foreach ($list as $item) {
+            if ($item->getType() == $type) {
+                $res->add($item);
+            }
+        }
+        return $res;
+    }
+
+    /**
+     * Returns property collection by type.
+     * @param string $type
+     * @return Property|null
+     */
+    function getPropByTypeAndValue($type, $value)
+    {
+        $list = $this->getList();
+        $res = null;
+        foreach ($list as $item) {
+            if ($item->getType() == $type && $item->getValue() == $value) {
+                $res = $item;
+                break;
+            }
+        }
+        return $res;
+    }
+
 }
 

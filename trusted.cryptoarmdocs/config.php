@@ -31,6 +31,10 @@ define("DOC_STATUS_BLOCKED", 1);
 define("DOC_STATUS_CANCELED", 2);
 define("DOC_STATUS_ERROR", 3);
 
+// Document access levels
+define("DOC_SHARE_READ", "SHARE_READ");
+define("DOC_SHARE_SIGN", "SHARE_SIGN");
+
 // License request url
 define("LICENSE_SERVICE_URL" , "https://licensesvc.trusted.ru/license/account");
 define("LICENSE_SERVICE_REGISTER_NEW_ACCOUNT_NUMBER" , LICENSE_SERVICE_URL . "/new");

@@ -331,14 +331,13 @@ class Utils
         return $USER->IsAuthorized();
     }
 
-    public static function checkDocumentAccess($docId) {
+    public static function currUserId() {
         global $USER;
-        if ($USER->IsAdmin()) {
-            return true;
-        }
-        $userId = $USER->GetID();
-        $propValues = Database::getPropertyValuesByDocumentIdAndType($docId, 'USER');
-        return in_array($userId, $propValues);
+        return $USER->GetID();
+    }
+
+    public static function isAdmin($userId) {
+        return in_array(1, \CUser::getUserGroup($userId));
     }
 
 }

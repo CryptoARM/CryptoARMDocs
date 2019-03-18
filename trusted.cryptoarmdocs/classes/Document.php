@@ -593,6 +593,80 @@ class Document implements IEntity, ISave
     }
 
     /**
+     * Shares document this the specified user at the specified level
+     * @param int $userId Bitrix user id
+     * @param string $level See "Document access level" in config
+     * @return void
+     */
+    public function share($userId, $level) {
+        $props = &$this->getProperties();
+        $shareReadProp = $props->getPropByTypeAndValue(DOC_SHARE_READ, $userId);
+        $shareSignProp = $props->getPropByTypeAndValue(DOC_SHARE_SIGN, $userId);
+
+        switch ($level) {
+
+            case DOC_SHARE_READ:
+                // Document already shared with this user on level READ
+                if ($shareReadProp) {
+                    return;
+                }
+
+                $props->add(new Property(DOC_SHARE_READ, $userId));
+                break;
+
+            case DOC_SHARE_SIGN:
+                // SIGN level should include READ
+                if (!$shareReadProp) {
+                    $props->add(new Property(DOC_SHARE_READ, $userId));
+                }
+
+                // Document already shared with this user on level SIGN
+                if ($shareSignProp) {
+                    return;
+                }
+
+                $props->add(new Property(DOC_SHARE_SIGN, $userId));
+                break;
+        }
+    }
+
+    /**
+     * Unshares document from the specified user on all levels
+     * @param mixed $userId
+     */
+    public function unshare($userId) {
+        $shareReadProp = $this->getProperties()->getPropByTypeAndValue(DOC_SHARE_READ, $userId);
+        if ($shareReadProp) {
+            $shareReadProp->remove();
+        }
+        $shareSignProps = $this->getProperties()->getPropByTypeAndValue(DOC_SHARE_SIGN, $userId);
+        if ($shareSignProps) {
+            $shareSignProps->remove();
+        }
+        // Updated properties will be fetched on the next getProperties call
+        $this->properties = null;
+    }
+
+    /**
+     * Checks if user has access to the document at the specified level
+     * @param int $userId
+     */
+    public function accessCheck($userId, $level) {
+        // Admins have access to all docs
+        if (Utils::isAdmin($userId)) {
+            return true;
+        }
+
+        $props = $this->getProperties();
+        // Document owners always have access
+        if ($props->getPropByTypeAndValue('USER', $userId)) {
+            return true;
+        }
+
+        return $props->getPropByTypeAndValue($level, $userId) ? true : false;
+    }
+
+    /**
      * Returns true if associated file exists on disk.
      * @return boolean
      */
