@@ -666,6 +666,12 @@ class Document implements IEntity, ISave
         return $props->getPropByTypeAndValue($level, $userId) ? true : false;
     }
 
+    public function getOwner() {
+        $props = $this->getProperties();
+        $userProp = $props->getPropByType('USER');
+        return $userProp ? $userProp->getValue() : false;
+    }
+
     /**
      * Returns true if associated file exists on disk.
      * @return boolean

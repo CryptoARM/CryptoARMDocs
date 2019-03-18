@@ -340,5 +340,14 @@ class Utils
         return in_array(1, \CUser::getUserGroup($userId));
     }
 
+    public static function getUserName($userId) {
+        $user = \CUser::GetByID($userId)->Fetch();
+        $userName = $user['LAST_NAME'] . ' ' . $user['NAME'];
+        if (!trim($userName)) {
+            $userName = $user['LOGIN'];
+        }
+        return $userName;
+    }
+
 }
 
