@@ -377,7 +377,9 @@ function promptEmail() {
 function promptAndSendEmail(docsList, event, arEventFields, message_id) {
     let email = promptEmail();
     arEventFields["EMAIL"] = email;
-    sendEmail(docsList, event, arEventFields, message_id);
+    if (email) {
+        sendEmail(docsList, event, arEventFields, message_id);
+    }
 }
 
 function share(ids, email, level = 'SHARE_READ') {
