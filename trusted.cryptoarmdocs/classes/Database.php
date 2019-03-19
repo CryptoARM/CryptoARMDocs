@@ -537,13 +537,16 @@ class Database
     }
 
     /**
-     * Returns all documents attached to the user.
+     * Returns all documents attached or shared with the user.
      * @param integer $userId
+     * @param true $shared Include shared documents
      * @return DocumentCollection
      */
-    static function getDocumentsByUser($userId)
+    static function getDocumentsByUser($userId, $shared = false)
     {
         global $DB;
+        $userId = (int)$userId;
+
         $sql = "
             SELECT
                 TD.ID
@@ -552,9 +555,16 @@ class Database
                 tr_ca_docs_property as TDP
             WHERE
                 TD.ID = TDP.DOCUMENT_ID AND
-                isnull(TD.CHILD_ID) AND
-                TDP.TYPE = 'USER' AND
-                TDP.VALUE = '" . (int)$userId . "';";
+                isnull(TD.CHILD_ID) AND ";
+        if ($shared) {
+            $sql .= "
+                ((TDP.TYPE = 'USER' AND TDP.VALUE = '$userId') OR
+                 (TDP.TYPE = 'SHARE_READ' AND TDP.VALUE = '$userId') OR
+                 (TDP.TYPE = 'SHARE_SIGN' AND TDP.VALUE = '$userId'));";
+        } else {
+            $sql .= "
+                TDP.TYPE = 'USER' AND TDP.VALUE = '$userId';";
+        }
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
         while ($row = $rows->Fetch()) {
@@ -646,15 +656,15 @@ class Database
             FROM
                 " . DB_TABLE_DOCUMENTS . " TD,
                 " . DB_TABLE_PROPERTY . " TDP,
-                (SELECT 
+                (SELECT
                     OrderID.VALUE, OrderID.DOCUMENT_ID, Property.VALUE AS EMAIL
                 FROM
                     " . DB_TABLE_PROPERTY . "  AS Property
                 RIGHT JOIN
-                    (SELECT 
+                    (SELECT
                         MAX(DOCUMENT_ID) AS DOCUMENT_ID, TYPE, CAST(VALUE AS UNSIGNED) as VALUE
                     FROM
-                        " . DB_TABLE_PROPERTY . " 
+                        " . DB_TABLE_PROPERTY . "
                     WHERE
                         TYPE = 'ORDER'
                     GROUP BY VALUE) AS OrderID ON OrderID.DOCUMENT_ID = Property.DOCUMENT_ID
