@@ -346,7 +346,7 @@ class AjaxCommand {
                 return $res;
             }
 
-            if (!$lastDoc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
+            if (!$lastDoc->accessCheck(Utils::currUserId())) {
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
@@ -649,6 +649,38 @@ class AjaxCommand {
             $res["message"] = $sendStatus["message"];
         }
 
+        return $res;
+    }
+
+    static function share($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.share",
+        );
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No autorization";
+            return $res;
+        }
+
+        $docIds = $params["ids"];
+        $email = $params["email"];
+        $level = $params["level"];
+
+        $userId = Utils::getUserIdByEmail($email);
+
+        foreach ($docIds as $docId) {
+            $doc = Database::getDocumentById($docId);
+            if (!$doc || !$doc->accessCheck(Utils::currUserId())) {
+                $res["message"] = "No access to some of the documents";
+                return $res;
+            }
+            $doc->share($userId, $level);
+            $doc->save();
+        }
+
+        $res["success"] = true;
+        $res["message"] = "Documents shared";
         return $res;
     }
 }

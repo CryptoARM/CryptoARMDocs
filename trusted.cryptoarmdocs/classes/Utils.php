@@ -349,5 +349,11 @@ class Utils
         return $userName;
     }
 
+    public static function getUserIdByEmail($email) {
+        $filter = array("EMAIL" => $email);
+        $user = \CUser::GetList(($by="id"), ($order="desc"), $filter)->Fetch();
+        return $user ? $user['ID'] : null;
+    }
+
 }
 

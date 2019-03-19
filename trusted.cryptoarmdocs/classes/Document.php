@@ -653,21 +653,28 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Checks if user has access to the document at the specified level
+     * Checks if user has access to the document at the specified level.
+     * When called without level - checks for admin rights and ownership.
      * @param int $userId
+     * @param string $level See Document access levels in config
+     * @return bool
      */
-    public function accessCheck($userId, $level) {
+    public function accessCheck($userId, $level = null) {
         // Admins have access to all docs
         if (Utils::isAdmin($userId)) {
             return true;
         }
 
-        $props = $this->getProperties();
         // Document owners always have access
-        if ($props->getPropByTypeAndValue('USER', $userId)) {
+        if ($this->getOwner() == $userId) {
             return true;
         }
 
+        if (!$level) {
+            return false;
+        }
+
+        $props = $this->getProperties();
         return $props->getPropByTypeAndValue($level, $userId) ? true : false;
     }
 

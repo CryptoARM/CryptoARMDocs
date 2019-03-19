@@ -28,3 +28,4 @@ $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Enter e-mail to which you want to
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS"] = "Email is sent";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_FAILURE"] = "Error email is sent";
 
+$MESS["TR_CA_DOCS_ACT_SHARE"] = "Enter user e-mail with whom you want to share your document:";

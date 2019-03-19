@@ -21,6 +21,9 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "share":
+            $res = Docs\AjaxCommand::share($params);
+            break;
         case "sendEmail":
             $res = Docs\AjaxCommand::sendEmail($params);
             break;

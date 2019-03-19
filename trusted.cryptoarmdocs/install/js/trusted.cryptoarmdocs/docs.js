@@ -380,3 +380,25 @@ function promptAndSendEmail(docsList, event, arEventFields, message_id) {
     sendEmail(docsList, event, arEventFields, message_id);
 }
 
+function share(ids, email, level = 'SHARE_READ') {
+    BX.ajax({
+        url: AJAX_CONTROLLER + '?command=share',
+        data: {ids: ids, email: email, level: level},
+        method: 'post',
+        onsuccess: function (d) {
+            console.log(d);
+        },
+        onfailure: function (e) {
+            console.log(e);
+        }
+    }
+    );
+}
+
+function promptAndShare(ids, level = 'SHARE_READ') {
+    let email = promptEmail();
+    if (email) {
+        share(ids, email, level);
+    }
+}
+
