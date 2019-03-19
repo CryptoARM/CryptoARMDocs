@@ -560,11 +560,12 @@ class Database
             $sql .= "
                 ((TDP.TYPE = 'USER' AND TDP.VALUE = '$userId') OR
                  (TDP.TYPE = 'SHARE_READ' AND TDP.VALUE = '$userId') OR
-                 (TDP.TYPE = 'SHARE_SIGN' AND TDP.VALUE = '$userId'));";
+                 (TDP.TYPE = 'SHARE_SIGN' AND TDP.VALUE = '$userId'))";
         } else {
             $sql .= "
-                TDP.TYPE = 'USER' AND TDP.VALUE = '$userId';";
+                TDP.TYPE = 'USER' AND TDP.VALUE = '$userId'";
         }
+        $sql .= " GROUP BY TD.ID;";
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
         while ($row = $rows->Fetch()) {
