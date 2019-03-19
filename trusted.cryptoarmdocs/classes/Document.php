@@ -599,6 +599,11 @@ class Document implements IEntity, ISave
      * @return void
      */
     public function share($userId, $level) {
+        // Stop if user doesn't exist
+        if (!\CUser::GetByID($userId)) {
+            return;
+        }
+
         $props = &$this->getProperties();
         $shareReadProp = $props->getPropByTypeAndValue(DOC_SHARE_READ, $userId);
         $shareSignProp = $props->getPropByTypeAndValue(DOC_SHARE_SIGN, $userId);
