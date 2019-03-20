@@ -132,10 +132,10 @@ $tabControl->Begin();
         <?= $tabControl->BeginNextTab(); ?>
 
         <tr>
-            <td width="20%">
+            <td width="40%">
                 <?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR") ?>
             </td>
-            <td width="80%">
+            <td width="60%">
                 <input name="DOCUMENTS_DIR"
                        class="adm-detail-content-cell-r"
                        size="40"

@@ -160,7 +160,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                                     if ($docAccessLevel == "OWNER") {
                                         echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER2");
                                     } else {
-                                        echo Docs\Utils::getUserName(Docs\Utils::currUserId());
+                                        echo $doc['OWNER_USERNAME'];
                                     }
                                     ?>
                                 </div>

@@ -30,6 +30,7 @@ foreach ($docs->getList() as $doc) {
             "STATUS" => $doc->getStatus(),
             "STATUS_STRING" => Docs\Utils::getStatusString($doc),
             "ACCESS_LEVEL" => $accessLevel,
+            "OWNER_USERNAME" => Docs\Utils::getUserName($doc->getOwner()),
         );
         $allIds[] = $doc->getId();
     }
