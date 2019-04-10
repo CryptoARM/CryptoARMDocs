@@ -366,16 +366,16 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function promptEmail() {
+function promptEmail(message) {
     do {
-        var emailAddress = prompt(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT'), '');
+        var emailAddress = prompt(message, '');
         var validatedEmail = validateEmail(emailAddress);
     } while (emailAddress && validatedEmail !== true);
     return emailAddress;
 }
 
 function promptAndSendEmail(docsList, event, arEventFields, message_id) {
-    let email = promptEmail();
+    let email = promptEmail(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT'));
     arEventFields["EMAIL"] = email;
     if (email) {
         sendEmail(docsList, event, arEventFields, message_id);
@@ -388,7 +388,15 @@ function share(ids, email, level = 'SHARE_READ') {
         data: {ids: ids, email: email, level: level},
         method: 'post',
         onsuccess: function (d) {
-            console.log(d);
+            d = JSON.parse(d);
+            if (d.success) {
+                alert(BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1') + email + BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2'));
+            } else {
+                console.log(d.message);
+                if (d.message == 'User not found') {
+                    alert(BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1') + email + BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2'));
+                }
+            }
         },
         onfailure: function (e) {
             console.log(e);
@@ -398,7 +406,7 @@ function share(ids, email, level = 'SHARE_READ') {
 }
 
 function promptAndShare(ids, level = 'SHARE_READ') {
-    let email = promptEmail();
+    let email = promptEmail(BX.message('TR_CA_DOCS_ACT_SHARE'));
     if (email) {
         share(ids, email, level);
     }

@@ -28,4 +28,9 @@ $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Enter e-mail to which you want to
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS"] = "Email is sent";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_FAILURE"] = "Error email is sent";
 
-$MESS["TR_CA_DOCS_ACT_SHARE"] = "Enter user e-mail with whom you want to share your document:";
+$MESS["TR_CA_DOCS_ACT_SHARE"] = "Enter Bitrix user e-mail:";
+$MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_1"] = "User with e-mail ";
+$MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_2"] = " now has access to the document";
+$MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_1"] = "User with e-mail ";
+$MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " is not found";
+

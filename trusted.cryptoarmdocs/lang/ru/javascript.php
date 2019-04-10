@@ -28,4 +28,9 @@ $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Укажите e-mail, на ко�
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS"] = "Письмо отправлено";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_FAILURE"] = "Ошибка, письмо не отправлено";
 
-$MESS["TR_CA_DOCS_ACT_SHARE"] = "Укажите e-mail пользователя которому вы хотите дать доступ к данному документу:";
+$MESS["TR_CA_DOCS_ACT_SHARE"] = "Укажите e-mail пользователя 1-С Битрикс:";
+$MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_1"] = "Пользователь c e-mail ";
+$MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_2"] = " получил доступ к документу";
+$MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_1"] = "Пользователь с e-mail ";
+$MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " не найден";
+

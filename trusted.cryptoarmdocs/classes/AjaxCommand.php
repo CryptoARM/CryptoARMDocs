@@ -668,6 +668,10 @@ class AjaxCommand {
         $level = $params["level"];
 
         $userId = Utils::getUserIdByEmail($email);
+        if (!$userId) {
+            $res["message"] = "User not found";
+            return $res;
+        }
 
         foreach ($docIds as $docId) {
             $doc = Database::getDocumentById($docId);
