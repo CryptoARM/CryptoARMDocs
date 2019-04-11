@@ -342,7 +342,7 @@ class Utils
 
     public static function getUserName($userId) {
         $user = \CUser::GetByID($userId)->Fetch();
-        $userName = $user['LAST_NAME'] . ' ' . $user['NAME'];
+        $userName = $user['NAME'] . ' ' . $user['LAST_NAME'];
         if (!trim($userName)) {
             $userName = $user['LOGIN'];
         }

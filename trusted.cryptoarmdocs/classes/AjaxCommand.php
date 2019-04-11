@@ -679,6 +679,18 @@ class AjaxCommand {
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
+
+            $fileName = $doc->getName();
+            $ownerId = $doc->getOwner();
+            $shareFrom = Utils::getUserName($ownerId) ?: "";
+
+            $arEventFields = array(
+                "EMAIL" => $email,
+                "FILE_NAME" => $fileName,
+                "SHARE_FROM" => $shareFrom,
+            );
+
+            Email::sendEmail([$docId], "MAIL_EVENT_ID_SHARE", $arEventFields, "MAIL_TEMPLATE_ID_SHARE");
             $doc->share($userId, $level);
             $doc->save();
         }

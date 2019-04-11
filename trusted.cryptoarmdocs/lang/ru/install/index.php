@@ -27,4 +27,13 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_RU"] = "
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Документы";
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Документы: #FILE_NAMES#";
 
+$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_NAME_RU"] = "КриптоАРМ Документы - уведомление";
+$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION_RU"] = "
+#EMAIL# - EMail получателя сообщения
+#FILE_NAME# - название документа
+#SHARE_FROM# - автор документа
+";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "#SITE_NAME#: получен доступ к #FILE_NAME#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = "#SITE_NAME#: #SHARE_FROM# поделился документом #FILE_NAME#";
+
 $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";

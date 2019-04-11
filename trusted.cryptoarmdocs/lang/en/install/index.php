@@ -27,4 +27,13 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_EN"] = "
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Documents";
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Documents: #FILE_NAMES#";
 
+$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_NAME_EN"] = "CryptoARM Documents - notification";
+$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION_EN"] = "
+#EMAIL# - recipient email
+#FILE_NAME# - document name
+#SHARE_FROM# - document owner
+";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "#SITE_NAME#: shared document #FILE_NAME#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = "#SITE_NAME#: #SHARE_FROM# shared with you a document #FILE_NAME#";
+
 $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Cancel installation";
