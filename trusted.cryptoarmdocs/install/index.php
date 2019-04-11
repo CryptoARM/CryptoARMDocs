@@ -169,6 +169,7 @@ Class trusted_cryptoarmdocs extends CModule
                     `SIGNERS` text COLLATE utf8_unicode_ci,
                     `PARENT_ID` int(11) DEFAULT NULL,
                     `CHILD_ID` int(11) DEFAULT NULL,
+                    `HASH` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
                     `TIMESTAMP_X` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`ID`),
                 KEY `fk_tr_ca_docs_tr_ca_docs1_idx` (`PARENT_ID`)

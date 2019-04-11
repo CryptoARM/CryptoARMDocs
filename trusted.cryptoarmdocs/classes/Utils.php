@@ -23,6 +23,7 @@ class Utils
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
+        $doc->setHash(hash_file('md5', $_SERVER['DOCUMENT_ROOT'] . $file));
         if ($properties) {
             $doc->setProperties($properties);
         }

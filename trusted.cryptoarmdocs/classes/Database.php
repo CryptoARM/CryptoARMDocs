@@ -51,6 +51,7 @@ class Database
                 . 'TYPE = ' . $doc->getType() . ', '
                 . 'STATUS = ' . $doc->getStatus() . ', '
                 . "SIGNERS = '" . $DB->ForSql($doc->getSigners()) . "', "
+                . 'HASH = "' . $doc->getHash() . '", '
                 . 'PARENT_ID = ' . $parentId . ', '
                 . 'CHILD_ID = ' . $childId . ' '
                 . 'WHERE ID = ' . $doc->getId();
@@ -77,14 +78,15 @@ class Database
             $childId = 'NULL';
         }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID)'
+            . '(NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID, HASH)'
             . 'VALUES ('
             . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
             . "'" . $DB->ForSql($doc->getSigners()) . "', "
             . $doc->getType() . ', '
             . $parentId . ', '
-            . $childId
+            . $childId . ', '
+            . '"' . $DB->ForSql($doc->getHash()) . '"'
             . ')';
         $DB->Query($sql);
         $doc->setId($DB->LastID());
@@ -104,6 +106,17 @@ class Database
             $parent->setChildId($id);
             $parent->save();
         }
+    }
+
+    static function saveDocumentHash($doc)
+    {
+        global $DB;
+        $docId = $doc->getId();
+        $hash = $doc->getHash();
+        $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
+            . 'HASH = "' . $hash . '" '
+            . 'WHERE ID = ' . $docId . ';';
+        $DB->Query($sql);
     }
 
     /**

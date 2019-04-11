@@ -67,6 +67,12 @@ class Document implements IEntity, ISave
     protected $childId = null;
 
     /**
+     * Document file hash. HASH field in DB.
+     * @var string
+     */
+    protected $hash = null;
+
+    /**
      * Document creation time. TIMESTAMP_X field in DB.
      * @var string
      */
@@ -101,6 +107,7 @@ class Document implements IEntity, ISave
             $doc->setStatus($array["STATUS"]);
             $doc->setParentId($array["PARENT_ID"]);
             $doc->setChildId($array["CHILD_ID"]);
+            $doc->setHash($array["HASH"]);
         }
         return $doc;
     }
@@ -120,6 +127,7 @@ class Document implements IEntity, ISave
             "signers"  => $this->getSigners(),
             "parentId" => $this->getParentId(),
             "childId"  => $this->getChildId(),
+            "hash"  => $this->getHash(),
         );
         return $a;
     }
@@ -289,6 +297,34 @@ class Document implements IEntity, ISave
             $this->childId = null;
         } else {
             $this->childId = (int)$childId;
+        }
+    }
+
+    /**
+     * Returns document file hash.
+     * @return string
+     */
+    function getHash()
+    {
+        // Older versions of module didn't have hash field
+        // so we have to calculate and save it on first access
+        if (is_null($this->hash)) {
+            $hash = hash_file('md5', $this->getFullPath());
+            $this->hash = $hash;
+            Database::saveDocumentHash($this);
+        }
+        return $this->hash;
+    }
+
+    /**
+     * Sets document file hash
+     * @param string $hash
+     * @return void
+     */
+    function setHash($hash)
+    {
+        if (is_null($this->hash)) {
+            $this->hash = $hash;
         }
     }
 
@@ -543,6 +579,11 @@ class Document implements IEntity, ISave
             "id" => $this->getId(),
         );
         return $a;
+    }
+
+    public function getFullPath()
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . urldecode($this->getPath());
     }
 
     public function getHtmlPath()

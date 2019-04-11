@@ -205,6 +205,7 @@ class AjaxCommand {
             $newDoc->setType(DOC_TYPE_SIGNED_FILE);
             $newDoc->setParent($doc);
             $file = $_FILES["file"];
+            $newDoc->setHash(hash_file('md5', $file['tmp_name']));
             $extra = json_decode($params["extra"], true);
             // Detect document by order signing
             if (array_key_exists("role", $extra)) {
@@ -488,7 +489,7 @@ class AjaxCommand {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
                 $last = $doc->getLastDocument();
-                $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($last->getPath());
+                $file = $last->getFullPath();
                 Utils::download($file, $doc->getName());
             } else {
                 header("HTTP/1.1 500 Internal Server Error");
