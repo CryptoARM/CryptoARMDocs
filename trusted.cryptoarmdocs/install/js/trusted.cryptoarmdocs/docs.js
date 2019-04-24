@@ -165,13 +165,21 @@ function verify(ids) {
         alert(HTTP_WARNING);
         return;
     }
+    let iOS = /iphone/i.test(navigator.userAgent);
+    let android = /android/i.test(navigator.userAgent);
+    if (!iOS && !android) {
+        if (!socket.connected) {
+            alert(NO_CLIENT);
+            return;
+        }
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=verify',
         type: 'post',
         data: {id: ids},
         success: function (d) {
             // mobile CryptoArm support START
-            if (/iphone/i.test(navigator.userAgent)) {
+            if (iOS || android) {
                 let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docs)[0].url + "&command=verify";
                 if (/CriOS/i.test(navigator.userAgent || '')) {
                     window.location = url + "&browser=chrome";
