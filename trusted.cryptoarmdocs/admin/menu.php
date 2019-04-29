@@ -23,21 +23,21 @@ if ($APPLICATION->GetGroupRight("trusted.cryptoarmdocs") >= "R") {
         $menuItems = array();
 
         $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS"),
-            "url" => "trusted_cryptoarm_docs.php?lang=" . LANGUAGE_ID,
+            "url" => "trusted_cryptoarm_docs.php",
             // more_url assigns page to the menu entry
             "more_url" => array("trusted_cryptoarm_docs_upload.php"),
             "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS")
         );
 
         $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_USER"),
-            "url" => "trusted_cryptoarm_docs_by_user.php?lang=" . LANGUAGE_ID,
+            "url" => "trusted_cryptoarm_docs_by_user.php",
             "more_url" => array("trusted_cryptoarm_docs_upload_by_user.php"),
             "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_USER")
         );
 
         if (Loader::includeModule("sale")) {
             $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER"),
-                "url" => "trusted_cryptoarm_docs_by_order.php?lang=" . LANGUAGE_ID,
+                "url" => "trusted_cryptoarm_docs_by_order.php",
                 "more_url" => array("trusted_cryptoarm_docs_upload_by_order.php"),
                 "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER")
             );

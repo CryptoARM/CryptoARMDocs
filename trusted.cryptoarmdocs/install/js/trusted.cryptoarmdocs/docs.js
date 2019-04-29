@@ -1,3 +1,6 @@
+// ===============================
+// === Get js library messages ===
+// ===============================
 var AJAX_CONTROLLER = BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
 var NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
 var HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
@@ -10,37 +13,88 @@ var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
 var ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
 var ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
 var ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
+var SEND_MAIL_SUCCESS = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS');
+var SEND_MAIL_FAILURE = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE');
+var SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
+var SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
+var SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
+var SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
+var SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
+var ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
 
+
+// ====================================================
+// === Establish socket connection, assign handlers ===
+// ====================================================
 if (location.protocol === 'https:') {
     var socket = io('https://localhost:4040');
+    socket.on('connect', () => { console.log('Event: connect'); });
+    socket.on('disconnect', data => { console.log('Event: disconnect, reason: ', data); });
+    socket.on('verified', data => { console.log('Event: verified', data); });
+    socket.on('signed', data => { console.log('Event: signed, data: ', data); });
+    socket.on('uploaded', data => {
+        console.log('Event: uploaded, data: ', data);
+        // Check to see if page defined it's own handler
+        if (typeof trustedCAUploadHandler === 'function') {
+            trustedCAUploadHandler(data);
+        } else {
+            location.reload();
+        }
+    });
+    socket.on('cancelled', data => { console.log('Event: cancelled', data); });
 }
 
-socket.on('connect', function () {
-    console.log('Event: connect');
-});
 
-socket.on('disconnect', function (data) {
-    console.log('Event: disconnect, reason: ', data);
-});
+// =========================
+// === Module js library ===
+// =========================
+if (!trustedCA) {
+    var trustedCA = {};
+}
 
-socket.on('verified', function (data) {
-    console.log('Event: verified', data);
-});
 
-socket.on('signed', function (data) {
-    console.log('Event: signed, data: ', data);
-});
+trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=' + command,
+        type: 'post',
+        data: data,
+        // Ajax request succeeds
+        success: function (d) {
+            // Report any errors
+            trustedCA.show_messages(d);
+            // Command execution succeeds
+            if (d.success) {
+                if (typeof onSuccess === 'function') {
+                    onSuccess(d);
+                } else {
+                    console.log(d.message);
+                }
+            // Command execution fails
+            } else {
+                if (typeof onFailure === 'function') {
+                    onFailure(d);
+                } else {
+                    console.log(d.message);
+                }
+            }
+        },
+        // Ajax request fails
+        error: function (e) {
+            console.error(e);
+            try {
+                var d = JSON.parse(e.responseText);
+                if (d.success === false) {
+                    console.log(d);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    });
+};
 
-socket.on('uploaded', function (data) {
-    console.log('Event: uploaded, data: ', data);
-    location.reload()
-});
 
-socket.on('cancelled', function (data) {
-    console.log('Event: cancelled', data);
-});
-
-function sign(ids, extra = null) {
+trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null) {
     if (location.protocol === 'http:') {
         alert(HTTP_WARNING);
         return;
@@ -67,9 +121,9 @@ function sign(ids, extra = null) {
                     filenameArr.push(elem.name);
                     idArr.push(elem.id);
                 });
-                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + (extra === null ? "null" : extra.role)
-                    + "&url=" + JSON.parse(d.docsToSign)[0].url + "&filename=" + filenameArr + "&href="
-                    + window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
+                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + (extra === null ? "null" : extra.role) +
+                    "&url=" + JSON.parse(d.docsToSign)[0].url + "&filename=" + filenameArr + "&href=" +
+                    window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
                 if (/CriOS/i.test(navigator.userAgent)) {
                     window.location = url + "chrome";
                 } else {
@@ -79,7 +133,7 @@ function sign(ids, extra = null) {
                 docs.forEach(function (elem) {
                     ids.push(elem.id);
                 });
-                block(ids);
+                trustedCA.block(ids);
                 setTimeout(() => location.reload(), 1000);
                 // mobile CryptoArm support END
             } else {
@@ -99,13 +153,15 @@ function sign(ids, extra = null) {
                     docs.forEach(function (elem) {
                         ids.push(elem.id);
                     });
-                    block(ids, function () {
-                        location.reload();
-                    });
+                    if (typeof onSuccess === 'function') {
+                        onSuccess(d);
+                    }
                 } else {
-                    console.log(d);
+                    if (typeof onFailure === 'function') {
+                        onFailure(d);
+                    }
                 }
-                show_messages(d);
+                trustedCA.show_messages(d);
             }
         },
         error: function (e) {
@@ -120,47 +176,10 @@ function sign(ids, extra = null) {
             }
         }
     });
-}
+};
 
-function show_messages(response) {
-    if (response.docsFileNotFound) {
-        message = ERROR_FILE_NOT_FOUND;
-        response.docsFileNotFound.forEach(function (elem) {
-            message += '\n' + elem.id + ': ' + elem.filename;
-        });
-        alert(message);
-    }
-    if (response.docsNotFound) {
-        message = ERROR_DOC_NOT_FOUND;
-        response.docsNotFound.forEach(function (elem) {
-            message += '\n' + elem;
-        });
-        alert(message);
-    }
-    if (response.docsBlocked) {
-        message = ERROR_DOC_BLOCKED;
-        response.docsBlocked.forEach(function (elem) {
-            message += '\n' + elem.id + ': ' + elem.filename;
-        });
-        alert(message);
-    }
-    if (response.docsRoleSigned) {
-        message = ERROR_DOC_ROLE_SIGNED;
-        response.docsRoleSigned.forEach(function (elem) {
-            message += '\n' + elem.id + ': ' + elem.filename;
-        });
-        alert(message);
-    }
-    if (response.docsNoAccess) {
-        message = ERROR_DOC_NO_ACCESS;
-        response.docsNoAccess.forEach(function (elem) {
-            message += '\n' + elem;
-        });
-        alert(message);
-    }
-}
 
-function verify(ids) {
+trustedCA.verify = function (ids) {
     if (location.protocol === 'http:') {
         alert(HTTP_WARNING);
         return;
@@ -218,205 +237,119 @@ function verify(ids) {
             }
         }
     });
-}
+};
 
-function block(ids, cb = null) {
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=block',
-        type: 'post',
-        data: {id: ids},
-        success: function (d) {
-            if (d.success === false) {
-                console.log(d);
-            }
-            if (cb) {
-                cb(d);
-            }
-        },
-        error: function (e) {
-            console.error(e);
-            try {
-                var d = JSON.parse(e.responseText);
-                if (d.success === false) {
-                    console.log(d);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    });
-}
 
-function unblock(ids) {
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=unblock',
-        type: 'post',
-        data: {id: ids},
-        success: function (d) {
-            if (d.success === false) {
-                console.log(d);
-                alert(d.message);
-            } else {
-                location.reload();
-            }
-        },
-        error: function (e) {
-            console.error(e);
-            try {
-                var d = JSON.parse(e.responseText);
-                if (d.success === false) {
-                    alert(d.message);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    });
-}
-
-function remove(ids, force = false, message = REMOVE_ACTION_CONFIRM) {
-    if (force ? true : confirm(message)) {
-        $.ajax({
-            url: AJAX_CONTROLLER + '?command=remove',
-            type: 'post',
-            data: {id: ids},
-            success: function (d) {
-                if (d.success === false) {
-                    console.log(d);
-                    alert(d.message);
-                } else {
-                    location.reload();
-                }
-            },
-            error: function (e) {
-                console.error(e);
-                try {
-                    var d = JSON.parse(e.responseText);
-                    if (d.success === false) {
-                        alert(d.message);
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            }
+trustedCA.show_messages = function (response) {
+    if (response.docsFileNotFound) {
+        message = ERROR_FILE_NOT_FOUND;
+        response.docsFileNotFound.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
         });
+        alert(message);
     }
-}
+    if (response.docsNotFound) {
+        message = ERROR_DOC_NOT_FOUND;
+        response.docsNotFound.forEach(function (elem) {
+            message += '\n' + elem;
+        });
+        alert(message);
+    }
+    if (response.docsBlocked) {
+        message = ERROR_DOC_BLOCKED;
+        response.docsBlocked.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (response.docsRoleSigned) {
+        message = ERROR_DOC_ROLE_SIGNED;
+        response.docsRoleSigned.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (response.docsNoAccess) {
+        message = ERROR_DOC_NO_ACCESS;
+        response.docsNoAccess.forEach(function (elem) {
+            message += '\n' + elem;
+        });
+        alert(message);
+    }
+};
 
-function download(ids, del = false, archiveName = null) {
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=download',
-        type: 'post',
-        data: {ids: ids, archiveName: archiveName},
-        success: function(d) {
-            console.log(d);
-            show_messages(d);
-            if (d.success === true) {
-                if (ids.length === 1) {
-                    window.location.href = AJAX_CONTROLLER + '?command=content&id=' + ids[0];
-                } else {
-                    window.location.href = AJAX_CONTROLLER + '?command=content&file=' + d.content;
-                }
+
+trustedCA.block = function (ids, onSuccess = null, onFailure = null) {
+    trustedCA.ajax('block', {ids}, onSuccess, onFailure);
+};
+
+
+trustedCA.unblock = function (ids, onSuccess = null, onFailure = null) {
+    trustedCA.ajax('unblock', {ids}, onSuccess, onFailure);
+};
+
+
+trustedCA.remove = function (ids, force = false, onSuccess = null, onFailure = null, message = REMOVE_ACTION_CONFIRM) {
+    if (force ? true : confirm(message)) {
+        trustedCA.ajax('remove', {ids}, onSuccess, onFailure);
+    }
+};
+
+
+trustedCA.download = function (ids, filename) {
+    let onSuccess = (d) => {
+        if (d.success === true) {
+            if (ids.length === 1) {
+                window.location.href = AJAX_CONTROLLER + '?command=content&id=' + ids[0];
             } else {
-                if (del) {
-                    var removeMessage = LOST_DOC_REMOVE_CONFIRM_PRE;
-                    removeMessage += '\n' + d.filename + '\n';
-                    removeMessage += LOST_DOC_REMOVE_CONFIRM_POST;
-                    if (confirm(removeMessage)) {
-                        remove({ids}, removeMessage);
-                    }
-                }
+                window.location.href = AJAX_CONTROLLER + '?command=content&file=' + d.content;
             }
-        },
-        error: function(e) {
-            console.log(e);
         }
-    });
-}
+    };
+    trustedCA.ajax('download', {ids, filename}, onSuccess);
+};
 
-function view(id) {
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=view',
-        type: 'post',
-        data: {id: id},
-        success: function (d) {
-            console.log(d);
-        },
-        error: function (e) {
-            console.log(e);
-        }
-    });
-}
 
-function sendEmail(docsList, event, arEventFields, message_id) {
-    BX.ajax({
-            url: AJAX_CONTROLLER + '?command=sendEmail',
-            data: {docsList: docsList, event: event, arEventFields: arEventFields, message_id: message_id},
-            method: 'post',
-            onsuccess: function (d) {
-                d = JSON.parse(d);
-                if (d.success) {
-                    alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS'));
-                } else {
-                    console.log(d);
-                    alert(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE'));
-                }
-            },
-        onfailure: function (e) {
-            console.log(e);
-        }
+trustedCA.sendEmail = function (ids, event, arEventFields, messageId) {
+    let onSuccess = (d) => { alert(SEND_MAIL_SUCCESS); };
+    let onFailure = (e) => { alert(SEND_MAIL_FAILURE); };
+    trustedCA.ajax('sendEmail', {ids, event, arEventFields, messageId}, onSuccess, onFailure);
+};
+
+
+trustedCA.promptEmail = function (message) {
+    function validateEmail(email) {
+        let re = /\S+@\S+\.\S+/;
+        return re.test(email);
     }
-    );
-}
-
-function validateEmail(email) {
-    let re = /\S+@\S+\.\S+/;
-    return re.test(email);
-}
-
-function promptEmail(message) {
     do {
         var emailAddress = prompt(message, '');
         var validatedEmail = validateEmail(emailAddress);
     } while (emailAddress && validatedEmail !== true);
     return emailAddress;
-}
+};
 
-function promptAndSendEmail(docsList, event, arEventFields, message_id) {
-    let email = promptEmail(BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT'));
-    arEventFields["EMAIL"] = email;
+
+trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) {
+    let email = trustedCA.promptEmail(SEND_MAIL_TO_PROMPT);
+    arEventFields.EMAIL = email;
     if (email) {
-        sendEmail(docsList, event, arEventFields, message_id);
+        trustedCA.sendEmail(ids, event, arEventFields, message_id);
     }
-}
+};
 
-function share(ids, email, level = 'SHARE_READ') {
-    BX.ajax({
-        url: AJAX_CONTROLLER + '?command=share',
-        data: {ids: ids, email: email, level: level},
-        method: 'post',
-        onsuccess: function (d) {
-            d = JSON.parse(d);
-            if (d.success) {
-                alert(BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1') + email + BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2'));
-            } else {
-                console.log(d.message);
-                if (d.message == 'User not found') {
-                    alert(BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1') + email + BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2'));
-                }
-            }
-        },
-        onfailure: function (e) {
-            console.log(e);
-        }
-    }
-    );
-}
 
-function promptAndShare(ids, level = 'SHARE_READ') {
-    let email = promptEmail(BX.message('TR_CA_DOCS_ACT_SHARE'));
+trustedCA.share = function (ids, email, level = 'SHARE_READ') {
+    let onSuccess = (d) => { alert(SHARE_SUCCESS_1 + email + SHARE_SUCCESS_2); };
+    let onFailure = (e) => { alert(SHARE_NO_USER_1 + email + SHARE_NO_USER_2); };
+    trustedCA.ajax('share', {ids, email, level}, onSuccess, onFailure);
+};
+
+
+trustedCA.promptAndShare = function (ids, level = 'SHARE_READ') {
+    let email = trustedCA.promptEmail(ACT_SHARE);
     if (email) {
-        share(ids, email, level);
+        trustedCA.share(ids, email, level);
     }
-}
+};
 

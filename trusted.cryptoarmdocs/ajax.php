@@ -57,9 +57,6 @@ if (isset($command)) {
         case "remove":
             $res = Docs\AjaxCommand::remove($params);
             break;
-        case "view":
-            $res = Docs\AjaxCommand::view($params);
-            break;
         case "download":
             $res = Docs\AjaxCommand::download($params);
             break;

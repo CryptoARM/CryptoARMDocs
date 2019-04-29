@@ -70,6 +70,8 @@ class AjaxCommand {
                 } else {
                     // Doc is ready to be sent
                     $docsToSign->add($doc);
+                    $doc->setStatus(DOC_STATUS_BLOCKED);
+                    $doc->save();
                 }
             }
         }
@@ -252,7 +254,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["id"];
+        $docIds = $params["ids"];
         if (!$docIds) {
             $res["message"] = "No ids were given";
             return $res;
@@ -289,7 +291,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["id"];
+        $docIds = $params["ids"];
         if (!$docIds) {
             $res["message"] = "No ids were given";
             return $res;
@@ -326,8 +328,9 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["id"];
+        $docIds = $params["ids"];
         if (!$docIds) {
+            $res["docsNotFound"] = array($id);
             $res["message"] = "No ids were given";
             return $res;
         }
@@ -336,17 +339,20 @@ class AjaxCommand {
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
             if (!$doc) {
+                $res["docsNotFound"] = array($id);
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
 
             $lastDoc = $doc->getLastDocument();
             if (!$lastDoc) {
+                $res["docsNotFound"] = array($id);
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
 
             if (!$lastDoc->accessCheck(Utils::currUserId())) {
+                $res["docsNotFound"] = array($id);
                 $res["message"] = "No access to some of the documents";
                 return $res;
             }
@@ -418,8 +424,8 @@ class AjaxCommand {
         }
 
         if ($docsFound->count()) {
-            $archiveName = $params["archiveName"] ? $params["archiveName"] . ".zip" : "TCA-Docs.zip";
-            $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $archiveName;
+            $filename = $params["filename"] ? $params["filename"] . ".zip" : "TCA-Docs.zip";
+            $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $filename;
             $archiveObject = \CBXArchive::GetArchive($archivePath);
             $archiveObject->SetOptions(
                 array(
@@ -453,7 +459,7 @@ class AjaxCommand {
         }
 
         if (file_exists($archivePath)) {
-            rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $archiveName);
+            rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $filename);
         }
 
         if ($docsFound->count()) {
@@ -462,7 +468,7 @@ class AjaxCommand {
         } else {
             $res["message"] = "Nothing to download";
         }
-        $res["content"] = $archiveName;
+        $res["content"] = $filename;
         return $res;
     }
 
@@ -625,12 +631,12 @@ class AjaxCommand {
             return $res;
         }
 
-        $docsList = $params['docsList'];
+        $ids = $params['ids'];
         $event = $params['event'];
         $arEventFields = $params['arEventFields'];
-        $message_id = $params['message_id'];
+        $messageId = $params['messageId'];
 
-        foreach ($docsList as $docId) {
+        foreach ($ids as $docId) {
             $doc = Database::getDocumentById($docId);
             if (!$doc || !$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
                 $res["message"] = "No access to some of the documents";
@@ -638,7 +644,7 @@ class AjaxCommand {
             }
         }
 
-        $sendStatus = Email::sendEmail($docsList, $event, $arEventFields, $message_id);
+        $sendStatus = Email::sendEmail($ids, $event, $arEventFields, $messageId);
 
         if ($sendStatus['success']) {
             $res = array(

@@ -14,7 +14,7 @@ main.document-card {
     border-radius: 2px;
 }
 
-header.document-card__title_user {
+.document-card__title_user {
     border-radius: 2px 2px 0 0;
     display: flex;
     justify-content: space-between;

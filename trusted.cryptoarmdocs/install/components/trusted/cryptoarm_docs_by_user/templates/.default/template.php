@@ -4,21 +4,27 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
-?>
+use Bitrix\Main\Application;
+use Bitrix\Main\Page\Asset;
 
-<head>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
+Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">');
+Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">');
 
-<?
+$app = Application::getInstance();
+$context = $app->getContext();
+$request = $context->getRequest();
+
 $allIds = $arResult['ALL_IDS'];
 $allIdsJs = $arResult['ALL_IDS_JS'];
 $docs = $arResult['DOCS'];
 
 $compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
 $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
+?>
 
+<a id="reload_doc_by_user_comp" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
+
+<?
 // DOCUMENT UPLOAD HANDLER - START
 $DOCUMENTS_DIR = COption::GetOptionString("trusted.cryptoarmdocs", "DOCUMENTS_DIR", "docs");
 if (!empty($_FILES["userfile"]["name"])) {
@@ -35,15 +41,15 @@ if (!empty($_FILES["userfile"]["name"])) {
 
     }
     unset ($_FILES["userfile"]["name"]);
-    echo "<script>window.location = window.location.href</script>";
+    LocalRedirect($request->getRequestUri());
+    die();
 }
 // DOCUMENT UPLOAD HANDLER - END
 ?>
 
-<body>
 <div id="main-document">
     <main class="document-card">
-        <header class="document-card__title_user">
+        <div class="document-card__title_user">
             <?
             echo $compTitle;
             if (!empty($allIds)) {
@@ -55,39 +61,39 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                     </div>
                     <ul id="ul_by_user">
-                        <? $emailJs = "promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
-                        <div onclick="<?= $emailJs ?>">
+                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                        <div onclick="<?= $emailAllJs ?>">
                             <div class="material-icons">
                                 email
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>
                         </div>
-                        <? $signJs = "sign($allIdsJs, {'role': 'CLIENT'})" ?>
-                        <div onclick="<?= $signJs ?>">
+                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'}, reloadDocByUserComp)" ?>
+                        <div onclick="<?= $signAllJs ?>">
                             <div class="material-icons">
                                 create
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
                         </div>
-                        <? $verifyJs = "verify($allIdsJs)" ?>
-                        <div onclick="<?= $verifyJs ?>">
+                        <? $verifyAllJs = "trustedCA.verify($allIdsJs)" ?>
+                        <div onclick="<?= $verifyAllJs ?>">
                             <div class="material-icons">
                                 info
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
                         </div>
-                        <? $downloadJs = "self.download($allIdsJs, false, '$zipName')" ?>
-                        <div onclick="<?= $downloadJs ?>">
+                        <? $downloadAllJs = "trustedCA.download($allIdsJs, '$zipName')" ?>
+                        <div onclick="<?= $downloadAllJs ?>">
                             <div class="material-icons">
                                 save_alt
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
                         </div>
                         <?
-                        if ($arParams["POSSIBILITY_OF_REMOVAL"] === 'Y') {
+                        if ($arParams["ALLOW_REMOVAL"] === 'Y') {
                         ?>
-                            <? $removeJs = "remove($allIdsJs)" ?>
-                            <div onclick="<?= $removeJs ?>">
+                            <? $removeAllJs = "trustedCA.remove($allIdsJs, false, reloadDocByUserComp)" ?>
+                            <div onclick="<?= $removeAllJs ?>">
                                 <div class="material-icons">
                                     delete
                                 </div>
@@ -101,7 +107,7 @@ if (!empty($_FILES["userfile"]["name"])) {
             <?
             }
             ?>
-        </header>
+        </div>
 
         <div class="document-card__content">
             <?
@@ -168,7 +174,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                         </div>
                         <div class="document-item__right_user">
                             <div class="icon_content">
-                                <? $emailJs = "promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                                <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>"
                                      onclick="<?= $emailJs ?>">
@@ -178,7 +184,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                                 </div>
                                 <?
                                 if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
-                                    $signJs = "sign([$docId], {'role': 'CLIENT'})";
+                                    $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'}, reloadDocByUserComp)";
                                 ?>
                                     <div class="icon-wrapper"
                                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
@@ -189,7 +195,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                                     </div>
                                 <?
                                 }
-                                $verifyJs = "verify([$docId])";
+                                $verifyJs = "trustedCA.verify([$docId])";
                                 ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
@@ -198,7 +204,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                                         info
                                     </i>
                                 </div>
-                                <? $downloadJs = "self.download([$docId], false)" ?>
+                                <? $downloadJs = "trustedCA.download([$docId])" ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
                                      onclick="<?= $downloadJs ?>">
@@ -208,7 +214,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                                 </div>
                                 <?
                                 if ($docAccessLevel == "OWNER") {
-                                    $shareJs = "promptAndShare([$docId], 'SHARE_SIGN')"
+                                    $shareJs = "trustedCA.promptAndShare([$docId], 'SHARE_SIGN')"
                                 ?>
                                     <div class="icon-wrapper"
                                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>"
@@ -218,8 +224,8 @@ if (!empty($_FILES["userfile"]["name"])) {
                                         </i>
                                     </div>
                                     <?
-                                    if ($arParams["POSSIBILITY_OF_REMOVAL"] === 'Y') {
-                                        $removeJs = "remove([$docId])";
+                                    if ($arParams["ALLOW_REMOVAL"] === 'Y') {
+                                        $removeJs = "trustedCA.remove([$docId], false, reloadDocByUserComp)";
                                     ?>
                                         <div class="icon-wrapper"
                                              title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
@@ -241,10 +247,10 @@ if (!empty($_FILES["userfile"]["name"])) {
             ?>
         </div>
         <?
-        if ($arParams["POSSIBILITY_OF_ADDING"] === 'Y') {
+        if ($arParams["ALLOW_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) {
         ?>
-                <footer class="document-card__footer">
+                <div class="document-card__footer">
                     <form enctype="multipart/form-data" method="POST">
                         <div class="document-footer__action">
                             <input class="document-footer__input" name="userfile" type="file" style="font-size: 0"
@@ -252,14 +258,13 @@ if (!empty($_FILES["userfile"]["name"])) {
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
                         </div>
                     </form>
-                </footer>
+                </div>
         <?
             }
         }
         ?>
     </main>
 </div>
-</body>
 
 <script>
     $(".document-card__title_user").click(function () {

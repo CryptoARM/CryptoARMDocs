@@ -5,6 +5,7 @@ $arComponentParameters = array(
     'GROUPS' => array(
         'SETTINGS' => array(
             'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_GROUP_NAME"),
+            'SORT' => 10,
         ),
     ),
     'PARAMETERS' => array(
@@ -14,15 +15,15 @@ $arComponentParameters = array(
             'TYPE' => 'CHECKBOX',
             'DEFAULT' => 'N',
         ),
-        'POSSIBILITY_OF_REMOVAL' => array(
+        'ALLOW_REMOVAL' => array(
             'PARENT' => 'SETTINGS',
-            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_POSSIBILITY_OF_REMOVAL"),
+            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_ALLOW_REMOVAL"),
             'TYPE' => 'CHECKBOX',
             'DEFAULT' => 'N',
         ),
-        'POSSIBILITY_OF_ADDING' => array(
+        'ALLOW_ADDING' => array(
             'PARENT' => 'SETTINGS',
-            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_POSSIBILITY_OF_ADDING"),
+            'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_ALLOW_ADDING"),
             'TYPE' => 'CHECKBOX',
             'DEFAULT' => 'N',
         ),
@@ -32,5 +33,6 @@ $arComponentParameters = array(
             'TYPE' => 'STRING',
             'DEFAULT' => 20,
         ),*/
+        'AJAX_MODE' => array(),
     )
 );

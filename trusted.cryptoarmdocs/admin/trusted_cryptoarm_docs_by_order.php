@@ -68,6 +68,8 @@ $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
 // main list object
 $lAdmin = new CAdminList($sTableID, $oSort);
 
+$reloadTableJs = $sTableID . '.GetAdminList("")';
+
 function CheckFilter() {
     global $FilterArr, $lAdmin;
     foreach ($FilterArr as $f)
@@ -131,17 +133,17 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.sign(' . json_encode($ids) . ', {"role": "SELLER"})';
+            echo 'window.parent.trustedCA.sign(' . json_encode($ids) . ', {"role": "SELLER"}, () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
         case "unblock":
             echo '<script>';
-            echo 'window.parent.unblock(' . json_encode($ids) . ')';
+            echo 'window.parent.trustedCA.unblock(' . json_encode($ids) . ', () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
         case "remove":
             echo '<script>';
-            echo 'window.parent.remove(' . json_encode($ids) . ')';
+            echo 'window.parent.trustedCA.remove(' . json_encode($ids) . ', false, () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
         case "send_mail":
@@ -311,9 +313,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
-        $docViewField .= "<input class='verify_button' type='button' value='i' onclick='verify([";
+        $docViewField .= "<input class='verify_button' type='button' value='i' onclick='trustedCA.verify([";
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
-        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='self.download([";
+        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='trustedCA.download([";
         $docViewField .= $docId;
         $docViewField .= "], true)'>";
         $docViewField .= $docName . "</a>";
@@ -341,7 +343,6 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
                 "ICON" => "edit",
                 "DEFAULT" => true,
                 "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_SIGN"),
-                //"ACTION" => "sign(" . json_encode($ids) . ")"
                 "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
             );
 
@@ -549,6 +550,12 @@ if (!Docs\Utils::isSecure()) {
     ?>
 
 </form>
+
+<script>
+let trustedCAUploadHandler = (data) => {
+    <?= $reloadTableJs ?>
+};
+</script>
 
 <?
 $lAdmin->DisplayList();

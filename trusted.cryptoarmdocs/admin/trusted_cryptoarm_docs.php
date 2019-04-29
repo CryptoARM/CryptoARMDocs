@@ -22,6 +22,7 @@ $sTableID = "Docs_ID";
 $oSort = new CAdminSorting($sTableID, "ID", "asc");
 $lAdmin = new CAdminList($sTableID, $oSort);
 
+$reloadTableJs = $sTableID . '.GetAdminList("")';
 
 function CheckFilter()
 {
@@ -59,7 +60,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     if ($_REQUEST['action_target'] == 'selected') {
         // apply filter
         $docs = Docs\Database::getDocumentIdsByFilter(array($by => $order), $arFilter);
-        while($arRes = $docs->Fetch()) {
+        while ($arRes = $docs->Fetch()) {
             $ids[] = $arRes['ID'];
         }
     } else {
@@ -72,17 +73,17 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.sign(' . json_encode($ids) . ')';
+            echo 'window.parent.trustedCA.sign(' . json_encode($ids) . ', null, () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
         case "unblock":
             echo '<script>';
-            echo 'window.parent.unblock(' . json_encode($ids) . ')';
+            echo 'window.parent.trustedCA.unblock(' . json_encode($ids) . ', () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
         case "remove":
             echo '<script>';
-            echo 'window.parent.remove(' . json_encode($ids) . ')';
+            echo 'window.parent.trustedCA.remove(' . json_encode($ids) . ', false, () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
     }
@@ -135,9 +136,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $doc = Docs\Database::getDocumentById($f_ID);
     $docId = $doc->getId();
 
-    $docName = "<input type='button' value='i' onclick='verify([";
+    $docName = "<input type='button' value='i' onclick='trustedCA.verify([";
     $docName .= $docId . "])' class='verify_button' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
-    $docName .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='self.download([";
+    $docName .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='trustedCA.download([";
     $docName .= $docId . "], true)' >" . $doc->getName() . "</a>";
 
     if ($doc->getSigners() == "") {
@@ -207,7 +208,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             "ICON" => "edit",
             "DEFAULT" => true,
             "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_SIGN"),
-            "ACTION" => "sign(" . json_encode($arId) . ")"
+            "ACTION" => $lAdmin->ActionDoGroup($f_ID, "sign"),
         );
         $arActions[] = array("SEPARATOR" => true);
     }
@@ -218,7 +219,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             "ICON" => "access",
             "DEFAULT" => false,
             "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_UNBLOCK"),
-            "ACTION" => "unblock(" . json_encode($arId) . ")"
+            "ACTION" => $lAdmin->ActionDoGroup($f_ID, "unblock"),
         );
         $arActions[] = array("SEPARATOR" => true);
     }
@@ -227,7 +228,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "ICON" => "delete",
         "DEFAULT" => false,
         "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
-        "ACTION" => "remove(" . json_encode($arId) . ")"
+        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "remove"),
     );
 
     $arActions[] = array("SEPARATOR" => true);
@@ -361,6 +362,12 @@ if (!Docs\Utils::isSecure()) {
     ?>
 
 </form>
+
+<script>
+let trustedCAUploadHandler = (data) => {
+    <?= $reloadTableJs ?>
+};
+</script>
 
 <?php $lAdmin->DisplayList(); ?>
 

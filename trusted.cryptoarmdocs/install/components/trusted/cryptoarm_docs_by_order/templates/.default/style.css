@@ -14,7 +14,7 @@ main.document-card {
     border-radius: 2px;
 }
 
-header.document-card__title {
+.document-card__title {
     border-radius: 2px 2px 0 0;
     display: flex;
     justify-content: space-between;
@@ -73,8 +73,8 @@ header.document-card__title {
 
 .document-content__item .document-item__right {
     flex-wrap: wrap;
-    justify-content: center;
-    width: 210px;
+    justify-content: right;
+    width: 360px;
 }
 
 .document-card__content .document-item__text {

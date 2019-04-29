@@ -8,6 +8,7 @@ $arComponentParameters = array(
         ),
     ),
     'PARAMETERS' => array(
+        'AJAX_MODE' => array(),
 /*        'ELEMENTS_ON_PAGE' => array(
             'PARENT' => 'SETTINGS',
             'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SETTINGS_PARAMETERS_ON_PAGE"),
