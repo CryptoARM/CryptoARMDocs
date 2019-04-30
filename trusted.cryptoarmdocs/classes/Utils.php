@@ -260,19 +260,17 @@ class Utils
     /**
      * Print debug info to log.txt in site root
      *
-     * @param mixed $var
-     * @param string $name
+     * @param ... $vars
      * @return void
      */
-    public static function debug($var, $name = "VAR")
-    {
-        $logFile = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", "a");
-        $logTime = date("Y-m-d H:i:s", time());
-        fwrite($logFile, "##################################\n");
-        fwrite($logFile, $logTime . " - " . $name . "\n");
-        fwrite($logFile, "----------------------------------\n");
-        fwrite($logFile, print_r($var, true) . "\n\n\n");
-        fclose($logFile);
+    public static function dump(...$vars) {
+        $file = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", 'a');
+        $time = date("H:i:s ");
+        fwrite($file, $time . str_repeat("=", 30) . "\n");
+        foreach ($vars as $var) {
+            fwrite($file, print_r($var, true) . "\n\n");
+        }
+        fclose($file);
     }
 
     /**
