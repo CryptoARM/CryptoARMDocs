@@ -367,6 +367,10 @@ if (!Docs\Utils::isSecure()) {
 let trustedCAUploadHandler = (data) => {
     <?= $reloadTableJs ?>
 };
+
+let trustedCACancellHandler = (data) => {
+    <?= $reloadTableJs ?>
+};
 </script>
 
 <?php $lAdmin->DisplayList(); ?>

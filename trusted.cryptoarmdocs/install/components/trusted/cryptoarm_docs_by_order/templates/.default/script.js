@@ -6,3 +6,7 @@ function trustedCAUploadHandler(data) {
     reloadDocByOrderComp();
 }
 
+function trustedCACancellHandler(data) {
+    reloadDocByOrderComp();
+}
+
