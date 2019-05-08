@@ -451,45 +451,27 @@ class Document implements IEntity, ISave
      */
     function getSignersToArray()
     {
-        $signers = $this->signers;
-        $signers = explode(",{", $signers);
-        foreach ($signers as $key => $signer) {
-            $arr = array("{", "}", "[", "]");
-            $arrTo = array("", "", "", "");
-            $signer = str_replace($arr, $arrTo, $signer);
-            $signer = explode(",", $signer);
-            foreach ($signer as $keyN => $value) {
-                $value = str_replace('"', '', $value);
-                $value = explode(":", $value);
-                $prop = $value[0];
-                $value = $value[1];
-                $signer[$prop] = $value;
-                unset($signer[$keyN]);
-            }
-            $signers[$key] = $signer;
-            if ($signer["subjectName"]) {
-                $subject = explode("/", ($signer["subjectName"]));
-                foreach ($subject as $keyS => $value) {
-                    $value = explode("=", $value);
-                    $prop = $value[0];
-                    $value = $value[1];
-                    $subject[$prop] = $value;
-                    unset($subject[$keyS]);
+        $signers = json_decode($this->signers, true);
+        foreach ($signers as $index => $signer) {
+            $subjectName = explode('/', $signer['subjectName']);
+            $newSubjectName = array();
+            foreach ($subjectName as $value) {
+                $value = explode('=', $value);
+                if ($value[0] !== '') {
+                    $newSubjectName[$value[0]] = $value[1];
                 }
-                $signer["subjectName"] = $subject;
             }
-            if ($signer["issuerName"]) {
-                $subject = explode("/", ($signer["issuerName"]));
-                foreach ($subject as $keyS => $value) {
-                    $value = explode("=", $value);
-                    $prop = $value[0];
-                    $value = $value[1];
-                    $subject[$prop] = $value;
-                    unset($subject[$keyS]);
+            $signers[$index]['subjectName'] = $newSubjectName;
+
+            $issuerName = explode('/', $signer['issuerName']);
+            $newIssuerName = array();
+            foreach ($issuerName as $value) {
+                $value = explode('=', $value);
+                if ($value[0] !== '') {
+                    $newIssuerName[$value[0]] = $value[1];
                 }
-                $signer["issuerName"] = $subject;
             }
-            $signers[$key] = $signer;
+            $signers[$index]['issuerName'] = $newIssuerName;
         }
         return $signers;
     }

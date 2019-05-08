@@ -146,22 +146,27 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     } else {
         $signers = $doc->getSignersToArray();
     }
+
     $signersString = '<table width=100%>';
 
-    foreach ($signers as $key => $signer) {
+    foreach ($signers as $signer) {
 
         $signingTime = Loc::getMessage("TR_CA_DOCS_SIGN_TIME")
-            . date("d:m:o H:i", round($signer[signingTime] / 1000));
+            . date("d:m:o H:i", round($signer['signingTime'] / 1000));
 
-        $subjectName = Loc::getMessage("TR_CA_DOCS_SIGN_NAME");
-        if ($signer[subject_name]) $subjectName .= $signer[subject_name];
-        else $subjectName .= $signer[subjectFriendlyName];
+        $subjectName = Loc::getMessage("TR_CA_DOCS_SIGN_NAME")
+            . $signer['subjectFriendlyName'];
 
-        if ($signer[subjectName][O])
-            $subjectCompany = Loc::getMessage("TR_CA_DOCS_SIGN_ORG") . $signer[subjectName][O];
+        $subjectOrganization = '';
+        // Check for organization name code
+        if ($signer['issuerName']['2.5.4.10']) {
+            $subjectOrganization = Loc::getMessage("TR_CA_DOCS_SIGN_ORG")
+                . $signer['issuerName']['2.5.4.10'];
+        }
 
-        $signersString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectCompany . "</td></tr>";
+        $signersString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectOrganization . "</td></tr>";
     }
+
     $signersString .= '</table>';
 
     $arId = array();
