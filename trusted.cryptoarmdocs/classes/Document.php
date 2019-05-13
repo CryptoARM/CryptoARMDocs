@@ -49,10 +49,10 @@ class Document implements IEntity, ISave
     protected $status = DOC_STATUS_NONE;
 
     /**
-     * Information about document signers. SIGNERS field in DB.
+     * Information about document signatures. SIGNATURES field in DB.
      * @var string JSON
      */
-    protected $signers = "";
+    protected $signatures = "";
 
     /**
      * ID of the parent of the document. PARENT_ID field in DB.
@@ -102,7 +102,7 @@ class Document implements IEntity, ISave
             $doc->setCreated($array["TIMESTAMP_X"]);
             $doc->setName($array["NAME"]);
             $doc->setPath($array["PATH"]);
-            $doc->setSigners($array["SIGNERS"]);
+            $doc->setSignatures($array["SIGNATURES"]);
             $doc->setType($array["TYPE"]);
             $doc->setStatus($array["STATUS"]);
             $doc->setParentId($array["PARENT_ID"]);
@@ -124,7 +124,7 @@ class Document implements IEntity, ISave
             "path"     => $this->getPath(),
             "type"     => $this->getType(),
             "status"   => $this->getStatus(),
-            "signers"  => $this->getSigners(),
+            "signatures"  => $this->getSignatures(),
             "parentId" => $this->getParentId(),
             "childId"  => $this->getChildId(),
             "hash"  => $this->getHash(),
@@ -228,22 +228,22 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Returns signers of the document.
+     * Returns signatures of the document.
      * @return string JSON
      */
-    function getSigners()
+    function getSignatures()
     {
-        return $this->signers;
+        return $this->signatures;
     }
 
     /**
-     * Sets signers of the document.
-     * @param string $signers JSON
+     * Sets signatures of the document.
+     * @param string $signatures JSON
      * @return void
      */
-    function setSigners($signers)
+    function setSignatures($signatures)
     {
-        $this->signers = $signers;
+        $this->signatures = $signatures;
     }
 
     /**
@@ -449,11 +449,11 @@ class Document implements IEntity, ISave
      * Returns document sign info as array.
      * @return array
      */
-    function getSignersToArray()
+    function getSignaturesToArray()
     {
-        $signers = json_decode($this->signers, true);
-        foreach ($signers as $index => $signer) {
-            $subjectName = explode('/', $signer['subjectName']);
+        $signatures = json_decode($this->signatures, true);
+        foreach ($signatures as $index => $signature) {
+            $subjectName = explode('/', $signature['subjectName']);
             $newSubjectName = array();
             foreach ($subjectName as $value) {
                 $value = explode('=', $value);
@@ -461,9 +461,9 @@ class Document implements IEntity, ISave
                     $newSubjectName[$value[0]] = $value[1];
                 }
             }
-            $signers[$index]['subjectName'] = $newSubjectName;
+            $signatures[$index]['subjectName'] = $newSubjectName;
 
-            $issuerName = explode('/', $signer['issuerName']);
+            $issuerName = explode('/', $signature['issuerName']);
             $newIssuerName = array();
             foreach ($issuerName as $value) {
                 $value = explode('=', $value);
@@ -471,9 +471,9 @@ class Document implements IEntity, ISave
                     $newIssuerName[$value[0]] = $value[1];
                 }
             }
-            $signers[$index]['issuerName'] = $newIssuerName;
+            $signatures[$index]['issuerName'] = $newIssuerName;
         }
-        return $signers;
+        return $signatures;
     }
 
     /**
@@ -528,7 +528,7 @@ class Document implements IEntity, ISave
         $new = new Document();
         $new->setName($this->getName());
         $new->setPath($this->getPath());
-        $new->setSigners($this->getSigners());
+        $new->setSignatures($this->getSignatures());
         $new->setType($this->getType());
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {

@@ -44,7 +44,7 @@ $MESS["TR_CA_DOCS_COL_ORDER_STATUS"] = "Order status";
 $MESS["TR_CA_DOCS_COL_BUYER"] = "Buyer";
 $MESS["TR_CA_DOCS_COL_MAIL"] = "Email status";
 
-// Signers info
+// Signature info
 $MESS["TR_CA_DOCS_SIGN_TIME"] = "<b>Timestamp: </b> ";
 $MESS["TR_CA_DOCS_SIGN_NAME"] = "<b>Name: </b> ";
 $MESS["TR_CA_DOCS_SIGN_ORG"] = "<b>Organization: </b> ";

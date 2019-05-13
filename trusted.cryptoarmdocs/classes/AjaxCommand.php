@@ -174,7 +174,7 @@ class AjaxCommand {
      * Creates new document and updates type and status of other documents accordingly.
      *
      * @param array $params [id]: document id
-     *                      [signers]: information about signer
+     *                      [signers]: information about signatures
      *                      [extra]: additional information
      * @return array [success]: operation result status
      *               [message]: operation result message
@@ -200,8 +200,8 @@ class AjaxCommand {
             }
 
             $newDoc = $doc->copy();
-            $signers = urldecode($params["signers"]);
-            $newDoc->setSigners($signers);
+            $signatures = urldecode($params["signers"]);
+            $newDoc->setSignatures($signatures);
             $newDoc->setType(DOC_TYPE_SIGNED_FILE);
             $newDoc->setParent($doc);
             $file = $_FILES["file"];

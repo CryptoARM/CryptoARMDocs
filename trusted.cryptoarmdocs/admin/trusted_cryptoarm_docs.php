@@ -37,7 +37,7 @@ $FilterArr = Array(
     "find",
     "find_docId",
     "find_fileName",
-    "find_signInfo",
+    "find_signatures",
     "find_type",
     "find_status"
 );
@@ -49,7 +49,7 @@ if (CheckFilter()) {
         "ID" => ($find != "" && $find_type == "id" ? $find : $find_id),
         "DOC" => $find_docId,
         "FILE_NAME" => $find_fileName,
-        "SIGN" => $find_signInfo,
+        "SIGNATURES" => $find_signatures,
         "TYPE" => $find_type,
         "STATUS" => $find_status
     );
@@ -118,9 +118,9 @@ $lAdmin->AddHeaders(array(
         "default" => false
     ),
     array(
-        "id" => "SIGN",
+        "id" => "SIGNATURES",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_SIGN"),
-        "sort" => "SIGN",
+        "sort" => "SIGNATURES",
         "default" => true
     ),
     array(
@@ -141,33 +141,33 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docName .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='trustedCA.download([";
     $docName .= $docId . "], true)' >" . $doc->getName() . "</a>";
 
-    if ($doc->getSigners() == "") {
-        $signers = array();
+    if ($doc->getSignatures() == "") {
+        $signatures = array();
     } else {
-        $signers = $doc->getSignersToArray();
+        $signatures = $doc->getSignaturesToArray();
     }
 
-    $signersString = '<table width=100%>';
+    $signaturesString = '<table width=100%>';
 
-    foreach ($signers as $signer) {
+    foreach ($signatures as $signature) {
 
         $signingTime = Loc::getMessage("TR_CA_DOCS_SIGN_TIME")
-            . date("d:m:o H:i", round($signer['signingTime'] / 1000));
+            . date("d:m:o H:i", round($signature['signingTime'] / 1000));
 
         $subjectName = Loc::getMessage("TR_CA_DOCS_SIGN_NAME")
-            . $signer['subjectFriendlyName'];
+            . $signature['subjectFriendlyName'];
 
         $subjectOrganization = '';
         // Check for organization name code
-        if ($signer['issuerName']['2.5.4.10']) {
+        if ($signature['issuerName']['2.5.4.10']) {
             $subjectOrganization = Loc::getMessage("TR_CA_DOCS_SIGN_ORG")
-                . $signer['issuerName']['2.5.4.10'];
+                . $signature['issuerName']['2.5.4.10'];
         }
 
-        $signersString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectOrganization . "</td></tr>";
+        $signaturesString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectOrganization . "</td></tr>";
     }
 
-    $signersString .= '</table>';
+    $signaturesString .= '</table>';
 
     $arId = array();
     $arId[] = $doc->getId();
@@ -191,7 +191,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "FILE_NAME" => $docName,
         "PARENT_CREATED" => $docParentCreated,
         "CREATED" => $docCreated,
-        "SIGN" => $signersString,
+        "SIGNATURES" => $signaturesString,
         "TYPE" => $docType,
     );
 
@@ -201,7 +201,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("FILE_NAME", $docName);
     $row->AddViewField("PARENT_CREATED", $docParentCreated);
     $row->AddViewField("CREATED", $docCreated);
-    $row->AddViewField("SIGN", $signersString);
+    $row->AddViewField("SIGNATURES", $signaturesString);
     $row->AddViewField("TYPE", $docTypeString);
 
     // context menu
@@ -315,7 +315,7 @@ if (!Docs\Utils::isSecure()) {
 
     <tr>
         <td> <?= Loc::getMessage("TR_CA_DOCS_COL_SIGN") . ":" ?></td>
-        <td><input type="text" name="find_signInfo" size="47" value="<?= htmlspecialchars($find_signInfo) ?>"></td>
+        <td><input type="text" name="find_signatures" size="47" value="<?= htmlspecialchars($find_signatures) ?>"></td>
     </tr>
 
     <tr>

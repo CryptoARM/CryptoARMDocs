@@ -50,7 +50,7 @@ class Database
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
                 . 'STATUS = ' . $doc->getStatus() . ', '
-                . "SIGNERS = '" . $DB->ForSql($doc->getSigners()) . "', "
+                . "SIGNATURES = '" . $DB->ForSql($doc->getSignatures()) . "', "
                 . 'HASH = "' . $doc->getHash() . '", '
                 . 'PARENT_ID = ' . $parentId . ', '
                 . 'CHILD_ID = ' . $childId . ' '
@@ -78,11 +78,11 @@ class Database
             $childId = 'NULL';
         }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(NAME, PATH, SIGNERS, TYPE, PARENT_ID, CHILD_ID, HASH)'
+            . '(NAME, PATH, SIGNATURES, TYPE, PARENT_ID, CHILD_ID, HASH)'
             . 'VALUES ('
             . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
-            . "'" . $DB->ForSql($doc->getSigners()) . "', "
+            . "'" . $DB->ForSql($doc->getSignatures()) . "', "
             . $doc->getType() . ', '
             . $parentId . ', '
             . $childId . ', '
@@ -411,8 +411,8 @@ class Database
             'FILE_NAME' => array(
                 'FIELD_NAME' => 'TD.NAME',
             ),
-            'SIGN' => array(
-                'FIELD_NAME' => 'TD.SIGNERS',
+            'SIGNATURES' => array(
+                'FIELD_NAME' => 'TD.SIGNATURES',
             ),
             'TYPE' => array(
                 'FIELD_NAME' => 'TD.TYPE',
@@ -424,7 +424,7 @@ class Database
 
         $find_docId = (string)$filter['DOC'];
         $find_fileName = (string)$filter['FILE_NAME'];
-        $find_signInfo = (string)$filter['SIGN'];
+        $find_signatures = (string)$filter['SIGNATURES'];
         $find_type = (string)$filter['TYPE'];
         $find_status = (string)$filter['STATUS'];
 
@@ -440,8 +440,8 @@ class Database
             $sql .= " AND TD.ID = '" . $find_docId . "'";
         if ($find_fileName !== "")
             $sql .= " AND TD.NAME LIKE '%" . $find_fileName . "%'";
-        if ($find_signInfo !== "")
-            $sql .= " AND TD.SIGNERS LIKE '%" . $DB->ForSql($find_signInfo) . "%'";
+        if ($find_signatures !== "")
+            $sql .= " AND TD.SIGNATURES LIKE '%" . $DB->ForSql($find_signatures) . "%'";
         if ($find_type !== "")
             $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status !== "")

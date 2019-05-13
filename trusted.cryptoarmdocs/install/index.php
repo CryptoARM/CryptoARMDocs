@@ -166,7 +166,7 @@ Class trusted_cryptoarmdocs extends CModule
                     `PATH` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `TYPE` tinyint(1) DEFAULT '0',
                     `STATUS` tinyint(1) DEFAULT '0',
-                    `SIGNERS` text COLLATE utf8_unicode_ci,
+                    `SIGNATURES` text COLLATE utf8_unicode_ci,
                     `PARENT_ID` int(11) DEFAULT NULL,
                     `CHILD_ID` int(11) DEFAULT NULL,
                     `HASH` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
