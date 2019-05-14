@@ -1,4 +1,7 @@
 <?php
+
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
