@@ -17,6 +17,7 @@ class AjaxCommand {
      *                      [extra]: additional information
      * @return array [success]: operation result status
      *               [message]: operation result message
+     *               [token]: block token
      *               [docsToSign]: JSON representation of documents that are ready to be signed
      *               [docsNotFound]: array of ids that were not found in document database
      *               [docsFileNotFound]: documents for which associated file was not found on disk
@@ -47,6 +48,8 @@ class AjaxCommand {
         $docsRoleSigned = new DocumentCollection();
         $docsNoAccess = array();
 
+        $token = Utils::generateUUID();
+
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
             if (!$doc) {
@@ -70,7 +73,7 @@ class AjaxCommand {
                 } else {
                     // Doc is ready to be sent
                     $docsToSign->add($doc);
-                    $doc->setStatus(DOC_STATUS_BLOCKED);
+                    $doc->block($token);
                     $doc->save();
                 }
             }
@@ -80,6 +83,7 @@ class AjaxCommand {
             $res["docsToSign"] = $docsToSign->toJSON();
             $res["message"] = "Some documents were sent for signing";
             $res["success"] = true;
+            $res["token"] = $token;
         }
         if ($docsNotFound) {
             $res["docsNotFound"] = $docsNotFound;
@@ -185,50 +189,56 @@ class AjaxCommand {
             "message" => "Unknown error in AjaxCommand.upload",
         );
 
-        // TODO: add security check
-        if (true) {
-            $doc = Database::getDocumentById($params['id']);
-            if ($doc) {
-                $lastDoc = $doc->getLastDocument();
-            } else {
-                $res["message"] = "Document is not found";
-                return $res;
-            }
-            if ($lastDoc->getId() != $doc->getId()) {
-                $res["message"] = "Document already has child.";
-                return $res;
-            }
-
-            $newDoc = $doc->copy();
-            $signatures = urldecode($params["signers"]);
-            $newDoc->setSignatures($signatures);
-            $newDoc->setType(DOC_TYPE_SIGNED_FILE);
-            $newDoc->setParent($doc);
-            $file = $_FILES["file"];
-            $newDoc->setHash(hash_file('md5', $file['tmp_name']));
-            $extra = json_decode($params["extra"], true);
-            // Detect document by order signing
-            if (array_key_exists("role", $extra)) {
-                DocumentsByOrder::upload($newDoc, $extra);
-            }
-            if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
-                $newDoc->setName($newDoc->getName() . '.sig');
-                $newDoc->setPath($newDoc->getPath() . '.sig');
-            }
-            $newDoc->save();
-            move_uploaded_file(
-                $file['tmp_name'],
-                $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
-            );
-            // Drop "blocked" status of original doc
-            $doc = Database::getDocumentById($params['id']);
-            $doc->setStatus(DOC_STATUS_NONE);
-            $doc->save();
-            $res["success"] = true;
-            $res["message"] = "File uploaded";
+        $doc = Database::getDocumentById($params['id']);
+        if ($doc) {
+            $lastDoc = $doc->getLastDocument();
         } else {
-            $res["message"] = "Access denied";
+            $res["message"] = "Document is not found";
+            return $res;
         }
+        if ($lastDoc->getId() !== $doc->getId()) {
+            $res["message"] = "Document already has child.";
+            return $res;
+        }
+        if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
+            $res["message"] = "Document not blocked";
+            return $res;
+        }
+        $extra = json_decode($params["extra"], true);
+        if ($doc->getBlockToken() !== $extra['token']) {
+            $res["message"] = "Wrong token";
+            return $res;
+        }
+
+        $newDoc = $doc->copy();
+        $signatures = urldecode($params["signers"]);
+        $newDoc->setSignatures($signatures);
+        // Append new user to the list of signers
+        $newDoc->addSigner($doc->getBlockBy());
+        $newDoc->setType(DOC_TYPE_SIGNED_FILE);
+        $newDoc->setParent($doc);
+        $file = $_FILES["file"];
+        $newDoc->setHash(hash_file('md5', $file['tmp_name']));
+        // Detect document by order signing
+        if (array_key_exists("role", $extra)) {
+            DocumentsByOrder::upload($newDoc, $extra);
+        }
+        if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
+            $newDoc->setName($newDoc->getName() . '.sig');
+            $newDoc->setPath($newDoc->getPath() . '.sig');
+        }
+        $newDoc->save();
+        move_uploaded_file(
+            $file['tmp_name'],
+            $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
+        );
+        // Drop "blocked" status of original doc
+        $doc = Database::getDocumentById($params['id']);
+        $doc->unblock();
+        $doc->save();
+        $res["success"] = true;
+        $res["message"] = "File uploaded";
+
         Utils::log(array(
             "action" => "signed",
             "docs" => $doc,
@@ -238,44 +248,7 @@ class AjaxCommand {
     }
 
     /**
-     * Sets document status to BLOCKED for one or multiple documents.
-     *
-     * @param array $params [id]: array of document ids
-     * @return array [success]: operation result status
-     *               [message]: operation result message
-     */
-    static function block($params) {
-        $res = array(
-            "success" => false,
-            "message" => "Unknown error in AjaxCommand.block",
-        );
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No autorization';
-            return $res;
-        }
-
-        $docIds = $params["ids"];
-        if (!$docIds) {
-            $res["message"] = "No ids were given";
-            return $res;
-        }
-
-        $res["message"] = "No access";
-        foreach ($docIds as &$id) {
-            $doc = Database::getDocumentById($id);
-            if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
-                $res["success"] = true;
-                $res["message"] = "Some documents were blocked";
-                $doc->setStatus(DOC_STATUS_BLOCKED);
-                $doc->save();
-            }
-        }
-        return $res;
-    }
-
-    /**
-     * Sets document status to NONE for one or multiple documents
+     * Unblocks one or multiple documents
      *
      * @param array $params [id]: array of document ids
      * @return array [success]: operation result status
@@ -304,7 +277,7 @@ class AjaxCommand {
             if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
                 $res["success"] = true;
                 $res["message"] = "Some documents were unblocked";
-                $doc->setStatus(DOC_STATUS_NONE);
+                $doc->unblock();
                 $doc->save();
             }
         }

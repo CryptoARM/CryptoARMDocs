@@ -145,6 +145,10 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                 // mobile CryptoArm support END
             } else {
                 if (d.success) {
+                    if (extra === null) {
+                        extra = {};
+                    }
+                    extra.token = d.token;
                     docs = JSON.parse(d.docsToSign);
                     req = {};
                     req.jsonrpc = '2.0';
@@ -283,11 +287,6 @@ trustedCA.show_messages = function (response) {
         });
         alert(message);
     }
-};
-
-
-trustedCA.block = function (ids, onSuccess = null, onFailure = null) {
-    trustedCA.ajax('block', {ids}, onSuccess, onFailure);
 };
 
 

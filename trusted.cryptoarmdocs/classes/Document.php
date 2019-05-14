@@ -49,12 +49,6 @@ class Document implements IEntity, ISave
     protected $status = DOC_STATUS_NONE;
 
     /**
-     * Information about document signatures. SIGNATURES field in DB.
-     * @var string JSON
-     */
-    protected $signatures = "";
-
-    /**
      * ID of the parent of the document. PARENT_ID field in DB.
      * @var integer
      */
@@ -71,6 +65,36 @@ class Document implements IEntity, ISave
      * @var string
      */
     protected $hash = null;
+
+    /**
+     * Information about document signatures. SIGNATURES field in DB.
+     * @var string JSON
+     */
+    protected $signatures = "";
+
+    /**
+     * Comma-separated list of bitrix users who signed the doc
+     * @var string
+     */
+    protected $signers = "";
+
+    /**
+     * Id of the bitrix user that blocked the doc
+     * @var integer
+     */
+    protected $blockBy = null;
+
+    /**
+     * Token for accessing the blocked document
+     * @var string
+     */
+    protected $blockToken = null;
+
+    /**
+     * Timestamp of the block operation
+     * @var string
+     */
+    protected $blockTime = "";
 
     /**
      * Document creation time. TIMESTAMP_X field in DB.
@@ -99,15 +123,19 @@ class Document implements IEntity, ISave
         if ($array) {
             $doc = new Document();
             $doc->setId($array["ID"]);
-            $doc->setCreated($array["TIMESTAMP_X"]);
             $doc->setName($array["NAME"]);
             $doc->setPath($array["PATH"]);
-            $doc->setSignatures($array["SIGNATURES"]);
             $doc->setType($array["TYPE"]);
             $doc->setStatus($array["STATUS"]);
             $doc->setParentId($array["PARENT_ID"]);
             $doc->setChildId($array["CHILD_ID"]);
             $doc->setHash($array["HASH"]);
+            $doc->setSignatures($array["SIGNATURES"]);
+            $doc->setSigners($array["SIGNERS"]);
+            $doc->setBlockBy($array["BLOCK_BY"]);
+            $doc->setBlockToken($array["BLOCK_TOKEN"]);
+            $doc->setBlockTime($array["BLOCK_TIME"]);
+            $doc->setCreated($array["TIMESTAMP_X"]);
         }
         return $doc;
     }
@@ -228,25 +256,6 @@ class Document implements IEntity, ISave
     }
 
     /**
-     * Returns signatures of the document.
-     * @return string JSON
-     */
-    function getSignatures()
-    {
-        return $this->signatures;
-    }
-
-    /**
-     * Sets signatures of the document.
-     * @param string $signatures JSON
-     * @return void
-     */
-    function setSignatures($signatures)
-    {
-        $this->signatures = $signatures;
-    }
-
-    /**
      * Returns parent document id.
      * @return integer|null
      */
@@ -326,6 +335,109 @@ class Document implements IEntity, ISave
         if (is_null($this->hash)) {
             $this->hash = $hash;
         }
+    }
+
+    /**
+     * Returns signatures of the document.
+     * @return string JSON
+     */
+    function getSignatures()
+    {
+        return $this->signatures;
+    }
+
+    /**
+     * Sets signatures of the document.
+     * @param string $signatures JSON
+     * @return void
+     */
+    function setSignatures($signatures)
+    {
+        $this->signatures = $signatures;
+    }
+
+    /**
+     * Returns signers of the document.
+     * @return void
+     */
+    function getSigners()
+    {
+        return $this->signers;
+    }
+
+    /**
+     * Sets signers of the document.
+     * @param string $signers
+     * @return void
+     */
+    function setSigners($signers)
+    {
+        $this->signers = $signers;
+    }
+
+    /**
+     * Returns id of the user that blocked the doc.
+     * @return integer
+     */
+    function getBlockBy()
+    {
+        if (is_null($this->blockBy)) {
+            return null;
+        } else {
+            return (int)$this->blockBy;
+        }
+    }
+
+    /**
+     * Sets id of the user that blocked the doc.
+     * @param integer $blockBy
+     * @return void
+     */
+    function setBlockBy($blockBy)
+    {
+        if (is_null($blockBy)) {
+            $this->blockBy = null;
+        } else {
+            $this->blockBy = (int)$blockBy;
+        }
+    }
+
+    /**
+     * Returns token of the blocked doc.
+     * @return string
+     */
+    function getBlockToken()
+    {
+        return $this->blockToken;
+    }
+
+    /**
+     * Sets block token of the doc.
+     * @param string $blockToken
+     * @return void
+     */
+    function setBlockToken($blockToken)
+    {
+        $this->blockToken = $blockToken;
+    }
+
+    /**
+     * Returns time when the doc was blocked.
+     * @return string
+     */
+    function getBlockTime()
+    {
+        return $this->blockTime;
+    }
+
+    /**
+     * Sets time when the doc was blocked.
+     * @param string $blockTime
+     * @return void
+     */
+    function setBlockTime($blockTime)
+    {
+        $this->blockTime = $blockTime;
     }
 
     /**
@@ -477,6 +589,15 @@ class Document implements IEntity, ISave
     }
 
     /**
+     * Returns document signers as array
+     * @return array
+     */
+    function getSignersToArray()
+    {
+        return preg_split("/,/", $this->getSigners(), null, PREG_SPLIT_NO_EMPTY);
+    }
+
+    /**
      * Return collection of properties of document.
      * @return PropertyCollection
      */
@@ -528,8 +649,9 @@ class Document implements IEntity, ISave
         $new = new Document();
         $new->setName($this->getName());
         $new->setPath($this->getPath());
-        $new->setSignatures($this->getSignatures());
         $new->setType($this->getType());
+        $new->setSignatures($this->getSignatures());
+        $new->setSigners($this->getSigners());
         $list = $this->getProperties()->getList();
         foreach ($list as &$prop) {
             $newProp = new Property($prop->getType(), $prop->getValue());
@@ -581,6 +703,46 @@ class Document implements IEntity, ISave
     public function getUrl()
     {
         return TR_CA_DOCS_AJAX_CONTROLLER . "?command=content&id=" . $this->getId();
+    }
+
+    /**
+     * Add new bitrix user id to the comma-separated list of signers
+     * @param integer $id
+     * @return void
+     */
+    public function addSigner($id)
+    {
+        $signers = $this->getSignersToArray();
+        $signers[] = (int)$id;
+        $this->setSigners(implode(",", $signers));
+    }
+
+    /**
+     * Blocks document as the current user
+     * @param string $token
+     * @return void
+     */
+    public function block($token)
+    {
+        $userId = Utils::currUserId();
+        if ($userId && $token) {
+            $this->setStatus(DOC_STATUS_BLOCKED);
+            $this->setBlockBy($userId);
+            $this->setBlockToken($token);
+            $this->setBlockTime(date('Y-m-d H:i:s', time()));
+        }
+    }
+
+    /**
+     * Unblocks the document.
+     * @return void
+     */
+    public function unblock()
+    {
+            $this->setStatus(DOC_STATUS_NONE);
+            $this->setBlockBy(null);
+            $this->setBlockToken(null);
+            $this->setBlockTime(null);
     }
 
     /**

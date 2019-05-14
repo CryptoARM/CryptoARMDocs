@@ -39,21 +39,39 @@ class Database
             global $DB;
             $parentId = $doc->getParentId();
             $childId = $doc->getChildId();
+            $blockBy = $doc->getBlockBy();
+            $blockToken = $doc->getBlockToken();
+            $blockTime = $doc->getBlockTime();
             if (is_null($parentId)) {
                 $parentId = 'NULL';
             }
             if (is_null($childId)) {
                 $childId = 'NULL';
             }
+            if (is_null($blockBy)) {
+                $blockBy = 'NULL';
+            }
+            if (is_null($blockToken)) {
+                $blockToken = 'NULL';
+            } else {
+                $blockToken = "'$blockToken'";
+            }
+            if (is_null($blockTime)) {
+                $blockTime = '0';
+            }
             $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
                 . 'NAME = "' . $DB->ForSql($doc->getName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
                 . 'STATUS = ' . $doc->getStatus() . ', '
-                . "SIGNATURES = '" . $DB->ForSql($doc->getSignatures()) . "', "
-                . 'HASH = "' . $doc->getHash() . '", '
                 . 'PARENT_ID = ' . $parentId . ', '
-                . 'CHILD_ID = ' . $childId . ' '
+                . 'CHILD_ID = ' . $childId . ', '
+                . 'HASH = "' . $doc->getHash() . '", '
+                . "SIGNATURES = '" . $DB->ForSql($doc->getSignatures()) . "', "
+                . "SIGNERS = '" . $DB->ForSql($doc->getSigners()) . "', "
+                . 'BLOCK_BY = ' . $blockBy . ', '
+                . 'BLOCK_TOKEN = ' . $blockToken . ', '
+                . "BLOCK_TIME = '" . $blockTime . "' "
                 . 'WHERE ID = ' . $doc->getId();
             $DB->Query($sql);
             Database::saveDocumentParent($doc, $doc->getId());
@@ -78,15 +96,16 @@ class Database
             $childId = 'NULL';
         }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(NAME, PATH, SIGNATURES, TYPE, PARENT_ID, CHILD_ID, HASH)'
+            . '(NAME, PATH, TYPE, PARENT_ID, CHILD_ID, HASH, SIGNATURES, SIGNERS)'
             . 'VALUES ('
             . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
-            . "'" . $DB->ForSql($doc->getSignatures()) . "', "
             . $doc->getType() . ', '
             . $parentId . ', '
             . $childId . ', '
-            . '"' . $DB->ForSql($doc->getHash()) . '"'
+            . '"' . $DB->ForSql($doc->getHash()) . '", '
+            . "'" . $DB->ForSql($doc->getSignatures()) . "', "
+            . '"' . $DB->ForSql($doc->getSigners()) . '"'
             . ')';
         $DB->Query($sql);
         $doc->setId($DB->LastID());
