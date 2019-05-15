@@ -173,7 +173,7 @@ Class trusted_cryptoarmdocs extends CModule
                     `SIGNERS` text COLLATE utf8_unicode_ci,
                     `BLOCK_BY` int(11) DEFAULT NULL,
                     `BLOCK_TOKEN` varchar(36) DEFAULT NULL,
-                    `BLOCK_TIME` timestamp DEFAULT '0',
+                    `BLOCK_TIME` datetime DEFAULT '1000-01-01 00:00:00',
                     `TIMESTAMP_X` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`ID`),
                 KEY `fk_tr_ca_docs_tr_ca_docs1_idx` (`PARENT_ID`)

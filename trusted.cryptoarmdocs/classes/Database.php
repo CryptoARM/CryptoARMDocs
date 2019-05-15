@@ -57,7 +57,7 @@ class Database
                 $blockToken = "'$blockToken'";
             }
             if (is_null($blockTime)) {
-                $blockTime = '0';
+                $blockTime = '1000-01-01 00:00:00';
             }
             $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
                 . 'NAME = "' . $DB->ForSql($doc->getName()) . '", '
