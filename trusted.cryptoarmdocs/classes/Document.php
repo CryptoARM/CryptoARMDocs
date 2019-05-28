@@ -2,6 +2,7 @@
 namespace Trusted\CryptoARM\Docs;
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Directory;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * Represents a single document
@@ -586,6 +587,38 @@ class Document implements IEntity, ISave
             $signatures[$index]['issuerName'] = $newIssuerName;
         }
         return $signatures;
+    }
+
+    /**
+     * Returns document sign info as html table
+     * @return string
+     */
+    function getSignaturesToTable()
+    {
+        $signatures = $this->getSignaturesToArray();
+
+        $signaturesString = '<table width=100%>';
+
+        foreach ($signatures as $signature) {
+
+            $signingTime = Loc::getMessage("TR_CA_DOCS_SIGN_TIME")
+                . date("d:m:o H:i", round($signature['signingTime'] / 1000));
+
+            $subjectName = Loc::getMessage("TR_CA_DOCS_SIGN_NAME")
+                . $signature['subjectFriendlyName'];
+
+            $subjectOrganization = '';
+            // Check for organization name code
+            if ($signature['issuerName']['2.5.4.10']) {
+                $subjectOrganization = Loc::getMessage("TR_CA_DOCS_SIGN_ORG")
+                    . $signature['issuerName']['2.5.4.10'];
+            }
+
+            $signaturesString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectOrganization . "</td></tr>";
+        }
+
+        $signaturesString .= '</table>';
+        return $signaturesString;
     }
 
     /**

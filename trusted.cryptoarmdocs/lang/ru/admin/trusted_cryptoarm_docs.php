@@ -44,11 +44,6 @@ $MESS["TR_CA_DOCS_COL_ORDER_STATUS"] = "Статус заказа";
 $MESS["TR_CA_DOCS_COL_BUYER"] = "Покупатель";
 $MESS["TR_CA_DOCS_COL_MAIL"] = "Статус письма";
 
-// Signature info
-$MESS["TR_CA_DOCS_SIGN_TIME"] = "<b>Время: </b> ";
-$MESS["TR_CA_DOCS_SIGN_NAME"] = "<b>Имя: </b> ";
-$MESS["TR_CA_DOCS_SIGN_ORG"] = "<b>Организация: </b> ";
-
 $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 
 // Actions
