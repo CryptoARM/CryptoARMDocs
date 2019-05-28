@@ -135,6 +135,19 @@ Class trusted_cryptoarmdocs extends CModule
                 $_SERVER["DOCUMENT_ROOT"],
                 true, true
             );
+            CopyDirFiles(
+                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
+                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
+                true, true
+            );
+            CUrlRewriter::Add(
+                array(
+                    'CONDITION' => '#^/trusted_ca_docs/wf/#',
+                    'RULE' => '',
+                    'ID' => 'trusted:cryptoarm_docs_wf',
+                    'PATH' => '/trusted_ca_docs/wf/index.php',
+                )
+            );
         }
         return true;
     }
@@ -382,6 +395,7 @@ Class trusted_cryptoarmdocs extends CModule
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm_personal/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_wf/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
@@ -395,6 +409,13 @@ Class trusted_cryptoarmdocs extends CModule
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
         if ($this->crmSupport()) {
             DeleteDirFilesEx("/trusted_ca_docs/");
+            DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
+            CUrlRewriter::Delete(
+                array(
+                    'ID' => 'trusted:cryptoarm_docs_wf',
+                    'PATH' => '/trusted_ca_docs/wf/index.php',
+                )
+            );
         }
         return true;
     }
