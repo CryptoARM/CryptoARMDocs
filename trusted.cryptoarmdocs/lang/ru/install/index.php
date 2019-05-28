@@ -1,5 +1,4 @@
 <?php
-require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/trusted.cryptoarmdocs/lang/en/install/index.php";
 
 $MESS["TR_CA_DOCS_MODULE_NAME"] = "КриптоАРМ Документы";
 $MESS["TR_CA_DOCS_MODULE_DESCRIPTION"] = "Модуль работы с документами";
