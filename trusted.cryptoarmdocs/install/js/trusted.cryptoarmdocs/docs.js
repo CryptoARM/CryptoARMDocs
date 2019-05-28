@@ -43,8 +43,8 @@ if (location.protocol === 'https:') {
     });
     socket.on('cancelled', data => {
         console.log('Event: cancelled', data);
-        if (typeof trustedCACancellHandler === 'function') {
-            trustedCA.unblock([data.id], (data) => trustedCACancellHandler(data));
+        if (typeof trustedCACancelHandler === 'function') {
+            trustedCA.unblock([data.id], (data) => trustedCACancelHandler(data));
         } else {
             trustedCA.unblock([data.id], () => location.reload());
         }

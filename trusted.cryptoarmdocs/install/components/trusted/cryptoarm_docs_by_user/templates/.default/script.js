@@ -6,7 +6,7 @@ function trustedCAUploadHandler(data) {
     reloadDocByUserComp();
 }
 
-function trustedCACancellHandler(data) {
+function trustedCACancelHandler(data) {
     reloadDocByUserComp();
 }
 

@@ -353,7 +353,7 @@ let trustedCAUploadHandler = (data) => {
     <?= $reloadTableJs ?>
 };
 
-let trustedCACancellHandler = (data) => {
+let trustedCACancelHandler = (data) => {
     <?= $reloadTableJs ?>
 };
 </script>
