@@ -359,3 +359,13 @@ trustedCA.promptAndShare = function (ids, level = 'SHARE_READ') {
     }
 };
 
+
+trustedCA.reloadGrid = function (gridId) {
+    var reloadParams = { apply_filter: 'Y', clear_nav: 'Y' };
+    var gridObject = BX.Main.gridManager.getById(gridId);
+
+    if (gridObject.hasOwnProperty('instance')){
+        gridObject.instance.reloadTable('POST', reloadParams);
+    }
+}
+

@@ -3,6 +3,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Application;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\EventManager;
 
 Loc::loadMessages(__FILE__);
 
@@ -84,7 +85,8 @@ Class trusted_cryptoarmdocs extends CModule
             $this->CreateDocsDir();
             $this->InstallModuleOptions();
             $this->InstallDB();
-            $this->InstallMailEvent();
+            $this->InstallMenuItems();
+            $this->InstallMailEvents();
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -100,6 +102,11 @@ Class trusted_cryptoarmdocs extends CModule
         return CheckVersion(ModuleManager::getVersion("main"), "14.00.00");
     }
 
+    function crmSupport()
+    {
+        return IsModuleInstalled("crm");
+    }
+
     function InstallFiles()
     {
         CopyDirFiles(
@@ -108,8 +115,8 @@ Class trusted_cryptoarmdocs extends CModule
             true, true
         );
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin/",
             true, false
         );
         CopyDirFiles(
@@ -118,10 +125,17 @@ Class trusted_cryptoarmdocs extends CModule
             true, true
         );
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes/",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
             true, true
         );
+        if ($this->crmSupport()) {
+            CopyDirFiles(
+                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
+                $_SERVER["DOCUMENT_ROOT"],
+                true, true
+            );
+        }
         return true;
     }
 
@@ -195,7 +209,25 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
     }
 
-    function InstallMailEvent()
+    function InstallMenuItems() {
+        $siteInfo = $this->getSiteInfo();
+
+        if ($this->crmSupport()) {
+            $this->AddMenuItem(
+                $siteInfo["DIR"] . ".top.menu.php",
+                array(
+                    Loc::getMessage('TR_CA_DOCS_CRM_MENU_TITLE'),
+                    $siteInfo["DIR"] . "trusted_ca_docs/",
+                    array(),
+                    array(),
+                    "IsModuleInstalled('" . $this->MODULE_ID . "')"
+                ),
+                $siteInfo["LID"]
+            );
+        }
+    }
+
+    function InstallMailEvents()
     {
         $this->createMailEventByOrder();
         $this->createMailEventTo();
@@ -335,7 +367,8 @@ Class trusted_cryptoarmdocs extends CModule
             if ($savedata != "Y") {
                 $this->UnInstallDB();
             }
-            $this->UnInstallMailEvent();
+            $this->UnInstallMenuItems();
+            $this->UnInstallMailEvents();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
@@ -348,6 +381,7 @@ Class trusted_cryptoarmdocs extends CModule
     {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm_personal/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
@@ -359,6 +393,9 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default/"
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
+        if ($this->crmSupport()) {
+            DeleteDirFilesEx("/trusted_ca_docs/");
+        }
         return true;
     }
 
@@ -411,7 +448,19 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
     }
 
-    function UnInstallMailEvent()
+    function UnInstallMenuItems() {
+        $siteInfo = $this->getSiteInfo();
+
+        if ($this->crmSupport()) {
+            $this->DeleteMenuItem(
+                $siteInfo["DIR"] . ".top.menu.php",
+                $siteInfo["DIR"] . "trusted_ca_docs/",
+                $siteInfo["LID"]
+            );
+        }
+    }
+
+    function UnInstallMailEvents()
     {
         $this->UnInstallMailEventByOrder();
         $this->UnInstallMailEventTo();
@@ -471,6 +520,55 @@ Class trusted_cryptoarmdocs extends CModule
 
         if ($parentId) {
             $this->dropDocumentChain($parentId);
+        }
+    }
+
+    function getSiteInfo() {
+        $siteID = CSite::GetDefSite();
+        return CSite::GetByID($siteID)->Fetch();
+    }
+
+    function AddMenuItem($menuFile, $menuItem,  $siteID, $pos = -1)
+    {
+        if (CModule::IncludeModule('fileman')) {
+            $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
+            $arMenuItems = $arResult["aMenuLinks"];
+            $menuTemplate = $arResult["sMenuTemplate"];
+
+            $bFound = false;
+            foreach ($arMenuItems as $item) {
+                if ($item[1] == $menuItem[1]) {
+                    $bFound = true;
+                    break;
+                }
+            }
+
+            if (!$bFound) {
+                if ($pos<0 || $pos>=count($arMenuItems)) {
+                    $arMenuItems[] = $menuItem;
+                } else {
+                    for ($i=count($arMenuItems); $i>$pos; $i--) {
+                        $arMenuItems[$i] = $arMenuItems[$i-1];
+                    }
+                    $arMenuItems[$pos] = $menuItem;
+                }
+
+                CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
+            }
+        }
+    }
+
+    function DeleteMenuItem($menuFile, $menuLink, $siteID) {
+        if (CModule::IncludeModule("fileman")) {
+            $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
+            $arMenuItems = $arResult["aMenuLinks"];
+            $menuTemplate = $arResult["sMenuTemplate"];
+
+            foreach($arMenuItems as $key => $item) {
+                if($item[1] == $menuLink) unset($arMenuItems[$key]);
+            }
+
+            CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
         }
     }
 
