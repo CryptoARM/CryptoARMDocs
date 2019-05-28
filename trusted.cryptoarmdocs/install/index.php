@@ -242,121 +242,83 @@ Class trusted_cryptoarmdocs extends CModule
 
     function InstallMailEvents()
     {
-        $this->createMailEventByOrder();
-        $this->createMailEventTo();
-        $this->createMailEventShare();
-    }
-
-    function createMailEventByOrder() {
         $obEventType = new CEventType;
-        $obEventType->add(
+        $events = array(
+            // by order
             array(
                 "LID" => "ru",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_NAME_RU"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_DESCRIPTION_RU"),
-            )
-        );
-        $obEventType->add(
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_DESCRIPTION"),
+            ),
+
+            // to
             array(
-                "LID" => "en",
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION"),
+            ),
+
+            // share
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"),
+            ),
+        );
+        foreach ($events as $event) {
+            $obEventType->add($event);
+        }
+
+        $obEventMessage = new CEventMessage;
+        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+        $siteIds = array();
+        while ($site = $sites->Fetch()) {
+            $siteIds[] = $site["ID"];
+        }
+        $templates = array(
+            // by order
+            'MAIL_TEMPLATE_ID' => array(
+                "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_NAME_EN"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_DESCRIPTION_EN"),
-            )
-        );
-        $obEventMessage = new CEventMessage;
-        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
-        $siteIds = array();
-        while ($site = $sites->Fetch()) {
-            $siteIds[] = $site["ID"];
-        }
-        $templateId = $obEventMessage->add(array(
-            "ACTIVE" => "Y",
-            "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
-            "LID" => $siteIds,
-            "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-            "EMAIL_TO" => "#EMAIL#",
-            "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"),
-            "BODY_TYPE" => "html",
-            "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_BODY"),
-        ));
-        Option::set("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID", $templateId);
-    }
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_BODY"),
+            ),
 
-    function createMailEventTo() {
-        $obEventType = new CEventType;
-        $obEventType->add(
-            array(
-                "LID" => "ru",
+            // to
+            'MAIL_TEMPLATE_ID_TO' => array(
+                "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME_RU"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_RU"),
-            )
-        );
-        $obEventType->add(
-            array(
-                "LID" => "en",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME_EN"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION_EN"),
-            )
-        );
-        $obEventMessage = new CEventMessage;
-        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
-        $siteIds = array();
-        while ($site = $sites->Fetch()) {
-            $siteIds[] = $site["ID"];
-        }
-        $templateId = $obEventMessage->add(array(
-            "ACTIVE" => "Y",
-            "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
-            "LID" => $siteIds,
-            "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-            "EMAIL_TO" => "#EMAIL#",
-            "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"),
-            "BODY_TYPE" => "html",
-            "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"),
-        ));
-        Option::set("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID_TO", $templateId);
-    }
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"),
+            ),
 
-    function createMailEventShare()
-    {
-        $obEventType = new CEventType;
-        $obEventType->add(
-            array(
-                "LID" => "ru",
+            // share
+            'MAIL_TEMPLATE_ID_SHARE' => array(
+                "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_NAME_RU"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION_RU"),
-            )
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
+            ),
         );
-        $obEventType->add(
-            array(
-                "LID" => "en",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_NAME_EN"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION_EN"),
-            )
-        );
-        $obEventMessage = new CEventMessage;
-        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
-        $siteIds = array();
-        while ($site = $sites->Fetch()) {
-            $siteIds[] = $site["ID"];
+        foreach ($templates as $templateName => $template) {
+            $templateId = $obEventMessage->add($template);
+            Option::set("trusted.cryptoarmdocs", $templateName, $templateId);
         }
-        $templateId = $obEventMessage->add(array(
-            "ACTIVE" => "Y",
-            "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
-            "LID" => $siteIds,
-            "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-            "EMAIL_TO" => "#EMAIL#",
-            "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"),
-            "BODY_TYPE" => "html",
-            "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
-        ));
-        Option::set("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID_SHARE", $templateId);
     }
 
     function DoUninstall()
