@@ -38,7 +38,7 @@ if (location.protocol === 'https:') {
         if (typeof trustedCAUploadHandler === 'function') {
             trustedCAUploadHandler(data);
         } else {
-            location.reload();
+            console.log('upload detected, handler not defined');
         }
     });
     socket.on('cancelled', data => {
@@ -46,7 +46,7 @@ if (location.protocol === 'https:') {
         if (typeof trustedCACancelHandler === 'function') {
             trustedCA.unblock([data.id], (data) => trustedCACancelHandler(data));
         } else {
-            trustedCA.unblock([data.id], () => location.reload());
+            trustedCA.unblock([data.id], () => console.log('cancel detected, handler not defined'));
         }
     });
 }
