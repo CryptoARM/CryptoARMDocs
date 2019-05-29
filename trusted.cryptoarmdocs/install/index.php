@@ -142,17 +142,9 @@ Class trusted_cryptoarmdocs extends CModule
             );
             CUrlRewriter::Add(
                 array(
-                    'CONDITION' => '#^/trusted_ca_docs/wf/#',
-                    'RULE' => '',
-                    'ID' => 'trusted:cryptoarm_docs_wf',
-                    'PATH' => '/trusted_ca_docs/wf/index.php',
-                )
-            );
-            CUrlRewriter::Add(
-                array(
                     'CONDITION' => '#^/trusted_ca_docs/#',
                     'RULE' => '',
-                    'ID' => 'trusted:cryptoarm_docs_crm_personal',
+                    'ID' => 'trusted:cryptoarm_docs_crm',
                     'PATH' => '/trusted_ca_docs/index.php',
                 )
             );
@@ -364,8 +356,7 @@ Class trusted_cryptoarmdocs extends CModule
     {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm_personal/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_wf/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
@@ -382,13 +373,7 @@ Class trusted_cryptoarmdocs extends CModule
             DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
             CUrlRewriter::Delete(
                 array(
-                    'ID' => 'trusted:cryptoarm_docs_wf',
-                    'PATH' => '/trusted_ca_docs/wf/index.php',
-                )
-            );
-            CUrlRewriter::Delete(
-                array(
-                    'ID' => 'trusted:cryptoarm_docs_crm_personal',
+                    'ID' => 'trusted:cryptoarm_docs_crm',
                     'PATH' => '/trusted_ca_docs/index.php',
                 )
             );

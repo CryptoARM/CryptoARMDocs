@@ -3,9 +3,12 @@ defined('B_PROLOG_INCLUDED') || die;
 
 use Bitrix\Main\Context;
 use Bitrix\Main\Loader;
+use Bitrix\Main\Localization\Loc;
 use Trusted\CryptoARM\Docs;
 
 Loader::includeModule('trusted.cryptoarmdocs');
+
+$APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_WF_EDIT_TITLE'));
 
 $urlTemplates = array(
     'EDIT' => $arResult['SEF_FOLDER'] . $arResult['SEF_URL_TEMPLATES']['edit'],
@@ -19,7 +22,7 @@ $APPLICATION->IncludeComponent(
         'MODULE_ID' => 'trusted.cryptoarmdocs',
         'ENTITY' => Docs\WorkflowDocument::class,
         'DOCUMENT_TYPE' => 'TR_CA_DOC',
-        'ID' => (int)$arResult['VARIABLES']['ID'],
+        'ID' => (int)$arResult['VARIABLES']['WF_ID'],
         'EDIT_PAGE_TEMPLATE' => $urlTemplates['EDIT'],
         'LIST_PAGE_URL' => $urlTemplates['LIST'],
         'SHOW_TOOLBAR' => 'Y',

@@ -8,6 +8,8 @@ use Bitrix\Main\Localization\Loc;
 
 Loader::includeModule('trusted.cryptoarmdocs');
 
+$APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_CRM_LIST_TITLE'));
+
 Loc::loadMessages($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/admin/trusted_cryptoarm_docs.php');
 
 $schema = array(

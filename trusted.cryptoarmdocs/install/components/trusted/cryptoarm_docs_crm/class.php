@@ -4,13 +4,14 @@ defined('B_PROLOG_INCLUDED') || die;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 
-class TrustedCACrmPersonalComponent extends CBitrixComponent
+class TrustedCACrmComponent extends CBitrixComponent
 {
     const SEF_DEFAULT_TEMPLATES = array(
+        'wf_list' => 'wf/',
+        'wf_edit' => 'wf/#WF_ID#',
         'list' => '',
-        'edit' => '#ID#/',
+        'detail' => '#ID#/',
     );
-
 
     public function executeComponent() {
 
@@ -48,6 +49,8 @@ class TrustedCACrmPersonalComponent extends CBitrixComponent
 
         $this->includeComponentTemplate($page);
     }
+
+
 
 }
 

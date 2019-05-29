@@ -4,20 +4,23 @@ defined('B_PROLOG_INCLUDED') || die;
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
-// use Bitrix\Main\Text\HtmlFilter;
-// use Bitrix\Main\UI\Extension;
 use Trusted\CryptoARM\Docs;
 
 Loader::includeModule("trusted.cryptoarmdocs");
 
-$editUrlTemplate = $arResult['SEF_FOLDER'] . $arResult['SEF_URL_TEMPLATES']['edit'];
+$APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_WF_LIST_TITLE'));
+
+// bizproc.workflow.list expects variable #ID#
+$editUrlTemplate = str_replace(
+    '#WF_ID#',
+    '#ID#',
+    $arResult['SEF_FOLDER'] . $arResult['SEF_URL_TEMPLATES']['wf_edit']
+);
 $urlTemplates = array(
     'EDIT' => $editUrlTemplate,
     'EDIT_STATEMACHINE' => $editUrlTemplate . '?init=statemachine',
-    'LIST' => $arResult['SEF_FOLDER'],
+    'LIST' => $arResult['SEF_FOLDER'] . $arResult['SEF_URL_TEMPLATES']['wf_list'],
 );
-
-// Extension::load('ui.buttons');
 
 $APPLICATION->IncludeComponent(
     'bitrix:main.interface.toolbar',
@@ -59,3 +62,4 @@ $APPLICATION->IncludeComponent(
         'TARGET_MODULE_ID' => 'trusted.cryptoarmdocs',
     )
 );
+
