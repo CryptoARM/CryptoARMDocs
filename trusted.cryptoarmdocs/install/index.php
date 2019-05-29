@@ -148,6 +148,14 @@ Class trusted_cryptoarmdocs extends CModule
                     'PATH' => '/trusted_ca_docs/wf/index.php',
                 )
             );
+            CUrlRewriter::Add(
+                array(
+                    'CONDITION' => '#^/trusted_ca_docs/#',
+                    'RULE' => '',
+                    'ID' => 'trusted:cryptoarm_docs_crm_personal',
+                    'PATH' => '/trusted_ca_docs/index.php',
+                )
+            );
         }
         return true;
     }
@@ -376,6 +384,12 @@ Class trusted_cryptoarmdocs extends CModule
                 array(
                     'ID' => 'trusted:cryptoarm_docs_wf',
                     'PATH' => '/trusted_ca_docs/wf/index.php',
+                )
+            );
+            CUrlRewriter::Delete(
+                array(
+                    'ID' => 'trusted:cryptoarm_docs_crm_personal',
+                    'PATH' => '/trusted_ca_docs/index.php',
                 )
             );
         }
