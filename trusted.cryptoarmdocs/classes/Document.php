@@ -565,6 +565,9 @@ class Document implements IEntity, ISave
     function getSignaturesToArray()
     {
         $signatures = json_decode($this->signatures, true);
+        if (!is_array($signatures)) {
+            return array();
+        }
         foreach ($signatures as $index => $signature) {
             $subjectName = explode('/', $signature['subjectName']);
             $newSubjectName = array();
@@ -596,6 +599,9 @@ class Document implements IEntity, ISave
     function getSignaturesToTable()
     {
         $signatures = $this->getSignaturesToArray();
+        if (!is_array($signatures)) {
+            return array();
+        }
 
         $signaturesString = '<table width=100%>';
 

@@ -16,12 +16,12 @@ class TrustedCACrmComponent extends CBitrixComponent
     public function executeComponent() {
 
         if (empty($this->arParams['SEF_MODE']) || $this->arParams['SEF_MODE'] != 'Y') {
-            ShowError(Loc::getMessage('TR_CA_DOCS_CRM_SEF_NOT_ENABLED'));
+            ShowError('SEF not enabled');
             return;
         }
 
         if (empty($this->arParams['SEF_FOLDER'])) {
-            ShowError(Loc::getMessage('TR_CA_DOCS_CRM_SEF_BASE_EMPTY'));
+            ShowError('SEF folder is empty');
             return;
         }
 

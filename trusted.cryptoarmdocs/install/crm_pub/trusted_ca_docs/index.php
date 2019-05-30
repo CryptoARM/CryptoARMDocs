@@ -8,11 +8,6 @@ $APPLICATION->IncludeComponent(
     array(
         'SEF_MODE' => 'Y',
         'SEF_FOLDER' => '/trusted_ca_docs/',
-        // 'SEF_URL_TEMPLATES' => array(
-        //     'list' => '',
-        //     'detail' => '#ID#/',
-        //     'detail' => '#ID#/',
-        // ),
     ),
     false
 );
