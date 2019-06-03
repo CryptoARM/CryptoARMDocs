@@ -3,6 +3,9 @@ defined('B_PROLOG_INCLUDED') || die;
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Trusted\CryptoARM\Docs;
+
+Loader::includeModule('trusted.cryptoarmdocs');
 
 class TrustedCACrmComponent extends CBitrixComponent
 {
@@ -12,8 +15,8 @@ class TrustedCACrmComponent extends CBitrixComponent
         'list' => '',
     );
 
-    public function executeComponent() {
 
+    public function executeComponent() {
         if (empty($this->arParams['SEF_MODE']) || $this->arParams['SEF_MODE'] != 'Y') {
             ShowError('SEF not enabled');
             return;
@@ -44,9 +47,18 @@ class TrustedCACrmComponent extends CBitrixComponent
             'SEF_FOLDER' => $this->arParams['SEF_FOLDER'],
             'SEF_URL_TEMPLATES' => $sefTemplates,
             'VARIABLES' => $arVariables,
+            'WORKFLOW_TEMPLATES' => $this->getWorkflowTemplates(),
         );
 
         $this->includeComponentTemplate($page);
+    }
+
+
+    private function getWorkflowTemplates() {
+        if (!Loader::includeModule('bizproc')) {
+            return null;
+        }
+        return CBPDocument::GetWorkflowTemplatesForDocumentType(Docs\WorkflowDocument::getComplexDocumentType());
     }
 
 }

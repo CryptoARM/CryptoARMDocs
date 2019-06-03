@@ -6,8 +6,10 @@ use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 use Bitrix\Main\UI;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Web\Json;
 
 Loader::includeModule('trusted.cryptoarmdocs');
+CJSCore::Init('bp_starter');
 
 UI\Extension::load("ui.buttons.icons");
 
@@ -90,6 +92,37 @@ foreach ($docs->getList() as $doc) {
             'default' => true,
         );
     }
+
+    if (!empty($arResult['WORKFLOW_TEMPLATES'])) {
+        $startWorkflowActions = array();
+        foreach ($arResult['WORKFLOW_TEMPLATES'] as $workflowTemplate) {
+            $starterParams = array(
+                'moduleId' => TR_CA_DOCS_MODULE_ID,
+                'entity' => Docs\WorkflowDocument::class,
+                'documentType' => 'TR_CA_DOC',
+                'documentId' => $docId,
+                'templateId' => $workflowTemplate['ID'],
+                'templateName' => $workflowTemplate['NAME'],
+                'hasParameters' => $workflowTemplate['HAS_PARAMETERS']
+            );
+            $startWorkflowActions[] = array(
+                'TITLE' => $workflowTemplate['DESCRIPTION'],
+                'TEXT' => $workflowTemplate['NAME'],
+                'ONCLICK' => sprintf(
+                    'BX.Bizproc.Starter.singleStart(%s, %s)',
+                    Json::encode($starterParams),
+                    $gridBuilder->reloadGridJs
+                )
+            );
+        }
+        // $actions[] = array('SEPARATOR' => true);
+        $actions[] = array(
+            'TITLE' => Loc::getMessage('TR_CA_DOCS_CRM_START_WORKFLOW'),
+            'TEXT' => Loc::getMessage('TR_CA_DOCS_CRM_START_WORKFLOW'),
+            'MENU' => $startWorkflowActions
+        );
+    }
+
     $actions[] = array(
         'text' => Loc::getMessage('TR_CA_DOCS_ACT_REMOVE'),
         'onclick' => "trustedCA.remove([$docId], false, {$gridBuilder->reloadGridJs})",
