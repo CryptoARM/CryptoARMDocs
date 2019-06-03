@@ -88,11 +88,6 @@ foreach ($docs->getList() as $doc) {
         );
     }
     $actions[] = array(
-        'text' => Loc::getMessage('TR_CA_DOCS_CRM_ACT_DOC_PAGE'),
-        'onclick' => "window.location.href='$docId/'",
-        'default' => false,
-    );
-    $actions[] = array(
         'text' => Loc::getMessage('TR_CA_DOCS_ACT_REMOVE'),
         'onclick' => "trustedCA.remove([$docId], false, {$gridBuilder->reloadGridJs})",
         'default' => false,

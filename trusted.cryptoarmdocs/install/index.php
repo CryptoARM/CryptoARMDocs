@@ -162,28 +162,20 @@ Class trusted_cryptoarmdocs extends CModule
 
     function InstallModuleOptions()
     {
-        if (!Option::get("trusted.cryptoarmdocs", "DOCUMENTS_DIR", "")) {
-            Option::set("trusted.cryptoarmdocs", "DOCUMENTS_DIR", "/docs/");
-        }
-        if (!Option::get("trusted.cryptoarmdocs", "MAIL_EVENT_ID", "")) {
-            Option::set("trusted.cryptoarmdocs", "MAIL_EVENT_ID", "TR_CA_DOCS_MAIL_BY_ORDER");
-        }
-        if (!Option::get("trusted.cryptoarmdocs", "MAIL_EVENT_ID_TO", "")) {
-            Option::set("trusted.cryptoarmdocs", "MAIL_EVENT_ID_TO", "TR_CA_DOCS_MAIL_TO");
-        }
-        if (!Option::get("trusted.cryptoarmdocs", "MAIL_EVENT_ID_SHARE", "")) {
-            Option::set("trusted.cryptoarmdocs", "MAIL_EVENT_ID_SHARE", "TR_CA_DOCS_MAIL_SHARE");
+        $options = array(
+            'DOCUMENTS_DIR' => '/docs/',
+            'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
+            'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
+            'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
+        );
+        foreach ($options as $name => $value) {
+            if (!Option::get($this->MODULE_ID, $name, '')) {
+                Option::set($this->MODULE_ID, $name, $value);
+            }
         }
     }
 
     function InstallDB()
-    {
-        global $DB;
-        $this->createTableDocument();
-        $this->createTableDocumentProps();
-    }
-
-    function createTableDocument()
     {
         global $DB;
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs` (
@@ -206,11 +198,7 @@ Class trusted_cryptoarmdocs extends CModule
                 KEY `fk_tr_ca_docs_tr_ca_docs1_idx` (`PARENT_ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $DB->Query($sql);
-    }
 
-    function createTableDocumentProps()
-    {
-        global $DB;
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_property` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
                     `DOCUMENT_ID` int(11) DEFAULT NULL,
@@ -357,7 +345,6 @@ Class trusted_cryptoarmdocs extends CModule
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm.detail/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
@@ -384,49 +371,28 @@ Class trusted_cryptoarmdocs extends CModule
 
     function UnInstallModuleOptions()
     {
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_EVENT_ID")
+        $options = array(
+            // 'DOCUMENTS_DIR',
+            'MAIL_EVENT_ID',
+            'MAIL_TEMPLATE_ID',
+            'MAIL_EVENT_ID_TO',
+            'MAIL_TEMPLATE_ID_TO',
+            'MAIL_EVENT_ID_SHARE',
+            'MAIL_TEMPLATE_ID_SHARE',
         );
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_TEMPLATE_ID")
-        );
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_EVENT_ID_TO")
-        );
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_TEMPLATE_ID_TO")
-        );
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_EVENT_ID_SHARE")
-        );
-        Option::delete(
-            "trusted.cryptoarmdocs",
-            array("name" => "MAIL_TEMPLATE_ID_SHARE")
-        );
+        foreach ($options as $options) {
+            Option::delete(
+                $this->MODULE_ID,
+                array('name' => $option)
+            );
+        }
     }
 
     function UnInstallDB()
     {
         global $DB;
-        $this->dropTableDocument();
-        $this->dropTableDocumentProps();
-    }
-
-    function dropTableDocument()
-    {
-        global $DB;
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs`";
         $DB->Query($sql);
-    }
-
-    function dropTableDocumentProps()
-    {
-        global $DB;
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs_property`";
         $DB->Query($sql);
     }
@@ -445,45 +411,24 @@ Class trusted_cryptoarmdocs extends CModule
 
     function UnInstallMailEvents()
     {
-        $this->UnInstallMailEventByOrder();
-        $this->UnInstallMailEventTo();
-        $this->UnInstallMailEventShare();
-    }
-
-    function UnInstallMailEventByOrder() {
-        $by = "id";
-        $order = "desc";
-        $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TR_CA_DOCS_MAIL_BY_ORDER"));
-        $eventMessage = new CEventMessage;
-        while ($template = $eventMessages->Fetch()) {
-            $eventMessage->Delete((int)$template["ID"]);
+        $events = array(
+            'TR_CA_DOCS_MAIL_BY_ORDER',
+            'TR_CA_DOCS_MAIL_TO',
+            'TR_CA_DOCS_MAIL_SHARE',
+        );
+        foreach ($events as $event) {
+            $eventMessages = CEventMessage::GetList(
+                $by = 'id',
+                $order = 'desc',
+                array('TYPE' => $event)
+            );
+            $eventMessage = new CEventMessage;
+            while ($template = $eventMessages->Fetch()) {
+                $eventMessage->Delete((int)$template['ID']);
+            }
+            $eventType = new CEventType;
+            $eventType->Delete($event);
         }
-        $obEventType = new CEventType;
-        $obEventType->Delete("TR_CA_DOCS_MAIL_BY_ORDER");
-    }
-
-    function UnInstallMailEventTo() {
-        $by = "id";
-        $order = "desc";
-        $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TR_CA_DOCS_MAIL_TO"));
-        $eventMessage = new CEventMessage;
-        while ($template = $eventMessages->Fetch()) {
-            $eventMessage->Delete((int)$template["ID"]);
-        }
-        $obEventType = new CEventType;
-        $obEventType->Delete("TR_CA_DOCS_MAIL_TO");
-    }
-
-    function UnInstallMailEventShare() {
-        $by = "id";
-        $order = "desc";
-        $eventMessages = CEventMessage::GetList($by, $order, array("TYPE" => "TR_CA_DOCS_MAIL_SHARE"));
-        $eventMessage = new CEventMessage;
-        while ($template = $eventMessages->Fetch()) {
-            $eventMessage->Delete((int)$template["ID"]);
-        }
-        $obEventType = new CEventType;
-        $obEventType->Delete("TR_CA_DOCS_MAIL_SHARE");
     }
 
     function dropDocumentChain($id)

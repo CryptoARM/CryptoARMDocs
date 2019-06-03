@@ -10,7 +10,6 @@ class TrustedCACrmComponent extends CBitrixComponent
         'wf_list' => 'wf/',
         'wf_edit' => 'wf/#WF_ID#',
         'list' => '',
-        'detail' => '#ID#/',
     );
 
     public function executeComponent() {
