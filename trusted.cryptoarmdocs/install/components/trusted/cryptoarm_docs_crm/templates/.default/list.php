@@ -92,12 +92,19 @@ foreach ($docs->getList() as $doc) {
         'onclick' => "window.location.href='$docId/'",
         'default' => false,
     );
+    $actions[] = array(
+        'text' => Loc::getMessage('TR_CA_DOCS_ACT_REMOVE'),
+        'onclick' => "trustedCA.remove([$docId], false, {$gridBuilder->reloadGridJs})",
+        'default' => false,
+    );
 
+    $downloadJs = "trustedCA.download([$docId], true)";
+    $docName = "<a style='cursor:pointer;' onclick='$downloadJs' title='" . Loc::getMessage('TR_CA_DOCS_DOWNLOAD_DOC') . "'>{$doc->getName()}</a>";
     $rows[] = array(
         'id' => $docId,
         'columns' => array(
             'ID' => $docId,
-            'NAME' => $doc->getName(),
+            'NAME' => $docName,
             'SIGNATURES' => $doc->getSignaturesToTable(),
             'STATUS' => $docStatusString,
         ),
