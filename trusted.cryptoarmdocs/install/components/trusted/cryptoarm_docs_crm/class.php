@@ -49,7 +49,5 @@ class TrustedCACrmComponent extends CBitrixComponent
         $this->includeComponentTemplate($page);
     }
 
-
-
 }
 
