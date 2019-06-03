@@ -4,9 +4,12 @@ defined('B_PROLOG_INCLUDED') || die;
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
+use Bitrix\Main\UI;
 use Bitrix\Main\Localization\Loc;
 
 Loader::includeModule('trusted.cryptoarmdocs');
+
+UI\Extension::load("ui.buttons.icons");
 
 $APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_CRM_LIST_TITLE'));
 
