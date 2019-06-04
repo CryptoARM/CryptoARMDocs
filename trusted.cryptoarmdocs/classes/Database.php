@@ -1,5 +1,6 @@
 <?php
 namespace Trusted\CryptoARM\Docs;
+use Bitrix\Main\Loader;
 
 /**
  * DB interaction class.
@@ -159,6 +160,7 @@ class Database
 
     /**
      * Removes document and all of its parents from DB.
+     * Also cleans up any workflows, associated with the document.
      * @global object $DB Bitrix global CDatabase object
      * @param Document $doc Document to be removed
      * @return void
@@ -169,6 +171,12 @@ class Database
         $parent = null;
         if ($doc->getParent()) {
             $parent = $doc->getParent();
+        }
+        if (Loader::includeModule('bizproc')) {
+            \CBPDocument::OnDocumentDelete(
+                WorkflowDocument::getComplexDocumentId($doc->getId()),
+                $errors = array()
+            );
         }
         Database::removeDocument($doc);
         if ($parent) {
