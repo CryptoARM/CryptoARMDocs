@@ -408,8 +408,8 @@ class CBPTrustedCASign
             }
 
             $docId = $arTask["DOCUMENT_ID"];
-            $doc = Docs\Database::getDocumentById($docId);
-            $lastDocId = $doc->getLastDocument()->getId();
+            $doc = Docs\Database::getDocumentById($docId)->getLastDocument();
+            $lastDocId = $doc->getId();
 
             echo "<script>";
             // echo "$('button[name=review]').css({visibility: 'hidden', width: '0px', padding: '0px', margin: '0px'});";
