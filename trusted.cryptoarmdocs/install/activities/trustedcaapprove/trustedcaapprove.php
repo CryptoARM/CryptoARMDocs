@@ -6,7 +6,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 Loader::includeModule('trusted.cryptoarmdocs');
 
-class CBPTrustedCASign
+class CBPTrustedCAApprove
     extends CBPCompositeActivity
     implements IBPEventActivity, IBPActivityExternalEventListener
 {
@@ -17,8 +17,8 @@ class CBPTrustedCASign
     private $isInEventActivityMode = false;
     private $taskStatus = false;
 
-    private $arReviewResults = array();
-    private $arReviewOriginalResults = array();
+    private $arApproveResults = array();
+    private $arApproveOriginalResults = array();
 
     public function __construct($name)
     {
@@ -27,26 +27,39 @@ class CBPTrustedCASign
             "Title" => "",
             "Users" => null,
             "ApproveType" => "all",
+            "Percent" => 100,
             "OverdueDate" => null,
             "Name" => null,
             "Description" => null,
             "Parameters" => null,
-            "ReviewedCount" => 0,
+            "ApproveMinPercent" => 50,
+            "ApproveWaitForAll" => "N",
+            "TaskId" => 0,
+            "Comments" => "",
+            "VotedCount" => 0,
             "TotalCount" => 0,
+            "VotedPercent" => 0,
+            "ApprovedPercent" => 0,
+            "NotApprovedPercent" => 0,
+            "ApprovedCount" => 0,
+            "NotApprovedCount" => 0,
             "StatusMessage" => "",
             "SetStatusMessage" => "Y",
-            "TaskButtonMessage" => "",
+            "LastApprover" => null,
+            "LastApproverComment" => '',
+            "Approvers" => "",
+            "Rejecters" => "",
+            "UserApprovers" => [],
+            "UserRejecters" => [],
             "TimeoutDuration" => 0,
             "TimeoutDurationType" => "s",
             "IsTimeout" => 0,
-            "TaskId" => 0,
-            "Comments" => "",
+            "TaskButton1Message" => "",
+            "TaskButton2Message" => "",
             "CommentLabelMessage" => "",
             "ShowComment" => "Y",
             'CommentRequired' => 'N',
             'AccessControl' => 'N',
-            "LastReviewer" => null,
-            "LastReviewerComment" => '',
             'DelegationType' => 0,
         );
 
@@ -55,36 +68,51 @@ class CBPTrustedCASign
             'Comments' => array(
                 'Type' => 'string',
             ),
-            'ReviewedCount' => array(
+            'VotedCount' => array(
                 'Type' => 'int',
             ),
             'TotalCount' => array(
                 'Type' => 'int',
             ),
+            'VotedPercent' => array(
+                'Type' => 'int',
+            ),
+            'ApprovedPercent' => array(
+                'Type' => 'int',
+            ),
+            'NotApprovedPercent' => array(
+                'Type' => 'int',
+            ),
+            'ApprovedCount' => array(
+                'Type' => 'int',
+            ),
+            'NotApprovedCount' => array(
+                'Type' => 'int',
+            ),
+            'LastApprover' => array(
+                'Type' => 'user',
+            ),
+            'LastApproverComment' => array(
+                'Type' => 'string',
+            ),
+            'Approvers' => array(
+                'Type' => 'string',
+            ),
+            'Rejecters' => array(
+                'Type' => 'string',
+            ),
+            'UserApprovers' => array(
+                'Type' => 'user',
+                'Multiple' => true
+            ),
+            'UserRejecters' => array(
+                'Type' => 'user',
+                'Multiple' => true
+            ),
             'IsTimeout' => array(
                 'Type' => 'int',
             ),
-            'LastReviewer' => array(
-                'Type' => 'user',
-            ),
-            'LastReviewerComment' => array(
-                'Type' => 'string',
-            ),
         ));
-    }
-
-    protected function ReInitialize()
-    {
-        parent::ReInitialize();
-
-        $this->TaskId = 0;
-        $this->arReviewResults = array();
-        $this->arReviewOriginalResults = array();
-        $this->ReviewedCount = 0;
-        $this->Comments = '';
-        $this->IsTimeout = 0;
-        $this->LastReviewer = null;
-        $this->LastReviewerComment = '';
     }
 
     public function Execute()
@@ -115,7 +143,12 @@ class CBPTrustedCASign
         if (!is_array($arUsersTmp))
             $arUsersTmp = array($arUsersTmp);
 
-        $this->WriteToTrackingService(str_replace("#VAL#", "{=user:".implode("}, {=user:", $arUsersTmp)."}", GetMessage("BPAR_ACT_TRACK2")));
+        if ($this->ApproveType == "any")
+            $this->WriteToTrackingService(str_replace("#VAL#", "{=user:".implode("}, {=user:", $arUsersTmp)."}", GetMessage("BPAA_ACT_TRACK1")));
+        elseif ($this->ApproveType == "all")
+            $this->WriteToTrackingService(str_replace("#VAL#", "{=user:".implode("}, {=user:", $arUsersTmp)."}", GetMessage("BPAA_ACT_TRACK2")));
+        elseif ($this->ApproveType == "vote")
+            $this->WriteToTrackingService(str_replace("#VAL#", "{=user:".implode("}, {=user:", $arUsersTmp)."}", GetMessage("BPAA_ACT_TRACK3")));
 
         $arUsers = CBPHelper::ExtractUsers($arUsersTmp, $documentId, false);
 
@@ -124,12 +157,15 @@ class CBPTrustedCASign
             $arParameters = array($arParameters);
         $arParameters["DOCUMENT_ID"] = $documentId;
         $arParameters["DOCUMENT_URL"] = $documentService->GetDocumentAdminPage($documentId);
-        $arParameters["TaskButtonMessage"] = $this->IsPropertyExists("TaskButtonMessage") ? $this->TaskButtonMessage : GetMessage("BPAR_ACT_BUTTON2");
-        if (strlen($arParameters["TaskButtonMessage"]) <= 0)
-            $arParameters["TaskButtonMessage"] = GetMessage("BPAR_ACT_BUTTON2");
-        $arParameters["CommentLabelMessage"] = $this->IsPropertyExists("CommentLabelMessage") ? $this->CommentLabelMessage : GetMessage("BPAR_ACT_COMMENT");
+        $arParameters["TaskButton1Message"] = $this->IsPropertyExists("TaskButton1Message") ? $this->TaskButton1Message : GetMessage("BPAA_ACT_BUTTON1");
+        if (strlen($arParameters["TaskButton1Message"]) <= 0)
+            $arParameters["TaskButton1Message"] = GetMessage("BPAA_ACT_BUTTON1");
+        $arParameters["TaskButton2Message"] = $this->IsPropertyExists("TaskButton2Message") ? $this->TaskButton2Message : GetMessage("BPAA_ACT_BUTTON2");
+        if (strlen($arParameters["TaskButton2Message"]) <= 0)
+            $arParameters["TaskButton2Message"] = GetMessage("BPAA_ACT_BUTTON2");
+        $arParameters["CommentLabelMessage"] = $this->IsPropertyExists("CommentLabelMessage") ? $this->CommentLabelMessage : GetMessage("BPAA_ACT_COMMENT");
         if (strlen($arParameters["CommentLabelMessage"]) <= 0)
-            $arParameters["CommentLabelMessage"] = GetMessage("BPAR_ACT_COMMENT");
+            $arParameters["CommentLabelMessage"] = GetMessage("BPAA_ACT_COMMENT");
         $arParameters["ShowComment"] = $this->IsPropertyExists("ShowComment") ? $this->ShowComment : "Y";
         if ($arParameters["ShowComment"] != "Y" && $arParameters["ShowComment"] != "N")
             $arParameters["ShowComment"] = "Y";
@@ -150,7 +186,7 @@ class CBPTrustedCASign
             array(
                 "USERS" => $arUsers,
                 "WORKFLOW_ID" => $this->GetWorkflowInstanceId(),
-                "ACTIVITY" => "TrustedCASign",
+                "ACTIVITY" => "TrustedCAApprove",
                 "ACTIVITY_NAME" => $this->name,
                 "OVERDUE_DATE" => $overdueDate,
                 "NAME" => $this->Name,
@@ -168,10 +204,10 @@ class CBPTrustedCASign
         if (!$this->IsPropertyExists("SetStatusMessage") || $this->SetStatusMessage == "Y")
         {
             $totalCount = $this->TotalCount;
-            $message = ($this->IsPropertyExists("StatusMessage") && strlen($this->StatusMessage) > 0) ? $this->StatusMessage : GetMessage("BPAR_ACT_INFO");
+            $message = ($this->IsPropertyExists("StatusMessage") && strlen($this->StatusMessage) > 0) ? $this->StatusMessage : GetMessage("BPAA_ACT_INFO");
             $this->SetStatusTitle(str_replace(
-                array("#PERC#", "#PERCENT#", "#REV#", "#REVIEWED#", "#TOT#", "#TOTAL#", "#REVIEWERS#"),
-                array(0, 0, 0, 0, $totalCount, $totalCount, ""),
+                array("#PERC#", "#PERCENT#", "#REV#", "#VOTED#", "#TOT#", "#TOTAL#", "#APPROVERS#", "#REJECTERS#"),
+                array(0, 0, 0, 0, $totalCount, $totalCount, GetMessage("BPAA_ACT_APPROVERS_NONE"), GetMessage("BPAA_ACT_APPROVERS_NONE")),
                 $message
             ));
         }
@@ -250,7 +286,53 @@ class CBPTrustedCASign
         if (!$this->isInEventActivityMode && $this->taskId > 0)
             $this->Unsubscribe($this);
 
+        for ($i = count($this->arActivities) - 1; $i >= 0; $i--)
+        {
+            $activity = $this->arActivities[$i];
+            if ($activity->executionStatus == CBPActivityExecutionStatus::Executing)
+            {
+                $this->workflow->CancelActivity($activity);
+                return CBPActivityExecutionStatus::Canceling;
+            }
+
+            if (($activity->executionStatus == CBPActivityExecutionStatus::Canceling)
+                || ($activity->executionStatus == CBPActivityExecutionStatus::Faulting))
+                return CBPActivityExecutionStatus::Canceling;
+
+            if ($activity->executionStatus == CBPActivityExecutionStatus::Closed)
+                return CBPActivityExecutionStatus::Closed;
+        }
         return CBPActivityExecutionStatus::Closed;
+    }
+
+    protected function ExecuteOnApprove()
+    {
+        if (count($this->arActivities) <= 0)
+        {
+            $this->workflow->CloseActivity($this);
+            return;
+        }
+
+        $this->WriteToTrackingService(GetMessage("BPAA_ACT_APPROVE"));
+
+        $activity = $this->arActivities[0];
+        $activity->AddStatusChangeHandler(self::ClosedEvent, $this);
+        $this->workflow->ExecuteActivity($activity);
+    }
+
+    protected function ExecuteOnNonApprove()
+    {
+        if (count($this->arActivities) <= 1)
+        {
+            $this->workflow->CloseActivity($this);
+            return;
+        }
+
+        $this->WriteToTrackingService(GetMessage("BPAA_ACT_NONAPPROVE"));
+
+        $activity = $this->arActivities[1];
+        $activity->AddStatusChangeHandler(self::ClosedEvent, $this);
+        $this->workflow->ExecuteActivity($activity);
     }
 
     public function OnExternalEvent($arEventParameters = array())
@@ -266,16 +348,21 @@ class CBPTrustedCASign
                 $this->IsTimeout = 1;
                 $this->taskStatus = CBPTaskStatus::Timeout;
                 $this->Unsubscribe($this);
-                $this->workflow->CloseActivity($this);
+                $this->writeApproversResult();
+                $this->ExecuteOnNonApprove();
                 return;
             }
         }
 
         if (!array_key_exists("USER_ID", $arEventParameters) || intval($arEventParameters["USER_ID"]) <= 0)
             return;
+        if (!array_key_exists("APPROVE", $arEventParameters))
+            return;
 
         if (empty($arEventParameters["REAL_USER_ID"]))
             $arEventParameters["REAL_USER_ID"] = $arEventParameters["USER_ID"];
+
+        $approve = ($arEventParameters["APPROVE"] ? true : false);
 
         $arUsers = $this->taskUsers;
         if (empty($arUsers)) //compatibility
@@ -286,92 +373,147 @@ class CBPTrustedCASign
         if (!in_array($arEventParameters["USER_ID"], $arUsers))
             return;
 
-        if ($this->IsPropertyExists("LastReviewer"))
-            $this->LastReviewer = "user_".$arEventParameters["REAL_USER_ID"];
-        if ($this->IsPropertyExists("LastReviewerComment"))
-            $this->LastReviewerComment = (string)$arEventParameters["COMMENT"];
+        if ($this->IsPropertyExists("LastApprover"))
+            $this->LastApprover = "user_".$arEventParameters["REAL_USER_ID"];
+        if ($this->IsPropertyExists("LastApproverComment"))
+            $this->LastApproverComment = (string)$arEventParameters["COMMENT"];
 
         $taskService = $this->workflow->GetService("TaskService");
-        $taskService->MarkCompleted($this->taskId, $arEventParameters["REAL_USER_ID"], CBPTaskUserStatus::Ok);
+        $taskService->MarkCompleted($this->taskId, $arEventParameters["REAL_USER_ID"], $approve? CBPTaskUserStatus::Yes : CBPTaskUserStatus::No);
 
         $dbUser = CUser::GetById($arEventParameters["REAL_USER_ID"]);
-        if ($arUser = $dbUser->Fetch())
+        if($arUser = $dbUser->Fetch())
             $this->Comments = $this->Comments.
-                CUser::FormatName(COption::GetOptionString("bizproc", "name_template", CSite::GetNameFormat(false), SITE_ID), $arUser)." (".$arUser["LOGIN"].")".
-                ((strlen($arEventParameters["COMMENT"]) > 0) ? ": " : "").$arEventParameters["COMMENT"]."\n";
+                CUser::FormatName(COption::GetOptionString("bizproc", "name_template", CSite::GetNameFormat(false), SITE_ID), $arUser)." (".$arUser["LOGIN"]."): ".($approve?GetMessage("BPAA_LOG_Y"):GetMessage("BPAA_LOG_N"))."\n".
+                (strlen($arEventParameters["COMMENT"]) > 0 ? GetMessage("BPAA_LOG_COMMENTS").": ".$arEventParameters["COMMENT"] : "")."\n";
 
         $this->WriteToTrackingService(
-                str_replace(
-                    array("#PERSON#", "#COMMENT#"),
-                    array("{=user:user_".$arEventParameters["REAL_USER_ID"]."}", (strlen($arEventParameters["COMMENT"]) > 0 ? ": ".$arEventParameters["COMMENT"] : "")),
-                    GetMessage("BPAR_ACT_REVIEW_TRACK")
-                ),
-                $arEventParameters["REAL_USER_ID"]
-            );
+            str_replace(
+                array("#PERSON#", "#COMMENT#"),
+                array("{=user:user_".$arEventParameters["REAL_USER_ID"]."}", (strlen($arEventParameters["COMMENT"]) > 0 ? ": ".$arEventParameters["COMMENT"] : "")),
+                GetMessage($approve ? "BPAA_ACT_APPROVE_TRACK" : "BPAA_ACT_NONAPPROVE_TRACK")
+            ),
+            $arEventParameters["REAL_USER_ID"]
+        );
 
         $result = "Continue";
 
-        $this->arReviewOriginalResults[] = $arEventParameters["USER_ID"];
-        $this->arReviewResults[] = $arEventParameters["REAL_USER_ID"];
-        $this->ReviewedCount = count($this->arReviewResults);
+        $this->arApproveOriginalResults[$arEventParameters["USER_ID"]] = $approve;
+        $this->arApproveResults[$arEventParameters["REAL_USER_ID"]] = $approve;
 
-        if ($this->IsPropertyExists("ApproveType") && $this->ApproveType == "any")
-        {
-            $result = "Finish";
-        }
+        if($approve)
+            $this->ApprovedCount = $this->ApprovedCount + 1;
         else
-        {
-            $allAproved = true;
-            foreach ($arUsers as $userId)
-            {
-                if (!in_array($userId, $this->arReviewOriginalResults))
-                    $allAproved = false;
-            }
+            $this->NotApprovedCount = $this->NotApprovedCount + 1;
 
-            if ($allAproved)
-                $result = "Finish";
+        $this->VotedCount = count($this->arApproveResults);
+        $this->VotedPercent = intval($this->VotedCount/$this->TotalCount*100);
+        $this->ApprovedPercent = intval($this->ApprovedCount/$this->TotalCount*100);
+        $this->NotApprovedPercent = intval($this->NotApprovedCount/$this->TotalCount*100);
+
+        if ($this->ApproveType == "any")
+        {
+            $result = ($approve ? "Approve" : "NonApprove");
+        }
+        elseif ($this->ApproveType == "all")
+        {
+            if (!$approve)
+            {
+                $result = "NonApprove";
+            }
+            else
+            {
+                $allAproved = true;
+                foreach ($arUsers as $userId)
+                {
+                    if (!isset($this->arApproveOriginalResults[$userId]))
+                        $allAproved = false;
+                }
+
+                if ($allAproved)
+                    $result = "Approve";
+            }
+        }
+        elseif ($this->ApproveType == "vote")
+        {
+            if($this->ApproveWaitForAll == "Y")
+            {
+                if($this->VotedPercent==100)
+                {
+                    if ($this->ApprovedPercent > $this->ApproveMinPercent || $this->ApprovedPercent == 100 && $this->ApproveMinPercent == 100)
+                        $result = "Approve";
+                    else
+                        $result = "NonApprove";
+                }
+            }
+            else
+            {
+                $noneApprovedPercent = ($this->VotedCount-$this->ApprovedCount)/$this->TotalCount*100;
+                if ($this->ApprovedPercent > $this->ApproveMinPercent || $this->ApprovedPercent == 100 && $this->ApproveMinPercent == 100)
+                    $result = "Approve";
+                elseif($noneApprovedPercent > 0 && $noneApprovedPercent >= 100 - $this->ApproveMinPercent)
+                    $result = "NonApprove";
+            }
         }
 
+        $approvers = "";
+        $rejecters = "";
         if (!$this->IsPropertyExists("SetStatusMessage") || $this->SetStatusMessage == "Y")
         {
-            $messageTemplate = ($this->IsPropertyExists("StatusMessage") && strlen($this->StatusMessage) > 0) ? $this->StatusMessage : GetMessage("BPAR_ACT_INFO");
-            $votedPercent = intval($this->ReviewedCount / $this->TotalCount * 100);
-            $votedCount = $this->ReviewedCount;
+            $messageTemplate = ($this->IsPropertyExists("StatusMessage") && strlen($this->StatusMessage) > 0) ? $this->StatusMessage : GetMessage("BPAA_ACT_INFO");
+            $votedPercent = $this->VotedPercent;
+            $votedCount = $this->VotedCount;
             $totalCount = $this->TotalCount;
 
-            $reviewers = "";
-            if (strpos($messageTemplate, "#REVIEWERS#") !== false)
-                $reviewers = $this->GetReviewersNames();
-            if ($reviewers == "")
-                $reviewers = GetMessage("BPAA_ACT_APPROVERS_NONE");
+            if (strpos($messageTemplate, "#REJECTERS#") !== false)
+                $rejecters = $this->GetApproversNames(false);
+            if (strpos($messageTemplate, "#APPROVERS#") !== false)
+                $approvers = $this->GetApproversNames(true);
+
+            $approversTmp = $approvers;
+            $rejectersTmp = $rejecters;
+            if ($approversTmp == "")
+                $approversTmp = GetMessage("BPAA_ACT_APPROVERS_NONE");
+            if ($rejectersTmp == "")
+                $rejectersTmp = GetMessage("BPAA_ACT_APPROVERS_NONE");
 
             $this->SetStatusTitle(str_replace(
-                array("#PERC#", "#PERCENT#", "#REV#", "#REVIEWED#", "#TOT#", "#TOTAL#", "#REVIEWERS#"),
-                array($votedPercent, $votedPercent, $votedCount, $votedCount, $totalCount, $totalCount, $reviewers),
+                array("#PERC#", "#PERCENT#", "#REV#", "#VOTED#", "#TOT#", "#TOTAL#", "#APPROVERS#", "#REJECTERS#"),
+                array($votedPercent, $votedPercent, $votedCount, $votedCount, $totalCount, $totalCount, $approversTmp, $rejectersTmp),
                 $messageTemplate
             ));
         }
 
         if ($result != "Continue")
         {
-            $this->WriteToTrackingService(GetMessage("BPAR_ACT_REVIEWED"));
-
-            $this->taskStatus = CBPTaskStatus::CompleteOk;
+            $this->taskStatus = $result == "Approve"? CBPTaskStatus::CompleteYes : CBPTaskStatus::CompleteNo;
             $this->Unsubscribe($this);
-            $this->workflow->CloseActivity($this);
+            $this->writeApproversResult();
+
+            if ($result == "Approve")
+                $this->ExecuteOnApprove();
+            else
+                $this->ExecuteOnNonApprove();
         }
     }
 
-    private function GetReviewersNames()
+    private function GetApproversNames($b)
     {
         $result = "";
 
-        if (count($this->arReviewResults) > 0)
+        $ar = array();
+        foreach ($this->arApproveResults as $k => $v)
+        {
+            if ($b && $v || !$b && !$v)
+                $ar[] = $k;
+        }
+
+        if (count($ar) > 0)
         {
             $dbUsers = CUser::GetList(
                 ($b = ""),
                 ($o = ""),
-                array("ID" => implode('|', $this->arReviewResults)),
+                array("ID" => implode('|', $ar)),
                 array('FIELDS' => array('ID', 'LOGIN', 'NAME', 'LAST_NAME', 'SECOND_NAME', 'TITLE'))
             );
             while ($arUser = $dbUsers->Fetch())
@@ -387,10 +529,58 @@ class CBPTrustedCASign
         return $result;
     }
 
+    private function writeApproversResult()
+    {
+        $this->Rejecters = $this->GetApproversNames(false);
+        $this->Approvers = $this->GetApproversNames(true);
+
+        $approvers = $rejecters = [];
+
+        foreach ($this->arApproveResults as $userId => $vote)
+        {
+            $user = 'user_'.$userId;
+
+            if ($vote)
+            {
+                $approvers[] = $user;
+            }
+            else
+            {
+                $rejecters[] = $user;
+            }
+        }
+        $this->UserApprovers = $approvers;
+        $this->UserRejecters = $rejecters;
+    }
+
     protected function OnEvent(CBPActivity $sender)
     {
         $sender->RemoveStatusChangeHandler(self::ClosedEvent, $this);
         $this->workflow->CloseActivity($this);
+    }
+
+    protected function ReInitialize()
+    {
+        parent::ReInitialize();
+
+        $this->TaskId = 0;
+        $this->arApproveResults = array();
+        $this->arApproveOriginalResults = array();
+        $this->ApprovedCount = 0;
+        $this->NotApprovedCount = 0;
+
+        $this->VotedCount = 0;
+        $this->VotedPercent = 0;
+        $this->ApprovedPercent = 0;
+        $this->NotApprovedPercent = 0;
+        $this->Comments = '';
+        $this->IsTimeout = 0;
+        $this->Approvers = '';
+        $this->Rejecters = '';
+        $this->UserApprovers = [];
+        $this->UserRejecters = [];
+        $this->LastApprover = null;
+        $this->LastApproverComment = '';
     }
 
     public static function ShowTaskForm($arTask, $userId, $userName = "")
@@ -402,9 +592,22 @@ class CBPTrustedCASign
         if (!array_key_exists("ShowComment", $arTask["PARAMETERS"]) || ($arTask["PARAMETERS"]["ShowComment"] != "N"))
         {
             $required = '';
-            if (isset($arTask['PARAMETERS']['CommentRequired']) && $arTask['PARAMETERS']['CommentRequired'] == 'Y')
+            if (isset($arTask['PARAMETERS']['CommentRequired']))
             {
-                $required = '<span style="color: red">*</span>';
+                switch ($arTask['PARAMETERS']['CommentRequired'])
+                {
+                    case 'Y':
+                        $required = '<span>*</span>';
+                        break;
+                    case 'YA':
+                        $required = '<span style="color: green;">*</span>';
+                        break;
+                    case 'YR':
+                        $required = '<span style="color: red">*</span>';
+                        break;
+                    default:
+                        break;
+                }
             }
 
             $docId = $arTask["DOCUMENT_ID"];
@@ -418,7 +621,7 @@ class CBPTrustedCASign
 
             $form .=
                 '<tr><td valign="top" width="40%" align="right" class="bizproc-field-name">'
-                    .(strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAR_ACT_COMMENT"))
+                    .(strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAA_ACT_COMMENT"))
                     .$required
                 .':</td>'.
                 '<td valign="top" width="60%" class="bizproc-field-value">'.
@@ -437,7 +640,9 @@ class CBPTrustedCASign
             }
         }
 
-        $buttons = '<input type="button" name="review" value="'.(strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2")).'"/>';
+        $buttons =
+            '<input type="submit" name="approve" value="'.(strlen($arTask["PARAMETERS"]["TaskButton1Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton1Message"] : GetMessage("BPAA_ACT_BUTTON1")).'"/>'.
+            '<input type="submit" name="nonapprove" value="'.(strlen($arTask["PARAMETERS"]["TaskButton2Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton2Message"] : GetMessage("BPAA_ACT_BUTTON2")).'"/>';
 
         return array($form, $buttons);
     }
@@ -448,11 +653,18 @@ class CBPTrustedCASign
             'BUTTONS' => array(
                 array(
                     'TYPE'  => 'submit',
-                    'TARGET_USER_STATUS' => CBPTaskUserStatus::Ok,
-                    'NAME'  => 'review',
+                    'TARGET_USER_STATUS' => CBPTaskUserStatus::Yes,
+                    'NAME'  => 'approve',
                     'VALUE' => 'Y',
-                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2"),
+                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButton1Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton1Message"] : GetMessage("BPAA_ACT_BUTTON1")
                 ),
+                array(
+                    'TYPE'  => 'submit',
+                    'TARGET_USER_STATUS' => CBPTaskUserStatus::No,
+                    'NAME'  => 'nonapprove',
+                    'VALUE' => 'Y',
+                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButton2Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton2Message"] : GetMessage("BPAA_ACT_BUTTON2")
+                )
             )
         );
     }
@@ -471,19 +683,9 @@ class CBPTrustedCASign
                 'message' => GetMessage('BPAA_ACT_SIGN_ERROR'),
             );
             return false;
-        } else {
-            $arEventParameters = array(
-                "USER_ID" => $userId,
-                "REAL_USER_ID" => $realUserId,
-                "USER_NAME" => $userName,
-                "COMMENT" => isset($arRequest["task_comment"]) ? trim($arRequest["task_comment"]) : '',
-            );
-
-            CBPRuntime::SendExternalEvent($arTask["WORKFLOW_ID"], $arTask["ACTIVITY_NAME"], $arEventParameters);
-            return true;
         }
 
-        // unused code below
+        // original code below
         try
         {
             $userId = intval($userId);
@@ -497,19 +699,28 @@ class CBPTrustedCASign
                 "COMMENT" => isset($arRequest["task_comment"]) ? trim($arRequest["task_comment"]) : '',
             );
 
-            if (isset($arRequest['INLINE_USER_STATUS']) && $arRequest['INLINE_USER_STATUS'] != CBPTaskUserStatus::Ok)
+            if (isset($arRequest['approve']) && strlen($arRequest["approve"]) > 0
+                || isset($arRequest['INLINE_USER_STATUS']) && $arRequest['INLINE_USER_STATUS'] == CBPTaskUserStatus::Yes)
+                $arEventParameters["APPROVE"] = true;
+            elseif (isset($arRequest['nonapprove']) && strlen($arRequest["nonapprove"]) > 0
+                || isset($arRequest['INLINE_USER_STATUS']) && $arRequest['INLINE_USER_STATUS'] == CBPTaskUserStatus::No)
+                $arEventParameters["APPROVE"] = false;
+            else
                 throw new CBPNotSupportedException(GetMessage("BPAA_ACT_NO_ACTION"));
-
 
             if (
                 isset($arTask['PARAMETERS']['ShowComment'])
                 && $arTask['PARAMETERS']['ShowComment'] === 'Y'
                 && isset($arTask['PARAMETERS']['CommentRequired'])
                 && empty($arEventParameters['COMMENT'])
-                && $arTask['PARAMETERS']['CommentRequired'] === 'Y'
+                &&
+                ($arTask['PARAMETERS']['CommentRequired'] === 'Y'
+                    || $arTask['PARAMETERS']['CommentRequired'] === 'YA' && $arEventParameters["APPROVE"]
+                    || $arTask['PARAMETERS']['CommentRequired'] === 'YR' && !$arEventParameters["APPROVE"]
+                )
             )
             {
-                $label = strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAR_ACT_COMMENT");
+                $label = strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAA_ACT_COMMENT");
                 throw new CBPArgumentNullException(
                     'task_comment',
                     GetMessage("BPAA_ACT_COMMENT_ERROR", array(
@@ -559,11 +770,21 @@ class CBPTrustedCASign
         }
 
         if ($bUsersFieldEmpty)
-            $arErrors[] = array("code" => "NotExist", "parameter" => "Users", "message" => GetMessage("BPAR_ACT_PROP_EMPTY1"));
+            $arErrors[] = array("code" => "NotExist", "parameter" => "Users", "message" => GetMessage("BPAA_ACT_PROP_EMPTY1"));
+
+        if (!array_key_exists("ApproveType", $arTestProperties))
+        {
+            $arErrors[] = array("code" => "NotExist", "parameter" => "ApproveType", "message" => GetMessage("BPAA_ACT_PROP_EMPTY2"));
+        }
+        else
+        {
+            if (!in_array($arTestProperties["ApproveType"], array("any", "all", "vote")))
+                $arErrors[] = array("code" => "NotInRange", "parameter" => "ApproveType", "message" => GetMessage("BPAA_ACT_PROP_EMPTY3"));
+        }
 
         if (!array_key_exists("Name", $arTestProperties) || strlen($arTestProperties["Name"]) <= 0)
         {
-            $arErrors[] = array("code" => "NotExist", "parameter" => "Name", "message" => GetMessage("BPAR_ACT_PROP_EMPTY4"));
+            $arErrors[] = array("code" => "NotExist", "parameter" => "Name", "message" => GetMessage("BPAA_ACT_PROP_EMPTY4"));
         }
 
         return array_merge($arErrors, parent::ValidateProperties($arTestProperties, $user));
@@ -602,20 +823,23 @@ class CBPTrustedCASign
         $runtime = CBPRuntime::GetRuntime();
 
         $arMap = array(
-            "Users" => "review_users",
+            "Users" => "approve_users",
             "ApproveType" => "approve_type",
-            "OverdueDate" => "review_overdue_date",
-            "Name" => "review_name",
-            "Description" => "review_description",
-            "Parameters" => "review_parameters",
+            "ApproveMinPercent" => "approve_percent",
+            "OverdueDate" => "approve_overdue_date",
+            "Name" => "approve_name",
+            "Description" => "approve_description",
+            "Parameters" => "approve_parameters",
+            "ApproveWaitForAll" => "approve_wait",
             "StatusMessage" => "status_message",
             "SetStatusMessage" => "set_status_message",
-            "TaskButtonMessage" => "task_button_message",
+            "TimeoutDuration" => "timeout_duration",
+            "TimeoutDurationType" => "timeout_duration_type",
+            "TaskButton1Message" => "task_button1_message",
+            "TaskButton2Message" => "task_button2_message",
             "CommentLabelMessage" => "comment_label_message",
             "ShowComment" => "show_comment",
             'CommentRequired' => 'comment_required',
-            "TimeoutDuration" => "timeout_duration",
-            "TimeoutDurationType" => "timeout_duration_type",
             "AccessControl" => "access_control",
             "DelegationType" => "delegation_type",
         );
@@ -627,6 +851,7 @@ class CBPTrustedCASign
 
         if (!is_array($arCurrentValues))
         {
+            $arCurrentValues = Array();
             $arCurrentActivity = &CBPWorkflowTemplateLoader::FindActivityByName($arWorkflowTemplate, $activityName);
             if (is_array($arCurrentActivity["Properties"]))
             {
@@ -680,14 +905,22 @@ class CBPTrustedCASign
                 foreach ($arMap as $k => $v)
                     $arCurrentValues[$arMap[$k]] = "";
             }
+
+            if(strlen($arCurrentValues["approve_wait"])<=0)
+                $arCurrentValues["approve_wait"] = "N";
+
+            if(strlen($arCurrentValues["approve_percent"])<=0)
+                $arCurrentValues["approve_percent"] = "50";
         }
 
         if (strlen($arCurrentValues['status_message']) <= 0)
-            $arCurrentValues['status_message'] = GetMessage("BPAR_ACT_INFO");
+            $arCurrentValues['status_message'] = GetMessage("BPAA_ACT_INFO");
+        if (strlen($arCurrentValues['task_button1_message']) <= 0)
+            $arCurrentValues['task_button1_message'] = GetMessage("BPAA_ACT_BUTTON1");
+        if (strlen($arCurrentValues['task_button2_message']) <= 0)
+            $arCurrentValues['task_button2_message'] = GetMessage("BPAA_ACT_BUTTON2");
         if (strlen($arCurrentValues['comment_label_message']) <= 0)
-            $arCurrentValues['comment_label_message'] = GetMessage("BPAR_ACT_COMMENT");
-        if (strlen($arCurrentValues['task_button_message']) <= 0)
-            $arCurrentValues['task_button_message'] = GetMessage("BPAR_ACT_BUTTON2");
+            $arCurrentValues['comment_label_message'] = GetMessage("BPAA_ACT_COMMENT");
         if (strlen($arCurrentValues["timeout_duration_type"]) <= 0)
             $arCurrentValues["timeout_duration_type"] = "s";
 
@@ -712,20 +945,23 @@ class CBPTrustedCASign
         $runtime = CBPRuntime::GetRuntime();
 
         $arMap = array(
-            "review_users" => "Users",
+            "approve_users" => "Users",
             "approve_type" => "ApproveType",
-            "review_overdue_date" => "OverdueDate",
-            "review_name" => "Name",
-            "review_description" => "Description",
-            "review_parameters" => "Parameters",
+            "approve_overdue_date" => "OverdueDate",
+            "approve_percent" => "ApproveMinPercent",
+            "approve_wait" => "ApproveWaitForAll",
+            "approve_name" => "Name",
+            "approve_description" => "Description",
+            "approve_parameters" => "Parameters",
             "status_message" => "StatusMessage",
             "set_status_message" => "SetStatusMessage",
-            "task_button_message" => "TaskButtonMessage",
+            "timeout_duration" => "TimeoutDuration",
+            "timeout_duration_type" => "TimeoutDurationType",
+            "task_button1_message" => "TaskButton1Message",
+            "task_button2_message" => "TaskButton2Message",
             "comment_label_message" => "CommentLabelMessage",
             "show_comment" => "ShowComment",
             'comment_required' => 'CommentRequired',
-            "timeout_duration" => "TimeoutDuration",
-            "timeout_duration_type" => "TimeoutDurationType",
             "access_control" => "AccessControl",
             "delegation_type" => "DelegationType",
         );
@@ -733,12 +969,16 @@ class CBPTrustedCASign
         $arProperties = array();
         foreach ($arMap as $key => $value)
         {
-            if ($key == "review_users")
+            if ($key == "approve_users")
                 continue;
-            $arProperties[$value] = $arCurrentValues[$key];
+
+            if(strlen($arCurrentValues[$key."_X"])>0)
+                $arProperties[$value] = $arCurrentValues[$key."_X"];
+            else
+                $arProperties[$value] = $arCurrentValues[$key];
         }
 
-        $arProperties["Users"] = CBPHelper::UsersStringToArray($arCurrentValues["review_users"], $documentType, $arErrors);
+        $arProperties["Users"] = CBPHelper::UsersStringToArray($arCurrentValues["approve_users"], $documentType, $arErrors);
         if (count($arErrors) > 0)
             return false;
 

@@ -360,6 +360,7 @@ Class trusted_cryptoarmdocs extends CModule
         if ($this->crmSupport()) {
             DeleteDirFilesEx("/trusted_ca_docs/");
             DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
+            DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
             CUrlRewriter::Delete(
                 array(
                     'ID' => 'trusted:cryptoarm_docs_crm',

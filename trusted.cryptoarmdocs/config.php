@@ -14,6 +14,9 @@ define("TR_CA_DOCS_MODULE_DIR_CLASSES_GENERAL", TR_CA_DOCS_MODULE_DIR . "classes
 // Operations log file
 define("TR_CA_DOCS_LOG_FILE", TR_CA_DOCS_MODULE_DIR . "log.txt");
 
+// Common lang file
+define("TR_CA_DOCS_COMMON_LANG", TR_CA_DOCS_MODULE_DIR . "lang/" . LANGUAGE_ID . '/common.php');
+
 // AJAX controller is also defined in lang/ru/javascript.php & lang/en/javascript.php
 define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . TR_CA_HOST . "/bitrix/components/trusted/docs/ajax.php");
 

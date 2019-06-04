@@ -38,50 +38,50 @@ class WorkflowDocument implements \IBPWorkflowDocument {
     public static function GetDocumentFields($documentType) {
         return [
             'id' => [
-                'Name' => 'Id',
+                'Name' => 'ID',
                 'Type' => FieldType::INT,
                 'Editable' => false,
                 'Required' => true,
             ],
             'name' => [
-                'Name' => 'Name',
+                'Name' => Loc::getMessage('TR_CA_DOC_NAME'),
                 'Type' => FieldType::STRING,
                 'Editable' => true,
                 'Required' => true,
             ],
             'path' => [
-                'Name' => 'Path',
+                'Name' => Loc::getMessage('TR_CA_DOC_PATH'),
                 'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
             'type' => [
-                'Name' => 'Type',
+                'Name' => Loc::getMessage('TR_CA_DOC_TYPE'),
                 'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
             'status' => [
-                'Name' => 'Status',
+                'Name' => Loc::getMessage('TR_CA_DOC_STATUS'),
                 'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
             'signers' => [
-                'Name' => 'Signers',
+                'Name' => Loc::getMessage('TR_CA_DOC_SIGNERS'),
                 'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
-            'parentId' => [
-                'Name' => 'ParentId',
-                'Type' => FieldType::INT,
+            'signatures' => [
+                'Name' => Loc::getMessage('TR_CA_DOC_SIGNATURES'),
+                'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
-            'childId' => [
-                'Name' => 'ChildId',
-                'Type' => FieldType::INT,
+            'hash' => [
+                'Name' => Loc::getMessage('TR_CA_DOC_HASH'),
+                'Type' => FieldType::STRING,
                 'Editable' => false,
                 'Required' => true,
             ],
