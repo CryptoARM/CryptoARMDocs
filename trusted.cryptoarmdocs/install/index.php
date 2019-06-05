@@ -133,15 +133,15 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
             true, true
         );
+        CopyDirFiles(
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
+            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
+            true, true
+        );
         if ($this->crmSupport()) {
             CopyDirFiles(
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
                 $_SERVER["DOCUMENT_ROOT"],
-                true, true
-            );
-            CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
                 true, true
             );
             CUrlRewriter::Add(
