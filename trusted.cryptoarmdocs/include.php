@@ -12,6 +12,11 @@ foreach (glob(TR_CA_DOCS_MODULE_DIR_CLASSES . "/*.php") as $filename) {
     require_once $filename;
 }
 
+// Without this classes i couldn't use $doc->remove in the index.php
+// Probably a bug somewhere
+require_once TR_CA_DOCS_MODULE_DIR . 'install/activities/trustedcasign/trustedcasign.php';
+require_once TR_CA_DOCS_MODULE_DIR . 'install/activities/trustedcaapprove/trustedcaapprove.php';
+
 CJSCore::RegisterExt(
     "socketio",
     array(

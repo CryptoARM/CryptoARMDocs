@@ -4,6 +4,10 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\Application;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\EventManager;
+use Bitrix\Main\Loader;
+use Trusted\CryptoARM\Docs;
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/include.php';
 
 Loc::loadMessages(__FILE__);
 
@@ -142,10 +146,10 @@ Class trusted_cryptoarmdocs extends CModule
             );
             CUrlRewriter::Add(
                 array(
-                    'CONDITION' => '#^/trusted_ca_docs/#',
+                    'CONDITION' => '#^/tr_ca_docs/#',
                     'RULE' => '',
                     'ID' => 'trusted:cryptoarm_docs_crm',
-                    'PATH' => '/trusted_ca_docs/index.php',
+                    'PATH' => '/tr_ca_docs/index.php',
                 )
             );
         }
@@ -218,7 +222,7 @@ Class trusted_cryptoarmdocs extends CModule
                 $siteInfo["DIR"] . ".top.menu.php",
                 array(
                     Loc::getMessage('TR_CA_DOCS_CRM_MENU_TITLE'),
-                    $siteInfo["DIR"] . "trusted_ca_docs/",
+                    $siteInfo["DIR"] . "tr_ca_docs/",
                     array(),
                     array(),
                     "IsModuleInstalled('" . $this->MODULE_ID . "')"
@@ -358,13 +362,13 @@ Class trusted_cryptoarmdocs extends CModule
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
         if ($this->crmSupport()) {
-            DeleteDirFilesEx("/trusted_ca_docs/");
+            DeleteDirFilesEx("/tr_ca_docs/");
             DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
             DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
             CUrlRewriter::Delete(
                 array(
                     'ID' => 'trusted:cryptoarm_docs_crm',
-                    'PATH' => '/trusted_ca_docs/index.php',
+                    'PATH' => '/tr_ca_docs/index.php',
                 )
             );
         }
@@ -393,6 +397,12 @@ Class trusted_cryptoarmdocs extends CModule
     function UnInstallDB()
     {
         global $DB;
+        if (Loader::includeModule('bizproc')) {
+            $docs = Docs\Database::getDocuments();
+            foreach ($docs->getList() as $doc) {
+                $doc->remove();
+            }
+        }
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs`";
         $DB->Query($sql);
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs_property`";
@@ -405,7 +415,7 @@ Class trusted_cryptoarmdocs extends CModule
         if ($this->crmSupport()) {
             $this->DeleteMenuItem(
                 $siteInfo["DIR"] . ".top.menu.php",
-                $siteInfo["DIR"] . "trusted_ca_docs/",
+                $siteInfo["DIR"] . "tr_ca_docs/",
                 $siteInfo["LID"]
             );
         }

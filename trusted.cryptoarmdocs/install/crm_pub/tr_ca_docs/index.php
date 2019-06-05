@@ -18,7 +18,7 @@ if ($USER->IsAuthorized()) {
         '.default',
         array(
             'SEF_MODE' => 'Y',
-            'SEF_FOLDER' => '/trusted_ca_docs/',
+            'SEF_FOLDER' => '/tr_ca_docs/',
         ),
         false
     );
