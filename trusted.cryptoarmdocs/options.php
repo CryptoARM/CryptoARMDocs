@@ -7,9 +7,6 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
 
 include __DIR__ . "/config.php";
-// Include only necessary utility functions from module
-include __DIR__ . "/classes/Utils.php";
-include __DIR__ . "/classes/License.php";
 
 $module_id = TR_CA_DOCS_MODULE_ID;
 
@@ -214,7 +211,7 @@ $tabControl->Begin();
                 <input type="checkbox"
                     <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                        name="PROVIDE_LICENSE"
-                       value="true"
+                       value="true">
             </td>
         </tr>
 
