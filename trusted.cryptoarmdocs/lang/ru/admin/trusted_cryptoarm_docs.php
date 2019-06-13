@@ -49,6 +49,7 @@ $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 // Actions
 $MESS["TR_CA_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TR_CA_DOCS_ACT_UNBLOCK"] = "Разблокировать";
+$MESS["TR_CA_DOCS_ACT_PROTOCOL"] = "Скачать протокол";
 $MESS["TR_CA_DOCS_ACT_REMOVE"] = "Удалить";
 
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить документы покупателю";

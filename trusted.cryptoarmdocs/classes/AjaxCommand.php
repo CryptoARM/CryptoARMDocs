@@ -480,6 +480,41 @@ class AjaxCommand {
     }
 
 
+    static function protocol($params) {
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.protocol",
+        );
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No autorization';
+            return $res;
+        }
+
+        $id = $params["id"];
+
+        if (!$id) {
+            $res["message"] = "No id given";
+            return $res;
+        }
+
+        $doc = Database::getDocumentById($id);
+        if (!$doc) {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
+        $doc = $doc->getLastDocument();
+
+        if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
+            $res["message"] = "No access to the document";
+            return $res;
+        }
+
+        Protocol::createProtocol($doc);
+    }
+
+
     /**
      * Registers new account in licensesvc.
      *

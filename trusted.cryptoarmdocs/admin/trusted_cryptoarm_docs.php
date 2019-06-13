@@ -210,6 +210,15 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     }
 
     $arActions[] = array(
+        "ICON" => "view",
+        "DEFAULT" => false,
+        "TEXT" => Loc::getMessage('TR_CA_DOCS_ACT_PROTOCOL'),
+        "ACTION" => "trustedCA.protocol($f_ID, \"{$doc->getName()}\")"
+    );
+
+    $arActions[] = array("SEPARATOR" => true);
+
+    $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
         "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),

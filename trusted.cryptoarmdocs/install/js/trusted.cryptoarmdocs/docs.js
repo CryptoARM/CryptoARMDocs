@@ -323,6 +323,11 @@ trustedCA.sendEmail = function (ids, event, arEventFields, messageId) {
 };
 
 
+trustedCA.protocol = function (id) {
+    window.location.replace(AJAX_CONTROLLER + '?command=protocol&id=' + id);
+}
+
+
 trustedCA.promptEmail = function (message) {
     function validateEmail(email) {
         let re = /\S+@\S+\.\S+/;

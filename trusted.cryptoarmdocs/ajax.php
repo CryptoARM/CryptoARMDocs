@@ -64,6 +64,9 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::content($_GET);
             return $res;
             break;
+        case "protocol":
+            $res = Docs\AjaxCommand::protocol($_GET);
+            break;
         // case "token":
         //     $res = Docs\AjaxCommand::token($_GET);
         //     break;
