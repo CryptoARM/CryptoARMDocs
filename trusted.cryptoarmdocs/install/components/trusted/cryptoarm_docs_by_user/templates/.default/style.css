@@ -83,7 +83,7 @@ main.document-card {
 .document-content__item .document-item__right_user {
     flex-wrap: wrap;
     justify-content: flex-end;
-    width: 360px;
+    width: 455px;
 }
 
 .document-card__content .document-item__text {

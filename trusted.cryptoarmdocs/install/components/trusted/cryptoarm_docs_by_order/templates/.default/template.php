@@ -149,6 +149,14 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                             save_alt
                         </i>
                     </div>
+                    <? $protocolJs = "trustedCA.protocol($docId)" ?>
+                    <div class="icon-wrapper"
+                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_PROTOCOL"); ?>"
+                         onclick="<?= $protocolJs ?>">
+                        <i class="material-icons">
+                            description
+                        </i>
+                    </div>
                 </div>
             </div>
         <?

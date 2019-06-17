@@ -212,6 +212,14 @@ if (!empty($_FILES["userfile"]["name"])) {
                                         save_alt
                                     </i>
                                 </div>
+                                <? $protocolJs = "trustedCA.protocol($docId)" ?>
+                                <div class="icon-wrapper"
+                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>"
+                                     onclick="<?= $protocolJs ?>">
+                                    <i class="material-icons">
+                                        description
+                                    </i>
+                                </div>
                                 <?
                                 if ($docAccessLevel == "OWNER") {
                                     $shareJs = "trustedCA.promptAndShare([$docId], 'SHARE_SIGN')"

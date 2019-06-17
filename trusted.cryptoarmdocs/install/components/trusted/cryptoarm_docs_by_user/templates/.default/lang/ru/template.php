@@ -15,6 +15,7 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"] = "Отправить докум
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"] = "Подписать документ";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"] = "Проверить подпись";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"] = "Скачать документ";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"] = "Скачать протокол";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"] = "Поделиться документом";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Удалить документ";
 
