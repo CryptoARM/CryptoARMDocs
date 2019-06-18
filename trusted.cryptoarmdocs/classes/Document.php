@@ -596,31 +596,63 @@ class Document implements IEntity, ISave
      * Returns document sign info as html table
      * @return string
      */
-    function getSignaturesToTable()
+    function getSignaturesToTable($fields = array('time', 'name', 'org'))
     {
         $signatures = $this->getSignaturesToArray();
-        if (!is_array($signatures)) {
-            return array();
+        if (!$signatures || !$fields) {
+            return '';
         }
 
         $signaturesString = '<table width=100%>';
 
+        $signaturesString .= '<tr>';
+        foreach ($fields as $field) {
+            switch ($field) {
+                case 'time':
+                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
+                    break;
+                case 'name':
+                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_NAME') . '</th>';
+                    break;
+                case 'org':
+                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_ORG') . '</th>';
+                    break;
+                case 'algorithm':
+                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_ALGORITHM') . '</th>';
+                    break;
+            }
+        }
+        $signaturesString .= '</tr>';
+
         foreach ($signatures as $signature) {
 
-            $signingTime = Loc::getMessage("TR_CA_DOCS_SIGN_TIME")
-                . date("d:m:o H:i", round($signature['signingTime'] / 1000));
+            $signaturesString .= '<tr>';
+            foreach ($fields as $field) {
+                switch ($field) {
+                    case 'time':
+                        $signingTime = date("d:m:o H:i", round($signature['signingTime'] / 1000));
+                        $signaturesString .= '<td>' . $signingTime . '</td>';
+                        break;
 
-            $subjectName = Loc::getMessage("TR_CA_DOCS_SIGN_NAME")
-                . $signature['subjectFriendlyName'];
+                    case 'name':
+                        $signaturesString .= '<td>' . $signature['subjectFriendlyName'] . '</td>';
+                        break;
 
-            $subjectOrganization = '';
-            // Check for organization name code
-            if ($signature['issuerName']['2.5.4.10']) {
-                $subjectOrganization = Loc::getMessage("TR_CA_DOCS_SIGN_ORG")
-                    . $signature['issuerName']['2.5.4.10'];
+                    case 'org':
+                        $subjectOrganization = '';
+                        // Check for organization name code
+                        if ($signature['issuerName']['2.5.4.10']) {
+                            $subjectOrganization = $signature['issuerName']['2.5.4.10'];
+                        }
+                        $signaturesString .= '<td>' . $subjectOrganization . '</td>';
+                        break;
+
+                    case 'algorithm':
+                        $signaturesString .= '<td>' . $signature['digestAlgorithm'] . '</td>';
+                        break;
+                }
             }
-
-            $signaturesString .= "<tr><td>" . $signingTime . "</td><td>" . $subjectName . "</td><td>" . $subjectOrganization . "</td></tr>";
+            $signaturesString .= '</tr>';
         }
 
         $signaturesString .= '</table>';
