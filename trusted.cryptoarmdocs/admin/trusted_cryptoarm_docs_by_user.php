@@ -105,7 +105,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             break;
         case "send_mail":
             echo '<script>';
-            echo 'window.parent.trustedCA.promptAndSendEmail(' . json_encode($ids) . ', "MAIL_EVENT_ID_TO", [], "MAIL_TEMPLATE_ID_TO")';
+            echo 'window.parent.trustedCA.promptAndSendEmail(' . json_encode($ids) . ', "MAIL_EVENT_ID_TO", {}, "MAIL_TEMPLATE_ID_TO")';
             echo '</script>';
             break;
     }

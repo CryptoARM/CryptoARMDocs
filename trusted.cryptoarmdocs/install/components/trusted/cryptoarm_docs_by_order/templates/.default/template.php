@@ -36,7 +36,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                         </div>
                     </div>
                     <ul id="ul_by_order">
-                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
                         <div onclick="<?= $emailAllJs ?>">
                             <div class="material-icons">
                                 email
@@ -117,7 +117,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                     </div>
                 </div>
                 <div class="document-item__right">
-                    <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                    <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
                     <div class="icon-wrapper"
                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS"); ?>"
                          onclick="$emailJs">

@@ -52,7 +52,7 @@ $APPLICATION->IncludeComponent(
                         </div>
                     </div>
                     <ul id="ul_by_user">
-                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
                         <div onclick="<?= $emailAllJs ?>">
                             <div class="material-icons">
                                 email
@@ -165,7 +165,7 @@ $APPLICATION->IncludeComponent(
                         </div>
                         <div class="document-item__right_user">
                             <div class="icon_content">
-                                <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', [], 'MAIL_TEMPLATE_ID_TO')" ?>
+                                <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>"
                                      onclick="<?= $emailJs ?>">
