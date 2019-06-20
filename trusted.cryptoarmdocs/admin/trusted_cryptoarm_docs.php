@@ -213,7 +213,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "ICON" => "view",
         "DEFAULT" => false,
         "TEXT" => Loc::getMessage('TR_CA_DOCS_ACT_PROTOCOL'),
-        "ACTION" => "trustedCA.protocol($f_ID, \"{$doc->getName()}\")"
+        "ACTION" => "trustedCA.protocol($f_ID)"
     );
 
     $arActions[] = array("SEPARATOR" => true);

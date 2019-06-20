@@ -92,6 +92,11 @@ foreach ($docs->getList() as $doc) {
             'default' => true,
         );
     }
+    $actions[] = array(
+        'text' => Loc::getMessage('TR_CA_DOCS_ACT_PROTOCOL'),
+        'onclick' => "trustedCA.protocol($docId)",
+        'default' => false,
+    );
 
     if (!empty($arResult['WORKFLOW_TEMPLATES'])) {
         $startWorkflowActions = array();
