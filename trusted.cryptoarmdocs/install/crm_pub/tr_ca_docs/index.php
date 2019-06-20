@@ -8,7 +8,10 @@ if ($USER->IsAuthorized()) {
         'trusted:cryptoarm_docs_upload',
         '.default',
         array(
-            'USER' => $USER->GetID(),
+            'FILES' => array('tr_ca_upload_comp_crm'),
+            'PROPS' => array(
+                'USER' => $USER->GetID(),
+            ),
         ),
         false
     );

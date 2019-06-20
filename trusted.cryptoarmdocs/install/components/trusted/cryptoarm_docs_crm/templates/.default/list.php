@@ -149,7 +149,7 @@ ob_start();
 ?>
 <form enctype="multipart/form-data" method="POST">
     <div class="ui-btn ui-btn-primary ui-btn-icon-add crm-btn-toolbar-add tr_ca_upload_wrapper">
-        <input class="tr_ca_upload_input" name="tr_ca_upload_file" type="file" onchange=this.form.submit()>
+        <input class="tr_ca_upload_input" name="tr_ca_upload_comp_crm" type="file" onchange=this.form.submit()>
         <?= Loc::getMessage('TR_CA_DOCS_CRM_ADD_DOC') ?>
     </div>
 </form>

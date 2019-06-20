@@ -25,26 +25,17 @@ $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FU
 <a id="reload_doc_by_user_comp" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
 <?
-// DOCUMENT UPLOAD HANDLER - START
-$DOCUMENTS_DIR = COption::GetOptionString("trusted.cryptoarmdocs", "DOCUMENTS_DIR", "docs");
-if (!empty($_FILES["userfile"]["name"])) {
-    $uniqid = (string)uniqid();
-    $new_doc_dir = $_SERVER["DOCUMENT_ROOT"] . "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/";
-    mkdir($new_doc_dir);
-    $new_doc_filename = Docs\Utils::mb_basename($_FILES["userfile"]["name"]);
-    $absolute_path = $new_doc_dir . $new_doc_filename;
-    $relative_path = "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/" . $new_doc_filename;
-    if (move_uploaded_file($_FILES["userfile"]["tmp_name"], $absolute_path)) {
-        $props = new Docs\PropertyCollection();
-        $props->add(new Docs\Property("USER", (string)$USER->GetID()));
-        $doc = Docs\Utils::createDocument($relative_path, $props);
-
-    }
-    unset ($_FILES["userfile"]["name"]);
-    LocalRedirect($request->getRequestUri());
-    die();
-}
-// DOCUMENT UPLOAD HANDLER - END
+$APPLICATION->IncludeComponent(
+    'trusted:cryptoarm_docs_upload',
+    '.default',
+    array(
+        'FILES' => array('tr_ca_upload_comp_by_user'),
+        'PROPS' => array(
+            'USER' => $USER->GetID(),
+        ),
+    ),
+    false
+);
 ?>
 
 <div id="main-document">
@@ -261,7 +252,7 @@ if (!empty($_FILES["userfile"]["name"])) {
                 <div class="document-card__footer">
                     <form enctype="multipart/form-data" method="POST">
                         <div class="document-footer__action">
-                            <input class="document-footer__input" name="userfile" type="file" style="font-size: 0"
+                            <input class="document-footer__input" name="tr_ca_upload_comp_by_user" type="file" style="font-size: 0"
                                    onchange=this.form.submit()>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
                         </div>
