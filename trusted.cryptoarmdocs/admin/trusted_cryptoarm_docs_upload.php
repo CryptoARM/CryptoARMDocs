@@ -170,6 +170,7 @@ function dirSelectorAct(filename, path, site)
     .adm-workarea .adm-input-file{
         text-overflow: ellipsis;
         width: 115px;
+        display: block;
     }
     </style>
 
