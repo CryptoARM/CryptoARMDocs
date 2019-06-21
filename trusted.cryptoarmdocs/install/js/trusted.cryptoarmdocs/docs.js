@@ -8,6 +8,7 @@ var REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM')
 var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
 var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
 var LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
+var ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
 var ERROR_FILE_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_FILE_NOT_FOUND');
 var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
 var ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
@@ -252,6 +253,9 @@ trustedCA.verify = function (ids) {
 
 
 trustedCA.show_messages = function (response) {
+    if (response.noIds) {
+        alert(ERROR_NO_IDS);
+    }
     if (response.docsFileNotFound) {
         message = ERROR_FILE_NOT_FOUND;
         response.docsFileNotFound.forEach(function (elem) {
@@ -324,7 +328,11 @@ trustedCA.sendEmail = function (ids, event, arEventFields, messageId) {
 
 
 trustedCA.protocol = function (id) {
-    window.location.replace(AJAX_CONTROLLER + '?command=protocol&id=' + id);
+    trustedCA.ajax(
+        'check',
+        {ids: [id], level: 'SHARE_READ', allowBlocked: true},
+        () => { window.location.replace(AJAX_CONTROLLER + '?command=protocol&id=' + id) }
+    );
 }
 
 

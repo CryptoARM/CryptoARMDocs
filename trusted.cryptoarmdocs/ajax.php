@@ -67,6 +67,9 @@ if (isset($command)) {
         case "protocol":
             $res = Docs\AjaxCommand::protocol($_GET);
             break;
+        case "check":
+            $res = Docs\AjaxCommand::check($params);
+            break;
         // case "token":
         //     $res = Docs\AjaxCommand::token($_GET);
         //     break;

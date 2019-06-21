@@ -9,6 +9,83 @@ use DateTime;
  * Used for interaction of bitrix server with opened pages and signing client.
  */
 class AjaxCommand {
+
+    static function check($params) {
+        $res = array(
+            'success' => false,
+            'message' => 'Unknown error in Ajax.check',
+        );
+
+        $ids = $params['ids'];
+        $level = $params['level'] ?: DOC_SHARE_READ;
+        $allowBlocked = $params['allowBlocked'] ?: true;
+
+        if (!$ids) {
+            $res["message"] = "No ids were given";
+            $res["noIds"] = true;
+            return $res;
+        }
+
+        $docsNotFound = array();
+        $docsNoAccess = array();
+        $docsFileNotFound = new DocumentCollection();
+        $docsBlocked = new DocumentCollection();
+        $docsOk = array();
+
+        foreach ($ids as $id) {
+            $doc = Database::getDocumentById($id);
+            if (!$doc) {
+                $docsNotFound[] = $id;
+                continue;
+            }
+            if (!$doc->accessCheck(Utils::currUserId(), $level)) {
+                $docsNoAccess[] = $id;
+            } elseif (!$allowBlocked && $doc->getStatus() === DOC_STATUS_BLOCKED) {
+                $docsBlocked->add($doc);
+            } elseif (!$doc->checkFile()) {
+                $docsFileNotFound->add($doc);
+            } else {
+                $docsOk[] = $id;
+            }
+        }
+
+        if ($docsNotFound) {
+            $res['docsNotFound'] = $docsNotFound;
+        }
+
+        if ($docsNoAccess) {
+            $res['docsNoAccess'] = $docsNoAccess;
+        }
+
+        if ($docsFileNotFound->count()) {
+            foreach ($docsFileNotFound->getList() as $doc) {
+                $res["docsFileNotFound"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+
+        if ($docsBlocked->count()) {
+            foreach ($docsBlocked->getList() as $doc) {
+                $res["docsBlocked"][] = array(
+                    "filename" => $doc->getName(),
+                    "id" => $doc->getId(),
+                );
+            }
+        }
+
+        if ($docsOk) {
+            $res['success'] = true;
+            $res['message'] = 'Some documents passed checks';
+            $res['docsOk'] = $docsOk;
+        } else {
+            $res['message'] = 'Documents did not pass checks';
+        }
+
+        return $res;
+    }
+
     /**
      * Recieves array of document ids and checks them all before
      * determining which ones are ready to signed.
@@ -37,6 +114,7 @@ class AjaxCommand {
 
         $docIds = $params["id"];
         if (!$docIds) {
+            $res["noIds"] = true;
             $res["message"] = "No ids were given";
             return $res;
         }
