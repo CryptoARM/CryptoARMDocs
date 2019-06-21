@@ -74,7 +74,7 @@ main.document-card {
 .document-content__item .document-item__right {
     flex-wrap: wrap;
     justify-content: right;
-    width: 360px;
+    width: 50%;
 }
 
 .document-card__content .document-item__text {
