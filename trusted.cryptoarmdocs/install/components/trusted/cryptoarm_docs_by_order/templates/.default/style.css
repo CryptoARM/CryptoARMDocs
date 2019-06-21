@@ -68,7 +68,7 @@ main.document-card {
 
 .document-content__item .document-item__left {
     justify-content: flex-start;
-    width: 73%;
+    width: 50%;
 }
 
 .document-content__item .document-item__right {
