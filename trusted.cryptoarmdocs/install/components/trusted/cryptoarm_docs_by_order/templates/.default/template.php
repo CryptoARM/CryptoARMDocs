@@ -120,7 +120,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                     <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
                     <div class="icon-wrapper"
                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS"); ?>"
-                         onclick="$emailJs">
+                         onclick="<?=$emailJs?>">
                         <i class="material-icons">
                             email
                         </i>
