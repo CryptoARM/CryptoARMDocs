@@ -70,11 +70,14 @@ main.document-card {
     justify-content: flex-start;
     width: 50%;
 }
-
+@media(max-width: 1024px){
+    .document-content__item .document-item__left {
+        width: 40%;
+    }
+}
 .document-content__item .document-item__right {
     flex-wrap: wrap;
     justify-content: right;
-    width: 50%;
 }
 
 .document-card__content .document-item__text {
@@ -130,6 +133,11 @@ div#sweeties ul > div {
     color: rgba(0,0,0,0.54);
     display: flex;
 }
+@media(max-width: 500px) {
+    div#sweeties ul > div {
+        font-size: 12px;
+    }
+}
 
 div#sweeties ul > div:hover {
     background-color: rgb(238,238,238);
@@ -141,6 +149,11 @@ div#sweeties ul > div > div {
     font-size: 24px;
     color: rgba(0,0,0,0.54);
     margin-right: 24px;
+}
+@media(max-width: 500px) {
+    div#sweeties ul > div > div {
+        font-size: 20px;
+    }
 }
 
 #ul_by_order {

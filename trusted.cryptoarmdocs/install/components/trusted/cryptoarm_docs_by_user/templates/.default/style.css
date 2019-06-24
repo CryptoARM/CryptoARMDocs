@@ -79,11 +79,15 @@ main.document-card {
     justify-content: flex-start;
     width: 50%;
 }
+@media(max-width: 1024px){
+    .document-content__item .document-item__left {
+        width: 40%;
+    }
+}
 
 .document-content__item .document-item__right_user {
     flex-wrap: wrap;
     justify-content: flex-end;
-    width: 50%;
 }
 
 .document-card__content .document-item__text {

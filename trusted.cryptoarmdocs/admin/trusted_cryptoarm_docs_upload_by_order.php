@@ -177,14 +177,6 @@ function dirSelectorAct(filename, path, site)
 
 <? if (strlen($strWarning) <= 0 || $bCan): ?>
 
-    <style>
-    .adm-workarea .adm-input-file{
-        text-overflow: ellipsis;
-        width: 115px;
-        display: block;
-    }
-    </style>
-
     <form method="POST"
           action="<?= $APPLICATION->GetCurPage() . "?" . $addUrl . "&site=" . $site . "&path=" . UrlEncode($path) ?>"
           name="ffilemanupload" enctype="multipart/form-data">
