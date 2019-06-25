@@ -5,6 +5,7 @@ var AJAX_CONTROLLER = BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
 var NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
 var HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
 var REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
+var REMOVE_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM_MANY');
 var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
 var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
 var LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
@@ -299,7 +300,12 @@ trustedCA.unblock = function (ids, onSuccess = null, onFailure = null) {
 };
 
 
-trustedCA.remove = function (ids, force = false, onSuccess = null, onFailure = null, message = REMOVE_ACTION_CONFIRM) {
+trustedCA.remove = function (ids, force = false, onSuccess = null, onFailure = null) {
+    if (ids.length != 1) {
+        message = REMOVE_ACTION_CONFIRM_MANY;
+    } else {
+        message = REMOVE_ACTION_CONFIRM
+    }
     if (force ? true : confirm(message)) {
         trustedCA.ajax('remove', {ids}, onSuccess, onFailure);
     }
