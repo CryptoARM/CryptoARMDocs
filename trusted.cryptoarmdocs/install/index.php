@@ -79,6 +79,7 @@ Class trusted_cryptoarmdocs extends CModule
         if ($step == 4 && $continue) {
             if ($request["dropDB"] == "Y") {
                 $this->UnInstallDB();
+                $this->UnInstallIb();
             } elseif ($request["dropLostDocs"]) {
                 $lostDocs = unserialize($request["dropLostDocs"]);
                 foreach ($lostDocs as $id) {
@@ -89,6 +90,7 @@ Class trusted_cryptoarmdocs extends CModule
             $this->CreateDocsDir();
             $this->InstallModuleOptions();
             $this->InstallDB();
+            $this->InstallIb();
             $this->InstallMenuItems();
             $this->InstallMailEvents();
             ModuleManager::registerModule($this->MODULE_ID);
@@ -214,6 +216,10 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
     }
 
+    function InstallIb() {
+        Docs\IBlock::install();
+    }
+
     function InstallMenuItems() {
         $siteInfo = $this->getSiteInfo();
 
@@ -333,6 +339,7 @@ Class trusted_cryptoarmdocs extends CModule
             $savedata = $request["savedata"];
             if ($savedata != "Y") {
                 $this->UnInstallDB();
+                $this->UnInstallIb();
             }
             $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
@@ -407,6 +414,10 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs_property`";
         $DB->Query($sql);
+    }
+
+    function UnInstallIb() {
+        Docs\IBlock::uninstall();
     }
 
     function UnInstallMenuItems() {

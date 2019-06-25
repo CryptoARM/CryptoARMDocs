@@ -24,6 +24,9 @@ define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . TR_CA_HOST . "/bitrix/componen
 define("DB_TABLE_DOCUMENTS", "tr_ca_docs");
 define("DB_TABLE_PROPERTY", "tr_ca_docs_property");
 
+// iBlock define
+define("TR_CA_IB_TYPE_ID", "tr_ca_docs_form");
+
 // Document types
 define("DOC_TYPE_FILE", 0);
 define("DOC_TYPE_SIGNED_FILE", 1);
