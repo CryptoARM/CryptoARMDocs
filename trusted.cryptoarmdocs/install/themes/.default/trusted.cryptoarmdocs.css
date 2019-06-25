@@ -102,7 +102,7 @@
 }    
 @media(max-width: 1280px){
     .adm-list-table-cell-documents{
-        width: 250px;
+        width: 200px;
         
     }
 }
@@ -116,6 +116,7 @@
 .adm-list-table-cell-certificate{
     width: 100%;
     table-layout: fixed;
+    min-width: 250px;
 }    
 .adm-list-table-cell-certificate th:first-child{
     width: 30%;
