@@ -139,7 +139,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docName =  "<span class='adm-list-table-cell-documents'>";
     $docName .= "<input type='button' value='i' onclick='trustedCA.verify([";
     $docName .= $docId . "])' class='verify_button' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
-    $docName .= "<a class='tn_document_main' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . "' onclick='trustedCA.download([";
+    $docName .= "<a class='tn_document_main' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
+    $docName .= Loc::getMessage("TR_CA_DOCS_OPEN_QUOTE") . $doc->getName() . Loc::getMessage("TR_CA_DOCS_CLOSE_QOUTE");
+    $docName .= "‎' onclick='trustedCA.download([";
     $docName .= $docId . "], true)' >" . $doc->getName() . "</a>";
     $docName .= "</span>";
 

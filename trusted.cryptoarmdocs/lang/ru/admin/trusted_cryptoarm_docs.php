@@ -59,6 +59,8 @@ $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Отправить документы н
 $MESS["TR_CA_DOCS_USER_PROFILE"] = "Профиль пользователя";
 $MESS["TR_CA_DOCS_MAILTO_USER"] = "Написать письмо пользователю";
 $MESS["TR_CA_DOCS_DOWNLOAD_DOC"] = "Скачать документ";
+$MESS["TR_CA_DOCS_OPEN_QUOTE"] = "«";
+$MESS["TR_CA_DOCS_CLOSE_QOUTE"] = "»‎";
 $MESS["TR_CA_DOCS_VERIFY_DOC"] = "Проверить подпись документа";
 
 $MESS["TR_CA_DOCS_EDIT_ORDER"] = "Редактировать заказ";
