@@ -94,21 +94,39 @@
     }
 } 
 /*Table documents column*/
+    /*Document name*/
+.adm-list-table-cell-documents{
+    display: inline-block;
+    white-space: nowrap;
+    width: 100%;  
+}    
 @media(max-width: 1280px){
     .adm-list-table-cell-documents{
-        display: inline-block;
-        white-space: nowrap;
         width: 250px;
         
     }
 }
 @media(max-width: 1024px){
     .adm-list-table-cell-documents{
-        display: inline-block;
-        white-space: nowrap;
         width: 169px;
         
     }
+}
+    /*certificate*/
+.adm-list-table-cell-certificate{
+    width: 100%;
+    table-layout: fixed;
+}    
+.adm-list-table-cell-certificate th:first-child{
+    width: 30%;
+}
+.adm-list-table-cell-certificate td:nth-child(2){ 
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.adm-list-table-cell-certificate td:nth-child(3){
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .tn_document_main {
     cursor: pointer;
