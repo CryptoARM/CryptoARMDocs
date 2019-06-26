@@ -9,6 +9,7 @@ var REMOVE_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONF
 var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
 var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
 var LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
+var ERROR_NO_AUTH = BX.message('TR_CA_DOCS_ERROR_NO_AUTH');
 var ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
 var ERROR_FILE_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_FILE_NOT_FOUND');
 var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
@@ -257,6 +258,9 @@ trustedCA.verify = function (ids) {
 trustedCA.show_messages = function (response) {
     if (response.noIds) {
         alert(ERROR_NO_IDS);
+    }
+    if (response.noAuth) {
+        alert(ERROR_NO_AUTH);
     }
     if (response.docsFileNotFound && response.docsFileNotFound.length) {
         message = ERROR_FILE_NOT_FOUND;

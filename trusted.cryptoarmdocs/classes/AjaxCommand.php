@@ -25,6 +25,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -80,6 +81,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -145,6 +147,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -265,6 +268,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -302,6 +306,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -363,6 +368,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -488,6 +494,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -639,6 +646,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
+            $res["noAuth"] = true;
             return $res;
         }
 
@@ -677,6 +685,7 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No autorization";
+            $res["noAuth"] = true;
             return $res;
         }
 

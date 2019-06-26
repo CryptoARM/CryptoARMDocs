@@ -9,6 +9,7 @@ if (Docs\Utils::isSecure()) {
     $MESS["TR_CA_DOCS_AJAX_CONTROLLER"] = "http://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trusted/docs/ajax.php";
 }
 
+$MESS["TR_CA_DOCS_ERROR_NO_AUTH"] = "Для выполнения этой операции необходима авторизация";
 $MESS["TR_CA_DOCS_ERROR_NO_IDS"] = "В запросе не заданы идентификаторы документов";
 $MESS["TR_CA_DOCS_ERROR_FILE_NOT_FOUND"] = "Не найдены файлы соответствующие следующим документам:";
 $MESS["TR_CA_DOCS_ERROR_DOC_NOT_FOUND"] = "Нет найдены документы со следующими идентификаторами: ";
