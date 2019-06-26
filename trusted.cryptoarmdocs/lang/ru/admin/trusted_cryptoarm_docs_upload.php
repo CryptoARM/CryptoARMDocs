@@ -22,7 +22,7 @@ $MESS["TR_CA_DOCS_UPLOAD_INVALID_ORDER_ID"] = "Недопустимый номе
 $MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_DOESNT_EXIST"] = "Несуществующий номер заказа.";
 
 $MESS["TR_CA_DOCS_UPLOAD_ACCESS_DENIED"] = "Недостаточно прав для создания файла";
-$MESS["TR_CA_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимальный допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
+$MESS["TR_CA_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимально допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
 // TODO: File exists error is deprecated. Need to be fixed in all upload pages
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS1"] = "Файл с именем";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS2"] = "уже существует";
@@ -31,8 +31,8 @@ $MESS["TR_CA_DOCS_UPLOAD_INVALID_DIR"] = "Нельзя сохранять фай
 $MESS["TR_CA_DOCS_UPLOAD_FILE_CREATE_ERROR"] = "Ошибка при создании файла";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_CREATE_ERROR_NO_ACCESS"] = "Нет доступа к директории.";
 
-$MESS["TR_CA_DOCS_UPLOAD_PROP_NOTE"] = " Параметр может содержать символы русского или английского алфавита, цифры, спецсимволы (черточка, подчеркивание, точка). Максимальная длина - 50 символов.";
-$MESS["TR_CA_DOCS_UPLOAD_VALUE_NOTE"] = " Значение может содержать любые данные. Максимальная длина - 255 символов.";
+$MESS["TR_CA_DOCS_UPLOAD_PROP_NOTE"] = " Параметр может содержать символы русского или английского алфавита, цифры, спецсимволы (черточка, подчеркивание, точка). Максимальная длина: 50 символов.";
+$MESS["TR_CA_DOCS_UPLOAD_VALUE_NOTE"] = " Значение может содержать любые данные. Максимальная длина: 255 символов.";
 
 $MESS["TR_CA_DOCS_UPLOAD_USER_ID_NOTE"] = " Цифровой идентификатор пользователя в Битрикс.";
 

@@ -10,7 +10,7 @@ $MESS["TR_CA_DOCS_CRM_MENU_TITLE"] = "КриптоАРМ Документы";
 $MESS["TR_CA_DOCS_MAIL_EVENT_NAME"] = "КриптоАРМ Документы - рассылка документов по заказам";
 $MESS["TR_CA_DOCS_MAIL_EVENT_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
-#ORDER_USER# - имя пользователя совершившего заказ
+#ORDER_USER# - имя пользователя, совершившего заказ
 #ORDER_ID# - номер заказа
 #FILE_NAMES# - список названий документов
 ";
