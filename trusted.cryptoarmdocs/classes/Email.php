@@ -50,6 +50,7 @@ class Email {
             array(
                 'SITE_URL' => TR_CA_HOST,
                 'FILE_NAMES' => implode(", ", $docNames),
+                'RAND_UID' => Utils::generateUUID(),
             ),
             $arEventFields
         );
