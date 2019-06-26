@@ -630,7 +630,7 @@ class Document implements IEntity, ISave
             foreach ($fields as $field) {
                 switch ($field) {
                     case 'time':
-                        $signingTime = date("d:m:o H:i", round($signature['signingTime'] / 1000));
+                        $signingTime = date("d-m-o H:i", round($signature['signingTime'] / 1000));
                         $signaturesString .= '<td>' . $signingTime . '</td>';
                         break;
 

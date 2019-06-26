@@ -156,8 +156,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
-    $docCreated = $doc->getCreated();
-    $docParentCreated = $doc->getFirstParent()->getCreated();
+    $docCreated = date("d-m-o H:i",strtotime($doc->getCreated()));
+    $docParentCreated = date("d-m-o H:i",strtotime($doc->getFirstParent()->getCreated()));
 
     $docType = $doc->getType();
     $docTypeString = Docs\Utils::GetTypeString($doc);
