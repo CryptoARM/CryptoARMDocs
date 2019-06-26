@@ -69,9 +69,30 @@ class DocumentCollection extends Collection implements IEntity
      */
     public function toArray()
     {
-        $array = array();
+        $a = array();
         foreach ($this->items_ as &$item) {
             $a[] = $item->toArray();
+        }
+        return $a;
+    }
+
+    public function toIdArray()
+    {
+        $a = array();
+        foreach ($this->items_ as &$item) {
+            $a[] = $item->getId();
+        }
+        return $a;
+    }
+
+    public function toIdAndFilenameArray()
+    {
+        $a = array();
+        foreach ($this->items_ as &$item) {
+            $a[] = array(
+                'filename' => $item->getName(),
+                'id' => $item->getId(),
+            );
         }
         return $a;
     }

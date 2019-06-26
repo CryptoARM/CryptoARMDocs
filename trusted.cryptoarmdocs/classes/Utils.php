@@ -37,6 +37,54 @@ class Utils
     }
 
     /**
+     * Runs document ids through filters to find problems before accessing them.
+     *
+     * @param array[int] $ids Document ids
+     * @param string $level Required access level
+     * @param bool $allowBlocked Can operation be performed of blocked docs?
+     * @return array [docsNotFound]: array of ids that were not found in document database
+     *               [docsNoAccess]: documents for which current user has no access
+     *               [docsFileNotFound]: documents for which associated file was not found on disk
+     *               [docsBlocked]: documents blocked by previous operation
+     *               [docsOk]: documents that passed all checks
+     */
+    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true) {
+        $res = array(
+            'docsNotFound' => array(),
+            'docsNoAccess' => array(),
+            'docsFileNotFound' => new DocumentCollection(),
+            'docsBlocked' => new DocumentCollection(),
+            'docsOk' => new DocumentCollection(),
+        );
+
+        foreach ($ids as $id) {
+            $doc = Database::getDocumentById($id);
+            if (!$doc) {
+                // No doc with that id is found
+                $res['docsNotFound'][] = $id;
+                continue;
+            }
+            $doc = $doc->getLastDocument();
+            $id = $doc->getId();
+            if (!$doc->accessCheck(Utils::currUserId(), $level)) {
+                // Current user has no access to the doc
+                $res['docsNoAccess'][] = $id;
+            } elseif (!$allowBlocked && $doc->getStatus() === DOC_STATUS_BLOCKED) {
+                // Doc is blocked by previous operation
+                $res['docsBlocked']->add($doc);
+            } elseif (!$doc->checkFile()) {
+                // Associated file was not found on the disk
+                $res['docsFileNotFound']->add($doc);
+            } else {
+                // Document is ready to be processed
+                $res['docsOk']->add($doc);
+            }
+        }
+
+        return $res;
+    }
+
+    /**
      * Version of basename which correctly handles cyrillic letters and spaces.
      *
      * @param string $path

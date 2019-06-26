@@ -125,13 +125,13 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             if (iOS || android) {
                 let filenameArr = [];
                 let idArr = [];
-                docs = JSON.parse(d.docsToSign);
+                docs = JSON.parse(d.docsOk);
                 docs.forEach(function (elem) {
                     filenameArr.push(elem.name);
                     idArr.push(elem.id);
                 });
                 let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + (extra === null ? "null" : extra.role) +
-                    "&url=" + JSON.parse(d.docsToSign)[0].url + "&filename=" + filenameArr + "&href=" +
+                    "&url=" + JSON.parse(d.docsOk)[0].url + "&filename=" + filenameArr + "&href=" +
                     window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
                 if (/CriOS/i.test(navigator.userAgent)) {
                     window.location = url + "chrome";
@@ -151,7 +151,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                         extra = {};
                     }
                     extra.token = d.token;
-                    docs = JSON.parse(d.docsToSign);
+                    docs = JSON.parse(d.docsOk);
                     req = {};
                     req.jsonrpc = '2.0';
                     req.method = 'sign';
@@ -221,7 +221,7 @@ trustedCA.verify = function (ids) {
             // mobile CryptoArm support END
             } else {
                 if (d.success) {
-                    docs = JSON.parse(d.docs);
+                    docs = JSON.parse(d.docsOk);
                     req = {};
                     req.jsonrpc = '2.0';
                     req.method = 'verify';
@@ -236,6 +236,7 @@ trustedCA.verify = function (ids) {
                 } else {
                     console.log(d);
                 }
+                trustedCA.show_messages(d);
             }
         },
         error: function (e) {
@@ -257,35 +258,35 @@ trustedCA.show_messages = function (response) {
     if (response.noIds) {
         alert(ERROR_NO_IDS);
     }
-    if (response.docsFileNotFound) {
+    if (response.docsFileNotFound && response.docsFileNotFound.length) {
         message = ERROR_FILE_NOT_FOUND;
         response.docsFileNotFound.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
     }
-    if (response.docsNotFound) {
+    if (response.docsNotFound && response.docsNotFound.length) {
         message = ERROR_DOC_NOT_FOUND;
         response.docsNotFound.forEach(function (elem) {
             message += '\n' + elem;
         });
         alert(message);
     }
-    if (response.docsBlocked) {
+    if (response.docsBlocked && response.docsBlocked.length) {
         message = ERROR_DOC_BLOCKED;
         response.docsBlocked.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
     }
-    if (response.docsRoleSigned) {
+    if (response.docsRoleSigned && response.docsRoleSigned.length) {
         message = ERROR_DOC_ROLE_SIGNED;
         response.docsRoleSigned.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);
     }
-    if (response.docsNoAccess) {
+    if (response.docsNoAccess && response.docsNoAccess.length) {
         message = ERROR_DOC_NO_ACCESS;
         response.docsNoAccess.forEach(function (elem) {
             message += '\n' + elem;

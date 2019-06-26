@@ -10,11 +10,23 @@ use DateTime;
  */
 class AjaxCommand {
 
+    /**
+     * Check if documents are available before acessing them.
+     *
+     * @param array [ids]: array of document ids
+     *              [level]: access level required for operation
+     *              [allowBlocked]: can operation be performed on blocked docs?
+     */
     static function check($params) {
         $res = array(
             'success' => false,
             'message' => 'Unknown error in Ajax.check',
         );
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            return $res;
+        }
 
         $ids = $params['ids'];
         $level = $params['level'] ?: DOC_SHARE_READ;
@@ -26,59 +38,18 @@ class AjaxCommand {
             return $res;
         }
 
-        $docsNotFound = array();
-        $docsNoAccess = array();
-        $docsFileNotFound = new DocumentCollection();
-        $docsBlocked = new DocumentCollection();
-        $docsOk = array();
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, $level, $allowBlocked)
+        );
 
-        foreach ($ids as $id) {
-            $doc = Database::getDocumentById($id);
-            if (!$doc) {
-                $docsNotFound[] = $id;
-                continue;
-            }
-            if (!$doc->accessCheck(Utils::currUserId(), $level)) {
-                $docsNoAccess[] = $id;
-            } elseif (!$allowBlocked && $doc->getStatus() === DOC_STATUS_BLOCKED) {
-                $docsBlocked->add($doc);
-            } elseif (!$doc->checkFile()) {
-                $docsFileNotFound->add($doc);
-            } else {
-                $docsOk[] = $id;
-            }
-        }
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toIdArray();
 
-        if ($docsNotFound) {
-            $res['docsNotFound'] = $docsNotFound;
-        }
-
-        if ($docsNoAccess) {
-            $res['docsNoAccess'] = $docsNoAccess;
-        }
-
-        if ($docsFileNotFound->count()) {
-            foreach ($docsFileNotFound->getList() as $doc) {
-                $res["docsFileNotFound"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId(),
-                );
-            }
-        }
-
-        if ($docsBlocked->count()) {
-            foreach ($docsBlocked->getList() as $doc) {
-                $res["docsBlocked"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId(),
-                );
-            }
-        }
-
-        if ($docsOk) {
+        if ($res['docsOk']) {
             $res['success'] = true;
             $res['message'] = 'Some documents passed checks';
-            $res['docsOk'] = $docsOk;
         } else {
             $res['message'] = 'Documents did not pass checks';
         }
@@ -95,7 +66,7 @@ class AjaxCommand {
      * @return array [success]: operation result status
      *               [message]: operation result message
      *               [token]: block token
-     *               [docsToSign]: JSON representation of documents that are ready to be signed
+     *               [docsOk]: JSON representation of documents that are ready to be signed
      *               [docsNotFound]: array of ids that were not found in document database
      *               [docsFileNotFound]: documents for which associated file was not found on disk
      *               [docsBlocked]: documents blocked by previous operation
@@ -104,7 +75,7 @@ class AjaxCommand {
     static function sign($params) {
         $res = array(
             "success" => false,
-            "message" => "Nothing to sign",
+            "message" => "Unknown error in Ajax.sign",
         );
 
         if (!Utils::checkAuthorization()) {
@@ -112,86 +83,36 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["id"];
-        if (!$docIds) {
-            $res["noIds"] = true;
+        $ids = $params["id"];
+
+        if (!$ids) {
             $res["message"] = "No ids were given";
+            $res["noIds"] = true;
             return $res;
         }
 
-        $docsToSign = new DocumentCollection();
-        $docsNotFound = array();
-        $docsFileNotFound = new DocumentCollection();
-        $docsBlocked = new DocumentCollection();
-        $docsRoleSigned = new DocumentCollection();
-        $docsNoAccess = array();
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false)
+        );
 
         $token = Utils::generateUUID();
+        $res["token"] = $token;
 
-        foreach ($docIds as &$id) {
-            $doc = Database::getDocumentById($id);
-            if (!$doc) {
-                // No doc with that id is found
-                $docsNotFound[] = $id;
-            } else {
-                $doc = $doc->getLastDocument();
-                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
-                    // Current user has no access to the doc
-                    $docsNoAccess[] = $id;
-                } elseif ($doc->getStatus() === DOC_STATUS_BLOCKED) {
-                    // Doc is blocked by previous operation
-                    $docsBlocked->add($doc);
-                } elseif (!$doc->checkFile()) {
-                    // Associated file was not found on the disk
-                    $docsFileNotFound->add($doc);
-                } elseif ($params["extra"] && !DocumentsByOrder::checkDocByRole($doc, $params["extra"]["role"])) {
-                    // TODO: probably should be removed
-                    // No need to sign doc based on it ROLES property
-                    $docsRoleSigned->add($doc);
-                } else {
-                    // Doc is ready to be sent
-                    $docsToSign->add($doc);
-                    $doc->block($token);
-                    $doc->save();
-                }
-            }
+        foreach ($res['docsOk']->getList() as $okDoc) {
+            $okDoc->block($token);
+            $okDoc->save();
         }
 
-        if ($docsToSign->count()) {
-            $res["docsToSign"] = $docsToSign->toJSON();
-            $res["message"] = "Some documents were sent for signing";
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toJSON();
+
+        if ($res['docsOk']) {
             $res["success"] = true;
-            $res["token"] = $token;
-        }
-        if ($docsNotFound) {
-            $res["docsNotFound"] = $docsNotFound;
-        }
-        if ($docsFileNotFound->count()) {
-            foreach ($docsFileNotFound->getList() as $doc) {
-                $res["docsFileNotFound"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId(),
-                );
-            }
-        }
-        if ($docsBlocked->count()) {
-            foreach ($docsBlocked->getList() as $doc) {
-                $res["docsBlocked"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId(),
-                );
-            }
-        }
-        if ($docsRoleSigned->count()) {
-            foreach ($docsRoleSigned->getList() as $doc) {
-                $res["docsRoleSigned"][] = array(
-                    "filename" => $doc->getName(),
-                    "id" => $doc->getId(),
-                );
-            }
-        }
-        if ($docsNoAccess) {
-            $res["docsNoAccess"] = $docsNoAccess;
+            $res["message"] = "Some documents were sent for signing";
+        } else {
+            $res["message"] = "Nothing to sign";
         }
 
         if ($res['success'] && PROVIDE_LICENSE) {
@@ -227,26 +148,30 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["id"];
-        if (!$docIds) {
+        $ids = $params["id"];
+
+        if (!$ids) {
             $res["message"] = "No ids were given";
+            $res["noIds"] = true;
             return $res;
         }
 
-        $docColl = new DocumentCollection();
-        foreach ($docIds as &$id) {
-            $doc = Database::getDocumentById($id);
-            if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
-                $docColl->add($doc->getLastDocument());
-            }
-        }
-        if ($docColl->count()) {
-            $res["docs"] = $docColl->toJSON();
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, DOC_SHARE_READ, true)
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toJSON();
+
+        if ($res['docsOk']) {
             $res["message"] = "Found documents";
             $res["success"] = true;
         } else {
             $res["message"] = "Nothing to verify";
         }
+
         return $res;
     }
 
@@ -380,48 +305,45 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["ids"];
-        if (!$docIds) {
+        $ids = $params["ids"];
+
+        if (!$ids) {
             $res["docsNotFound"] = array($id);
             $res["message"] = "No ids were given";
             return $res;
         }
 
-        // Check all docs before removing
-        foreach ($docIds as &$id) {
-            $doc = Database::getDocumentById($id);
-            if (!$doc) {
-                $res["docsNotFound"] = array($id);
-                $res["message"] = "No access to some of the documents";
-                return $res;
-            }
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, DOC_SHARE_SIGN, true)
+        );
 
-            $lastDoc = $doc->getLastDocument();
-            if (!$lastDoc) {
-                $res["docsNotFound"] = array($id);
-                $res["message"] = "No access to some of the documents";
-                return $res;
-            }
+        $docsToRemove = array_merge(
+            $res['docsOk']->toIdArray(),
+            $res['docsFileNotFound']->toIdArray(),
+            $res['docsBlocked']->toIdArray()
+        );
 
-            if (!$lastDoc->accessCheck(Utils::currUserId())) {
-                $res["docsNotFound"] = array($id);
-                $res["message"] = "No access to some of the documents";
-                return $res;
-            }
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toIdArray();
+
+        if ($docsToRemove) {
+            $res["success"] = true;
+            $res["message"] = "Some documents were removed";
+        } else {
+            $res["message"] = "Nothing to remove";
         }
 
-        foreach ($docIds as &$id) {
+        foreach ($docsToRemove as $id) {
             $doc = Database::getDocumentById($id);
-            $lastDoc = $doc->getLastDocument();
-            $lastDoc->remove();
+            $doc->remove();
             Utils::log(array(
                 "action" => "removed",
-                "docs" => $lastDoc,
+                "docs" => $doc,
             ));
         }
 
-        $res["message"] = "Some documents were removed";
-        $res["success"] = true;
         return $res;
     }
 
@@ -576,18 +498,20 @@ class AjaxCommand {
             return $res;
         }
 
-        $doc = Database::getDocumentById($id);
-        if (!$doc) {
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments(array($id), DOC_SHARE_READ, true)
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+
+        if (!$res['docsOk']->count()) {
             $res["message"] = "Document is not found";
             return $res;
         }
 
-        $doc = $doc->getLastDocument();
-
-        if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
-            $res["message"] = "No access to the document";
-            return $res;
-        }
+        $doc = $res['docsOk']->getList()[0];
 
         Protocol::createProtocol($doc);
     }
