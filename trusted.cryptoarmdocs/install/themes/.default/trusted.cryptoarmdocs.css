@@ -33,7 +33,7 @@
 @media(min-width: 1025px){
     .trustedcryptoarmdocs_doc_table td:last-child {
         width: 30%;
-        display: contents;
+        display: inline-block;
     }
 } 
 @media(max-width: 1024px){
@@ -76,21 +76,13 @@
     text-overflow: ellipsis;
     overflow: hidden;
     margin-left: 8px;
+    margin-right: 25px;
     vertical-align: -moz-middle-with-baseline;
     vertical-align: -webkit-baseline-middle;
 }
 @media(max-width: 1024px){
     .tn_document {
-        cursor: pointer;
-        display: inline-block;
         width: 120px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        margin-left: 8px;
-        margin-right: 25px;
-        vertical-align: -moz-middle-with-baseline;
-        vertical-align: -webkit-baseline-middle;
-
     }
 } 
 /*Table documents column*/
