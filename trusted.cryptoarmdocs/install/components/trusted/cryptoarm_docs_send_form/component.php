@@ -39,15 +39,16 @@ $propertiesAdditional = CIBlockPropertyEnum::GetList(
 );
 
 while ($prop_fields = $properties->GetNext()) {
-//    $arResult["PROPERTY"][$prop_fields["ID"]]["NAME"] = $prop_fields;
+//    $arResult["PROPERTY"][$prop_fields["ID"]] = $prop_fields;
     $arResult["PROPERTY"][$prop_fields["ID"]]["ID"] = $prop_fields["ID"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["NAME"] = $prop_fields["NAME"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["PROPERTY_TYPE"] = $prop_fields["PROPERTY_TYPE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["MULTIPLE"] = $prop_fields["MULTIPLE"];
-    $arResult["PROPERTY"][$prop_fields["ID"]]["ACTIVE"] = $prop_fields["ACTIVE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["LIST_TYPE"] = $prop_fields["LIST_TYPE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["DEFAULT_VALUE"] = $prop_fields["DEFAULT_VALUE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["SORT"] = $prop_fields["SORT"];
+    $arResult["PROPERTY"][$prop_fields["ID"]]["CODE"] = $prop_fields["CODE"];
+    $arResult["PROPERTY"][$prop_fields["ID"]]["USER_TYPE"] = $prop_fields["USER_TYPE"];
 }
 
 while ($propAdd_fields = $propertiesAdditional->GetNext()) {
