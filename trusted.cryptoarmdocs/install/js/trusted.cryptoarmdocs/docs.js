@@ -26,6 +26,11 @@ var SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
 var ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
 
 
+// Error after authorization
+ if (AJAX_CONTROLLER == ''){
+    location.reload();
+ }
+
 // ====================================================
 // === Establish socket connection, assign handlers ===
 // ====================================================
