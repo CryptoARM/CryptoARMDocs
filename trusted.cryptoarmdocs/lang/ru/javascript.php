@@ -12,7 +12,7 @@ if (Docs\Utils::isSecure()) {
 $MESS["TR_CA_DOCS_ERROR_NO_AUTH"] = "Для выполнения этой операции необходима авторизация";
 $MESS["TR_CA_DOCS_ERROR_NO_IDS"] = "В запросе не заданы идентификаторы документов";
 $MESS["TR_CA_DOCS_ERROR_FILE_NOT_FOUND"] = "Не найдены файлы, соответствующие следующим документам:";
-$MESS["TR_CA_DOCS_ERROR_DOC_NOT_FOUND"] = "Нет найдены документы со следующими идентификаторами: ";
+$MESS["TR_CA_DOCS_ERROR_DOC_NOT_FOUND"] = "Не найдены документы со следующими идентификаторами: ";
 $MESS["TR_CA_DOCS_ERROR_DOC_BLOCKED"] = "Некоторые документы заблокированы с связи с отправкой на подпись:";
 $MESS["TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED"] = "Некоторые документы уже подписаны:";
 $MESS["TR_CA_DOCS_ERROR_DOC_NO_ACCESS"] = "Нет доступа к некоторым документам: ";
