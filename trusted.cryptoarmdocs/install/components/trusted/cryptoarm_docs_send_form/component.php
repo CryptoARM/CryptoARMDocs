@@ -3,6 +3,7 @@
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Config\Option;
 
 Loader::includeModule('trusted.cryptoarmdocs');
 Loader::includeModule('iblock');

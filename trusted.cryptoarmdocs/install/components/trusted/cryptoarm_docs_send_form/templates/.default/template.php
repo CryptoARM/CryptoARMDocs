@@ -4,7 +4,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die();
 ?>
 
-<form enctype="multipart/form-data" id="crypto-arm-document__send-form" method="POST">
+<iframe id="trCaDocs__frame"
+        name="trCaDocs__frame"
+        style="display:none">
+</iframe>
+<form enctype="multipart/form-data" target="trCaDocs__frame" id="crypto-arm-document__send-form" method="POST"
+      action="/bitrix/components/trusted/cryptoarm_docs_send_form/templates/.default/uploadDocs.php">
     <div class="crypto-arm-document__send-form">
         <div class="send-form-data">
             <?
@@ -23,7 +28,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                             <br/>
                                             <?
                                         }
-
                                         break;
                                     case "Date" :
                                         {
@@ -57,30 +61,28 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                         case "N":
                             {
                                 echo $value["NAME"];
-                                switch ($value["CODE"]) {
-                                    case "DOC_FILE" :
-                                        {
-                                            ?>
-                                            <input type="file"
-                                                   id="<?= "input_number_" . $value["ID"] ?>"
-                                                   name="<?= "input_number_" . $value["ID"] ?>"
-                                            />
-                                            <br/>
-                                            <?
-                                        }
-                                        break;
-                                    default :
-                                        {
-                                            ?>
-                                            <input type="number"
-                                                   id="<?= "input_number_" . $value["ID"] ?>"
-                                                   name="<?= "input_number_" . $value["ID"] ?>"
-                                                   value="<?= $value["DEFAULT_VALUE"] ?>"
-                                                   placeholder="<?= $value["HINT"] ?>"
-                                            />
-                                            <br/>
-                                            <?
-                                        }
+                                if (stristr($value["CODE"], "DOC_FILE")) {
+                                    ?>
+                                    <input type="file"
+                                           id="<?= "input_file_" . $value["ID"] ?>"
+                                           name="<?= "input_file_" . $value["ID"] ?>"
+                                    />
+                                    <input type="hidden"
+                                           id="<?= "input_file_id_" . $value["ID"] ?>"
+                                           name="<?= "input_file_id_" . $value["ID"] ?>"
+                                    />
+                                    <br/>
+                                    <?
+                                } else {
+                                    ?>
+                                    <input type="number"
+                                           id="<?= "input_number_" . $value["ID"] ?>"
+                                           name="<?= "input_number_" . $value["ID"] ?>"
+                                           value="<?= $value["DEFAULT_VALUE"] ?>"
+                                           placeholder="<?= $value["HINT"] ?>"
+                                    />
+                                    <br/>
+                                    <?
                                 }
                             }
                             break;
@@ -94,7 +96,9 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                id="<?= "input_checkbox_" . $key2 ?>"
                                                name="<?= "input_checkbox_" . $key2 ?>"
                                         />
-                                        <label for="<?= "input_checkbox_" . $key2 ?>"><?= $value2 ?></label>
+                                        <label for="<?= "input_checkbox_" . $key2 ?>">
+                                            <?= $value2 ?>
+                                        </label>
                                         <br/>
                                         <?
                                     }
@@ -104,17 +108,17 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                     case "L" :
                                         {
                                             ?>
-                                            <p>
-                                                <select name="<?= "input_number_" . $value["ID"] ?>">
-                                                    <?
-                                                    foreach ($value["ADDICTION"] as $key2 => $value2) {
-                                                        ?>
-                                                        <option value="<?= $key2 ?>"><?= $value2 ?></option>
-                                                        <?
-                                                    }
+                                            <select
+                                                    id="<?= "input_number_" . $value["ID"] ?>"
+                                                    name="<?= "input_number_" . $value["ID"] ?>">
+                                                <?
+                                                foreach ($value["ADDICTION"] as $key2 => $value2) {
                                                     ?>
-                                                </select>
-                                            </p>
+                                                    <option value="<?= $key2 ?>"><?= $value2 ?></option>
+                                                    <?
+                                                }
+                                                ?>
+                                            </select>
                                             <br/>
                                             <?
                                         }
@@ -126,8 +130,11 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                 ?>
                                                 <div class="radioBTN">
                                                     <input type="radio"
+                                                           id="<?= "input_radio_" . $value["ID"] ?>"
                                                            name="<?= "input_radio_" . $value["ID"] ?>"
-                                                           value="<?= $value2 ?>"/><?= $value2 ?>
+                                                           value="<?= $value2 ?>"
+                                                    />
+                                                    <?= $value2 ?>
                                                 </div>
                                                 <br/>
                                                 <?
@@ -144,8 +151,14 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
             }
             ?>
         </div>
+        <p>
         <div>
-            <input type="button" value="Сохранить файл" onclick=""/>
+            <input type="submit"
+                   id="cryptoArmDocsSubmitBTN"
+                   name="cryptoArmDocsSubmitBTN"
+                   value="Подписать документы"
+                   onclick=""/>
         </div>
+        </p>
     </div>
 </form>
