@@ -108,7 +108,11 @@ class AjaxCommand {
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
         $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
-        $res['docsOk'] = $res['docsOk']->toJSON();
+        if ($res['docsOk']->count()){
+            $res['docsOk'] = $res['docsOk']->toJSON();
+        } else {
+            $res['docsOk'] = null;
+        }
 
         if ($res['docsOk']) {
             $res["success"] = true;
@@ -166,7 +170,11 @@ class AjaxCommand {
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
         $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
-        $res['docsOk'] = $res['docsOk']->toJSON();
+        if ($res['docsOk']->count()){
+            $res['docsOk'] = $res['docsOk']->toJSON();
+        } else {
+            $res['docsOk'] = null;
+        }
 
         if ($res['docsOk']) {
             $res["message"] = "Found documents";
