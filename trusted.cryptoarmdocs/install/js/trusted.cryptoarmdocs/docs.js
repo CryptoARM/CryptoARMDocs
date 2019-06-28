@@ -1,35 +1,42 @@
+if (!trustedCA) {
+    var trustedCA = {};
+}
+
 // ===============================
 // === Get js library messages ===
 // ===============================
-var AJAX_CONTROLLER = BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
-var NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
-var HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
-var REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
-var REMOVE_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM_MANY');
-var LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
-var LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
-var LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
-var ERROR_NO_AUTH = BX.message('TR_CA_DOCS_ERROR_NO_AUTH');
-var ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
-var ERROR_FILE_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_FILE_NOT_FOUND');
-var ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
-var ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
-var ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
-var ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
-var SEND_MAIL_SUCCESS = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS');
-var SEND_MAIL_FAILURE = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE');
-var SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
-var SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
-var SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
-var SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
-var SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
-var ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
+trustedCA.initVar = function(){
+    AJAX_CONTROLLER = BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
+    NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
+    HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
+    REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
+    REMOVE_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM_MANY');
+    LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
+    LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
+    LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
+    ERROR_NO_AUTH = BX.message('TR_CA_DOCS_ERROR_NO_AUTH');
+    ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
+    ERROR_FILE_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_FILE_NOT_FOUND');
+    ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
+    ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
+    ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
+    ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
+    SEND_MAIL_SUCCESS = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS');
+    SEND_MAIL_FAILURE = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE');
+    SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
+    SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
+    SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
+    SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
+    SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
+    ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
+};
 
-
-// Error after authorization
- if (AJAX_CONTROLLER == ''){
-    location.reload();
- }
+// Fixes errors after authorization      
+if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
+    trustedCA.initVar();
+} else {    
+    setTimeout(function() {trustedCA.initVar()}, 100);
+}
 
 // ====================================================
 // === Establish socket connection, assign handlers ===
@@ -63,10 +70,6 @@ if (location.protocol === 'https:') {
 // =========================
 // === Module js library ===
 // =========================
-if (!trustedCA) {
-    var trustedCA = {};
-}
-
 
 trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
     $.ajax({
