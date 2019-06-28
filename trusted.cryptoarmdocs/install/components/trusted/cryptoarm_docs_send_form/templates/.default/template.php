@@ -34,8 +34,8 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                             echo $value["NAME"];
                                             ?>
                                             <input type="date"
-                                                   id="<?= "input_text_" . $value["ID"] ?>"
-                                                   name="<?= "input_text_" . $value["ID"] ?>"
+                                                   id="<?= "input_date_" . $value["ID"] ?>"
+                                                   name="<?= "input_date_" . $value["ID"] ?>"
                                                    value="<?= $value["DEFAULT_VALUE"] ?>"
                                             />
                                             <br/>
@@ -132,7 +132,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                     <input type="radio"
                                                            id="<?= "input_radio_" . $value["ID"] ?>"
                                                            name="<?= "input_radio_" . $value["ID"] ?>"
-                                                           value="<?= $value2 ?>"
+                                                           value="<?= $key2 ?>"
                                                     />
                                                     <?= $value2 ?>
                                                 </div>

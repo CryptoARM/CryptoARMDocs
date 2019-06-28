@@ -39,6 +39,7 @@ foreach ($_POST as $key => $value) {
                 $doc = Docs\Utils::createDocument($relativePath, $props);
                 $fileId = $doc->getId();
                 DocUpload($inputIndexFileId, $fileId);
+                $_POST["input_file_id_" . $inputIndexFileId] = $fileId;
             }
         }
     }
