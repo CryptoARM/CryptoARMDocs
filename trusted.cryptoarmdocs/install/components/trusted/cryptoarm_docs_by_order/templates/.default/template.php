@@ -50,7 +50,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>
                         </div>
-                        <? $verifyAllJs = "trustedCA.verify($allIdsJs ?>)" ?>
+                        <? $verifyAllJs = "trustedCA.verify($allIdsJs)" ?>
                         <div onclick="<?= $verifyAllJs ?>">
                             <div class="material-icons">
                                 info
