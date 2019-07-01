@@ -270,6 +270,12 @@ trustedCA.show_messages = function (response) {
     if (response.noAuth) {
         alert(ERROR_NO_AUTH);
     }
+    if (response.noUser) {
+        alert(SHARE_NO_USER_1 + response.noUser + SHARE_NO_USER_2);
+    }
+    if (response.noSendMail){
+        alert(SEND_MAIL_FAILURE);
+    }
     if (response.docsFileNotFound && response.docsFileNotFound.length) {
         message = ERROR_FILE_NOT_FOUND;
         response.docsFileNotFound.forEach(function (elem) {
@@ -341,8 +347,7 @@ trustedCA.download = function (ids, filename) {
 
 trustedCA.sendEmail = function (ids, event, arEventFields, messageId) {
     let onSuccess = (d) => { alert(SEND_MAIL_SUCCESS); };
-    let onFailure = (e) => { alert(SEND_MAIL_FAILURE); };
-    trustedCA.ajax('sendEmail', {ids, event, arEventFields, messageId}, onSuccess, onFailure);
+    trustedCA.ajax('sendEmail', {ids, event, arEventFields, messageId}, onSuccess);
 };
 
 
@@ -379,8 +384,7 @@ trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) 
 
 trustedCA.share = function (ids, email, level = 'SHARE_READ') {
     let onSuccess = (d) => { alert(SHARE_SUCCESS_1 + email + SHARE_SUCCESS_2); };
-    let onFailure = (e) => { alert(SHARE_NO_USER_1 + email + SHARE_NO_USER_2); };
-    trustedCA.ajax('share', {ids, email, level}, onSuccess, onFailure);
+    trustedCA.ajax('share', {ids, email, level}, onSuccess);
 };
 
 

@@ -663,12 +663,16 @@ class AjaxCommand {
         $arEventFields = $params['arEventFields'];
         $messageId = $params['messageId'];
 
-        foreach ($ids as $docId) {
-            $doc = Database::getDocumentById($docId);
-            if (!$doc || !$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
-                $res["message"] = "No access to some of the documents";
-                return $res;
-            }
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, DOC_SHARE_READ, true)
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+      
+        if (!$res['docsOk']->count()) {
+            $res["message"] = "Documents not found";
+            return $res;
         }
 
         $sendStatus = Email::sendEmail($ids, $event, $arEventFields, $messageId);
@@ -680,6 +684,7 @@ class AjaxCommand {
             );
         } else {
             $res["message"] = $sendStatus["message"];
+            $res["noSendMail"] = true;
         }
 
         return $res;
@@ -704,16 +709,26 @@ class AjaxCommand {
         $userId = Utils::getUserIdByEmail($email);
         if (!$userId) {
             $res["message"] = "User not found";
+            $res["noUser"] = $email;
+            return $res;
+        }
+
+        $ids = $params["ids"];
+
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($ids, DOC_SHARE_READ, true)
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+
+        if (!$res['docsOk']->count()) {
+            $res["message"] = "Documents not found";
             return $res;
         }
 
         foreach ($docIds as $docId) {
             $doc = Database::getDocumentById($docId);
-            if (!$doc || !$doc->accessCheck(Utils::currUserId())) {
-                $res["message"] = "No access to some of the documents";
-                return $res;
-            }
-
             $fileName = $doc->getName();
             $ownerId = $doc->getOwner();
             $shareFrom = Utils::getUserName($ownerId) ?: "";
