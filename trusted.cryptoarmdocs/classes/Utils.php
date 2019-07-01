@@ -46,14 +46,16 @@ class Utils
      *               [docsNoAccess]: documents for which current user has no access
      *               [docsFileNotFound]: documents for which associated file was not found on disk
      *               [docsBlocked]: documents blocked by previous operation
+     *               [docsUnsigned]: documents not signed
      *               [docsOk]: documents that passed all checks
      */
-    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true) {
+    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true) {
         $res = array(
             'docsNotFound' => array(),
             'docsNoAccess' => array(),
             'docsFileNotFound' => new DocumentCollection(),
             'docsBlocked' => new DocumentCollection(),
+            'docsUnsigned' => new DocumentCollection(),
             'docsOk' => new DocumentCollection(),
         );
 
@@ -75,6 +77,9 @@ class Utils
             } elseif (!$doc->checkFile()) {
                 // Associated file was not found on the disk
                 $res['docsFileNotFound']->add($doc);
+            } elseif (!$allowSigned && $doc->getType() === DOC_TYPE_FILE) {
+                // Document is not signed
+                $res['docsUnsigned']->add($doc);
             } else {
                 // Document is ready to be processed
                 $res['docsOk']->add($doc);

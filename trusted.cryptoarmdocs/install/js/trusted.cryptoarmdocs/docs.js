@@ -20,6 +20,7 @@ trustedCA.initVar = function(){
     ERROR_DOC_NOT_FOUND = BX.message('TR_CA_DOCS_ERROR_DOC_NOT_FOUND');
     ERROR_DOC_BLOCKED = BX.message('TR_CA_DOCS_ERROR_DOC_BLOCKED');
     ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
+    ERROR_DOC_UNSIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_UNSIGNED');
     ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
     SEND_MAIL_SUCCESS = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS');
     SEND_MAIL_FAILURE = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE');
@@ -31,10 +32,10 @@ trustedCA.initVar = function(){
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
 };
 
-// Fixes errors after authorization      
+// Fixes errors after authorization
 if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
     trustedCA.initVar();
-} else {    
+} else {
     setTimeout(function() {trustedCA.initVar()}, 100);
 }
 
@@ -300,6 +301,13 @@ trustedCA.show_messages = function (response) {
     if (response.docsRoleSigned && response.docsRoleSigned.length) {
         message = ERROR_DOC_ROLE_SIGNED;
         response.docsRoleSigned.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.filename;
+        });
+        alert(message);
+    }
+    if (response.docsUnsigned && response.docsUnsigned.length) {
+        message = ERROR_DOC_UNSIGNED;
+        response.docsUnsigned.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.filename;
         });
         alert(message);

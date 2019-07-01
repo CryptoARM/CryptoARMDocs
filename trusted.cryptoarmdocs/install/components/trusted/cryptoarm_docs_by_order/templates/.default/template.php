@@ -133,14 +133,20 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                             create
                         </i>
                     </div>
-                    <? $verifyJs = "trustedCA.verify([$docId])" ?>
-                    <div class="icon-wrapper"
-                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
-                         onclick="<?= $verifyJs ?>">
-                        <i class="material-icons">
-                            info
-                        </i>
-                    </div>
+                    <?
+                    $verifyJs = "trustedCA.verify([$docId])";
+                    if ($docType === DOC_TYPE_SIGNED_FILE) {
+                    ?>
+                        <div class="icon-wrapper"
+                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
+                            onclick="<?= $verifyJs ?>">
+                            <i class="material-icons">
+                                info
+                            </i>
+                        </div>
+                    <?
+                    }
+                    ?>
                     <? $downloadJs = "trustedCA.download([$docId], true)" ?>
                     <div class="icon-wrapper"
                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"

@@ -15,6 +15,7 @@ $MESS["TR_CA_DOCS_ERROR_FILE_NOT_FOUND"] = "Не найдены файлы, со
 $MESS["TR_CA_DOCS_ERROR_DOC_NOT_FOUND"] = "Не найдены документы со следующими идентификаторами: ";
 $MESS["TR_CA_DOCS_ERROR_DOC_BLOCKED"] = "Некоторые документы заблокированы с связи с отправкой на подпись:";
 $MESS["TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED"] = "Некоторые документы уже подписаны:";
+$MESS["TR_CA_DOCS_ERROR_DOC_UNSIGNED"] = "Следущие документы не имеют подписи:";
 $MESS["TR_CA_DOCS_ERROR_DOC_NO_ACCESS"] = "Нет доступа к некоторым документам: ";
 
 $MESS["TR_CA_DOCS_ALERT_NO_CLIENT"] = "Для подписи документов установите и запустите КриптоАРМ ГОСТ. Скачать КриптоАРМ ГОСТ можно в нашем интернет-магазине: https://cryptoarm.ru/cryptoarm-gost";

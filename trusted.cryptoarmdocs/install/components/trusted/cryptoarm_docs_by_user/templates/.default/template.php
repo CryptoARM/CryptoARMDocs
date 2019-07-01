@@ -187,14 +187,18 @@ $APPLICATION->IncludeComponent(
                                 <?
                                 }
                                 $verifyJs = "trustedCA.verify([$docId])";
+                                if ($docType === DOC_TYPE_SIGNED_FILE) {
                                 ?>
-                                <div class="icon-wrapper"
-                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
-                                     onclick="<?= $verifyJs ?>">
-                                    <i class="material-icons">
-                                        info
-                                    </i>
-                                </div>
+                                    <div class="icon-wrapper"
+                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
+                                        onclick="<?= $verifyJs ?>">
+                                        <i class="material-icons">
+                                            info
+                                        </i>
+                                    </div>
+                                <?
+                                }
+                                ?>
                                 <? $downloadJs = "trustedCA.download([$docId])" ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"

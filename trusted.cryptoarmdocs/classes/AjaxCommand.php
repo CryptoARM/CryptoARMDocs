@@ -165,11 +165,12 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_READ, true)
+            Utils::checkDocuments($ids, DOC_SHARE_READ, true, false)
         );
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
         $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsUnsigned'] = $res['docsUnsigned']->toIdAndFilenameArray();
         if ($res['docsOk']->count()){
             $res['docsOk'] = $res['docsOk']->toJSON();
         } else {
@@ -669,7 +670,7 @@ class AjaxCommand {
         );
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
-      
+
         if (!$res['docsOk']->count()) {
             $res["message"] = "Documents not found";
             return $res;
