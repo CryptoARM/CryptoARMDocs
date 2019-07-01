@@ -47,6 +47,7 @@ while ($prop_fields = $properties->GetNext()) {
     $arResult["PROPERTY"][$prop_fields["ID"]]["MULTIPLE"] = $prop_fields["MULTIPLE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["LIST_TYPE"] = $prop_fields["LIST_TYPE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["DEFAULT_VALUE"] = $prop_fields["DEFAULT_VALUE"];
+    $arResult["PROPERTY"][$prop_fields["ID"]]["IS_REQUIRED"] = $prop_fields["IS_REQUIRED"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["SORT"] = $prop_fields["SORT"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["CODE"] = $prop_fields["CODE"];
     $arResult["PROPERTY"][$prop_fields["ID"]]["USER_TYPE"] = $prop_fields["USER_TYPE"];

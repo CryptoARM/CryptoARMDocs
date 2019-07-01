@@ -45,4 +45,9 @@ foreach ($_POST as $key => $value) {
     }
 }
 
+$iblockTypeid = $_POST["iBlock_type_id"];
+unset($_POST["iBlock_type_id"]);
+
+Docs\Form::addIBlockForm($iblockTypeid, $_POST);
+
 unset($_FILES[$inputIndexFullFileId]['name']);

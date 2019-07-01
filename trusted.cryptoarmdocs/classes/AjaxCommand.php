@@ -669,7 +669,7 @@ class AjaxCommand {
         );
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
-      
+
         if (!$res['docsOk']->count()) {
             $res["message"] = "Documents not found";
             return $res;
