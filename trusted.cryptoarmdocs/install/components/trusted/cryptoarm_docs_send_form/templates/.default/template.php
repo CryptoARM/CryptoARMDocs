@@ -2,6 +2,7 @@
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die();
+//var_dump($arResult["PROPERTY"]);
 ?>
 
 <iframe id="trCaDocs__frame"
@@ -37,6 +38,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                    id="<?= "input_date_" . $value["ID"] ?>"
                                                    name="<?= "input_date_" . $value["ID"] ?>"
                                                    value="<?= $value["DEFAULT_VALUE"] ?>"
+                                                <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                             />
                                             <br/>
                                             <?
@@ -51,6 +53,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                    name="<?= "input_text_" . $value["ID"] ?>"
                                                    value="<?= $value["DEFAULT_VALUE"] ?>"
                                                    placeholder="<?= $value["HINT"] ?>"
+                                                <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                             />
                                             <br/>
                                             <?
@@ -66,6 +69,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                     <input type="file"
                                            id="<?= "input_file_" . $value["ID"] ?>"
                                            name="<?= "input_file_" . $value["ID"] ?>"
+                                        <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                     />
                                     <input type="hidden"
                                            id="<?= "input_file_id_" . $value["ID"] ?>"
@@ -80,6 +84,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                            name="<?= "input_number_" . $value["ID"] ?>"
                                            value="<?= $value["DEFAULT_VALUE"] ?>"
                                            placeholder="<?= $value["HINT"] ?>"
+                                        <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                     />
                                     <br/>
                                     <?
@@ -92,13 +97,15 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                 if ($value["MULTIPLE"] == "Y") {
                                     foreach ($value["ADDICTION"] as $key2 => $value2) {
                                         ?>
-                                        <input type="checkbox"
-                                               id="<?= "input_checkbox_" . $key2 ?>"
-                                               name="<?= "input_checkbox_" . $key2 ?>"
-                                        />
-                                        <label for="<?= "input_checkbox_" . $key2 ?>">
-                                            <?= $value2 ?>
-                                        </label>
+                                        <p>
+                                            <input type="checkbox"
+                                                   id="<?= "input_checkbox_" . $key . "_" . $key2 ?>"
+                                                   name="<?= "input_checkbox_" . $key . "_" . $key2 ?>"
+                                            />
+                                            <label for="<?= "input_checkbox_" . $key . "_" . $key2 ?>">
+                                                <?= $value2 ?>
+                                            </label>
+                                        </p>
                                         <br/>
                                         <?
                                     }
@@ -133,6 +140,7 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                            id="<?= "input_radio_" . $value["ID"] ?>"
                                                            name="<?= "input_radio_" . $value["ID"] ?>"
                                                            value="<?= $key2 ?>"
+                                                        <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                     />
                                                     <?= $value2 ?>
                                                 </div>
@@ -150,14 +158,16 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                 <?
             }
             ?>
+            <input type="hidden"
+                   id="iBlock_type_id"
+                   name="iBlock_type_id"
+                   value="<?= $arParams["IBLOCK_ID"] ?>"
+            />
         </div>
         <p>
         <div>
             <input type="submit"
-                   id="cryptoArmDocsSubmitBTN"
-                   name="cryptoArmDocsSubmitBTN"
-                   value="Подписать документы"
-                   onclick=""/>
+                   value="Подписать документы"/>
         </div>
         </p>
     </div>
