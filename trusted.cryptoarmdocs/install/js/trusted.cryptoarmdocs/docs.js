@@ -42,31 +42,33 @@ if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
 // ====================================================
 // === Establish socket connection, assign handlers ===
 // ====================================================
-if (location.protocol === 'https:') {
-    var socket = io('https://localhost:4040');
-    socket.on('connect', () => { console.log('Event: connect'); });
-    socket.on('disconnect', data => { console.log('Event: disconnect, reason: ', data); });
-    socket.on('verified', data => { console.log('Event: verified', data); });
-    socket.on('signed', data => { console.log('Event: signed, data: ', data); });
-    socket.on('uploaded', data => {
-        console.log('Event: uploaded, data: ', data);
-        // Check to see if page defined it's own handler
-        if (typeof trustedCAUploadHandler === 'function') {
-            trustedCAUploadHandler(data);
-        } else {
-            console.log('upload detected, handler not defined');
-        }
-    });
-    socket.on('cancelled', data => {
-        console.log('Event: cancelled', data);
-        if (typeof trustedCACancelHandler === 'function') {
-            trustedCA.unblock([data.id], (data) => trustedCACancelHandler(data));
-        } else {
-            trustedCA.unblock([data.id], () => console.log('cancel detected, handler not defined'));
-        }
-    });
-}
-
+trustedCA.socketInit = function(){
+    if (location.protocol === 'https:') {
+        socket = io('https://localhost:4040');
+        socket.on('connect', () => { console.log('Event: connect'); });
+        socket.on('disconnect', data => { console.log('Event: disconnect, reason: ', data); });
+        socket.on('verified', data => { console.log('Event: verified', data); });
+        socket.on('signed', data => { console.log('Event: signed, data: ', data); });
+        socket.on('uploaded', data => {
+            console.log('Event: uploaded, data: ', data);
+            // Check to see if page defined it's own handler
+            if (typeof trustedCAUploadHandler === 'function') {
+                trustedCAUploadHandler(data);
+            } else {
+                console.log('upload detected, handler not defined');
+            }
+        });
+        socket.on('cancelled', data => {
+            console.log('Event: cancelled', data);
+            if (typeof trustedCACancelHandler === 'function') {
+                trustedCA.unblock([data.id], (data) => trustedCACancelHandler(data));
+            } else {
+                trustedCA.unblock([data.id], () => console.log('cancel detected, handler not defined'));
+            }
+        });
+    }
+};
+trustedCA.socketInit();
 
 // =========================
 // === Module js library ===
@@ -110,6 +112,8 @@ trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
             }
         }
     });
+    // Fixes random socket disconnects
+    trustedCA.socketInit();
 };
 
 
