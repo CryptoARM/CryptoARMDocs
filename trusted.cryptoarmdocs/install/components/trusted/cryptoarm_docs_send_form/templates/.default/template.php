@@ -18,6 +18,16 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                 ?>
                 <div class="input-string">
                     <?
+                    if (!($value["USER_TYPE"] == "HTML")) {
+                        ?>
+                        <div class="export-item-title">
+                            <?
+                            echo $value["NAME"];
+                            ?>
+                        </div>
+                        <br/>
+                        <?
+                    }
                     switch ($value["PROPERTY_TYPE"]) {
                         case "S":
                             {
@@ -32,7 +42,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                         break;
                                     case "Date" :
                                         {
-                                            echo $value["NAME"];
                                             ?>
                                             <input type="date"
                                                    id="<?= "input_date_" . $value["ID"] ?>"
@@ -46,7 +55,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                         break;
                                     default :
                                         {
-                                            echo $value["NAME"];
                                             ?>
                                             <input type="text"
                                                    id="<?= "input_text_" . $value["ID"] ?>"
@@ -63,7 +71,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                             break;
                         case "N":
                             {
-                                echo $value["NAME"];
                                 if (stristr($value["CODE"], "DOC_FILE")) {
                                     ?>
                                     <input type="file"
@@ -93,7 +100,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                             break;
                         case "L":
                             {
-                                echo $value["NAME"];
                                 if ($value["MULTIPLE"] == "Y") {
                                     foreach ($value["ADDICTION"] as $key2 => $value2) {
                                         ?>
@@ -169,6 +175,5 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
             <input type="submit"
                    value="Подписать документы"/>
         </div>
-        </p>
     </div>
 </form>
