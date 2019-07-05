@@ -40,6 +40,7 @@ foreach ($_POST as $key => $value) {
                 $fileId = $doc->getId();
                 DocUpload($inputIndexFileId, $fileId);
                 $_POST["input_file_id_" . $inputIndexFileId] = $fileId;
+                $fileListToUpdate[] = $fileId;
             }
         }
     }
@@ -48,6 +49,15 @@ foreach ($_POST as $key => $value) {
 $iblockTypeid = $_POST["iBlock_type_id"];
 unset($_POST["iBlock_type_id"]);
 
-Docs\Form::addIBlockForm($iblockTypeid, $_POST);
+$iBlockId = Docs\Form::addIBlockForm($iblockTypeid, $_POST);
+
+if ($iblockTypeid["success"]) {
+    foreach ($fileListToUpdate as $fileId) {
+            $doc = Docs\Database::getDocumentById($fileId);
+            $props = $doc->getProperties();
+            $props->add(new Docs\Property("FORM", $iBlockId["data"]));
+            $doc->save();
+    }
+}
 
 unset($_FILES[$inputIndexFullFileId]['name']);
