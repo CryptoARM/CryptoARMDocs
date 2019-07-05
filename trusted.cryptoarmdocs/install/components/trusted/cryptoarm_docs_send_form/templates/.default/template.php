@@ -36,6 +36,11 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                         {
                                             ?>
                                             <? echo htmlspecialchars_decode($value["DEFAULT_VALUE"]["TEXT"]); ?>
+                                            <input type="hidden"
+                                                   id="<?= "input_html_" . $value["ID"] ?>"
+                                                   name="<?= "input_html_" . $value["ID"] ?>"
+                                                   value="<?= $value["DEFAULT_VALUE"]["TEXT"] ?>"
+                                            />
                                             <br/>
                                             <?
                                         }

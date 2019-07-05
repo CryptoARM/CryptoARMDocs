@@ -60,6 +60,11 @@ class Form {
                 $someArray[$key] = $value;
                 continue;
             }
+            if (stristr($key, "input_html_")) {
+                $key = str_ireplace("input_html_", "", $key);
+                $someArray[$key] = $value;
+                continue;
+            }
             if (stristr($key, "input_file_id_")) {
                 $key = str_ireplace("input_file_id_", "", $key);
                 if ($value || $value === 0 || $value === 0.0 || $value === '0') {

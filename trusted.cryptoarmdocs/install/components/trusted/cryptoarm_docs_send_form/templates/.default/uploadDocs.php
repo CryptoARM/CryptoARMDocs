@@ -60,4 +60,7 @@ if ($iblockTypeid["success"]) {
     }
 }
 
+//Docs\Utils::dump($arParams["IBLOCK_ID"]);
+//Docs\Form::createPDF(346);
+
 unset($_FILES[$inputIndexFullFileId]['name']);
