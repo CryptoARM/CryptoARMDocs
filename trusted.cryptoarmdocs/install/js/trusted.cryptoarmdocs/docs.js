@@ -6,7 +6,7 @@ if (!trustedCA) {
 // === Get js library messages ===
 // ===============================
 trustedCA.initVar = function(){
-    AJAX_CONTROLLER = BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
+    AJAX_CONTROLLER = window.location.protocol + '//' + window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
     NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
     HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
     REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');

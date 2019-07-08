@@ -1,13 +1,7 @@
 <?php
 use Trusted\CryptoARM\Docs;
 
-require_once __DIR__ . "/../../classes/Utils.php";
-
-if (Docs\Utils::isSecure()) {
-    $MESS["TR_CA_DOCS_AJAX_CONTROLLER"] = "https://" . $_SERVER["HTTP_HOST"] . "/bitrix/components/trusted/docs/ajax.php";
-} else {
-    $MESS["TR_CA_DOCS_AJAX_CONTROLLER"] = "http://" . $_SERVER["HTTP_HOST"]. "/bitrix/components/trusted/docs/ajax.php";
-}
+$MESS["TR_CA_DOCS_AJAX_CONTROLLER"] = "/bitrix/components/trusted/docs/ajax.php";
 
 $MESS["TR_CA_DOCS_ERROR_NO_AUTH"] = "Для выполнения этой операции необходима авторизация";
 $MESS["TR_CA_DOCS_ERROR_NO_IDS"] = "В запросе не заданы идентификаторы документов";
