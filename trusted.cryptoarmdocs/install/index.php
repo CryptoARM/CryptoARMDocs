@@ -338,7 +338,7 @@ Class trusted_cryptoarmdocs extends CModule
             $this->UnInstallFiles();
             $this->UnInstallModuleOptions();
             $savedata = $request["savedata"];
-            if ($savedata != "Y") {
+            if ($savedata == "Y") {
                 $this->UnInstallDB();
                 $this->UnInstallIb();
             }
