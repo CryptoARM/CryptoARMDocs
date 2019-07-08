@@ -1,57 +1,92 @@
 /* Menu icon */
-.trustedcryptoarmdocs_menu_icon {
+.trca-menu-icon {
     background-image: url(icons/trusted.cryptoarmdocs/mnu_docs.png);
     background-position: 9px 4px;
 }
 
-#trustedcryptoarmdocs_menu_icon {
+#trca-menu-icon {
     background-image:url(icons/trusted.cryptoarmdocs/mnu_docs.png);
 }
 
 /* Table with separators between rows */
-.trustedcryptoarmdocs_doc_table {
+.trca-doc-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.trustedcryptoarmdocs_doc_table tr {
+.trca-doc-table tr {
     border: solid;
     border-width: 1px 0;
     border-color: #D3D3D3;
 }
 
-.trustedcryptoarmdocs_doc_table td{
+.trca-doc-table td{
     padding: 5px 0;
 }
 
-.trustedcryptoarmdocs_doc_table td:first-child {
+.trca-doc-table td:first-child {
     display: inline-block;
     white-space: nowrap;
     width: 69%;
 }
 
 @media(min-width: 1025px){
-    .trustedcryptoarmdocs_doc_table td:last-child {
+    .trca-doc-table td:last-child {
         width: 30%;
         display: inline-block;
     }
 }
 @media(max-width: 1024px){
-    .trustedcryptoarmdocs_doc_table td:last-child {
+    .trca-doc-table td:last-child {
         width: 30%;
     }
 }
 
-.trustedcryptoarmdocs_doc_table tr:first-child {
+.trca-doc-table tr:first-child {
     border-top: none;
 }
 
-.trustedcryptoarmdocs_doc_table tr:last-child {
+.trca-doc-table tr:last-child {
     border-bottom: none;
 }
 
+/*Table documents column*/
+    /*Document name*/
+.trca-adm-list-table-cell-documents{
+    display: inline-block;
+    white-space: nowrap;
+    width: 100%;
+}
+@media(max-width: 1280px){
+    .trca-adm-list-table-cell-documents{
+        width: 200px;
+    }
+}
+@media(max-width: 1024px){
+    .trca-adm-list-table-cell-documents{
+        width: 169px;
+    }
+}
+    /*certificate*/
+.trca-adm-list-table-cell-certificate{
+    width: 100%;
+    table-layout: fixed;
+    min-width: 250px;
+}
+.trca-adm-list-table-cell-certificate th:first-child{
+    width: 30%;
+}
+.trca-adm-list-table-cell-certificate td:nth-child(2){
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.trca-adm-list-table-cell-certificate td:nth-child(3){
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 /* Verify document button */
-.verify_button {
+.trca-verify-button {
     float: left;
     font-style: italic;
     margin: 2px;
@@ -60,9 +95,8 @@
     height: 15px !important;
     padding: 0 !important;
 }
-
 /* Document link */
-.tn_document {
+.trca-tn-document {
     cursor: pointer;
     display: inline-block;
     width: 85%;
@@ -74,45 +108,11 @@
     vertical-align: -webkit-baseline-middle;
 }
 @media(max-width: 1024px){
-    .tn_document {
+    .trca-tn-document {
         width: 120px;
     }
 }
-/*Table documents column*/
-    /*Document name*/
-.adm-list-table-cell-documents{
-    display: inline-block;
-    white-space: nowrap;
-    width: 100%;
-}
-@media(max-width: 1280px){
-    .adm-list-table-cell-documents{
-        width: 200px;
-    }
-}
-@media(max-width: 1024px){
-    .adm-list-table-cell-documents{
-        width: 169px;
-    }
-}
-    /*certificate*/
-.adm-list-table-cell-certificate{
-    width: 100%;
-    table-layout: fixed;
-    min-width: 250px;
-}
-.adm-list-table-cell-certificate th:first-child{
-    width: 30%;
-}
-.adm-list-table-cell-certificate td:nth-child(2){
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-.adm-list-table-cell-certificate td:nth-child(3){
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-.tn_document_main {
+.trca-tn-document-main {
     cursor: pointer;
     display: inline-block;
     width: 85%;
@@ -122,18 +122,18 @@
     vertical-align: middle;
 }
 /* Document email icon and status */
-.trca_email_icon {
+.trca-email-icon {
     margin-right: 10px;
     padding: 0 !important;
 }
 
-.trca_email_status{
+.trca-email-status{
     display: table-cell;
     vertical-align: middle;
 }
 
 /*Download document*/
-.adm-workarea .adm-input-file{
+.trca-adm-input-file .adm-input-file{
     text-overflow: ellipsis;
     width: 115px;
     display: block !important;

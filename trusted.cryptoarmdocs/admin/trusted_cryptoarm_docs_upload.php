@@ -213,9 +213,11 @@ function dirSelectorAct(filename, path, site)
                         <tr>
 
                             <td class="adm-detail-content-cell-l">
-                                <input type="file" name="file_<?= $i ?>" size="30"
-                                       maxlength="255" value=""
-                                       onchange="<?= $sizeFileJS ?>">
+                                <div class="trca-adm-input-file">
+                                    <input type="file" name="file_<?= $i ?>" size="30"
+                                        maxlength="255" value=""
+                                        onchange="<?= $sizeFileJS ?>">
+                                </div>
                             </td>
 
                             <td class="adm-detail-content-cell-r">

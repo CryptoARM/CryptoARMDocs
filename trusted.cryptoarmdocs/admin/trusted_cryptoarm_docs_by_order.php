@@ -264,19 +264,19 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     // get email status
     $emailStatus = $arRes["EMAIL"];
-    $docEmailIcon = "<div class='trca_email_status'>";
-    $docEmailStatus = "<div class='trca_email_status'>";
+    $docEmailIcon = "<div class='trca-email-status'>";
+    $docEmailStatus = "<div class='trca-email-status'>";
     if (!$emailStatus) {
         $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_not_sent.png"';
-        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailIcon .= ' class="trca-email-icon">';
         $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SENT");
     } elseif ($emailStatus == "SENT") {
         $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_sent.png"';
-        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailIcon .= ' class="trca-email-icon">';
         $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_SENT");
     } elseif ($emailStatus == "READ") {
         $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_read.png"';
-        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailIcon .= ' class="trca-email-icon">';
         $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_READ");
     }
     $docEmailIcon .= '</div>';
@@ -305,7 +305,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $buyerViewField .= $user_email;
     $buyerViewField .= "</a></small>";
 
-    $docViewField = "<table class='trustedcryptoarmdocs_doc_table'>";
+    $docViewField = "<table class='trca-doc-table'>";
     foreach ($docList as $doc) {
         $docId = $doc->getId();
         $docName = $doc->getName();
@@ -317,13 +317,13 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
-        $docViewField .= "<input class='verify_button' type='button'";
+        $docViewField .= "<input class='trca-verify-button' type='button'";
         if ($doc->getType() === DOC_TYPE_FILE){
             $docViewField .= "disabled ";
         }
         $docViewField .= "value='i' onclick='trustedCA.verify([";
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
-        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
+        $docViewField .= "<a class='trca-tn-document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
         $docViewField .= Loc::getMessage("TR_CA_DOCS_OPEN_QUOTE") . $doc->getName() . Loc::getMessage("TR_CA_DOCS_CLOSE_QOUTE");
         $docViewField .= "' onclick='trustedCA.download([";
         $docViewField .= $docId;

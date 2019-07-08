@@ -603,7 +603,7 @@ class Document implements IEntity, ISave
             return '';
         }
 
-        $signaturesString = "<table class='adm-list-table-cell-certificate'>";
+        $signaturesString = "<table class='trca-adm-list-table-cell-certificate'>";
 
         $signaturesString .= '<tr>';
         foreach ($fields as $field) {

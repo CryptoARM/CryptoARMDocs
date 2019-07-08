@@ -168,7 +168,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $userNameViewField .= $f_EMAIL;
     $userNameViewField .= "</a></small>";
 
-    $docViewField = "<table class='trustedcryptoarmdocs_doc_table'>";
+    $docViewField = "<table class='trca-doc-table'>";
     foreach ($docList as $doc) {
         $docId = $doc->getId();
         $docName = $doc->getName();
@@ -180,13 +180,13 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         }
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
-        $docViewField .= "<input class='verify_button' type='button'";
+        $docViewField .= "<input class='trca-verify-button' type='button'";
         if ($doc->getType() === DOC_TYPE_FILE){
             $docViewField .= "disabled ";
         }
         $docViewField .= "value='i' onclick='trustedCA.verify([";
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
-        $docViewField .= "<a class='tn_document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
+        $docViewField .= "<a class='trca-tn-document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
         $docViewField .= Loc::getMessage("TR_CA_DOCS_OPEN_QUOTE") . $doc->getName() . Loc::getMessage("TR_CA_DOCS_CLOSE_QOUTE");
         $docViewField .= "' onclick='trustedCA.download([";
         $docViewField .= $docId . "], true)'>" . $docName . "</a>";
