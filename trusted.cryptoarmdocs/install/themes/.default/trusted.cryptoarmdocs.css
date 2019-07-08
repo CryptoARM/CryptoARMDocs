@@ -35,7 +35,7 @@
         width: 30%;
         display: inline-block;
     }
-} 
+}
 @media(max-width: 1024px){
     .trustedcryptoarmdocs_doc_table td:last-child {
         width: 30%;
@@ -49,13 +49,6 @@
 .trustedcryptoarmdocs_doc_table tr:last-child {
     border-bottom: none;
 }
-
-/*
-.tn_document {
-    text-overflow: ellipsis !important;
-    max-width: 50px !important;
-}
-*/
 
 /* Verify document button */
 .verify_button {
@@ -84,24 +77,22 @@
     .tn_document {
         width: 120px;
     }
-} 
+}
 /*Table documents column*/
     /*Document name*/
 .adm-list-table-cell-documents{
     display: inline-block;
     white-space: nowrap;
-    width: 100%;  
-}    
+    width: 100%;
+}
 @media(max-width: 1280px){
     .adm-list-table-cell-documents{
         width: 200px;
-        
     }
 }
 @media(max-width: 1024px){
     .adm-list-table-cell-documents{
         width: 169px;
-        
     }
 }
     /*certificate*/
@@ -109,11 +100,11 @@
     width: 100%;
     table-layout: fixed;
     min-width: 250px;
-}    
+}
 .adm-list-table-cell-certificate th:first-child{
     width: 30%;
 }
-.adm-list-table-cell-certificate td:nth-child(2){ 
+.adm-list-table-cell-certificate td:nth-child(2){
     text-overflow: ellipsis;
     overflow: hidden;
 }
@@ -130,21 +121,22 @@
     margin-left: 8px;
     vertical-align: middle;
 }
-/* Document email icon */
-.email_icon {
-    float: left;
-    /* margin: 2px; */
-    /* width: 15px; */
+/* Document email icon and status */
+.trca_email_icon {
     margin-right: 10px;
-    /* height: 15px !important; */
     padding: 0 !important;
+}
+
+.trca_email_status{
+    display: table-cell;
+    vertical-align: middle;
 }
 
 /*Download document*/
 .adm-workarea .adm-input-file{
     text-overflow: ellipsis;
     width: 115px;
-    display: block !important; 
+    display: block !important;
 }
 
 /* Tooltips */

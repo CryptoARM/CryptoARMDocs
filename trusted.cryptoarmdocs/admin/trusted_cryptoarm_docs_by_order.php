@@ -264,19 +264,23 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     // get email status
     $emailStatus = $arRes["EMAIL"];
+    $docEmailIcon = "<div class='trca_email_status'>";
+    $docEmailStatus = "<div class='trca_email_status'>";
     if (!$emailStatus) {
-        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_not_sent.png"';
-        $docEmailIcon .= ' class="email_icon">';
-        $docEmailStatus = Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SENT");
+        $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_not_sent.png"';
+        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SENT");
     } elseif ($emailStatus == "SENT") {
-        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_sent.png"';
-        $docEmailIcon .= ' class="email_icon">';
-        $docEmailStatus = Loc::getMessage("TR_CA_DOCS_EMAIL_SENT");
+        $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_sent.png"';
+        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_SENT");
     } elseif ($emailStatus == "READ") {
-        $docEmailIcon = '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_read.png"';
-        $docEmailIcon .= ' class="email_icon">';
-        $docEmailStatus = Loc::getMessage("TR_CA_DOCS_EMAIL_READ");
+        $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/trusted.cryptoarmdocs/email_read.png"';
+        $docEmailIcon .= ' class="trca_email_icon">';
+        $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_READ");
     }
+    $docEmailIcon .= '</div>';
+    $docEmailStatus .= '</div>';
     $emailViewField = $docEmailIcon . $docEmailStatus;
 
     // get docs by order
