@@ -29,6 +29,8 @@ trustedCA.initVar = function(){
     SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
     SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
     SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
+    DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
+    DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
 };
 
@@ -415,5 +417,19 @@ trustedCA.reloadGrid = function (gridId) {
     if (gridObject.hasOwnProperty('instance')){
         gridObject.instance.reloadTable('POST', reloadParams);
     }
-}
+};
+
+
+trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null){
+    if (file.size/1024/1024  > maxSize){
+        alert(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2);
+        if (typeof onFailure === 'function') {
+            onFailure();
+        }
+    } else {
+        if (typeof onSuccess === 'function') {
+            onSuccess();
+        }
+    }
+};
 

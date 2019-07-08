@@ -32,3 +32,5 @@ $MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_2"] = " получил доступ к до�
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_1"] = "Пользователь с e-mail ";
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " не найден";
 
+$MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_1"] = "Размер загружаемых файлов не должен превышать ";
+$MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_2"] = " Mb.";

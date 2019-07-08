@@ -1,6 +1,7 @@
 <?php
 namespace Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\Config\Option;
 
 Loc::loadMessages(__FILE__);
 
@@ -445,6 +446,52 @@ class Utils
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
     }
+    /**
+     * Gets size from string and converts it to bytes
+    */
+    public static function byteconvert($input){
+        preg_match('/(\d+)(\w*)/', $input, $matches);
+        $type = strtolower($matches[2]);
+        switch ($type) {
+        case "":
+        case "b":
+            $output = $matches[1];
+            break;
+        case "k":
+        case "kb":
+            $output = $matches[1]*1024;
+            break;
+        case "m":
+        case "mb":
+            $output = $matches[1]*1024*1024;
+            break;
+        case "g":
+        case "gb":
+            $output = $matches[1]*1024*1024*1024;
+            break;
+        case "t":
+        case "tb":
+            $output = $matches[1]*1024*1024*1024*1024;
+            break;
+        default:
+            break;
+        }
+     return $output;
+    }
 
+    /*
+     *Get the maximum size of the file uploaded to the server
+    */
+    public static function maxUploadFileSize() {
+        $minMaxSize = [
+            "uploadMax" => Utils::byteconvert(ini_get('upload_max_filesize')),
+            "postMax" => Utils::byteconvert(ini_get('post_max_size')),
+            "diskMax" => intval(Option::get("main", "disk_space"))*1024*1024,
+        ];
+        // Like min(), but casts to int and ignores 0
+        $minNotNull = min(array_diff(array_map('intval', $minMaxSize), array(0)));
+
+        return round($minNotNull/1024/1024, 2);
+    }
 }
 

@@ -205,12 +205,17 @@ function dirSelectorAct(filename, path, site)
                         </td>
 
                     </tr>
+                    <?
+                    $maxSize  = Docs\Utils::maxUploadFileSize();
+                    $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, null, () => { this.value = null; event.stopImmediatePropagation() })";
+                    ?>
                     <? for ($i = 1; $i <= 5; $i++): ?>
                         <tr>
 
                             <td class="adm-detail-content-cell-l">
                                 <input type="file" name="file_<?= $i ?>" size="30"
-                                       maxlength="255" value="">
+                                       maxlength="255" value=""
+                                       onchange="<?= $sizeFileJS ?>">
                             </td>
 
                             <td class="adm-detail-content-cell-r">
@@ -257,6 +262,11 @@ function dirSelectorAct(filename, path, site)
     <span class="required"><sup>1</sup></span><?echo Loc::getMessage("TR_CA_DOCS_UPLOAD_PROP_NOTE")?><br>
     <br>
     <span class="required"><sup>2</sup></span><?echo Loc::getMessage("TR_CA_DOCS_UPLOAD_VALUE_NOTE")?><br>
+    <br>
+    <?echo EndNote();?>
+
+    <?echo BeginNote();?>
+    <?echo Loc::getMessage("TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE1") . $maxSize . Loc::getMessage("TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE2")?><br>
     <?echo EndNote();?>
 
 <? endif; ?>

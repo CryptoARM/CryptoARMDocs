@@ -252,12 +252,14 @@ $APPLICATION->IncludeComponent(
         <?
         if ($arParams["ALLOW_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) {
+            $maxSize  = Docs\Utils::maxUploadFileSize();
+            $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, () => { $('#document-footer__download').submit() }, () => { $('#document-footer__input').val(null) })";
         ?>
                 <div class="document-card__footer">
-                    <form enctype="multipart/form-data" method="POST">
+                    <form enctype="multipart/form-data" method="POST" id="document-footer__download">
                         <div class="document-footer__action">
-                            <input class="document-footer__input" name="tr_ca_upload_comp_by_user" type="file" style="font-size: 0"
-                                   onchange=this.form.submit()>
+                            <input id="document-footer__input" class="document-footer__input" name="tr_ca_upload_comp_by_user" type="file" style="font-size: 0"
+                                    onchange="<?= $sizeFileJS ?>">
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
                         </div>
                     </form>

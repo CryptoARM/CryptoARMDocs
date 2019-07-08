@@ -38,3 +38,5 @@ $MESS["TR_CA_DOCS_UPLOAD_USER_ID_NOTE"] = " Цифровой идентифик�
 
 $MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_NOTE"] = " Цифровой номер заказа в магазине Битрикс.";
 
+$MESS["TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE1"] = "Размер загружаемых файлов не должен превышать ";
+$MESS["TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE2"] = " Mb.";
