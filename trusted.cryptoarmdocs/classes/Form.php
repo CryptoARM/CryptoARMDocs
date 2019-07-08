@@ -6,9 +6,10 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Loader;
 
+require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
+
 Loader::includeModule('iblock');
 
-require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
 
 class Form {
     public static function addIBlock($iBlockTypeId, $props, $userId) {
@@ -16,6 +17,11 @@ class Form {
             "success" => false,
             "message" => "Unknown error in Ajax.addIBlock",
         );
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
 
         $iBlock = new \CIBlockElement;
 
@@ -91,15 +97,14 @@ class Form {
             'message' => 'Unknown error in addIBlockForm',
         );
 
-        global $USER;
-        if (!$USER->IsAuthorized()) {
+        if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
             return $res;
         }
 
         $props = self::standardizationIBlockProps($props);
 
-        $addResult = self::addIBlock($iBlockTypeId, $props, $USER->GetID());
+        $addResult = self::addIBlock($iBlockTypeId, $props, Utils::currUserId());
 
         $res['success'] = true;
         $res['message'] = $addResult['message'];
@@ -108,28 +113,40 @@ class Form {
         return $res;
     }
 
-    static function createPDF($iBlockId) {
+    static function createPDF($iblockTypeid, $iBlockId) {
 
+        $res = array(
+            'success' => false,
+            'message' => 'Unknown error in createPDF',
+        );
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
 
         $form = \CIBlockElement::GetList(
             array('SORT' => 'ASC'),
             array(
                 'ID' => $iBlockId,
-                'IBLOCK_ID' => 4,
+                'IBLOCK_ID' => $iblockTypeid,
             )
         )->GetNextElement();
+
+        $props = [];
+        $fields = [];
 
         $formFields = $form->GetFields();
         $formProps = $form->GetProperties();
 
-        $nusnieFields = [
+        $fields = [
             "TIMESTAMP_X" => $formFields["TIMESTAMP_X"],
             "CREATED_USER_NAME" => $formFields["CREATED_USER_NAME"],
         ];
 
         foreach ($formProps as $key => $value) {
 
-            $nusnieProps[$key] = [
+            $props[$key] = [
                 "NAME" => $value["NAME"],
                 "VALUE" => $value["VALUE"],
                 "MULTIPLE" => $value["MULTIPLE"],
@@ -138,8 +155,8 @@ class Form {
             if (stristr($value["CODE"], "DOC_FILE")) {
                 $doc = Database::getDocumentById((int)$value["VALUE"]);
 
-                $nusnieProps[$key] = array_merge(
-                    $nusnieProps[$key],
+                $props[$key] = array_merge(
+                    $props[$key],
                     [
                         "FILE" => true,
                         "FILE_NAME" => $doc->getName(),
@@ -150,12 +167,8 @@ class Form {
             }
         }
 
-        Utils::dump("formFields", $nusnieFields);
-        Utils::dump("formProps", $nusnieProps);
-
-        return $formProps;
-
-        $firstDoc = $doc->getFirstParent();
+//        Utils::dump("props", $props);
+//        Utils::dump("fields", $fields);
 
         $pdf = new \TCPDF(
             'P',        // orientation - [P]ortrait or [L]andscape
@@ -167,10 +180,12 @@ class Form {
             false       // pdf/a mode
         );
 
-        $docName = $doc->getName();
+        $pdfOwner = Utils::getUserName(Utils::currUserId());
+        $dateCreation = date("Y-m-d_H:i:s");
 
         $author = Loc::getMessage('TR_CA_DOC_MODULE_NAME');
-        $title = Loc::getMessage('TR_CA_DOC_PROTOCOL_TITLE') . $docName;
+        $title = Loc::getMessage('TR_CA_DOC_PDF_FORM_TITLE') . " " . $pdfOwner . " " . $dateCreation;
+        $title = Utils::mb_basename($title);
         $headerText = Loc::getMessage('TR_CA_DOC_MODULE_DESC') . "\n" . Loc::getMessage('TR_CA_DOC_PARTNER_URI');
 
         $pdf->setCreator($author);
@@ -192,57 +207,32 @@ class Form {
 
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-        // set default font subsetting mode
-        // $pdf->setFontSubsetting(true);
-
-        // set some language-dependent strings (optional)
-        // if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-        //     require_once(dirname(__FILE__).'/lang/eng.php');
-        //     $pdf->setLanguageArray($l);
-        // }
-
         $pdf->SetFont('dejavuserif', '', 11);
 
         $pdf->AddPage();
 
-        // set text shadow effect
-        // $pdf->setTextShadow(array('enabled'=>true, 'depth_w'=>0.2, 'depth_h'=>0.2, 'color'=>array(196,196,196), 'opacity'=>1, 'blend_mode'=>'Normal'));
+        $pdfText = '<div height="100px"></div>
+        <h1 style="text-align:center;">' . Loc::getMessage('TR_CA_DOC_MODULE_NAME') . '</h1>
+        <table width="600px">
+            <tr>
+                <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_OWNER') . '</b></td>
+                <td>' . $pdfOwner . '</td>
+            </tr>
+            <tr>
+                <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_CREATE_TIME') . '</b></td>
+                <td>' . $dateCreation . '</td>
+            </tr>';
 
-        $mainText = self::replace(
-            self::MAIN_TEXT,
-            array(
-                '{MODULE_NAME}' => Loc::getMessage('TR_CA_DOC_MODULE_NAME'),
-                '{DOC_NAME}' => Loc::getMessage('TR_CA_DOC_NAME'),
-                '{DOC_NAME_VALUE}' => $docName,
-                '{DOC_FIRST_UPLOAD_TIME}' => Loc::getMessage('TR_CA_DOC_FIRST_UPLOAD_TIME'),
-                '{DOC_FIRST_UPLOAD_TIME_VALUE}' => $firstDoc->getCreated(),
-                '{DOC_HASH}' => Loc::getMessage('TR_CA_DOC_HASH'),
-                '{DOC_HASH_VALUE}' => $doc->getHash(),
-                '{DOC_ID}' => Loc::getMessage('TR_CA_DOC_ID'),
-                '{DOC_ID_VALUE}' => $doc->getId(),
-            )
-        );
+        //foreach
 
-        $docOwner = $doc->getOwner();
-        if ($docOwner) {
-            $docOwnerText = self::replace(
-                self::DOC_OWNER_ROW,
-                array(
-                    '{DOC_OWNER}' => Loc::getMessage('TR_CA_DOC_OWNER'),
-                    '{DOC_OWNER_VALUE}' => Utils::getUserName($docOwner),
-                )
-            );
-            $mainText = str_replace('{DOC_OWNER_ROW}', $docOwnerText, $mainText);
-        } else {
-            $mainText = str_replace('{DOC_OWNER_ROW}', '', $mainText);
-        }
+        $pdfText .= '</table>';
 
         $pdf->writeHTMLCell(
             0,      // width
             0,      // height
             '',     // x
             '',     // y
-            $mainText,
+            $pdfText,
             0,      // border
             1,      // next line
             0,      // fill
@@ -251,18 +241,34 @@ class Form {
             true    // autopadding
         );
 
-        if ($doc->getType() == DOC_TYPE_SIGNED_FILE) {
-            $signaturesText = self::replace(
-                self::SIGNATURES,
-                array(
-                    '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNATURES'),
-                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('time', 'name', 'org', 'algorithm')),
-                )
-            );
+        $title .= '.pdf';
 
-            $pdf->writeHTMLCell(0, 0, '', '', $signaturesText, 0, 1, 0, true, '', true);
+        $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
+
+        $uniqid = (string)uniqid();
+        $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
+        mkdir($newDocDir);
+
+        $newDocDir .= $title;
+        $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $title;
+
+        ob_end_clean();
+
+        $pdf->Output($newDocDir, 'FD');
+        $props = new PropertyCollection();
+        $props->add(new Property("USER", (string)Utils::currUserId()));
+        $props->add(new Property("FORM", (string)$iBlockId));
+        $doc = Utils::createDocument($relativePath, $props);
+        $docId = $doc->GetId();
+
+        if ($doc) {
+            $res = array(
+                'success' => true,
+                'message' => 'PDF created',
+                'data' => $docId
+            );
         }
 
-        $pdf->Output($doc->getName() . '_protocol.pdf', 'D');
+        return $res;
     }
 }

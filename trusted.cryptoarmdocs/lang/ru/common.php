@@ -28,6 +28,8 @@ $MESS['TR_CA_DOC_ID'] = 'Идентификатор документа';
 $MESS['TR_CA_DOC_FIRST_UPLOAD_TIME'] = 'Дата загрузки документа';
 $MESS['TR_CA_DOC_LAST_UPLOAD_TIME'] = 'Дата последней подписи';
 
+$MESS['TR_CA_DOC_PDF_OWNER'] = 'Создатель документа';
+$MESS['TR_CA_DOC_PDF_CREATE_TIME'] = 'Дата создания документа';
 
 // ======================
 // === Document props ===

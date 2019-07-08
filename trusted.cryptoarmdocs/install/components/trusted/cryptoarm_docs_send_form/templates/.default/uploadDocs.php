@@ -46,12 +46,13 @@ foreach ($_POST as $key => $value) {
     }
 }
 
-$iblockTypeid = $_POST["iBlock_type_id"];
+$iBlockTypeId = $_POST["iBlock_type_id"];
 unset($_POST["iBlock_type_id"]);
 
-$iBlockId = Docs\Form::addIBlockForm($iblockTypeid, $_POST);
+$iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
 
-if ($iblockTypeid["success"]) {
+if ($iBlockId["success"]) {
+    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId);
     foreach ($fileListToUpdate as $fileId) {
             $doc = Docs\Database::getDocumentById($fileId);
             $props = $doc->getProperties();
@@ -60,6 +61,6 @@ if ($iblockTypeid["success"]) {
     }
 }
 
-Docs\Form::createPDF($iBlockId);
+Docs\Utils::dump("PDF" ,$pdf);
 
 unset($_FILES[$inputIndexFullFileId]['name']);
