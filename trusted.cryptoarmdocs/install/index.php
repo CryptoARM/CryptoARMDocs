@@ -393,7 +393,7 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_EVENT_ID_SHARE',
             'MAIL_TEMPLATE_ID_SHARE',
         );
-        foreach ($options as $options) {
+        foreach ($options as $option) {
             Option::delete(
                 $this->MODULE_ID,
                 array('name' => $option)
