@@ -30,6 +30,7 @@ $MESS['TR_CA_DOC_LAST_UPLOAD_TIME'] = 'Дата последней подпис�
 
 $MESS['TR_CA_DOC_PDF_OWNER'] = 'Создатель документа';
 $MESS['TR_CA_DOC_PDF_CREATE_TIME'] = 'Дата создания документа';
+$MESS['TR_CA_DOC_PDF_FILE_HASH'] = 'Hash файла';
 
 // ======================
 // === Document props ===

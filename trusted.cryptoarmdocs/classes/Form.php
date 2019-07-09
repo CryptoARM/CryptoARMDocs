@@ -134,24 +134,15 @@ class Form {
         )->GetNextElement();
 
         $props = [];
-        $fields = [];
 
-        $formFields = $form->GetFields();
         $formProps = $form->GetProperties();
 
-        $fields = [
-            "TIMESTAMP_X" => $formFields["TIMESTAMP_X"],
-            "CREATED_USER_NAME" => $formFields["CREATED_USER_NAME"],
-        ];
-
         foreach ($formProps as $key => $value) {
-
             $props[$key] = [
                 "NAME" => $value["NAME"],
                 "VALUE" => $value["VALUE"],
                 "MULTIPLE" => $value["MULTIPLE"],
             ];
-
             if (stristr($value["CODE"], "DOC_FILE")) {
                 $doc = Database::getDocumentById((int)$value["VALUE"]);
 
@@ -166,9 +157,6 @@ class Form {
                 );
             }
         }
-
-//        Utils::dump("props", $props);
-//        Utils::dump("fields", $fields);
 
         $pdf = new \TCPDF(
             'P',        // orientation - [P]ortrait or [L]andscape
@@ -193,22 +181,15 @@ class Form {
         $pdf->setTitle($title);
         $pdf->setSubject($title);
         $pdf->setKeywords('CryptoARM, document, digital signature');
-
         $pdf->setHeaderFont(array('dejavuserif', 'B', 11));
         $pdf->setHeaderData('logo_docs.png', 14, $author, $headerText);
-
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
         $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
         $pdf->SetFont('dejavuserif', '', 11);
-
         $pdf->AddPage();
 
         $pdfText = '<div height="100px"></div>
@@ -223,7 +204,47 @@ class Form {
                 <td>' . $dateCreation . '</td>
             </tr>';
 
-        //foreach
+        foreach ($props as $key => $value) {
+            if ($value["HASH"]) {
+                $pdfText .= '
+                <tr>
+                    <td><b>' . $value["NAME"] . '</b></td>
+                    <td>' . $value["FILE_NAME"] . '</td>
+                </tr>
+                <tr>
+                    <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
+                    <td>' . $value["HASH"] .  '</td>
+                </tr>';
+                continue;
+            }
+
+            if ($value["MULTIPLE"] == "Y") {
+                $propertyString = "";
+                foreach ($value["VALUE"] as $property) {
+                    $propertyString .= $property . '<br>';
+                }
+                $propertyString = substr($propertyString, 0, -4);
+                $pdfText .= '
+                <tr>
+                    <td><b>' . $value["NAME"] . '</b></td>
+                    <td>' . $propertyString . '</td>
+                </tr>';
+                continue;
+            }
+
+            if ($value["VALUE"]["TYPE"] == "HTML") {
+                $pdfText .= '
+                <tr>
+                    <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
+                </tr>';
+                continue;
+            }
+
+            $pdfText .= '<tr>
+                <td><b>' . $value["NAME"] . '</b></td>
+                <td>' . $value["VALUE"] . '</td>
+            </tr>';
+        }
 
         $pdfText .= '</table>';
 
@@ -252,6 +273,7 @@ class Form {
         $newDocDir .= $title;
         $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $title;
 
+        ob_get_contents();
         ob_end_clean();
 
         $pdf->Output($newDocDir, 'FD');
