@@ -33,7 +33,7 @@ foreach ($arParams['FILES'] as $fileHandle) {
 
     $newDocFilename = Docs\Utils::mb_basename($_FILES[$fileHandle]['name']);
     $absolutePath = $newDocDir . $newDocFilename;
-    $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $newDocFilename;
+    $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
 
     if (move_uploaded_file($_FILES[$fileHandle]['tmp_name'], $absolutePath)) {
         $props = new Docs\PropertyCollection();
