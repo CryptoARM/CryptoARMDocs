@@ -135,12 +135,12 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
             true, true
         );
-        CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
-            true, true
-        );
         if ($this->crmSupport()) {
+            CopyDirFiles(
+                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
+                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
+                true, true
+            );
             CopyDirFiles(
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
                 $_SERVER["DOCUMENT_ROOT"],
@@ -356,6 +356,7 @@ Class trusted_cryptoarmdocs extends CModule
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_send_form/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
