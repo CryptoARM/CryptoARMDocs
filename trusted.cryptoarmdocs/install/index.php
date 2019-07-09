@@ -369,17 +369,18 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default/"
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
-        if ($this->crmSupport()) {
-            DeleteDirFilesEx("/tr_ca_docs/");
-            DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
-            DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
-            CUrlRewriter::Delete(
-                array(
-                    'ID' => 'trusted:cryptoarm_docs_crm',
-                    'PATH' => '/tr_ca_docs/index.php',
-                )
-            );
-        }
+
+        // CRM
+        DeleteDirFilesEx("/tr_ca_docs/");
+        DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
+        DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
+        CUrlRewriter::Delete(
+            array(
+                'ID' => 'trusted:cryptoarm_docs_crm',
+                'PATH' => '/tr_ca_docs/index.php',
+            )
+        );
+
         return true;
     }
 
