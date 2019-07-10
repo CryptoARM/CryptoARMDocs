@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         if ($docsDirCheck === true) {
             UpdateOption("DOCUMENTS_DIR");
         } else {
-            CAdminMessage::ShowMessage($docsDirCheck);
+            $_SESSION['OPTION_PAGE_DOC_DIR_ERROR'] = $docsDirCheck;
         }
         UpdateOption("PROVIDE_LICENSE");
         UpdateOption("LICENSE_ACCOUNT_NUMBER");
@@ -91,6 +91,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
+}
+if (isset($_SESSION['OPTION_PAGE_DOC_DIR_ERROR'])) {
+    CAdminMessage::ShowMessage($_SESSION['OPTION_PAGE_DOC_DIR_ERROR']);
+    unset($_SESSION['OPTION_PAGE_DOC_DIR_ERROR']);
 }
 
 foreach ($moduleOptions as $option) {

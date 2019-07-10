@@ -382,7 +382,7 @@ class Utils
         }
 
         // Check for entering bitrix system directory
-        if (preg_match("/^bitrix($|\/*)/", $dir)) {
+        if (preg_match("/^\/bitrix\/.*/", $dir)) {
             return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
         }
 
