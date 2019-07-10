@@ -160,7 +160,10 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $arId = array();
     $arId[] = $doc->getId();
 
-    $docCreated = date("d-m-o H:i",strtotime($doc->getCreated()));
+    $docCreated = '';
+    if ($doc->getType() === DOC_TYPE_SIGNED_FILE) {
+        $docCreated = date("d-m-o H:i",strtotime($doc->getCreated()));
+    }
     $docParentCreated = date("d-m-o H:i",strtotime($doc->getFirstParent()->getCreated()));
 
     $docType = $doc->getType();
