@@ -174,6 +174,7 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
             'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
+            'MAIL_EVENT_ID_FORM' => 'TR_CA_DOCS_MAIL_FORM',
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
@@ -243,7 +244,7 @@ Class trusted_cryptoarmdocs extends CModule
     {
         $obEventType = new CEventType;
         $events = array(
-            // by order
+            // email by order
             array(
                 "LID" => "ru",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
@@ -251,7 +252,7 @@ Class trusted_cryptoarmdocs extends CModule
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_DESCRIPTION"),
             ),
 
-            // to
+            // email documents
             array(
                 "LID" => "ru",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
@@ -259,12 +260,20 @@ Class trusted_cryptoarmdocs extends CModule
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION"),
             ),
 
-            // share
+            // email about share documents
             array(
                 "LID" => "ru",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
                 "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"),
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"),
+            ),
+
+            // email completed form
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
             ),
         );
         foreach ($events as $event) {
@@ -278,7 +287,7 @@ Class trusted_cryptoarmdocs extends CModule
             $siteIds[] = $site["ID"];
         }
         $templates = array(
-            // by order
+            //email by order
             'MAIL_TEMPLATE_ID' => array(
                 "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
@@ -290,7 +299,7 @@ Class trusted_cryptoarmdocs extends CModule
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_BODY"),
             ),
 
-            // to
+            //email documents
             'MAIL_TEMPLATE_ID_TO' => array(
                 "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
@@ -302,7 +311,7 @@ Class trusted_cryptoarmdocs extends CModule
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"),
             ),
 
-            // share
+            //email about share documents
             'MAIL_TEMPLATE_ID_SHARE' => array(
                 "ACTIVE" => "Y",
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
@@ -312,6 +321,18 @@ Class trusted_cryptoarmdocs extends CModule
                 "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"),
                 "BODY_TYPE" => "html",
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
+            ),
+
+            //email completed form
+            'MAIL_TEMPLATE_ID_FORM' => array(
+                "ACTIVE" => "Y",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
             ),
         );
         foreach ($templates as $templateName => $template) {
@@ -396,6 +417,8 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_TEMPLATE_ID_TO',
             'MAIL_EVENT_ID_SHARE',
             'MAIL_TEMPLATE_ID_SHARE',
+            'MAIL_EVENT_ID_FORM',
+            'MAIL_TEMPLATE_ID_FORM',
         );
         foreach ($options as $option) {
             Option::delete(
@@ -442,6 +465,7 @@ Class trusted_cryptoarmdocs extends CModule
             'TR_CA_DOCS_MAIL_BY_ORDER',
             'TR_CA_DOCS_MAIL_TO',
             'TR_CA_DOCS_MAIL_SHARE',
+            'TR_CA_DOCS_MAIL_FORM',
         );
         foreach ($events as $event) {
             $eventMessages = CEventMessage::GetList(
