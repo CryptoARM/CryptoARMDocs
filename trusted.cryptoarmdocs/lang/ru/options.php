@@ -6,6 +6,8 @@ $MESS["TR_CA_DOCS_LICENSE_TAB"] = "Предоставление лицензий
 $MESS["TR_CA_DOCS_LICENSE_TAB_TITLE"] = "Предоставление пользователям одноразовых лицензий";
 $MESS["TR_CA_DOCS_ORDER_TAB"] = "Документы по заказам";
 $MESS["TR_CA_DOCS_ORDER_TAB_TITLE"] = "Настройки документов с привязкой к заказу";
+$MESS["TR_CA_DOCS_FORM_TAB"] = "Формы";
+$MESS["TR_CA_DOCS_FORM_TAB_TITLE"] = "Настройки рассылки писем с документами по формам";
 $MESS["TR_CA_DOCS_LOGS_TAB"] = "Журнал";
 $MESS["TR_CA_DOCS_LOGS_TAB_TITLE"] = "Журнал операций с документами";
 
@@ -76,6 +78,12 @@ $MESS["TR_CA_DOCS_DEFAULT_EMAIL_MAIL_EVENT_ID"] = "Почтовое событи
 $MESS["TR_CA_DOCS_DEFAULT_EMAIL_TEMPLATE_ID"] = "Почтовый шаблон";
 $MESS["TR_CA_DOCS_DEFAULT_EMAIL_NOT_SELECTED"] = "Не выбрано";
 $MESS["TR_CA_DOCS_DEFAULT_EMAIL_DESCRIPTION"] = "Для удобства отправки клиентам подписанных документов модуль автоматически создает почтовое событие и привязанный к нему стандартный шаблон. Вы можете отредактировать шаблон по своему усмотрению.<br /><br />В шаблоне письма можно использовать следующие поля:<br />#EMAIL# - почтовый ящик пользователя, на который будет отправлено письмо,<br />#FILE_NAMES# - список названий документов.";
+
+$MESS["TR_CA_DOCS_FORM_EMAIL_HEADING"] = "Настройки рассылки писем с документами по формам";
+$MESS["TR_CA_DOCS_FORM_EMAIL_MAIL_EVENT_ID"] = "Почтовое событие";
+$MESS["TR_CA_DOCS_FORM_EMAIL_TEMPLATE_ID"] = "Почтовый шаблон";
+$MESS["TR_CA_DOCS_FORM_EMAIL_NOT_SELECTED"] = "Не выбрано";
+$MESS["TR_CA_DOCS_FORM_EMAIL_DESCRIPTION"] = "Для удобства отправки клиентам подписанных документов модуль автоматически создает почтовое событие и привязанный к нему стандартный шаблон. Вы можете отредактировать шаблон по своему усмотрению.<br /><br />В шаблоне письма можно использовать следующие поля:<br />#EMAIL# - почтовый ящик пользователя, на который будет отправлено письмо,<br />#FILE_NAMES# - список названий документов.";
 
 $MESS["TR_CA_DOCS_LOGS_LAST_100"] = "Последние 100 операций:";
 $MESS["TR_CA_DOCS_LOGS_NO_LOG_FILE"] = "Записи об операциях отсутствуют.";
