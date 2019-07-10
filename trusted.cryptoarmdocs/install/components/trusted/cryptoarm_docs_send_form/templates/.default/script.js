@@ -4,3 +4,9 @@ function onUploadDocument(res) {
 
     inputIndexFileIdObj.innerHTML = res.fileId; //doc id
 }
+
+function play() {
+    let audio = document.getElementById("audioMonetka");
+    audio.volume = 0.4;
+    audio.play();
+}

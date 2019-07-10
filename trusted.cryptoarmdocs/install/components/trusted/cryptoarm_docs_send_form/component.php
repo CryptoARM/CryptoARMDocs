@@ -54,7 +54,7 @@ while ($prop_fields = $properties->GetNext()) {
 }
 
 while ($propAdd_fields = $propertiesAdditional->GetNext()) {
-    $arResult["PROPERTY"][$propAdd_fields["PROPERTY_ID"]]["ADDICTION"][$propAdd_fields["ID"]] = $propAdd_fields["VALUE"];
+    $arResult["PROPERTY"][$propAdd_fields["PROPERTY_ID"]]["ADDITIONAL"][$propAdd_fields["ID"]] = $propAdd_fields["VALUE"];
 }
 
 $this->IncludeComponentTemplate();

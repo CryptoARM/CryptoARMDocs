@@ -7632,7 +7632,7 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Disposition: inline; filename="'.basename($name).'"');
+					header('Content-Disposition: inline; filename="'.Docs\Utils::mb_basename($name).'"');
 					TCPDF_STATIC::sendOutputData($this->getBuffer(), $this->bufferlen);
 				} else {
 					echo $this->getBuffer();
@@ -7686,7 +7686,7 @@ class TCPDF {
 					header('Pragma: public');
 					header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
 					header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
-					header('Content-Disposition: inline; filename="'.basename($name).'"');
+					header('Content-Disposition: inline; filename="'.Docs\Utils::mb_basename($name).'"');
 					TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
 				} elseif ($dest == 'FD') {
 					// send headers to browser
@@ -7711,7 +7711,7 @@ class TCPDF {
 						header('Content-Type: application/pdf');
 					}
 					// use the Content-Disposition header to supply a recommended filename
-					header('Content-Disposition: attachment; filename="'.basename($name).'"');
+					header('Content-Disposition: attachment; filename="'.Docs\Utils::mb_basename($name).'"');
 					header('Content-Transfer-Encoding: binary');
 					TCPDF_STATIC::sendOutputData(file_get_contents($name), filesize($name));
 				}

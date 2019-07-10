@@ -16,6 +16,7 @@ function DocUpload($inputIndexFileId, $fileId) {
     </script>';
 }
 
+
 $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
 foreach ($_POST as $key => $value) {
@@ -54,13 +55,13 @@ $iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
 if ($iBlockId["success"]) {
     $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId);
     foreach ($fileListToUpdate as $fileId) {
-            $doc = Docs\Database::getDocumentById($fileId);
-            $props = $doc->getProperties();
-            $props->add(new Docs\Property("FORM", $iBlockId["data"]));
-            $doc->save();
+        $doc = Docs\Database::getDocumentById($fileId);
+        $props = $doc->getProperties();
+        $props->add(new Docs\Property("FORM", $iBlockId["data"]));
+        $doc->save();
     }
 }
 
-Docs\Utils::dump("PDF" ,$pdf);
+Docs\Utils::dump("PDF", $pdf);
 
 unset($_FILES[$inputIndexFullFileId]['name']);
