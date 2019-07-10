@@ -48,9 +48,6 @@ if (isset($command)) {
         case "verify":
             $res = Docs\AjaxCommand::verify($params);
             break;
-        case "block":
-            $res = Docs\AjaxCommand::block($params);
-            break;
         case "unblock":
             $res = Docs\AjaxCommand::unblock($params);
             break;
@@ -70,9 +67,6 @@ if (isset($command)) {
         case "check":
             $res = Docs\AjaxCommand::check($params);
             break;
-        // case "token":
-        //     $res = Docs\AjaxCommand::token($_GET);
-        //     break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }
