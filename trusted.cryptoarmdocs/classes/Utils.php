@@ -446,48 +446,55 @@ class Utils
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
     }
+
     /**
-     * Gets size from string and converts it to bytes
-    */
+     * Gets size as string and converts it to bytes
+     *
+     * @param string $input String like "10mb" or "1G"
+     * @return int|null Number of bytes
+     */
     public static function byteconvert($input){
         preg_match('/(\d+)(\w*)/', $input, $matches);
         $type = strtolower($matches[2]);
+        $amount = (int)$matches[1];
         switch ($type) {
-        case "":
-        case "b":
-            $output = $matches[1];
-            break;
-        case "k":
-        case "kb":
-            $output = $matches[1]*1024;
-            break;
-        case "m":
-        case "mb":
-            $output = $matches[1]*1024*1024;
-            break;
-        case "g":
-        case "gb":
-            $output = $matches[1]*1024*1024*1024;
-            break;
-        case "t":
-        case "tb":
-            $output = $matches[1]*1024*1024*1024*1024;
-            break;
-        default:
-            break;
+            case "":
+            case "b":
+                $output = $amount;
+                break;
+            case "k":
+            case "kb":
+                $output = $amount * 1024;
+                break;
+            case "m":
+            case "mb":
+                $output = $amount * 1024 * 1024;
+                break;
+            case "g":
+            case "gb":
+                $output = $amount * 1024 * 1024 * 1024;
+                break;
+            case "t":
+            case "tb":
+                $output = $amount * 1024 * 1024 * 1024 * 1024;
+                break;
+            default:
+                $output = null;
+                break;
         }
-     return $output;
+        return $output;
     }
 
-    /*
-     *Get the maximum size of the file uploaded to the server
-    */
+    /**
+     * Get the maximum size of the file that could be uploaded to the server
+     */
     public static function maxUploadFileSize() {
-        $minMaxSize = [
+        $minMaxSize = array(
             "uploadMax" => Utils::byteconvert(ini_get('upload_max_filesize')),
             "postMax" => Utils::byteconvert(ini_get('post_max_size')),
-            "diskMax" => intval(Option::get("main", "disk_space"))*1024*1024,
-        ];
+            "diskMax" => (int)Option::get("main", "disk_space") * 1024 * 1024,
+        );
+
         // Like min(), but casts to int and ignores 0
         $minNotNull = min(array_diff(array_map('intval', $minMaxSize), array(0)));
 
