@@ -421,7 +421,8 @@ trustedCA.reloadGrid = function (gridId) {
 
 
 trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null){
-    if (file.size/1024/1024  > maxSize){
+    console.log(file.size/1024/1024);
+    if (file.size/1024/1024  >= maxSize){
         alert(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2);
         if (typeof onFailure === 'function') {
             onFailure();
