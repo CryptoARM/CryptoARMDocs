@@ -67,6 +67,9 @@ if (isset($command)) {
         case "check":
             $res = Docs\AjaxCommand::check($params);
             break;
+        case "blockCheck":
+            $res = Docs\AjaxCommand::blockCheck($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

@@ -223,6 +223,25 @@ class Database
     }
 
     /**
+     * Get documents from DB by BLOCK_TOKEN.
+     * @global object $DB Bitrix global CDatabase object
+     * @param string $blockToken string BLOCK_TOKEN
+     * @return DocumentCollection
+     */
+    static function getDocumentsByBlockToken($token)
+    {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE BLOCK_TOKEN = ' . '"' . $DB->ForSql($token) . '"';
+        $rows = $DB->Query($sql);
+        $docs = new DocumentCollection();
+        while ($array = $rows->Fetch()) {
+            $doc = Document::fromArray($array);
+            $docs->add($doc);
+        }
+        return $docs;
+    }
+
+    /**
      * Saves property in DB.
      * If property ID is null creates new record.
      * @global object $DB Bitrix global CDatabase object

@@ -749,5 +749,42 @@ class AjaxCommand {
         $res["message"] = "Documents shared";
         return $res;
     }
+
+    /**
+     * Search for locked documents with defined token
+     *
+     * @param $params [blockToken]: string ascii
+     *
+     * @return boolean
+     */
+    public function blockCheck($params){
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.blockCheck",
+        );
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $token = $params['blockToken'];
+
+        if (!$token) {
+            $res["message"] = "No token were given";
+            return $res;
+        }
+
+        $docs = Database::getDocumentsByBlockToken($token);
+        if ($docs->count()){
+            $res["message"] = "Documents blocked with this token are found";
+            $res["success"] = true;
+        } else {
+            $res["message"] = "No documents are blocked with this token";
+        }
+
+        return $res;
+    }
 }
 
