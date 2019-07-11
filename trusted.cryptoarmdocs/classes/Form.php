@@ -50,38 +50,50 @@ class Form {
         foreach ($props as $key => $value) {
             if (stristr($key, "input_date_")) {
                 $key = str_ireplace("input_date_", "", $key);
-                $someArray[$key] = date_format(date_create($value), 'd.m.Y');
+                if (self::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = date_format(date_create($value), 'd.m.Y');
+                }
                 continue;
             }
             if (stristr($key, "input_checkbox_")) {
                 $key = str_ireplace("input_checkbox_", "", $key);
                 $keyValue = preg_split("/\D/", $key);
-                $someArray[$keyValue[0]][] = $keyValue[1];
+                if (self::checkValueForNotEmpty($keyValue)) {
+                    $someArray[$keyValue[0]][] = $keyValue[1];
+                }
                 continue;
             }
             if (stristr($key, "input_text_")) {
                 $key = str_ireplace("input_text_", "", $key);
-                $someArray[$key] = $value;
+                if (self::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = $value;
+                }
                 continue;
             }
             if (stristr($key, "input_number_")) {
                 $key = str_ireplace("input_number_", "", $key);
-                $someArray[$key] = $value;
+                if (self::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = $value;
+                }
                 continue;
             }
             if (stristr($key, "input_radio_")) {
                 $key = str_ireplace("input_radio_", "", $key);
-                $someArray[$key] = $value;
+                if (self::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = $value;
+                }
                 continue;
             }
             if (stristr($key, "input_html_")) {
                 $key = str_ireplace("input_html_", "", $key);
-                $someArray[$key] = $value;
+                if (self::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = $value;
+                }
                 continue;
             }
             if (stristr($key, "input_file_id_")) {
                 $key = str_ireplace("input_file_id_", "", $key);
-                if ($value || $value === 0 || $value === 0.0 || $value === '0') {
+                if (self::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
@@ -89,6 +101,13 @@ class Form {
         }
 
         return $someArray;
+    }
+
+    public static function checkValueForNotEmpty($param) {
+        if ($param || $param === 0 || $param === 0.0 || $param === '0') {
+            return true;
+        }
+        return false;
     }
 
     public static function addIBlockForm($iBlockTypeId, $props) {
@@ -145,7 +164,9 @@ class Form {
             ];
             if (stristr($value["CODE"], "DOC_FILE")) {
                 $doc = Database::getDocumentById((int)$value["VALUE"]);
-
+                if (!$doc) {
+                    continue;
+                }
                 $props[$key] = array_merge(
                     $props[$key],
                     [
@@ -157,6 +178,7 @@ class Form {
                 );
             }
         }
+
 
         $pdf = new \TCPDF(
             'P',        // orientation - [P]ortrait or [L]andscape
@@ -206,44 +228,53 @@ class Form {
 
         foreach ($props as $key => $value) {
             if ($value["HASH"]) {
-                $pdfText .= '
-                <tr>
-                    <td><b>' . $value["NAME"] . '</b></td>
-                    <td>' . $value["FILE_NAME"] . '</td>
-                </tr>
-                <tr>
-                    <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
-                    <td>' . $value["HASH"] .  '</td>
-                </tr>';
+                if (self::checkValueForNotEmpty($value["FILE_NAME"])) {
+                    $pdfText .= '
+                    <tr>
+                        <td><b>' . $value["NAME"] . '</b></td>
+                        <td>' . $value["FILE_NAME"] . '</td>
+                    </tr>
+                    <tr>
+                        <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
+                        <td>' . $value["HASH"] . '</td>
+                    </tr>';
+                }
                 continue;
             }
 
             if ($value["MULTIPLE"] == "Y") {
-                $propertyString = "";
-                foreach ($value["VALUE"] as $property) {
-                    $propertyString .= $property . '<br>';
+                if (self::checkValueForNotEmpty($value["VALUE"])) {
+                    $propertyString = "";
+                    foreach ($value["VALUE"] as $property) {
+                        $propertyString .= $property . '<br>';
+                    }
+                    $propertyString = substr($propertyString, 0, -4);
+                    $pdfText .= '
+                    <tr>
+                        <td><b>' . $value["NAME"] . '</b></td>
+                        <td>' . $propertyString . '</td>
+                    </tr>';
                 }
-                $propertyString = substr($propertyString, 0, -4);
-                $pdfText .= '
-                <tr>
-                    <td><b>' . $value["NAME"] . '</b></td>
-                    <td>' . $propertyString . '</td>
-                </tr>';
                 continue;
             }
 
             if ($value["VALUE"]["TYPE"] == "HTML") {
-                $pdfText .= '
-                <tr>
-                    <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
-                </tr>';
+                if (self::checkValueForNotEmpty($value['VALUE']['TEXT'])) {
+                    $pdfText .= '
+                    <tr>
+                        <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
+                    </tr>';
+                }
                 continue;
             }
 
-            $pdfText .= '<tr>
-                <td><b>' . $value["NAME"] . '</b></td>
-                <td>' . $value["VALUE"] . '</td>
-            </tr>';
+            if (self::checkValueForNotEmpty($value["VALUE"])) {
+                $pdfText .= '
+                <tr>
+                    <td><b>' . $value["NAME"] . '</b></td>
+                    <td>' . $value["VALUE"] . '</td>
+                </tr>';
+            }
         }
 
         $pdfText .= '</table>';

@@ -53,15 +53,22 @@ unset($_POST["iBlock_type_id"]);
 $iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
 
 if ($iBlockId["success"]) {
-    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId);
-    foreach ($fileListToUpdate as $fileId) {
-        $doc = Docs\Database::getDocumentById($fileId);
-        $props = $doc->getProperties();
-        $props->add(new Docs\Property("FORM", $iBlockId["data"]));
-        $doc->save();
+    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId, $fileListToUpdate);
+    if (!empty($fileListToUpdate)) {
+        foreach ($fileListToUpdate as $fileId) {
+            $doc = Docs\Database::getDocumentById($fileId);
+            $props = $doc->getProperties();
+            $props->add(new Docs\Property("FORM", $iBlockId["data"]));
+            $doc->save();
+        }
     }
+    $fileListToUpdate[] = $pdf["data"];
 }
 
-Docs\Utils::dump("PDF", $pdf);
-
 unset($_FILES[$inputIndexFullFileId]['name']);
+
+Docs\Utils::dump(json_encode($fileListToUpdate));
+Docs\Utils::dump($fileListToUpdate);
+echo '<script>';
+echo 'window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ')';
+echo '</script>';

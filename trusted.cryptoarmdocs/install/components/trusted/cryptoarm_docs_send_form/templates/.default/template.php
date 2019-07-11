@@ -2,7 +2,6 @@
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die();
-//var_dump($arResult["PROPERTY"]);
 ?>
 
 <? if (!Trusted\CryptoARM\Docs\Utils::checkAuthorization()) {
@@ -14,7 +13,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
     </iframe>
     <form enctype="multipart/form-data" target="trCaDocs__frame" id="crypto-arm-document__send-form" method="POST"
           action="/bitrix/components/trusted/cryptoarm_docs_send_form/templates/.default/uploadDocs.php">
-        <audio id="audioMonetka" src="/Sound_19306.mp3"></audio>
         <div class="crypto-arm-document__send-form">
             <div class="send-form-data">
                 <?
@@ -182,7 +180,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
             <p>
             <div>
                 <input type="submit"
-                       onclick="play()"
                        value="Подписать документы"/>
             </div>
         </div>
