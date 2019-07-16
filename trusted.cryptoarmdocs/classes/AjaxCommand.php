@@ -329,7 +329,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_SIGN, true)
+            Utils::checkDocuments($ids, null, true)
         );
 
         $docsToRemove = array_merge(
