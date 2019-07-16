@@ -85,10 +85,6 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                name="<?= "input_file_" . $value["ID"] ?>"
                                             <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                         />
-                                        <input type="hidden"
-                                               id="<?= "input_file_id_" . $value["ID"] ?>"
-                                               name="<?= "input_file_id_" . $value["ID"] ?>"
-                                        />
                                         <br/>
                                         <?
                                     } else {

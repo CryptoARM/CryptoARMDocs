@@ -304,9 +304,7 @@ class Form {
         $newDocDir .= $title;
         $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $title;
 
-        ob_end_clean();
-
-        $pdf->Output($newDocDir, 'FD');
+        $pdf->Output($newDocDir, 'F');
         $props = new PropertyCollection();
         $props->add(new Property("USER", (string)Utils::currUserId()));
         $props->add(new Property("FORM", (string)$iBlockId));
