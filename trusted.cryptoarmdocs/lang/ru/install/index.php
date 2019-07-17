@@ -31,7 +31,7 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Документы"
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Документы: #FILE_NAMES#";
 
 // email about share documents
-$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"] = "КриптоАРМ Документы - уведомление";
+$MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"] = "КриптоАРМ Документы - уведомление о получении доступа к документу";
 $MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - название документа
@@ -41,7 +41,7 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "#SITE_NAME#: получен �
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = "#SITE_NAME#: #SHARE_FROM# поделился документом #FILE_NAME#";
 
 // email completed form
-$MESS["TR_CA_DOCS_MAIL_EVENT_FORM_NAME"] = "КриптоАРМ Документы - формы";
+$MESS["TR_CA_DOCS_MAIL_EVENT_FORM_NAME"] = "КриптоАРМ Документы - уведомление пользователя о форме";
 $MESS["TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - название документа
@@ -50,7 +50,7 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"] = "#SITE_NAME#: Документ�
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"] = "#SITE_NAME#: Форма успешно заполнена и документы подписаны #FILE_NAME#";
 
 // email completed form and send it to admin
-$MESS["TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"] = "КриптоАРМ Документы - формы";
+$MESS["TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"] = "КриптоАРМ Документы - уведомление администратора о форме";
 $MESS["TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - название документа
