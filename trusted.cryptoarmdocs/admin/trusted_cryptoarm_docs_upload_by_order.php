@@ -47,11 +47,14 @@ $sub = $_SERVER[REQUEST_URI];
 
 $bCan = false;
 
-if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
+if ($REQUEST_METHOD == "POST") {
     // Check permissions
     if (!$USER->CanDoFileOperation('fm_upload_file', $arPath)) {
         $strWarning = Loc::getMessage("ACCESS_DENIED");
-    } else {
+    } elseif (strlen($save) === 0) {
+        $bCan = true;
+        $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_ERROR");
+    } elseif (strlen($save) > 0 && check_bitrix_sessid()) {
         $bCan = true;
         $nums = IntVal($nums);
         if ($nums > 0) {
@@ -79,6 +82,8 @@ if ($REQUEST_METHOD == "POST" && strlen($save) > 0 && check_bitrix_sessid()) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_ACCESS_DENIED") . " \"" . $pathto . "\"\n";
                 elseif ($arFile["error"] == 1 || $arFile["error"] == 2)
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_SIZE_ERROR", Array('#FILE_NAME#' => $pathto)) . "\n";
+                elseif (!count($_FILES))
+                    $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_ERROR") . "\n";
                 elseif (($mess = CFileMan::CheckFileName(str_replace('/', '', $pathto))) !== true)
                     $strWarning .= $mess . ".\n";
                 elseif ($io->FileExists($DOC_ROOT . $pathto))
