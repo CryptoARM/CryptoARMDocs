@@ -1,4 +1,5 @@
 <?php
+
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Application;
@@ -11,8 +12,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/
 
 Loc::loadMessages(__FILE__);
 
-Class trusted_cryptoarmdocs extends CModule
-{
+Class trusted_cryptoarmdocs extends CModule {
     // Required by the marketplace standards
     var $MODULE_ID = "trusted.cryptoarmdocs";
     var $MODULE_NAME;
@@ -22,13 +22,11 @@ Class trusted_cryptoarmdocs extends CModule
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    function trusted_cryptoarmdocs()
-    {
+    function trusted_cryptoarmdocs() {
         self::__construct();
     }
 
-    function __construct()
-    {
+    function __construct() {
         $arModuleVersion = array();
         include __DIR__ . "/version.php";
         $this->MODULE_NAME = Loc::getMessage("TR_CA_DOCS_MODULE_NAME");
@@ -39,8 +37,7 @@ Class trusted_cryptoarmdocs extends CModule
         $this->PARTNER_URI = GetMessage("TR_CA_DOCS_PARTNER_URI");
     }
 
-    function DoInstall()
-    {
+    function DoInstall() {
         global $DOCUMENT_ROOT, $APPLICATION;
 
         $context = Application::getInstance()->getContext();
@@ -104,18 +101,15 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function d7Support()
-    {
+    function d7Support() {
         return CheckVersion(ModuleManager::getVersion("main"), "14.00.00");
     }
 
-    function crmSupport()
-    {
+    function crmSupport() {
         return IsModuleInstalled("crm");
     }
 
-    function InstallFiles()
-    {
+    function InstallFiles() {
         CopyDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/components/",
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components/",
@@ -159,22 +153,21 @@ Class trusted_cryptoarmdocs extends CModule
         return true;
     }
 
-    function CreateDocsDir()
-    {
+    function CreateDocsDir() {
         $docsDir = $_SERVER["DOCUMENT_ROOT"] . "/docs/";
         if (!file_exists($docsDir)) {
             mkdir($docsDir);
         }
     }
 
-    function InstallModuleOptions()
-    {
+    function InstallModuleOptions() {
         $options = array(
             'DOCUMENTS_DIR' => '/docs/',
             'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
             'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
             'MAIL_EVENT_ID_FORM' => 'TR_CA_DOCS_MAIL_FORM',
+            'MAIL_EVENT_ID_FORM_TO_ADMIN' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
@@ -183,8 +176,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function InstallDB()
-    {
+    function InstallDB() {
         global $DB;
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -240,8 +232,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function InstallMailEvents()
-    {
+    function InstallMailEvents() {
         $obEventType = new CEventType;
         $events = array(
             // email by order
@@ -274,6 +265,14 @@ Class trusted_cryptoarmdocs extends CModule
                 "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
                 "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
+            ),
+
+            // email completed form and send it to admin
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"),
             ),
         );
         foreach ($events as $event) {
@@ -334,6 +333,18 @@ Class trusted_cryptoarmdocs extends CModule
                 "BODY_TYPE" => "html",
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
             ),
+
+            //email completed form and send it to admin
+            'MAIL_TEMPLATE_ID_FORM_TO_ADMIN' => array(
+                "ACTIVE" => "Y",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY"),
+            ),
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
@@ -341,8 +352,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function DoUninstall()
-    {
+    function DoUninstall() {
         global $DOCUMENT_ROOT, $APPLICATION;
 
         $context = Application::getInstance()->getContext();
@@ -374,8 +384,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function UnInstallFiles()
-    {
+    function UnInstallFiles() {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
@@ -407,8 +416,7 @@ Class trusted_cryptoarmdocs extends CModule
         return true;
     }
 
-    function UnInstallModuleOptions()
-    {
+    function UnInstallModuleOptions() {
         $options = array(
             // 'DOCUMENTS_DIR',
             'MAIL_EVENT_ID',
@@ -419,6 +427,8 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_TEMPLATE_ID_SHARE',
             'MAIL_EVENT_ID_FORM',
             'MAIL_TEMPLATE_ID_FORM',
+            'MAIL_EVENT_ID_FORM_TO_ADMIN',
+            'MAIL_TEMPLATE_ID_FORM_TO_ADMIN',
         );
         foreach ($options as $option) {
             Option::delete(
@@ -428,8 +438,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function UnInstallDB()
-    {
+    function UnInstallDB() {
         global $DB;
         if (Loader::includeModule('bizproc')) {
             $docs = Docs\Database::getDocuments();
@@ -459,13 +468,13 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function UnInstallMailEvents()
-    {
+    function UnInstallMailEvents() {
         $events = array(
             'TR_CA_DOCS_MAIL_BY_ORDER',
             'TR_CA_DOCS_MAIL_TO',
             'TR_CA_DOCS_MAIL_SHARE',
             'TR_CA_DOCS_MAIL_FORM',
+            'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
         );
         foreach ($events as $event) {
             $eventMessages = CEventMessage::GetList(
@@ -482,8 +491,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function dropDocumentChain($id)
-    {
+    function dropDocumentChain($id) {
         global $DB;
         // Try to find parent doc
         $sql = 'SELECT `PARENT_ID` FROM `tr_ca_docs` WHERE `ID`=' . $id;
@@ -507,8 +515,7 @@ Class trusted_cryptoarmdocs extends CModule
         return CSite::GetByID($siteID)->Fetch();
     }
 
-    function AddMenuItem($menuFile, $menuItem,  $siteID, $pos = -1)
-    {
+    function AddMenuItem($menuFile, $menuItem, $siteID, $pos = -1) {
         if (CModule::IncludeModule('fileman')) {
             $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
             $arMenuItems = $arResult["aMenuLinks"];
@@ -523,11 +530,11 @@ Class trusted_cryptoarmdocs extends CModule
             }
 
             if (!$bFound) {
-                if ($pos<0 || $pos>=count($arMenuItems)) {
+                if ($pos < 0 || $pos >= count($arMenuItems)) {
                     $arMenuItems[] = $menuItem;
                 } else {
-                    for ($i=count($arMenuItems); $i>$pos; $i--) {
-                        $arMenuItems[$i] = $arMenuItems[$i-1];
+                    for ($i = count($arMenuItems); $i > $pos; $i--) {
+                        $arMenuItems[$i] = $arMenuItems[$i - 1];
                     }
                     $arMenuItems[$pos] = $menuItem;
                 }
@@ -543,8 +550,8 @@ Class trusted_cryptoarmdocs extends CModule
             $arMenuItems = $arResult["aMenuLinks"];
             $menuTemplate = $arResult["sMenuTemplate"];
 
-            foreach($arMenuItems as $key => $item) {
-                if($item[1] == $menuLink) unset($arMenuItems[$key]);
+            foreach ($arMenuItems as $key => $item) {
+                if ($item[1] == $menuLink) unset($arMenuItems[$key]);
             }
 
             CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
