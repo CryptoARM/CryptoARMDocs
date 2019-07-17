@@ -8,9 +8,9 @@ use Bitrix\Main\Config\Option;
 
 global $USER;
 
-Loader::includeModule("trusted.cryptoarmdocs");
+Loader::includeModule('trusted.cryptoarmdocs');
 
-$DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, "DOCUMENTS_DIR", "/docs/");
+$DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
 foreach ($_POST as $key => $value) {
     if (stristr($key, "input_file_id_")) {
@@ -19,12 +19,12 @@ foreach ($_POST as $key => $value) {
         $fileName = $_FILES[$inputIndexFullFileId]["name"];
         if ($fileName) {
             $uniqid = (string)uniqid();
-            $newDocDir = $_SERVER["DOCUMENT_ROOT"] . "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/";
+            $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
             mkdir($newDocDir);
 
             $newDocFilename = Docs\Utils::mb_basename($fileName);
             $absolutePath = $newDocDir . $newDocFilename;
-            $relativePath = "/" . $DOCUMENTS_DIR . "/" . $uniqid . "/" . $newDocFilename;
+            $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $newDocFilename;
 
             if (move_uploaded_file($_FILES[$inputIndexFullFileId]["tmp_name"], $absolutePath)) {
                 $props = new Docs\PropertyCollection();
@@ -56,7 +56,7 @@ if ($iBlockId["success"]) {
     }
     $fileListToUpdate[] = $pdf["data"];
 
-    echo "<script>window.parent.trustedCA.sign(" . json_encode($fileListToUpdate) . ")</script>";
+    echo '<script>window.parent.trustedCA.sign(' . $fileListToUpdate . ')</script>';
 }
 
 unset($_FILES[$inputIndexFullFileId]["name"]);

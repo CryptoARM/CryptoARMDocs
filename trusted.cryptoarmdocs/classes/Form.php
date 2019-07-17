@@ -50,7 +50,7 @@ class Form {
         foreach ($props as $key => $value) {
             if (stristr($key, "input_date_")) {
                 $key = str_ireplace("input_date_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = date_format(date_create($value), 'd.m.Y');
                 }
                 continue;
@@ -58,42 +58,42 @@ class Form {
             if (stristr($key, "input_checkbox_")) {
                 $key = str_ireplace("input_checkbox_", "", $key);
                 $keyValue = preg_split("/\D/", $key);
-                if (self::checkValueForNotEmpty($keyValue)) {
+                if (Utils::checkValueForNotEmpty($keyValue)) {
                     $someArray[$keyValue[0]][] = $keyValue[1];
                 }
                 continue;
             }
             if (stristr($key, "input_text_")) {
                 $key = str_ireplace("input_text_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_number_")) {
                 $key = str_ireplace("input_number_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_radio_")) {
                 $key = str_ireplace("input_radio_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_html_")) {
                 $key = str_ireplace("input_html_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_file_id_")) {
                 $key = str_ireplace("input_file_id_", "", $key);
-                if (self::checkValueForNotEmpty($value)) {
+                if (Utils::checkValueForNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
@@ -101,13 +101,6 @@ class Form {
         }
 
         return $someArray;
-    }
-
-    public static function checkValueForNotEmpty($param) {
-        if ($param || $param === 0 || $param === 0.0 || $param === '0') {
-            return true;
-        }
-        return false;
     }
 
     public static function addIBlockForm($iBlockTypeId, $props) {
@@ -179,7 +172,6 @@ class Form {
             }
         }
 
-
         $pdf = new \TCPDF(
             'P',        // orientation - [P]ortrait or [L]andscape
             'mm',       // measure unit
@@ -228,7 +220,7 @@ class Form {
 
         foreach ($props as $key => $value) {
             if ($value["HASH"]) {
-                if (self::checkValueForNotEmpty($value["FILE_NAME"])) {
+                if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
                     $pdfText .= '
                     <tr>
                         <td><b>' . $value["NAME"] . '</b></td>
@@ -243,7 +235,7 @@ class Form {
             }
 
             if ($value["MULTIPLE"] == "Y") {
-                if (self::checkValueForNotEmpty($value["VALUE"])) {
+                if (Utils::checkValueForNotEmpty($value["VALUE"])) {
                     $propertyString = "";
                     foreach ($value["VALUE"] as $property) {
                         $propertyString .= $property . '<br>';
@@ -259,7 +251,7 @@ class Form {
             }
 
             if ($value["VALUE"]["TYPE"] == "HTML") {
-                if (self::checkValueForNotEmpty($value['VALUE']['TEXT'])) {
+                if (Utils::checkValueForNotEmpty($value['VALUE']['TEXT'])) {
                     $pdfText .= '
                     <tr>
                         <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
@@ -268,7 +260,7 @@ class Form {
                 continue;
             }
 
-            if (self::checkValueForNotEmpty($value["VALUE"])) {
+            if (Utils::checkValueForNotEmpty($value["VALUE"])) {
                 $pdfText .= '
                 <tr>
                     <td><b>' . $value["NAME"] . '</b></td>

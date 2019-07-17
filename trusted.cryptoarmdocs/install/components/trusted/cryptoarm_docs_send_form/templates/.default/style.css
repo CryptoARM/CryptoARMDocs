@@ -1,3 +1,8 @@
+#trCaError {
+    color: red;
+    font-size: 20px;
+}
+
 .crypto-arm-document__send-form {
     width: 600px;
 }

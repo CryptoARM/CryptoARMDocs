@@ -8,13 +8,6 @@ use Bitrix\Main\Config\Option;
 Loader::includeModule('trusted.cryptoarmdocs');
 Loader::includeModule('iblock');
 
-global $USER;
-
-if ($arParams["IBLOCK_ID"] === "null") {
-    $this->IncludeComponentTemplate();
-}
-
-
 $arResult = array();
 
 $properties = CIBlockProperty::GetList(
@@ -55,6 +48,23 @@ while ($prop_fields = $properties->GetNext()) {
 
 while ($propAdd_fields = $propertiesAdditional->GetNext()) {
     $arResult["PROPERTY"][$propAdd_fields["PROPERTY_ID"]]["ADDITIONAL"][$propAdd_fields["ID"]] = $propAdd_fields["VALUE"];
+}
+
+if (Docs\Utils::checkAuthorization()) {
+    if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
+        $arResult["compVisibility"] = false;
+        $this->IncludeComponentTemplate();
+    }
+    $arResult["compVisibility"] = true;
+    if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
+        if (Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"])) {
+            $arResult["compVisibility"] = true;
+        } else {
+            $arResult["compVisibility"] = false;
+        }
+    }
+} else {
+    $arParams["compVisibility"] = false;
 }
 
 $this->IncludeComponentTemplate();

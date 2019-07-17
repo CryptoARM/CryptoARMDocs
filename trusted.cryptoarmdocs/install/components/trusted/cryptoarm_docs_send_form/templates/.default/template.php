@@ -1,12 +1,11 @@
 <?php
-
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
-if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die();
-?>
 
-<? if (!Trusted\CryptoARM\Docs\Utils::checkAuthorization()) {
-    return false;
-} else { ?>
+if (!$arResult["compVisibility"]) { ?>
+    <div id="trCaError">
+        ERROR
+    </div>
+<? } else { ?>
     <iframe id="trCaDocs__frame"
             name="trCaDocs__frame"
             style="display:none">
@@ -84,6 +83,10 @@ if ($arParams["IBLOCK_ID"] == "default" or $arParams["IBLOCK_ID"] == null) die()
                                                id="<?= "input_file_" . $value["ID"] ?>"
                                                name="<?= "input_file_" . $value["ID"] ?>"
                                             <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                        />
+                                        <input type="hidden"
+                                               id="<?= "input_file_id_" . $value["ID"] ?>"
+                                               name="<?= "input_file_id_" . $value["ID"] ?>"
                                         />
                                         <br/>
                                         <?
