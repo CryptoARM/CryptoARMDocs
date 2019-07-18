@@ -32,6 +32,7 @@ trustedCA.initVar = function(){
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
+    UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
 };
 
 // Fixes errors after authorization
@@ -433,3 +434,9 @@ trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure =
     }
 };
 
+trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
+    message = UNSHARE_CONFIRM;
+    if (force ? true : confirm(message)) {
+        trustedCA.ajax('unshare', {ids}, onSuccess, onFailure);
+    }
+};

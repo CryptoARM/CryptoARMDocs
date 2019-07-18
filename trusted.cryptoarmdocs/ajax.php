@@ -70,6 +70,9 @@ if (isset($command)) {
         case "blockCheck":
             $res = Docs\AjaxCommand::blockCheck($params);
             break;
+        case "unshare":
+            $res = Docs\AjaxCommand::unshare($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

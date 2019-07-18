@@ -21,3 +21,5 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Удалить документ"
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"] = "Добавить";
 
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"] = "Отказаться от документа";
+

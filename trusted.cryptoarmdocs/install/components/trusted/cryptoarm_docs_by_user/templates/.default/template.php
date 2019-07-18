@@ -239,6 +239,18 @@ $APPLICATION->IncludeComponent(
                                         </div>
                                 <?
                                     }
+
+                                } elseif ($docAccessLevel === "SIGN" || $docAccessLevel === "READ") {
+                                    $unshareJs = "trustedCA.unshare([$docId], false, reloadDocByUserComp)";
+                                ?>
+                                    <div class="icon-wrapper"
+                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"); ?>"
+                                         onclick="<?= $unshareJs ?>">
+                                        <i class="material-icons">
+                                            close
+                                        </i>
+                                    </div>
+                                    <?
                                 }
                                 ?>
                             </div>

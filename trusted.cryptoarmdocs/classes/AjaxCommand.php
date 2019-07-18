@@ -322,7 +322,7 @@ class AjaxCommand {
         $ids = $params["ids"];
 
         if (!$ids) {
-            $res["docsNotFound"] = array($id);
+            $res["noIds"] = true;
             $res["message"] = "No ids were given";
             return $res;
         }
@@ -750,6 +750,58 @@ class AjaxCommand {
         return $res;
     }
 
+    static function unshare($params){
+        $res = array(
+            "success" => false,
+            "message" => "Unknown error in Ajax.unshare",
+        );
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+        $docIds = $params["ids"];
+
+        if (!$docIds) {
+            $res["noIds"] = true;
+            $res["message"] = "No ids were given";
+            return $res;
+        }
+
+        $res = array_merge(
+            $res,
+            Utils::checkDocuments($docIds, SHARE_READ, true)
+        );
+
+        $docsToUnshare = array_merge(
+            $res['docsOk']->toIdArray(),
+            $res['docsFileNotFound']->toIdArray(),
+            $res['docsBlocked']->toIdArray()
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toIdArray();
+
+        if ($docsToUnshare) {
+            $res["success"] = true;
+            $res["message"] = "Some documents were unshared";
+        } else {
+            $res["message"] = "Nothing to unshare";
+        }
+
+        foreach ($docsToUnshare as $docId) {
+            $doc = Database::getDocumentById($docId);
+            $doc->unshare($userId);
+            $doc->save();
+        }
+
+        return $res;
+    }
+
     /**
      * Search for locked documents with defined token
      *
@@ -786,5 +838,7 @@ class AjaxCommand {
 
         return $res;
     }
+
+
 }
 
