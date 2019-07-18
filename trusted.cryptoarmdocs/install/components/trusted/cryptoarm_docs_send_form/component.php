@@ -51,20 +51,20 @@ while ($propAdd_fields = $propertiesAdditional->GetNext()) {
 }
 
 if (Docs\Utils::checkAuthorization()) {
+    $arResult["compVisibility"] = true;
     if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
         $arResult["compVisibility"] = false;
-        $this->IncludeComponentTemplate();
-    }
-    $arResult["compVisibility"] = true;
-    if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
-        if (Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"])) {
-            $arResult["compVisibility"] = true;
-        } else {
-            $arResult["compVisibility"] = false;
+    } else {
+        if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
+            if (Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"])) {
+                $arResult["compVisibility"] = true;
+            } else {
+                $arResult["compVisibility"] = false;
+            }
         }
     }
 } else {
-    $arParams["compVisibility"] = false;
+    $arResult["compVisibility"] = false;
 }
 
 $this->IncludeComponentTemplate();
