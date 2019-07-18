@@ -56,9 +56,7 @@ if (Docs\Utils::checkAuthorization()) {
         $arResult["compVisibility"] = false;
     } else {
         if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
-            if (Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"])) {
-                $arResult["compVisibility"] = true;
-            } else {
+            if (!(Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]))) {
                 $arResult["compVisibility"] = false;
             }
         }

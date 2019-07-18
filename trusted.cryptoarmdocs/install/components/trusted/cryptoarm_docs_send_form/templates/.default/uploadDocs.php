@@ -45,7 +45,7 @@ unset($_POST["iBlock_type_id"]);
 $iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
 
 if ($iBlockId["success"]) {
-    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId, $fileListToUpdate);
+    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId);
     if (!empty($fileListToUpdate)) {
         foreach ($fileListToUpdate as $fileId) {
             $doc = Docs\Database::getDocumentById($fileId);
@@ -56,7 +56,7 @@ if ($iBlockId["success"]) {
     }
     $fileListToUpdate[] = $pdf["data"];
 
-    echo '<script>window.parent.trustedCA.sign(' . $fileListToUpdate . ')</script>';
+    echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ')</script>';
 }
 
-unset($_FILES[$inputIndexFullFileId]["name"]);
+unset($_FILES);

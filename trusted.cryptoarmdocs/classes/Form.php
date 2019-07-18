@@ -299,7 +299,7 @@ class Form {
         $pdf->Output($newDocDir, 'F');
         $props = new PropertyCollection();
         $props->add(new Property("USER", (string)Utils::currUserId()));
-        $props->add(new Property("FORM", (string)$iBlockId));
+        $props->add(new Property("FORM", (string)$iBlockId["data"]));
         $doc = Utils::createDocument($relativePath, $props);
         $docId = $doc->GetId();
 

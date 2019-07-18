@@ -174,6 +174,16 @@ if (!$arResult["compVisibility"]) { ?>
                        name="iBlock_type_id"
                        value="<?= $arParams["IBLOCK_ID"] ?>"
                 />
+                <input type="hidden"
+                       id="send_email_to_user"
+                       name="send_email_to_user"
+                       value="<?= $arParams["SEND_EMAIL_TO_USER"] ?>"
+                />
+                <input type="hidden"
+                       id="send_email_to_admin"
+                       name="send_email_to_admin"
+                       value="<?= $arParams["SEND_EMAIL_TO_ADMIN"] ? $arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"] : false ?>"
+                />
             </div>
             <p>
             <div>
