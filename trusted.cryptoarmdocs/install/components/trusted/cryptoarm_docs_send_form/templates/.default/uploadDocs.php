@@ -40,8 +40,6 @@ foreach ($_POST as $key => $value) {
 }
 
 $iBlockTypeId = $_POST["iBlock_type_id"];
-unset($_POST["iBlock_type_id"]);
-
 $iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
 
 if ($iBlockId["success"]) {
@@ -55,8 +53,29 @@ if ($iBlockId["success"]) {
         }
     }
     $fileListToUpdate[] = $pdf["data"];
+    $extra = [
+        "send_email_to_user" => $_POST["send_email_to_user"],
+        "send_email_to_admin" => $_POST["send_email_to_admin"],
+        "formId" => $iBlockId["data"]
+    ];
 
-    echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ')</script>';
+    echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ')</script>';
 }
 
 unset($_FILES);
+
+/*$docsCollection = Docs\Database::getDocumentsByPropertyTypeAndValue("FORM", 449);
+
+$docsCollectionSign = array();
+$signValue = false;
+
+foreach ($docsCollection->getList() as $doc) {
+    $signValue = $doc->getSigners() ?: false;
+    $docsCollectionSign[] = $doc->getId();
+    if (!$signValue) {
+        break;
+    }
+}*/
+
+//$response = Docs\Form::sendEmail($fileListToUpdate, $_POST["send_email_to_user"], $_POST["send_email_to_admin"]);
+//Docs\Utils::dump($response);

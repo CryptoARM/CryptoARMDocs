@@ -58,11 +58,15 @@ if (Docs\Utils::checkAuthorization()) {
         if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
             if (!(Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]))) {
                 $arResult["compVisibility"] = false;
+            } else {
             }
         }
     }
 } else {
     $arResult["compVisibility"] = false;
 }
+
+$arResult["SEND_EMAIL_TO_USER"] = $arParams["SEND_EMAIL_TO_USER"] == "Y" ? Docs\Utils::getUserEmail() : false;
+$arResult["SEND_EMAIL_TO_ADMIN"] = $arParams["SEND_EMAIL_TO_ADMIN"] == "Y" ? $arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"] : false;
 
 $this->IncludeComponentTemplate();

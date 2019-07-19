@@ -15,7 +15,7 @@ class Form {
     public static function addIBlock($iBlockTypeId, $props, $userId) {
         $res = array(
             "success" => false,
-            "message" => "Unknown error in Ajax.addIBlock",
+            "message" => "Unknown error in Form::addIBlock",
         );
 
         if (!Utils::checkAuthorization()) {
@@ -106,7 +106,7 @@ class Form {
     public static function addIBlockForm($iBlockTypeId, $props) {
         $res = array(
             'success' => false,
-            'message' => 'Unknown error in addIBlockForm',
+            'message' => 'Unknown error in Form::addIBlockForm',
         );
 
         if (!Utils::checkAuthorization()) {
@@ -129,7 +129,7 @@ class Form {
 
         $res = array(
             'success' => false,
-            'message' => 'Unknown error in createPDF',
+            'message' => 'Unknown error in Form::createPDF',
         );
 
         if (!Utils::checkAuthorization()) {
@@ -309,6 +309,54 @@ class Form {
                 'message' => 'PDF created',
                 'data' => $docId
             );
+        }
+
+        return $res;
+    }
+
+    static function sendEmail($docsIds, $toUser = false, $toAdditional = false) {
+        $res = array(
+            'success' => false,
+            'message' => 'Unknown error in Form::sendEmail or nothing to send',
+        );
+
+        global $USER;
+
+        if ($toUser) {
+            $arEventFields = array(
+                "EMAIL" => $toUser
+            );
+
+            $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM", $arEventFields, "MAIL_TEMPLATE_ID_FORM");
+
+            Utils::dump("main" ,$arEventFields);
+
+            if ($response["success"]) {
+                $res = array(
+                    'success' => false,
+                    'message' => $response["message"],
+                );
+            }
+        }
+
+        if ($toAdditional) {
+            if (Utils::validateEmailAddress($toAdditional)) {
+                $arEventFields = array(
+                    "EMAIL" => $toAdditional,
+                    "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser))
+                );
+
+                $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
+
+                Utils::dump("ad" ,$arEventFields);
+
+                if ($response["success"]) {
+                    $res = array(
+                        'success' => false,
+                        'message' => $response["message"],
+                    );
+                }
+            }
         }
 
         return $res;

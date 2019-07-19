@@ -422,6 +422,24 @@ class Utils
         return $user ? $user['ID'] : null;
     }
 
+    public static function validateEmailAddress($emailAddress) {
+        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function getUserEmail($userId = false) {
+        if (!$userId) {
+            $userId = self::currUserId();
+        }
+
+        $filter = array("id" => $userId);
+
+        $user = \CUser::GetList(($by = "id"), ($order = "desc"), $filter)->Fetch();
+        return $user ? $user['EMAIL'] : null;
+    }
+
     /**
      * Genereates UUID v.4
      */
@@ -499,16 +517,10 @@ class Utils
         $minNotNull = min(array_diff(array_map('intval', $minMaxSize), array(0)));
 
         return round($minNotNull/1024/1024, 2);
+    }
 
     public static function checkValueForNotEmpty($param) {
         if ($param || $param === 0 || $param === 0.0 || $param === '0') {
-            return true;
-        }
-        return false;
-    }
-
-    public static function validateEmailAddress($emailAddress) {
-        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
             return true;
         }
         return false;

@@ -254,6 +254,28 @@ class AjaxCommand {
         $res["success"] = true;
         $res["message"] = "File uploaded";
 
+        //For FORM
+        if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
+            $docsCollection = Database::getDocumentsByPropertyTypeAndValue("FORM", $extra["formId"]);
+
+            $docsCollectionSign = array();
+            $signValue = false;
+
+            foreach ($docsCollection->getList() as $doc) {
+                $signValue = $doc->getSigners() ?: false;
+                $docsCollectionSign[] = $doc->getId();
+                if (!$signValue) {
+                    break;
+                }
+            }
+
+            Utils::dump($extra);
+
+            if ($signValue) {
+                Form::sendEmail($docsCollectionSign, $extra["send_email_to_user"], $extra["send_email_to_admin"]);
+            }
+        }
+
         Utils::log(array(
             "action" => "signed",
             "docs" => $doc,
