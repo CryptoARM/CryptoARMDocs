@@ -69,7 +69,6 @@
 }
     /*certificate*/
 .trca-adm-list-table-cell-certificate{
-    width: 100%;
     table-layout: fixed;
     min-width: 250px;
 }
@@ -138,6 +137,110 @@
     width: 115px;
     display: block !important;
 }
+
+/*Modal window*/
+.trca-modal-window {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 535px;
+    max-height: 100%;
+    min-height: 217px;
+    z-index: 1050;
+    background: white;
+    transform: translate(-50%, -50%);
+    border-radius: 3px;
+    -webkit-box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
+    box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
+}
+
+.trca-modal-header {
+    text-align: left;
+    font-size: 24px;
+    background: #2196f3;
+    padding: 24px;
+    color: white;
+}
+
+.trca-modal-content {
+    display: flex;
+    line-height: 1.2;
+}
+
+.trca-modal-content-icon {
+    padding-top: 24px;
+    padding-left: 24px;
+    font-size: 41px;
+    color: rgba(0,0,0,.38);
+}
+
+.trca-modal-content-message {
+    font-size: 1rem;
+    padding: 24px;
+}
+
+.trca-modal-close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 8px 8px auto;
+    cursor: pointer;
+    background-color: rgb(33, 150, 243);
+    color: white;
+    width: 185px;
+    height: 36px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    font-weight: 600;
+}
+
+.trca-modal-close:hover:not(.disabled) {
+    background: #1E88E5 !important;
+}
+
+.trca-modal-overlay {
+    z-index: 1050;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
+.trca-modal-spinner {
+    height: 2px;
+    width: 100%;
+    position: absolute;
+    overflow: -moz-hidden-unscrollable;
+    overflow: hidden;
+    background-color: #ddd;
+  }
+  .trca-modal-spinner:before{
+    display: block;
+    position: absolute;
+    content: "";
+    left: -200px;
+    width: 200px;
+    height: 2px;
+    min-height: 2px;
+    z-index: 1100;
+    background-color: #2980b9;
+    animation: trca-modal-spinner_loading 2s linear infinite;
+  }
+
+  @keyframes trca-modal-spinner_loading {
+      from {left: -200px; width: 30%;}
+      50% {width: 30%;}
+      70% {width: 70%;}
+      80% { left: 50%;}
+      95% {left: 120%;}
+      to {left: 100%;}
+  }
 
 /* Tooltips */
 [tooltip]{

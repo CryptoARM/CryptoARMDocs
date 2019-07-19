@@ -31,9 +31,34 @@ trustedCA.initVar = function(){
     SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
+    MODAL_MESSAGE_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_1');
+    MODAL_MESSAGE_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_2');
+    MODAL_MESSAGE_MANY_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_1');
+    MODAL_MESSAGE_MANY_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_2');
+    MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
 };
+
+// Modal window
+trustedCA.modalWindowSign = `
+    <div class="trca-modal-overlay" id="trca-modal-overlay">
+        <div class="trca-modal-window" id="trca-modal-window">
+            <div class="trca-modal-header" id="trca-modal-header"></div>
+            <div class="trca-modal-content">
+                <div class="trca-modal-content-icon" id=class="trca-modal-content-icon">
+                    <i class="material-icons" style="font-size: 41px;">info_outline</i>
+                </div>
+                <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
+            </div>
+            <div class="trca-modal-spinner" id="trca-modal-spinner"></div>
+            <div class="trca-modal-footer" id="trca-modal-footer">
+                <div class="trca-modal-close" id="trca-modal-close"></div>
+            </div>
+        </div>
+    </div>
+`;
+trustedCA.modalDiv = document.createElement("div");
 
 // Fixes errors after authorization
 if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
@@ -183,6 +208,8 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                     docs.forEach(function (elem) {
                         ids.push(elem.id);
                     });
+                    trustedCA.showModalWindow(ids);
+                    var interval = setInterval(() => trustedCA.blockCheck(d.token, interval), 2000);
                     if (typeof onSuccess === 'function') {
                         onSuccess(d);
                     }
@@ -208,6 +235,41 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     });
 };
 
+trustedCA.blockCheck = function (token, interval) {
+    let onSuccess = (d) => {};
+    let onFailure = (e) => {
+        clearInterval(interval);
+        interval=0;
+        document.body.removeChild(trustedCA.modalDiv)
+        trustedCA.reloadDoc();
+    }
+    trustedCA.ajax('blockCheck', {blockToken: token}, onSuccess, onFailure);
+};
+
+trustedCA.showModalWindow = function(ids) {
+    trustedCA.modalDiv.className = "trca-modal";
+    trustedCA.modalDiv.innerHTML = trustedCA.modalWindowSign;
+    document.body.appendChild(trustedCA.modalDiv);
+    trustedCA.reloadDoc();
+    $('#trca-modal-close').attr('onclick', "trustedCA.unblock([" + ids + "], () => {$('#trca-modal-window').hide(); $('#trca-modal-overlay').hide()})");
+    if (ids.length === 1){
+        $('#trca-modal-header').text(MODAL_MESSAGE_1);
+        $('#trca-modal-content-message').text(MODAL_MESSAGE_2 + '«' + MODAL_CANCEL + '».');
+    } else {
+        $('#trca-modal-header').text(MODAL_MESSAGE_MANY_1);
+        $('#trca-modal-content-message').text(MODAL_MESSAGE_MANY_2 + '«' + MODAL_CANCEL + '».');
+    }
+    $('#trca-modal-close').text(MODAL_CANCEL);
+}
+
+trustedCA.reloadDoc = function () {
+    let allElements = document.querySelectorAll('#trca-reload-doc');
+    allElements.forEach( (element) => {
+        if (typeof element.onclick === 'function'){
+            element.onclick();
+        }
+    });
+}
 
 trustedCA.verify = function (ids) {
     if (location.protocol === 'http:') {

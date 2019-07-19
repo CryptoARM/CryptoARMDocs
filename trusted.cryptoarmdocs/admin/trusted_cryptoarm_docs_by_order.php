@@ -133,7 +133,7 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
     switch ($_REQUEST['action']) {
         case "sign":
             echo '<script>';
-            echo 'window.parent.trustedCA.sign(' . json_encode($ids) . ', {"role": "SELLER"}, () => { window.parent.' . $reloadTableJs . ' })';
+            echo 'window.parent.trustedCA.sign(' . json_encode($ids) . ', {"role": "SELLER"})';
             echo '</script>';
             break;
         case "unblock":
@@ -450,7 +450,10 @@ $oFilter = new CAdminFilter(
         Loc::getMessage("TR_CA_DOCS_COL_STATUS")
     )
 );
+$reloadDocJS = $sTableID . ".GetAdminList('')";
 ?>
+
+<a id="trca-reload-doc" onclick="<?= $reloadDocJS ?>"></a>
 
 <?php
 if (!Docs\Utils::isSecure()) {
@@ -560,16 +563,6 @@ if (!Docs\Utils::isSecure()) {
     ?>
 
 </form>
-
-<script>
-let trustedCAUploadHandler = (data) => {
-    <?= $reloadTableJs ?>
-};
-
-let trustedCACancelHandler = (data) => {
-    <?= $reloadTableJs ?>
-};
-</script>
 
 <?
 $lAdmin->DisplayList();

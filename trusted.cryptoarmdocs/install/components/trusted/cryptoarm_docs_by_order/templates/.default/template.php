@@ -5,10 +5,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
-use Bitrix\Main\Page\Asset;
-
-Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">');
-Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">');
 
 $app = Application::getInstance();
 $context = $app->getContext();
@@ -22,7 +18,7 @@ $title = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOCS_BY_ORDER") . $arPar
 $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
 ?>
 
-<a id="reload_doc_by_order_comp" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
+<a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
 <div id="main-document">
     <main class="document-card">
@@ -43,7 +39,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS_ALL"); ?>
                         </div>
-                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'}, reloadDocByOrderComp)" ?>
+                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'})" ?>
                         <div onclick="<?= $signAllJs ?>">
                             <div class="material-icons">
                                 create
@@ -79,8 +75,13 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                     $docStatus = $doc["STATUS"];
 
                     if ($docType === DOC_TYPE_SIGNED_FILE) {
-                        $icon = "check_circles";
-                        $iconCss = "color: rgb(33, 150, 243)";
+                        if ($docStatus == DOC_STATUS_BLOCKED){
+                            $icon = "lock";
+                            $iconCss = "color: red";
+                        } else {
+                            $icon = "check_circles";
+                            $iconCss = "color: rgb(33, 150, 243)";
+                        };
                     } else {
                         switch ($docStatus) {
                         case DOC_STATUS_NONE:
@@ -125,7 +126,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                             email
                         </i>
                     </div>
-                    <? $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'}, reloadDocByOrderComp )" ?>
+                    <? $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'})" ?>
                     <div class="icon-wrapper"
                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>"
                          onclick="<?= $signJs ?>">

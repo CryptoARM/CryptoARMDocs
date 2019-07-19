@@ -81,7 +81,7 @@ foreach ($docs->getList() as $doc) {
     if ($docStatus === DOC_STATUS_NONE) {
         $actions[] = array(
             'text' => Loc::getMessage('TR_CA_DOCS_ACT_SIGN'),
-            'onclick' => "trustedCA.sign([$docId], null, {$gridBuilder->reloadGridJs})",
+            'onclick' => "trustedCA.sign([$docId])",
             'default' => true,
         );
     }
@@ -162,15 +162,6 @@ ob_start();
 $output = ob_get_contents();
 ob_end_clean();
 $APPLICATION->AddViewContent('pagetitle', $output, 100);
+$reloadDoc = "trustedCA.reloadGrid('crm_docs_grid')";
 ?>
-
-<script>
-let trustedCAUploadHandler = (data) => {
-    <?= $gridBuilder->reloadGridJs ?>()
-};
-
-let trustedCACancelHandler = (data) => {
-    <?= $gridBuilder->reloadGridJs ?>()
-};
-</script>
-
+<a id="trca-reload-doc" onclick="<?= $reloadDoc ?>"></a>

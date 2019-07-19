@@ -5,10 +5,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
-use Bitrix\Main\Page\Asset;
-
-Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">');
-Asset::getInstance()->addString('<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">');
 
 $app = Application::getInstance();
 $context = $app->getContext();
@@ -27,7 +23,7 @@ if ($USER->GetFullName()) {
 $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
 ?>
 
-<a id="reload_doc_by_user_comp" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
+<a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
 <?
 $APPLICATION->IncludeComponent(
@@ -64,7 +60,7 @@ $APPLICATION->IncludeComponent(
                             </div>
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>
                         </div>
-                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'}, reloadDocByUserComp)" ?>
+                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'})"; ?>
                         <div onclick="<?= $signAllJs ?>">
                             <div class="material-icons">
                                 create
@@ -88,7 +84,7 @@ $APPLICATION->IncludeComponent(
                         <?
                         if ($arParams["ALLOW_REMOVAL"] === 'Y') {
                         ?>
-                            <? $removeAllJs = "trustedCA.remove($allIdsJs, false, reloadDocByUserComp)" ?>
+                            <? $removeAllJs = "trustedCA.remove($allIdsJs, false, trustedCA.reloadDoc)" ?>
                             <div onclick="<?= $removeAllJs ?>">
                                 <div class="material-icons">
                                     delete
@@ -115,8 +111,13 @@ $APPLICATION->IncludeComponent(
                     $docAccessLevel = $doc["ACCESS_LEVEL"];
 
                     if ($docType == DOC_TYPE_SIGNED_FILE) {
-                        $icon = "check_circles";
-                        $iconCss = "color: rgb(33, 150, 243)";
+                        if ($docStatus == DOC_STATUS_BLOCKED){
+                            $icon = "lock";
+                            $iconCss = "color: red";
+                        } else {
+                            $icon = "check_circles";
+                            $iconCss = "color: rgb(33, 150, 243)";
+                        }
                     } else {
                         switch ($docStatus) {
                             case DOC_STATUS_NONE:
@@ -180,7 +181,7 @@ $APPLICATION->IncludeComponent(
                                 </div>
                                 <?
                                 if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
-                                    $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'}, reloadDocByUserComp)";
+                                    $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'})";
                                 ?>
                                     <div class="icon-wrapper"
                                          title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
@@ -233,7 +234,7 @@ $APPLICATION->IncludeComponent(
                                     </div>
                                     <?
                                     if ($arParams["ALLOW_REMOVAL"] === 'Y') {
-                                        $removeJs = "trustedCA.remove([$docId], false, reloadDocByUserComp)";
+                                        $removeJs = "trustedCA.remove([$docId], false, trustedCA.reloadDoc)";
                                     ?>
                                         <div class="icon-wrapper"
                                              title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
