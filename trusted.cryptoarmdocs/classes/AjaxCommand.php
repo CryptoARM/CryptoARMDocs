@@ -718,7 +718,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_READ, true)
+            Utils::checkDocuments($ids, null, true)
         );
 
         if (!$res['docsOk']->count()) {
