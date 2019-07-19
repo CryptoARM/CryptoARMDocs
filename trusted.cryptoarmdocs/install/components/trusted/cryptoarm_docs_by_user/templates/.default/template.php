@@ -18,7 +18,12 @@ $allIds = $arResult['ALL_IDS'];
 $allIdsJs = $arResult['ALL_IDS_JS'];
 $docs = $arResult['DOCS'];
 
-$compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
+if ($USER->GetFullName()) {
+    $compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
+} else {
+    $compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetEmail();
+ }
+
 $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
 ?>
 
