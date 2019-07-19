@@ -721,14 +721,27 @@ class AjaxCommand {
             Utils::checkDocuments($ids, DOC_SHARE_READ, true)
         );
 
-        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
-
         if (!$res['docsOk']->count()) {
             $res["message"] = "Documents not found";
             return $res;
         }
 
-        foreach ($docIds as $docId) {
+        $docsToShare = array_merge(
+            $res['docsOk']->toIdArray(),
+            $res['docsFileNotFound']->toIdArray(),
+            $res['docsBlocked']->toIdArray()
+        );
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+        $res['docsOk'] = $res['docsOk']->toIdArray();
+
+        if (!$docsToShare) {
+            $res["message"] = "Nothing to share";
+            return $res;
+        }
+
+        foreach ($docsToShare as $docId) {
             $doc = Database::getDocumentById($docId);
             $fileName = $doc->getName();
             $ownerId = $doc->getOwner();
