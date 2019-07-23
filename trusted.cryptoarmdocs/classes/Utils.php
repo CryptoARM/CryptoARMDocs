@@ -526,5 +526,15 @@ class Utils
         return false;
     }
 
+    public static function getUserLogin($userId = null) {
+        if (!$userId) {
+            $userId = self::currUserId();
+        }
+
+        $user = \CUser::GetByID($userId)->Fetch();
+
+        return $user["LOGIN"];
+    }
+
 }
 

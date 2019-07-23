@@ -24,7 +24,7 @@ Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trusted_c
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);
 
-$sTableID = "User_ID";
+$sTableID = "Form_ID";
 $oSort = new CAdminSorting($sTableID, 'SORT', 'asc');
 // main list object
 $lAdmin = new CAdminList($sTableID, $oSort);
@@ -45,30 +45,46 @@ $FilterArr = array(
     "find_user_id",
     "find_user_name",
     "find_user_email",
-    "find_doc_name",
-    "find_doc_type",
-    "find_doc_status",
 );
 
 $lAdmin->InitFilter($FilterArr);
 
 if (CheckFilter()) {
     $arFilter = array(
-        "IBLOCK_ELEMENT_ID" => $find_iblock_elem_id,
-        "IBLOCK_NAME" => $find_iblock_name,
-        "USER_ID" => $find_user_id,
+        "ID" => $find_iblock_elem_id,
+        "IBLOCK_ID" => $find_iblock_name,
+        "CREATED_BY" => $find_user_id,
         "USER_NAME" => $find_user_name,
         "USER_EMAIL" => $find_user_email,
-        "DOC_NAME" => $find_doc_name,
-        "DOC_TYPE" => $find_doc_type,
-        "DOC_STATUS" => $find_doc_status,
     );
 }
 
-$forms = Docs\Database::getFormWithDocsByFilter($by, $order, $filter);
+if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
+
+    // selected = checkbox "for all"
+    if ($_REQUEST['action_target'] == 'selected') {
+        $forms = Docs\Form::getIBlockElements($by, $order, $arFilter);
+        $ids = array();
+        foreach ($forms as $ID) {
+            $ids[] = $ID["ID"];
+        }
+    } else {
+        foreach ($arID as $ID) {
+            $ids[] = IntVal($ID);
+        }
+    }
+
+    switch ($_REQUEST['action']) {
+        case "remove":
+            Docs\Form::removeIBlockAndDocs($ids);
+            break;
+    }
+}
+
+$forms = Docs\Form::getIBlockElements($by, $order, $arFilter);
 
 // convert list to the CAdminResult class
-$rsData = new CAdminResult($users, $sTableID);
+$rsData = new CAdminResult($forms, $sTableID);
 
 // page-by-page navigation
 $rsData->NavStart();
@@ -81,7 +97,7 @@ $lAdmin->AddHeaders(
         array(
             "id" => "IBLOCK_ELEMENT_ID",
             "content" => Loc::getMessage("TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"),
-            "sort" => "IBLOCK_ELEMENT_ID",
+            "sort" => "ID",
             "default" => true,
         ),
         array(
@@ -91,9 +107,9 @@ $lAdmin->AddHeaders(
             "default" => true,
         ),
         array(
-            "id" => "USER_ID",
+            "id" => "USER_NAME",
             "content" => Loc::getMessage("TR_CA_DOCS_FILTER_USER_NAME"),
-            "sort" => "USER_ID",
+            "sort" => "USER_NAME",
             "default" => true,
         ),
         array(
@@ -106,27 +122,33 @@ $lAdmin->AddHeaders(
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
-    $row = &$lAdmin->AddRow($f_ID, $arRes);
+    $row = &$lAdmin->AddRow($arRes["ID"], $arRes);
 
-    $docs = Docs\Database::getDocumentsByUser($f_ID);
-    $docList = $docs->getList();
+    $iBlockElementId = $arRes["ID"];
 
-    $userIdViewField = "[<a href='";
-    $userIdViewField .= "/bitrix/admin/user_edit.php?ID=" . $f_ID . "'";
-    $userIdViewField .= "title='" . Loc::getMessage("TR_CA_DOCS_USER_PROFILE") . "'>";
-    $userIdViewField .= $f_ID;
-    $userIdViewField .= "</a>]";
+    $iBlockElementIdViewField = "[<a href='";
+    $iBlockElementIdViewField .= "/bitrix/admin/iblock_element_edit.php?IBLOCK_ID=" . $arRes["IBLOCK_ID"] . "&type=tr_ca_docs_form&ID=" . $iBlockElementId . "'";
+    $iBlockElementIdViewField .= "title='" . Loc::getMessage("TR_CA_DOCS_IBLOCK_ELEMENT") . "'>";
+    $iBlockElementIdViewField .= $iBlockElementId;
+    $iBlockElementIdViewField .= "</a>]";
 
-    $userNameViewField = $f_NAME . "<br />";
-    $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $f_ID . "'";
+    $iBlockNameViewField = $arRes["IBLOCK_NAME"];
+
+    $userId = $arRes["CREATED_BY"];
+
+    $userNameViewField = Docs\Utils::getUserName($userId) . "<br />";
+    $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $userId . "'";
     $userNameViewField .= "title='" . Loc::getMessage("TR_CA_DOCS_USER_PROFILE") . "'>";
-    $userNameViewField .= $f_LOGIN;
+    $userNameViewField .= Docs\Utils::getUserLogin($userId);
     $userNameViewField .= "</a>]<br />";
     $userNameViewField .= "<small><a href='mailto:";
-    $userNameViewField .= $f_EMAIL;
+    $userNameViewField .= Docs\Utils::getUserEmail($userId);
     $userNameViewField .= "' title='" . Loc::getMessage("TR_CA_DOCS_MAILTO_USER") . "'>";
-    $userNameViewField .= $f_EMAIL;
+    $userNameViewField .= Docs\Utils::getUserEmail($userId);
     $userNameViewField .= "</a></small>";
+
+    $docs = Docs\Database::getDocumentsByPropertyTypeAndValue("FORM", $iBlockElementId);
+    $docList = $docs->getList();
 
     $docViewField = "<table class='trustedcryptoarmdocs_doc_table'>";
     foreach ($docList as $doc) {
@@ -141,7 +163,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= "<tr>";
         $docViewField .= "<td>";
         $docViewField .= "<input class='verify_button' type='button'";
-        if ($doc->getType() === DOC_TYPE_FILE){
+        if ($doc->getType() === DOC_TYPE_FILE) {
             $docViewField .= "disabled ";
         }
         $docViewField .= "value='i' onclick='trustedCA.verify([";
@@ -157,7 +179,9 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     }
     $docViewField .= "</table>";
 
-    $row->AddViewField("USER_ID", $userIdViewField);
+
+    $row->AddViewField("IBLOCK_ELEMENT_ID", $iBlockElementIdViewField);
+    $row->AddViewField("IBLOCK_NAME", $iBlockNameViewField);
     $row->AddViewField("USER_NAME", $userNameViewField);
     $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
@@ -168,12 +192,11 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "ICON" => "delete",
         "DEFAULT" => false,
         "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
-        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "remove"),
+        "ACTION" => $lAdmin->ActionDoGroup($iBlockElementId, "remove"),
     );
 
     // apply context menu to the row
     $row->AddActions($arActions);
-
 }
 
 $lAdmin->AddFooter(
@@ -200,7 +223,7 @@ $lAdmin->AddGroupActionTable(
 // alternative output - ajax or excel
 $lAdmin->CheckListMode();
 
-$APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_TITLE_BY_USER"));
+$APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_TITLE_BY_FORM"));
 
 // separates preparing of data and output
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_after.php");
@@ -213,9 +236,6 @@ $oFilter = new CAdminFilter(
         Loc::getMessage("TR_CA_DOCS_FILTER_USER_ID"),
         Loc::getMessage("TR_CA_DOCS_FILTER_USER_NAME"),
         Loc::getMessage("TR_CA_DOCS_FILTER_USER_EMAIL"),
-        Loc::getMessage("TR_CA_DOCS_FILTER_DOC_NAME"),
-        Loc::getMessage("TR_CA_DOCS_FILTER_DOC_TYPE"),
-        Loc::getMessage("TR_CA_DOCS_FILTER_DOC_STATUS"),
     )
 );
 ?>
@@ -234,7 +254,8 @@ if (!Docs\Utils::isSecure()) {
             <?= Loc::getMessage("TR_CA_DOCS_FILTER_IBLOCK_ELEM_ID") . ":" ?>
         </td>
         <td>
-            <input type="text" name="find_user_id" size="47" value="<?= htmlspecialchars($find_iblock_elem_id) ?>">
+            <input type="text" name="find_iblock_elem_id" size="47"
+                   value="<?= htmlspecialchars($find_iblock_elem_id) ?>">
         </td>
     </tr>
 
@@ -243,7 +264,23 @@ if (!Docs\Utils::isSecure()) {
             <?= Loc::getMessage("TR_CA_DOCS_FILTER_IBLOCK_NAME") . ":" ?>
         </td>
         <td>
-            <input type="text" name="find_user_id" size="47" value="<?= htmlspecialchars($find_iblock_name) ?>">
+            <?php
+            $iBlocksId = Docs\Form::getIBlocks();
+
+            $arr = [
+                "reference_id" => [""
+                ],
+                "reference" => [
+                    ""
+                ]
+            ];
+
+            foreach ($iBlocksId as $id => $name) {
+                $arr["reference_id"][] = $id;
+                $arr["reference"][] = $name;
+            }
+            echo SelectBoxFromArray("find_iblock_name", $arr, $find_iblock_name, Loc::getMessage("POST_ALL"), "");
+            ?>
         </td>
     </tr>
 
@@ -256,6 +293,7 @@ if (!Docs\Utils::isSecure()) {
         </td>
     </tr>
 
+    <? /*
     <tr>
         <td>
             <?= Loc::getMessage("TR_CA_DOCS_FILTER_USER_NAME") . ":" ?>
@@ -273,63 +311,7 @@ if (!Docs\Utils::isSecure()) {
             <input type="text" name="find_user_email" size="47" value="<?= htmlspecialchars($find_user_email) ?>">
         </td>
     </tr>
-
-    <tr>
-        <td>
-            <?= Loc::getMessage("TR_CA_DOCS_FILTER_DOC_NAME") . ":" ?>
-        </td>
-        <td>
-            <input type="text" name="find_doc_name" size="47" value="<?= htmlspecialchars($find_doc_name) ?>">
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <?= Loc::getMessage("TR_CA_DOCS_FILTER_DOC_TYPE") . ":" ?>
-        </td>
-        <td>
-            <?php
-            $arr = array(
-                "reference_id" => array(
-                    "",
-                    DOC_TYPE_FILE,
-                    DOC_TYPE_SIGNED_FILE,
-                ),
-                "reference" => array(
-                    "",
-                    Loc::getMessage("TR_CA_DOCS_TYPE_" . DOC_TYPE_FILE),
-                    Loc::getMessage("TR_CA_DOCS_TYPE_" . DOC_TYPE_SIGNED_FILE),
-                ),
-            );
-            echo SelectBoxFromArray("find_doc_type", $arr, $find_doc_type, Loc::getMessage("POST_ALL"), "");
-            ?>
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <?= Loc::getMessage("TR_CA_DOCS_FILTER_DOC_STATUS") . ":" ?>
-        </td>
-        <td>
-            <?php
-            $arr = array(
-                "reference_id" => array(
-                    "",
-                    DOC_STATUS_BLOCKED,
-                    DOC_STATUS_CANCELED,
-                    DOC_STATUS_ERROR,
-                ),
-                "reference" => array(
-                    "",
-                    Loc::getMessage("TR_CA_DOCS_STATUS_" . DOC_STATUS_BLOCKED),
-                    Loc::getMessage("TR_CA_DOCS_STATUS_" . DOC_STATUS_CANCELED),
-                    Loc::getMessage("TR_CA_DOCS_STATUS_" . DOC_STATUS_ERROR),
-                ),
-            );
-            echo SelectBoxFromArray("find_doc_status", $arr, $find_doc_status, Loc::getMessage("POST_ALL"), "");
-            ?>
-        </td>
-    </tr>
+    */ ?>
 
     <?php
     $oFilter->Buttons(array("table_id" => $sTableID, "url" => $APPLICATION->GetCurPage(), "form" => "find_form"));

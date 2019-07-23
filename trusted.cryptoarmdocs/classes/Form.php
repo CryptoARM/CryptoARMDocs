@@ -33,6 +33,10 @@ class Form {
         return $iBlocks;
     }
 
+    public static function getIBlocksId() {
+        return array_keys(self::getIBlocks());
+    }
+
     public static function getIBlockName($iBlockId) {
         return self::getIBlocks()[$iBlockId];
     }
@@ -80,6 +84,31 @@ class Form {
         }
 
         return $properties;
+    }
+
+    public static function getIBlockElements($by, $order, $arFilter) {
+        $iBlocksId = self::getIBlocksId();
+        $iBlocksElements = [];
+
+        if (!$arFilter["IBLOCK_ID"]) {
+            $arFilter = array_merge(
+                $arFilter,
+                ["IBLOCK_ID" => $iBlocksId]
+            );
+        }
+
+        $db_elemens = \CIBlockElement::GetList(
+            array($by => $order),
+            $arFilter
+        );
+
+        while ($obElement = $db_elemens->GetNextElement()) {
+            $el = $obElement->GetFields();
+            $el["PROPERTIES"] = $obElement->GetProperties();
+            $iBlocksElements[$el["ID"]] = $el;
+        }
+
+        return $iBlocksElements;
     }
 
     public static function addIBlock($iBlockId, $props, $userId) {
@@ -374,8 +403,7 @@ class Form {
         $pdf->Output($newDocDir, 'F');
         $props = new PropertyCollection();
         $props->add(new Property("USER", (string)Utils::currUserId()));
-        $props->add(new Property("IBLOCK_ELEM", (string)$iBlockId["data"]));
-        $props->add(new Property("IBLOCK_NAME", (string)self::getIBlockName($iBlockId["data"])));
+        $props->add(new Property("FORM", (string)$iBlockElementId["data"]));
         $doc = Utils::createDocument($relativePath, $props);
         $docId = $doc->GetId();
 
@@ -429,6 +457,36 @@ class Form {
                     );
                 }
             }
+        }
+
+        return $res;
+    }
+
+    static function removeIBlockAndDocs($ids) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Form::removeIBlockAndDocs"
+        ];
+
+        foreach ($ids as $id) {
+            $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $id);
+            $docList = $docs->getList();
+
+            $docsId = [];
+
+            foreach ($docList as $doc) {
+                $docsId["ids"][] = $doc->getId();
+            }
+
+            $responce = AjaxCommand::remove($docsId);
+            $responceIBlock = \CIBlockElement::Delete($id);
+        }
+
+        if ($responceIBlock) {
+            $res = [
+                "success" => true,
+                "message" => "ok"
+            ];
         }
 
         return $res;

@@ -50,8 +50,7 @@ if ($iBlockElementId["success"]) {
         foreach ($fileListToUpdate as $fileId) {
             $doc = Docs\Database::getDocumentById($fileId);
             $props = $doc->getProperties();
-            $props->add(new Docs\Property("IBLOCK_NAME", (string)$iBlockName));
-            $props->add(new Docs\Property("IBLOCK_ELEM", $iBlockElementId["data"]));
+            $props->add(new Docs\Property("FORM", $iBlockElementId["data"]));
             $doc->save();
         }
     }

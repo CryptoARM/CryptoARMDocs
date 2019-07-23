@@ -145,7 +145,6 @@ $lAdmin->AddHeaders(
 );
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
-
     $row = &$lAdmin->AddRow($f_ID, $arRes);
 
     $docs = Docs\Database::getDocumentsByUser($f_ID);

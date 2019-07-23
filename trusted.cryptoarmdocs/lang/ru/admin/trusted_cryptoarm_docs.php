@@ -75,6 +75,8 @@ $MESS["TR_CA_DOCS_EDIT_ORDER"] = "Редактировать заказ";
 $MESS["TR_CA_DOCS_BUYER_PROFILE"] = "Профиль покупателя";
 $MESS["TR_CA_DOCS_MAILTO_BUYER"] = "Написать письмо покупателю";
 
+$MESS["TR_CA_DOCS_IBLOCK_ELEMENT"] = "Просмотр элемента инфоблока";
+
 // Email messages
 $MESS["TR_CA_DOCS_EMAIL_NOT_SENT"] = "Письмо не отправлено";
 $MESS["TR_CA_DOCS_EMAIL_SENT"] = "Письмо отправлено";
