@@ -1,22 +1,13 @@
 <?php
 
+use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;
 
 Loader::includeModule('iblock');
+Loader::includeModule('trusted.cryptoarmdocs');
 
 $formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_IBLOCK_ID_NAME");
-
-$dbIblocks = CIBlock::GetList(
-    Array(
-        "sort" => "asc",
-        "name" => "asc",
-    ),
-    Array(
-        "TYPE" => "tr_ca_docs_form",
-        "CHECK_PERMISSIONS" => "N",
-    )
-);
 
 $docSaveFormat = array(
     "pdf" => "PDF",
@@ -24,9 +15,7 @@ $docSaveFormat = array(
     "xsd" => "XSD",
 );
 
-while ($arIblock = $dbIblocks->Fetch()) {
-    $formIBlocks[htmlspecialcharsEx($arIblock["ID"])] = htmlspecialcharsEx($arIblock["NAME"]);
-}
+$formIBlocks += Docs\Form::getIBlocks();
 
 $arComponentParameters = array(
     "GROUPS" => array(

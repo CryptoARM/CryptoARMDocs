@@ -269,8 +269,6 @@ class AjaxCommand {
                 }
             }
 
-            Utils::dump($extra);
-
             if ($signValue) {
                 Form::sendEmail($docsCollectionSign, $extra["send_email_to_user"], $extra["send_email_to_admin"]);
             }

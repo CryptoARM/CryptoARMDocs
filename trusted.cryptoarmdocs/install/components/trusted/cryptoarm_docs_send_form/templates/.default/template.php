@@ -25,7 +25,6 @@ if (!$arResult["compVisibility"]) { ?>
                                 echo $value["NAME"];
                                 ?>
                             </div>
-                            <br/>
                             <?
                         }
                         switch ($value["PROPERTY_TYPE"]) {
@@ -48,27 +47,31 @@ if (!$arResult["compVisibility"]) { ?>
                                         case "Date" :
                                             {
                                                 ?>
-                                                <input type="date"
-                                                       id="<?= "input_date_" . $value["ID"] ?>"
-                                                       name="<?= "input_date_" . $value["ID"] ?>"
-                                                       value="<?= $value["DEFAULT_VALUE"] ?>"
-                                                    <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
-                                                />
-                                                <br/>
+                                                <div class="trca-sf-date">
+                                                    <input type="date"
+                                                        id="<?= "input_date_" . $value["ID"] ?>"
+                                                        name="<?= "input_date_" . $value["ID"] ?>"
+                                                        value="<?= $value["DEFAULT_VALUE"] ?>"
+                                                        <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                                    />
+                                                    <div class="trca-sf-input-footer"></div>
+                                                </div>
                                                 <?
                                             }
                                             break;
                                         default :
                                             {
                                                 ?>
-                                                <input type="text"
-                                                       id="<?= "input_text_" . $value["ID"] ?>"
-                                                       name="<?= "input_text_" . $value["ID"] ?>"
-                                                       value="<?= $value["DEFAULT_VALUE"] ?>"
-                                                       placeholder="<?= $value["HINT"] ?>"
-                                                    <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
-                                                />
-                                                <br/>
+                                                <div class="trca-sf-input">
+                                                    <input type="text"
+                                                        id="<?= "input_text_" . $value["ID"] ?>"
+                                                        name="<?= "input_text_" . $value["ID"] ?>"
+                                                        value="<?= $value["DEFAULT_VALUE"] ?>"
+                                                        placeholder="<?= $value["HINT"] ?>"
+                                                        <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                                    />
+                                                    <div class="trca-sf-input-footer"></div>
+                                                </div>
                                                 <?
                                             }
                                     }
@@ -78,27 +81,31 @@ if (!$arResult["compVisibility"]) { ?>
                                 {
                                     if (stristr($value["CODE"], "DOC_FILE")) {
                                         ?>
-                                        <input type="file"
-                                               id="<?= "input_file_" . $value["ID"] ?>"
-                                               name="<?= "input_file_" . $value["ID"] ?>"
-                                            <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
-                                        />
+                                        <div class="trca-sf-download-button">
+                                            <input type="file"
+                                                id="<?= "input_file_" . $value["ID"] ?>"
+                                                name="<?= "input_file_" . $value["ID"] ?>"
+                                                <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                            />
+                                            Добавить Файл
+                                        </div>
                                         <input type="hidden"
                                                id="<?= "input_file_id_" . $value["ID"] ?>"
                                                name="<?= "input_file_id_" . $value["ID"] ?>"
                                         />
-                                        <br/>
                                         <?
                                     } else {
                                         ?>
-                                        <input type="number"
-                                               id="<?= "input_number_" . $value["ID"] ?>"
-                                               name="<?= "input_number_" . $value["ID"] ?>"
-                                               value="<?= $value["DEFAULT_VALUE"] ?>"
-                                               placeholder="<?= $value["HINT"] ?>"
-                                            <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
-                                        />
-                                        <br/>
+                                        <div class="trca-sf-input-number">
+                                            <input type="number"
+                                                id="<?= "input_number_" . $value["ID"] ?>"
+                                                name="<?= "input_number_" . $value["ID"] ?>"
+                                                value="<?= $value["DEFAULT_VALUE"] ?>"
+                                                placeholder="<?= $value["HINT"] ?>"
+                                                <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                            />
+                                            <div class="trca-sf-input-footer"></div>
+                                        </div>
                                         <?
                                     }
                                 }
@@ -108,16 +115,16 @@ if (!$arResult["compVisibility"]) { ?>
                                     if ($value["MULTIPLE"] == "Y") {
                                         foreach ($value["ADDITIONAL"] as $key2 => $value2) {
                                             ?>
-                                            <p>
+                                            <div class="trca-sf-checkbox">
                                                 <input type="checkbox"
                                                        id="<?= "input_checkbox_" . $key . "_" . $key2 ?>"
                                                        name="<?= "input_checkbox_" . $key . "_" . $key2 ?>"
                                                 />
-                                                <label for="<?= "input_checkbox_" . $key . "_" . $key2 ?>">
+                                                <label for="<?= "input_checkbox_" . $key . "_" . $key2 ?>"></label>
+                                                <div class="trca-sf-checkbox-value">
                                                     <?= $value2 ?>
-                                                </label>
-                                            </p>
-                                            <br/>
+                                                </div>
+                                            </div>
                                             <?
                                         }
                                         break;
@@ -126,18 +133,20 @@ if (!$arResult["compVisibility"]) { ?>
                                         case "L" :
                                             {
                                                 ?>
-                                                <select
-                                                        id="<?= "input_number_" . $value["ID"] ?>"
-                                                        name="<?= "input_number_" . $value["ID"] ?>">
-                                                    <?
-                                                    foreach ($value["ADDITIONAL"] as $key2 => $value2) {
-                                                        ?>
-                                                        <option value="<?= $key2 ?>"><?= $value2 ?></option>
+                                                <div class="trca-sf-selector">
+                                                    <select
+                                                            id="<?= "input_number_" . $value["ID"] ?>"
+                                                            name="<?= "input_number_" . $value["ID"] ?>">
                                                         <?
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <br/>
+                                                        foreach ($value["ADDITIONAL"] as $key2 => $value2) {
+                                                            ?>
+                                                            <option value="<?= $key2 ?>"><?= $value2 ?></option>
+                                                            <?
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                    <div class="trca-sf-drop-down"></div>
+                                                </div>
                                                 <?
                                             }
                                             break;
@@ -146,16 +155,17 @@ if (!$arResult["compVisibility"]) { ?>
                                             {
                                                 foreach ($value["ADDITIONAL"] as $key2 => $value2) {
                                                     ?>
-                                                    <div class="radioBTN">
+                                                    <div class="trca-sf-radioBTN">
                                                         <input type="radio"
                                                                id="<?= "input_radio_" . $value["ID"] ?>"
                                                                name="<?= "input_radio_" . $value["ID"] ?>"
                                                                value="<?= $key2 ?>"
                                                             <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                         />
-                                                        <?= $value2 ?>
+                                                        <label>
+                                                            <?= $value2 ?>
+                                                        </label>
                                                     </div>
-                                                    <br/>
                                                     <?
                                                 }
                                             }
@@ -170,8 +180,8 @@ if (!$arResult["compVisibility"]) { ?>
                 }
                 ?>
                 <input type="hidden"
-                       id="iBlock_type_id"
-                       name="iBlock_type_id"
+                       id="iBlock_id"
+                       name="iBlock_id"
                        value="<?= $arParams["IBLOCK_ID"] ?>"
                 />
                 <input type="hidden"
@@ -188,7 +198,8 @@ if (!$arResult["compVisibility"]) { ?>
             <p>
             <div>
                 <input type="submit"
-                       value="Подписать документы"/>
+                       value="Подписать документы"
+                />
             </div>
         </div>
     </form>

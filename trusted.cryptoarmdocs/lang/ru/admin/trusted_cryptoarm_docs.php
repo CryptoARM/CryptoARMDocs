@@ -3,12 +3,14 @@
 $MESS["TR_CA_DOCS_TITLE"] = "Документы";
 $MESS["TR_CA_DOCS_TITLE_BY_USER"] = "Подписание документов пользователей";
 $MESS["TR_CA_DOCS_TITLE_BY_ORDER"] = "Подписание документов по заказам";
+$MESS["TR_CA_DOCS_TITLE_BY_FORM"] = "Просмотр документов по формам";
 
 $MESS["TR_CA_DOCS_MODULE_DEMO_EXPIRED"] = "Срок работы демо-режима модуля истек.";
 $MESS["TM_DOCS_MODULE_HTTP_WARNING"] = "<span class=\"required\">Внимание!</span><br>Подпись документа невозможна на незащищенном соединении (\"HTTP\" протокол).";
 
 $MESS["TR_CA_DOCS_NAV_TEXT_BY_USER"] = "Пользователи";
 $MESS["TR_CA_DOCS_NAV_TEXT_BY_ORDER"] = "Заказ";
+$MESS["TR_CA_DOCS_NAV_TEXT_BY_FORM"] = "Формы";
 
 // Filter
 $MESS["TR_CA_DOCS_FILTER_USER_ID"] = "ID пользователя";
@@ -27,6 +29,9 @@ $MESS["TR_CA_DOCS_FILTER_ROLES_SELLER"] = "Подписан продавцом";
 $MESS["TR_CA_DOCS_FILTER_ROLES_BOTH"] = "Подписан обеими сторонами";
 $MESS["TR_CA_DOCS_FILTER_ROLES_NONE"] = "Требуется подпись";
 
+$MESS["TR_CA_DOCS_FILTER_IBLOCK_ELEM_ID"] = "ID элемента инфоблока";
+$MESS["TR_CA_DOCS_FILTER_IBLOCK_NAME"] = "Название инфоблока";
+
 // Columns
 $MESS["TR_CA_DOCS_COL_ID"] = "ID";
 $MESS["TR_CA_DOCS_COL_FILENAME"] = "Название документа";
@@ -43,6 +48,9 @@ $MESS["TR_CA_DOCS_COL_ORDER"] = "№ заказа";
 $MESS["TR_CA_DOCS_COL_ORDER_STATUS"] = "Статус заказа";
 $MESS["TR_CA_DOCS_COL_BUYER"] = "Покупатель";
 $MESS["TR_CA_DOCS_COL_MAIL"] = "Статус письма";
+
+$MESS["TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"] = "ID элемента инфоблока";
+$MESS["TR_CA_DOCS_COL_IBLOCK_NAME"] = "Название инфоблока";
 
 $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 

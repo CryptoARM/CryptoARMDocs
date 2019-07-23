@@ -12,6 +12,9 @@ Loader::includeModule('trusted.cryptoarmdocs');
 
 $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
+$iBlockId = $_POST["iBlock_id"];
+$iBlockName = Docs\Form::getIBlocks()[$iBlockId];
+
 foreach ($_POST as $key => $value) {
     if (stristr($key, "input_file_id_")) {
         $inputIndexFileId = str_ireplace("input_file_id_", "", $key);
@@ -39,16 +42,16 @@ foreach ($_POST as $key => $value) {
     }
 }
 
-$iBlockTypeId = $_POST["iBlock_type_id"];
-$iBlockId = Docs\Form::addIBlockForm($iBlockTypeId, $_POST);
+$iBlockElementId = Docs\Form::addIBlockForm($iBlockId, $_POST);
 
-if ($iBlockId["success"]) {
-    $pdf = Docs\Form::createPDF($iBlockTypeId, $iBlockId);
+if ($iBlockElementId["success"]) {
+    $pdf = Docs\Form::createPDF($iBlockId, $iBlockElementId);
     if (!empty($fileListToUpdate)) {
         foreach ($fileListToUpdate as $fileId) {
             $doc = Docs\Database::getDocumentById($fileId);
             $props = $doc->getProperties();
-            $props->add(new Docs\Property("FORM", $iBlockId["data"]));
+            $props->add(new Docs\Property("IBLOCK_NAME", (string)$iBlockName));
+            $props->add(new Docs\Property("IBLOCK_ELEM", $iBlockElementId["data"]));
             $doc->save();
         }
     }
@@ -56,26 +59,10 @@ if ($iBlockId["success"]) {
     $extra = [
         "send_email_to_user" => $_POST["send_email_to_user"],
         "send_email_to_admin" => $_POST["send_email_to_admin"],
-        "formId" => $iBlockId["data"]
+        "formId" => $iBlockElementId["data"]
     ];
 
     echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ')</script>';
 }
 
 unset($_FILES);
-
-/*$docsCollection = Docs\Database::getDocumentsByPropertyTypeAndValue("FORM", 449);
-
-$docsCollectionSign = array();
-$signValue = false;
-
-foreach ($docsCollection->getList() as $doc) {
-    $signValue = $doc->getSigners() ?: false;
-    $docsCollectionSign[] = $doc->getId();
-    if (!$signValue) {
-        break;
-    }
-}*/
-
-//$response = Docs\Form::sendEmail($fileListToUpdate, $_POST["send_email_to_user"], $_POST["send_email_to_admin"]);
-//Docs\Utils::dump($response);

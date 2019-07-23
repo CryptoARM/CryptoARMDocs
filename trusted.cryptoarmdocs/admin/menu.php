@@ -43,6 +43,10 @@ if ($APPLICATION->GetGroupRight("trusted.cryptoarmdocs") >= "R") {
             );
         }
 
+        $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM"),
+            "url" => "trusted_cryptoarm_docs_by_form.php",
+            "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM")
+        );
 
         $aMenu["items"] = $menuItems;
         return $aMenu;
