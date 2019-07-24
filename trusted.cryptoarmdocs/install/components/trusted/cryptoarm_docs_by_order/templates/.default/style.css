@@ -84,7 +84,7 @@ main.document-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    line-height: 1.2;
+    line-height: 135%;
 }
 
 .document-card__title {

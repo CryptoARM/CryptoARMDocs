@@ -94,7 +94,7 @@ main.document-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    line-height: 1.3;
+    line-height: 135%;
     width: 86%;
 }
 
