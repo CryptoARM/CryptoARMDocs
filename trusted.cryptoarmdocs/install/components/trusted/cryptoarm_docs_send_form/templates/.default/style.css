@@ -137,6 +137,11 @@
     z-index: 10;
 }
 
+.crypto-arm-document__send-form .trca-sf-radioBTN label {
+    width: 95%;
+    word-wrap: break-word;
+}
+
 .crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:before,
 .crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:after {
     border: 2px solid #5a5a5a;
@@ -199,6 +204,8 @@
 .crypto-arm-document__send-form .trca-sf-checkbox .trca-sf-checkbox-value{
     position: relative;
     left: 15px;
+    word-wrap: break-word;
+    width: 95%;
 }
 
 .crypto-arm-document__send-form input[type=checkbox]:checked,
