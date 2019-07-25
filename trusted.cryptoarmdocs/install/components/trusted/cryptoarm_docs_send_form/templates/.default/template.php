@@ -1,5 +1,8 @@
 <?php
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
+use Bitrix\Main\Localization\Loc;
+
 if (!$arResult["compVisibility"]) { ?>
     <div id="trCaError">
         ERROR
@@ -54,7 +57,6 @@ if (!$arResult["compVisibility"]) { ?>
                                                         value="<?= $value["DEFAULT_VALUE"] ?>"
                                                         <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                     />
-                                                    <div class="trca-sf-input-footer"></div>
                                                 </div>
                                                 <?
                                             }
@@ -81,14 +83,29 @@ if (!$arResult["compVisibility"]) { ?>
                                 {
                                     if (stristr($value["CODE"], "DOC_FILE")) {
                                         ?>
-                                        <div class="trca-sf-download-button">
-                                            <input type="file"
+                                        <div class="trca-sf-download-button" id="trca-sf-download-button-<?= $value["ID"] ?>">
+                                            <input type="file" id="trca-sf-download-input-<?= $value["ID"] ?>"
                                                 id="<?= "input_file_" . $value["ID"] ?>"
                                                 name="<?= "input_file_" . $value["ID"] ?>"
+                                                onchange = "<?= "showFileName(" . $value["ID"] . ")" ?>"
                                                 <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                             />
-                                            Добавить Файл
+                                            <?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_INPUT_FILE"); ?>
                                         </div>
+                                        <div class="trca-sf-download-file-hide" id="trca-sf-download-file-hide-<?= $value["ID"] ?>">
+                                            <div class="trca-sf-download-file" id="trca-sf-download-file-<?= $value["ID"] ?>">
+                                                <div class="trca-sf-download-file-icon">
+                                                    <i class="material-icons">
+                                                        insert_drive_file
+                                                    </i>
+                                                </div>
+                                                <div class="trca-sf-download-file-name" id="trca-sf-download-file-name-<?= $value["ID"] ?>"></div>
+                                                <div class="trca-sf-download-file-remove" onclick="<?= "hideFileName(" . $value["ID"] . ")" ?>">
+                                                    <i class="material-icons">
+                                                        close
+                                                    </i>
+                                                </div>
+                                            </div>
                                         <input type="hidden"
                                                id="<?= "input_file_id_" . $value["ID"] ?>"
                                                name="<?= "input_file_id_" . $value["ID"] ?>"
@@ -196,10 +213,9 @@ if (!$arResult["compVisibility"]) { ?>
                 />
             </div>
             <p>
-            <div>
-                <input type="submit"
-                       value="Подписать документы"
-                />
+            <div class="trca-sf-button-sign">
+                <input type="submit"/>
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_BUTTON_SIGN"); ?>
             </div>
         </div>
     </form>
