@@ -24,3 +24,22 @@ window.onload = function addAutoResize() {
         element.removeAttribute('data-autoresize');
     });
 };
+
+function addInputTypeFileField(id) {
+    let parentDivId = "#trca-sf-download-button-" + id;
+    let parent = document.getElementById("trca-sf-download-button-" + id);
+    let inputsInDiv = $(parentDivId);
+    let numOfInputs = inputsInDiv.find("input").length;
+    let inputFile = document.createElement('input');
+
+    inputFile.setAttribute("type", "file");
+    inputFile.setAttribute("id", "input_file_" + id + "_" + numOfInputs + "_Y");
+    inputFile.setAttribute("name", "input_file_" + id + "_" + numOfInputs + "_Y");
+    inputFile.setAttribute("onclick", "addInputTypeFileField(" + id + ")");
+    parent.appendChild(inputFile);
+
+    let parentIncrement = numOfInputs - 1;
+    let kek = "input_file_" + id + "_" + parentIncrement + "_Y";
+
+    document.getElementById(kek).removeAttribute("onclick");
+}

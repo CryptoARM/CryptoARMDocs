@@ -9,22 +9,22 @@ Loader::includeModule('trusted.cryptoarmdocs');
 
 $formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_IBLOCK_ID_NAME");
 
-$docSaveFormat = array(
+$docSaveFormat = [
     "pdf" => "PDF",
     "xml" => "XML",
     "xsd" => "XSD",
-);
+];
 
 $formIBlocks += Docs\Form::getIBlocks();
 
-$arComponentParameters = array(
-    "GROUPS" => array(
-        "SETTINGS" => array(
+$arComponentParameters = [
+    "GROUPS" => [
+        "SETTINGS" => [
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_GROUP_SETTINGS_NAME"),
-        ),
-    ),
-    "PARAMETERS" => array(
-        "IBLOCK_ID" => array(
+        ],
+    ],
+    "PARAMETERS" => [
+        "IBLOCK_ID" => [
             "PARENT" => "SETTINGS",
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_IBLOCK_ID_NAME"),
             "TYPE" => "LIST",
@@ -33,8 +33,8 @@ $arComponentParameters = array(
             "VALUES" => $formIBlocks,
             "DEFAULT" => $formIBlocks["default"],
             "ADDITIONAL_VALUES" => "N",
-        ),
-        "FILE_FORMAT_SAVE" => array(
+        ],
+        "FILE_FORMAT_SAVE" => [
             "PARENT" => "SETTINGS",
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_FILE_FORMAT_SAVE_NAME"),
             "TYPE" => "LIST",
@@ -43,24 +43,24 @@ $arComponentParameters = array(
             "VALUES" => $docSaveFormat,
             "DEFAULT" => $docSaveFormat["default"],
             "ADDITIONAL_VALUES" => "N",
-        ),
-        "SEND_EMAIL_TO_USER" => array(
+        ],
+        "SEND_EMAIL_TO_USER" => [
             "PARENT" => "SETTINGS",
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_USER_NAME"),
             "TYPE" => "CHECKBOX",
             "DEFAULT" => "N",
-        ),
-        "SEND_EMAIL_TO_ADMIN" => array(
+        ],
+        "SEND_EMAIL_TO_ADMIN" => [
             "PARENT" => "SETTINGS",
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_NAME"),
             "TYPE" => "CHECKBOX",
             "DEFAULT" => "N",
-        ),
-        "SEND_EMAIL_TO_ADMIN_ADDRESS" => array(
+        ],
+        "SEND_EMAIL_TO_ADMIN_ADDRESS" => [
             "PARENT" => "SETTINGS",
             "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_ADDRESS_NAME"),
             "TYPE" => "STRING",
             "DEFAULT" => "",
-        ),
-    )
-);
+        ],
+    ],
+];

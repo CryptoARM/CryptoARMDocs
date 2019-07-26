@@ -14,14 +14,14 @@ Loader::includeModule('iblock');
 class Form {
     public static function getIBlocks() {
         $responce = \CIBlock::GetList(
-            Array(
+            [
                 "sort" => "asc",
                 "name" => "asc",
-            ),
-            Array(
+            ],
+            [
                 "TYPE" => "tr_ca_docs_form",
                 "CHECK_PERMISSIONS" => "N",
-            )
+            ]
         );
 
         $iBlocks = [];
@@ -43,14 +43,14 @@ class Form {
 
     public static function getIBlockProperty($iBlockId) {
         $responce = \CIBlockProperty::GetList(
-            Array(
+            [
                 "sort" => "asc",
                 "name" => "asc",
-            ),
-            Array(
+            ],
+            [
                 "ACTIVE" => "Y",
                 "IBLOCK_ID" => $iBlockId,
-            )
+            ]
         );
 
         $properties = [];
@@ -69,14 +69,14 @@ class Form {
         }
 
         $responceAdditional = \CIBlockPropertyEnum::GetList(
-            Array(
+            [
                 "sort" => "asc",
                 "name" => "asc",
-            ),
-            Array(
+            ],
+            [
                 "ACTIVE" => "Y",
                 "IBLOCK_ID" => $iBlockId,
-            )
+            ]
         );
 
         while ($propAdd_fields = $responceAdditional->GetNext()) {
@@ -98,7 +98,7 @@ class Form {
         }
 
         $db_elemens = \CIBlockElement::GetList(
-            array($by => $order),
+            [$by => $order],
             $arFilter
         );
 
@@ -112,10 +112,10 @@ class Form {
     }
 
     public static function addIBlock($iBlockId, $props, $userId) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Form::addIBlock",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
@@ -124,21 +124,21 @@ class Form {
 
         $iBlockElement = new \CIBlockElement;
 
-        $response = Array(
+        $response = [
             "MODIFIED_BY" => $userId,
             "IBLOCK_SECTION_ID" => false,
             "IBLOCK_ID" => $iBlockId,
             "PROPERTY_VALUES" => $props,
             "NAME" => "Form",
             "ACTIVE" => "Y",
-        );
+        ];
 
         if ($iBlockElementId = $iBlockElement->Add($response)) {
-            $res = array(
+            $res = [
                 "success" => true,
                 "message" => "iBlockElement added",
-                "id" => $iBlockElementId
-            );
+                "id" => $iBlockElementId,
+            ];
         }
 
         return $res;
@@ -146,11 +146,11 @@ class Form {
 
     public static function getIBlockElementInfo($iBlockId, $iBlockElementId) {
         $form = \CIBlockElement::GetList(
-            array('SORT' => 'ASC'),
-            array(
+            ['SORT' => 'ASC'],
+            [
                 'ID' => $iBlockElementId,
                 'IBLOCK_ID' => $iBlockId,
-            )
+            ]
         )->GetNextElement();
 
         $props = [];
@@ -164,26 +164,42 @@ class Form {
                 "MULTIPLE" => $value["MULTIPLE"],
             ];
             if (stristr($value["CODE"], "DOC_FILE")) {
-                $doc = Database::getDocumentById((int)$value["VALUE"]);
-                if (!$doc) {
-                    continue;
-                }
-                $props[$key] = array_merge(
-                    $props[$key],
-                    [
-                        "FILE" => true,
-                        "FILE_NAME" => $doc->getName(),
-                        "HASH" => $doc->getHash(),
+                if ($value["MULTIPLE"] == "Y") {
+                    foreach ($value["VALUE"] as $docId) {
+                        $doc = Database::getDocumentById((int)$docId);
+                        if (!$doc) {
+                            continue;
+                        }
+                        $props[$key]["FILE"] = true;
+                        $props[$key]["FILE_NAME"][] = $doc->getName();
+                        $props[$key]["HASH"][] = $doc->getHash();
+                    }
+                } else {
+                    $doc = Database::getDocumentById((int)$value["VALUE"]);
+                    if (!$doc) {
+                        continue;
+                    }
+                    $props[$key] = array_merge(
+                        $props[$key],
+                        [
+                            "FILE" => true,
+                            "FILE_NAME" => $doc->getName(),
+                            "HASH" => $doc->getHash(),
 
-                    ]
-                );
+                        ]
+                    );
+                }
             }
         }
         return $props;
     }
 
+    public static function getIBlockElementInfoByField($iBlockId, $iBlockElementId, $field) {
+        return self::getIBlockElementInfo($iBlockId, $iBlockElementId)[$field];
+    }
+
     public static function standardizationIBlockProps($props) {
-        $someArray = array();
+        $someArray = [];
         foreach ($props as $key => $value) {
             if (stristr($key, "input_date_")) {
                 $key = str_ireplace("input_date_", "", $key);
@@ -194,7 +210,7 @@ class Form {
             }
             if (stristr($key, "input_checkbox_")) {
                 $key = str_ireplace("input_checkbox_", "", $key);
-                $keyValue = preg_split("/\D/", $key);
+                $keyValue = explode("_", $key);
                 if (Utils::checkValueForNotEmpty($keyValue)) {
                     $someArray[$keyValue[0]][] = $keyValue[1];
                 }
@@ -221,6 +237,13 @@ class Form {
                 }
                 continue;
             }
+            if (stristr($key, "input_select_")) {
+                $key = str_ireplace("input_select_", "", $key);
+                if (Utils::checkValueForNotEmpty($value)) {
+                    $someArray[$key] = $value;
+                }
+                continue;
+            }
             if (stristr($key, "input_html_")) {
                 $key = str_ireplace("input_html_", "", $key);
                 if (Utils::checkValueForNotEmpty($value)) {
@@ -228,10 +251,15 @@ class Form {
                 }
                 continue;
             }
-            if (stristr($key, "input_file_id_")) {
-                $key = str_ireplace("input_file_id_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
-                    $someArray[$key] = $value;
+            if (stristr($key, "input_file_")) {
+                $key = str_ireplace("input_file_", "", $key);
+                $keyValue = explode("_", $key);
+                if (Utils::checkValueForNotEmpty($keyValue)) {
+                    if ($keyValue[2] == "Y") {
+                        $someArray[$keyValue[0]][] = $value;
+                    } else {
+                        $someArray[$keyValue[0]] = $value;
+                    }
                 }
                 continue;
             }
@@ -241,10 +269,10 @@ class Form {
     }
 
     public static function addIBlockForm($iBlockId, $props) {
-        $res = array(
+        $res = [
             'success' => false,
             'message' => 'Unknown error in Form::addIBlockForm',
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
@@ -264,10 +292,10 @@ class Form {
 
     static function createPDF($iBlockId, $iBlockElementId) {
 
-        $res = array(
+        $res = [
             'success' => false,
             'message' => 'Unknown error in Form::createPDF',
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
@@ -299,13 +327,13 @@ class Form {
         $pdf->setTitle($title);
         $pdf->setSubject($title);
         $pdf->setKeywords('CryptoARM, document, digital signature');
-        $pdf->setHeaderFont(array('dejavuserif', 'B', 11));
+        $pdf->setHeaderFont(['dejavuserif', 'B', 11]);
         $pdf->setHeaderData('logo_docs.png', 14, $author, $headerText);
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
         $pdf->SetFont('dejavuserif', '', 11);
         $pdf->AddPage();
@@ -323,9 +351,24 @@ class Form {
             </tr>';
 
         foreach ($props as $key => $value) {
-            if ($value["HASH"]) {
-                if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
-                    $pdfText .= '
+            if ($value["FILE"] == true) {
+                if ($value["MULTIPLE"] == "Y") {
+                    foreach ($value["FILE_NAME"] as $key2 => $value2) {
+                        if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
+                            $pdfText .= '
+                    <tr>
+                        <td><b>' . $value["NAME"] . '</b></td>
+                        <td>' . $value["FILE_NAME"][$key2] . '</td>
+                    </tr>
+                    <tr>
+                        <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
+                        <td>' . $value["HASH"][$key2] . '</td>
+                    </tr>';
+                        }
+                    }
+                } else {
+                    if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
+                        $pdfText .= '
                     <tr>
                         <td><b>' . $value["NAME"] . '</b></td>
                         <td>' . $value["FILE_NAME"] . '</td>
@@ -334,6 +377,7 @@ class Form {
                         <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
                         <td>' . $value["HASH"] . '</td>
                     </tr>';
+                    }
                 }
                 continue;
             }
@@ -408,53 +452,53 @@ class Form {
         $docId = $doc->GetId();
 
         if ($doc) {
-            $res = array(
+            $res = [
                 'success' => true,
                 'message' => 'PDF created',
-                'data' => $docId
-            );
+                'data' => $docId,
+            ];
         }
 
         return $res;
     }
 
     static function sendEmail($docsIds, $toUser = false, $toAdditional = false) {
-        $res = array(
+        $res = [
             'success' => false,
             'message' => 'Unknown error in Form::sendEmail or nothing to send',
-        );
+        ];
 
         global $USER;
 
         if ($toUser) {
-            $arEventFields = array(
-                "EMAIL" => $toUser
-            );
+            $arEventFields = [
+                "EMAIL" => $toUser,
+            ];
 
             $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM", $arEventFields, "MAIL_TEMPLATE_ID_FORM");
 
             if ($response["success"]) {
-                $res = array(
+                $res = [
                     'success' => false,
                     'message' => $response["message"],
-                );
+                ];
             }
         }
 
         if ($toAdditional) {
             if (Utils::validateEmailAddress($toAdditional)) {
-                $arEventFields = array(
+                $arEventFields = [
                     "EMAIL" => $toAdditional,
-                    "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser))
-                );
+                    "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser)),
+                ];
 
                 $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
 
                 if ($response["success"]) {
-                    $res = array(
+                    $res = [
                         'success' => false,
                         'message' => $response["message"],
-                    );
+                    ];
                 }
             }
         }
@@ -465,7 +509,7 @@ class Form {
     static function removeIBlockAndDocs($ids) {
         $res = [
             "success" => false,
-            "message" => "Unknown error in Form::removeIBlockAndDocs"
+            "message" => "Unknown error in Form::removeIBlockAndDocs",
         ];
 
         foreach ($ids as $id) {
@@ -485,7 +529,7 @@ class Form {
         if ($responceIBlock) {
             $res = [
                 "success" => true,
-                "message" => "ok"
+                "message" => "ok",
             ];
         }
 

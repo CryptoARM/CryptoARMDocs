@@ -15,9 +15,9 @@ $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 $iBlockId = $_POST["iBlock_id"];
 $iBlockName = Docs\Form::getIBlocks()[$iBlockId];
 
-foreach ($_POST as $key => $value) {
-    if (stristr($key, "input_file_id_")) {
-        $inputIndexFileId = str_ireplace("input_file_id_", "", $key);
+foreach ($_FILES as $key => $value) {
+    if (stristr($key, "input_file_")) {
+        $inputIndexFileId = str_ireplace("input_file_", "", $key);
         $inputIndexFullFileId = "input_file_" . $inputIndexFileId;
         $fileName = $_FILES[$inputIndexFullFileId]["name"];
         if ($fileName) {
@@ -35,7 +35,7 @@ foreach ($_POST as $key => $value) {
 
                 $doc = Docs\Utils::createDocument($relativePath, $props);
                 $fileId = $doc->getId();
-                $_POST["input_file_id_" . $inputIndexFileId] = $fileId;
+                $_POST["input_file_" . $inputIndexFileId] = $fileId;
                 $fileListToUpdate[] = $fileId;
             }
         }
@@ -58,7 +58,7 @@ if ($iBlockElementId["success"]) {
     $extra = [
         "send_email_to_user" => $_POST["send_email_to_user"],
         "send_email_to_admin" => $_POST["send_email_to_admin"],
-        "formId" => $iBlockElementId["data"]
+        "formId" => $iBlockElementId["data"],
     ];
 
     echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ')</script>';

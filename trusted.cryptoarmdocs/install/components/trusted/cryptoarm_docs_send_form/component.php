@@ -8,7 +8,7 @@ use Bitrix\Main\Config\Option;
 Loader::includeModule('trusted.cryptoarmdocs');
 Loader::includeModule('iblock');
 
-$arResult = array();
+$arResult = [];
 $arResult["PROPERTY"] = Docs\Form::getIBlockProperty($arParams["IBLOCK_ID"]);
 
 if (Docs\Utils::checkAuthorization()) {
