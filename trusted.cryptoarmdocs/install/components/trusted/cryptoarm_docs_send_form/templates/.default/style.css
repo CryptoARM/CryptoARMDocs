@@ -274,36 +274,42 @@
     z-index: 0;
 }
 
-/* Download button */
-.crypto-arm-document__send-form .trca-sf-download-button input {
+/* Upload button */
+.crypto-arm-document__send-form .trca-sf-upload-button-input {
+    margin: 10px auto;
+    display: flex;
+    text-align: center;
+}
+
+.crypto-arm-document__send-form .trca-sf-upload-input input {
     height: 25px;
-    width: 200px;
+    width: 140px;
     position: absolute;
     opacity: 0;
     cursor: pointer;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-button {
+.crypto-arm-document__send-form .trca-sf-upload-input {
     padding: 8px;
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 600;
     color: #4285f4;
-    width: 200px;
+    width: 160px;
     border-radius: 4px;
     cursor: pointer;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-button:active {
+.crypto-arm-document__send-form .trca-sf-upload-input:active {
     background-color: rgb(216, 232, 247);
     transition: 0.5s;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-file-hide {
+.crypto-arm-document__send-form .trca-sf-upload-file-button {
     display: none;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-file {
+.crypto-arm-document__send-form .trca-sf-upload-file {
     display: flex;
     -moz-box-shadow: 0 1px 1px #9e9e9e;
     box-shadow: 0 1px 1px #9e9e9e;
@@ -314,13 +320,13 @@
     font-size: 15px;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-file-icon {
+.crypto-arm-document__send-form .trca-sf-upload-file-icon {
     width: 24px;
     height: 24px;
     color: rgb(33, 150, 243);
 }
 
-.crypto-arm-document__send-form .trca-sf-download-file-name {
+.crypto-arm-document__send-form .trca-sf-upload-file-name {
     padding-left: 5px;
     max-width: 130px;
     overflow: hidden;
@@ -328,7 +334,7 @@
     white-space: nowrap;
 }
 
-.crypto-arm-document__send-form .trca-sf-download-file-remove {
+.crypto-arm-document__send-form .trca-sf-upload-file-remove {
     margin: 0 5px 0 auto;
     cursor: pointer;
 }
