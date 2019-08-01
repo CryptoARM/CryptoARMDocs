@@ -77,22 +77,10 @@ trustedCA.socketInit = function(){
         socket.on('disconnect', data => { console.log('Event: disconnect, reason: ', data); });
         socket.on('verified', data => { console.log('Event: verified', data); });
         socket.on('signed', data => { console.log('Event: signed, data: ', data); });
-        socket.on('uploaded', data => {
-            console.log('Event: uploaded, data: ', data);
-            // Check to see if page defined it's own handler
-            if (typeof trustedCAUploadHandler === 'function') {
-                trustedCAUploadHandler(data);
-            } else {
-                console.log('upload detected, handler not defined');
-            }
-        });
+        socket.on('uploaded', data => { console.log('Event: uploaded, data: ', data); });
         socket.on('cancelled', data => {
             console.log('Event: cancelled', data);
-            if (typeof trustedCACancelHandler === 'function') {
-                trustedCA.unblock([data.id], (data) => trustedCACancelHandler(data));
-            } else {
-                trustedCA.unblock([data.id], () => console.log('cancel detected, handler not defined'));
-            }
+            trustedCA.unblock([data.id]);
         });
     }
 };
@@ -209,10 +197,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                         ids.push(elem.id);
                     });
                     trustedCA.showModalWindow(ids);
-                    var interval = setInterval(() => trustedCA.blockCheck(d.token, interval), 2000);
-                    if (typeof onSuccess === 'function') {
-                        onSuccess(d);
-                    }
+                    var interval = setInterval(() => trustedCA.blockCheck(d.token, interval, onSuccess), 2000);
                 } else {
                     if (typeof onFailure === 'function') {
                         onFailure(d);
@@ -235,15 +220,17 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     });
 };
 
-trustedCA.blockCheck = function (token, interval) {
-    let onSuccess = (d) => {};
+trustedCA.blockCheck = function (token, interval, onSuccess) {
     let onFailure = (e) => {
         clearInterval(interval);
         interval=0;
         document.body.removeChild(trustedCA.modalDiv)
         trustedCA.reloadDoc();
+        if (typeof onSuccess === 'function') {
+            onSuccess();
+        }
     }
-    trustedCA.ajax('blockCheck', {blockToken: token}, onSuccess, onFailure);
+    trustedCA.ajax('blockCheck', {blockToken: token}, () => {}, onFailure);
 };
 
 trustedCA.showModalWindow = function(ids) {

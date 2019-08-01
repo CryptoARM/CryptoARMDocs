@@ -423,11 +423,6 @@ class CBPTrustedCASign
             $doc = Docs\Database::getDocumentById($docId)->getLastDocument();
             $lastDocId = $doc->getId();
 
-            echo "<script>";
-            // echo "$('button[name=review]').css({visibility: 'hidden', width: '0px', padding: '0px', margin: '0px'});";
-            echo "var trustedCAUploadHandler = data => { if (data.id == $lastDocId) { $('.bp-button-accept').click() } };";
-            echo "</script>";
-
             $form .=
                 '<tr><td valign="top" width="40%" align="right" class="bizproc-field-name">'
                     .(strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAR_ACT_COMMENT"))
@@ -437,16 +432,34 @@ class CBPTrustedCASign
                 '<textarea rows="3" cols="50" name="task_comment"></textarea>'.
                 '</td></tr>';
 
+            $onSuccess = '() => { $(".bp-button-accept").click() }';
+            echo "<script>";
+            echo "$('.bp-button-accept').hide();";
+            echo "var signButton = document.createElement('input');";
+
             if ($doc->getStatus() === DOC_STATUS_BLOCKED) {
                 $blockUser = $doc->getBlockBy();
                 $blockMessage = GetMessage('BPAA_ACT_BLOCK_BY') . Docs\Utils::getUserName(CUser::GetByID($blockUser));
                 $form .= "<tr><td>$blockMessage</td><td></td></tr>";
                 if ($blockUser == $USER->GetID()) {
-                    $form .= '<tr><td colspan="2"><input type="button" class="bp-button bp-button-transparent" style="border: none" value="' . GetMessage('BPAA_ACT_UNBLOCK') . '" onclick="trustedCA.unblock([' . $lastDocId . '], () => { location.reload() })" /></td></tr>';
+                    echo "signButton.className = 'bp-button bp-button-transparent';";
+                    echo "signButton.setAttribute('type', 'button');";
+                    echo "signButton.setAttribute('style', 'border: none; margin: 3px 3px 3px 0;');";
+                    echo "signButton.setAttribute('value', '" . GetMessage('BPAA_ACT_UNBLOCK') . "');";
+                    echo "signButton.onclick = () => {trustedCA.unblock([ $lastDocId ], () => { location.reload() })};";
                 }
             } else {
-                $form .= '<tr><td colspan="2"><input type="button" class="bp-button bp-button-accept" style="border: none" value="' . GetMessage('BPAA_ACT_SIGN') . '" onclick="trustedCA.sign([' . $lastDocId . '], null, null)" /></td></tr>';
+                echo "signButton.className = 'ui-btn ui-btn-success';";
+                echo "signButton.setAttribute('type', 'button');";
+                echo "signButton.setAttribute('style', 'height: 35px; margin: 3px 3px 3px 0; line-height: 0px;');";
+                echo "signButton.setAttribute('value', '" . GetMessage('BPAA_ACT_SIGN') . "');";
+                echo "signButton.onclick = () => {trustedCA.sign([ $lastDocId ], null ,  $onSuccess )};";
             }
+            echo "var elemButtons = document.getElementsByClassName('bizproc-item-buttons');";
+            echo "elemButtons[0].style.display = 'flex';";
+            echo "elemButtons[0].insertBefore(signButton, elemButtons[0].firstChild);";
+            echo "</script>";
+
         }
 
         $buttons = '<input type="button" name="review" value="'.(strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2")).'"/>';

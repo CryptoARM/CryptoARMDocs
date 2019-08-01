@@ -626,11 +626,6 @@ class CBPTrustedCAApprove
             $doc = Docs\Database::getDocumentById($docId)->getLastDocument();
             $lastDocId = $doc->getId();
 
-            echo "<script>";
-            // echo "$('button[name=review]').css({visibility: 'hidden', width: '0px', padding: '0px', margin: '0px'});";
-            echo "var trustedCAUploadHandler = data => { if (data.id == $lastDocId) { $('.bp-button-accept').click() } };";
-            echo "</script>";
-
             $form .=
                 '<tr><td valign="top" width="40%" align="right" class="bizproc-field-name">'
                     .(strlen($arTask["PARAMETERS"]["CommentLabelMessage"]) > 0 ? $arTask["PARAMETERS"]["CommentLabelMessage"] : GetMessage("BPAA_ACT_COMMENT"))
