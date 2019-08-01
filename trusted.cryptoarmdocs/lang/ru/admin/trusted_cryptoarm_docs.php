@@ -29,8 +29,8 @@ $MESS["TR_CA_DOCS_FILTER_ROLES_SELLER"] = "Подписан продавцом";
 $MESS["TR_CA_DOCS_FILTER_ROLES_BOTH"] = "Подписан обеими сторонами";
 $MESS["TR_CA_DOCS_FILTER_ROLES_NONE"] = "Требуется подпись";
 
-$MESS["TR_CA_DOCS_FILTER_IBLOCK_ELEM_ID"] = "ID элемента инфоблока";
-$MESS["TR_CA_DOCS_FILTER_IBLOCK_NAME"] = "Название инфоблока";
+$MESS["TR_CA_DOCS_FILTER_IBLOCK_ELEM_ID"] = "ID заполненной формы";
+$MESS["TR_CA_DOCS_FILTER_IBLOCK_NAME"] = "Форма";
 
 // Columns
 $MESS["TR_CA_DOCS_COL_ID"] = "ID";
@@ -49,8 +49,8 @@ $MESS["TR_CA_DOCS_COL_ORDER_STATUS"] = "Статус заказа";
 $MESS["TR_CA_DOCS_COL_BUYER"] = "Покупатель";
 $MESS["TR_CA_DOCS_COL_MAIL"] = "Статус письма";
 
-$MESS["TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"] = "ID элемента инфоблока";
-$MESS["TR_CA_DOCS_COL_IBLOCK_NAME"] = "Название инфоблока";
+$MESS["TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"] = "ID заполненной формы";
+$MESS["TR_CA_DOCS_COL_IBLOCK_NAME"] = "Форма";
 
 $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 

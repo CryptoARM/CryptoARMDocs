@@ -90,6 +90,10 @@ class Form {
         $iBlocksId = self::getIBlocksId();
         $iBlocksElements = [];
 
+        if (empty($iBlocksId)) {
+            return false;
+        }
+
         if (!$arFilter["IBLOCK_ID"]) {
             $arFilter = array_merge(
                 $arFilter,
