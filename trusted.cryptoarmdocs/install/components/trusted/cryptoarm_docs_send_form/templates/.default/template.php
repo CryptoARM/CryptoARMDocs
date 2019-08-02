@@ -3,12 +3,14 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Bitrix\Main\Localization\Loc;
 
-if (!$arResult["compVisibility"]) {
-    ?>
-    <div id="trCaError">
-        ERROR
-    </div>
-    <?
+if ($arResult["compNotVisibility"]) {
+    if ($arResult["isAdmin"]) {
+        ?>
+        <div id="trCaError">
+            <?= $arResult["compVisibility"] ?>
+        </div>
+        <?
+    }
 } else {
     ?>
     <iframe id="trCaDocs__frame"
@@ -85,8 +87,10 @@ if (!$arResult["compVisibility"]) {
                                         $multiple = $value["MULTIPLE"] == "Y" ? "_Y" : "";
                                         ?>
                                         <div id="trca-sf-upload-button-<?= $value["ID"] ?>">
-                                            <div class="trca-sf-upload-button-input" id="<?= 'trca-sf-upload-button-input-' . $value['ID'] . '_0' ?>">
-                                                <div class="trca-sf-upload-input" id="<?= 'trca-sf-upload-input-' . $value['ID'] . '_0' ?>" >
+                                            <div class="trca-sf-upload-button-input"
+                                                 id="<?= 'trca-sf-upload-button-input-' . $value['ID'] . '_0' ?>">
+                                                <div class="trca-sf-upload-input"
+                                                     id="<?= 'trca-sf-upload-input-' . $value['ID'] . '_0' ?>">
                                                     <input type="file"
                                                            id="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
                                                            name="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
@@ -105,26 +109,28 @@ if (!$arResult["compVisibility"]) {
                                                     />
                                                     <?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_INPUT_FILE"); ?>
                                                 </div>
-                                                <div class="trca-sf-upload-file-button" id="<?= 'trca-sf-upload-file-button-' . $value['ID'] . '_0' ?>">
+                                                <div class="trca-sf-upload-file-button"
+                                                     id="<?= 'trca-sf-upload-file-button-' . $value['ID'] . '_0' ?>">
                                                     <div class="trca-sf-upload-file">
                                                         <div class="trca-sf-upload-file-icon">
                                                             <i class="material-icons">
                                                                 insert_drive_file
                                                             </i>
                                                         </div>
-                                                        <div class ="trca-sf-upload-file-name" id="<?= 'trca-sf-upload-file-name-' . $value['ID'] . '_0' ?>"></div>
-                                                        <div class ="trca-sf-upload-file-remove"
-                                                        <?
-                                                        if ($value["MULTIPLE"] == "Y") {
-                                                            ?>
-                                                            onclick="removeUploadFile(<?= $value['ID'] ?>, 0)"
+                                                        <div class="trca-sf-upload-file-name"
+                                                             id="<?= 'trca-sf-upload-file-name-' . $value['ID'] . '_0' ?>"></div>
+                                                        <div class="trca-sf-upload-file-remove"
                                                             <?
-                                                        } else {
+                                                            if ($value["MULTIPLE"] == "Y") {
+                                                                ?>
+                                                                onclick="removeUploadFile(<?= $value['ID'] ?>, 0)"
+                                                                <?
+                                                            } else {
+                                                                ?>
+                                                                onclick="hideUploadFile(<?= $value['ID'] ?>)"
+                                                                <?
+                                                            }
                                                             ?>
-                                                            onclick="hideUploadFile(<?= $value['ID'] ?>)"
-                                                            <?
-                                                        }
-                                                        ?>
                                                         >
                                                             <i class="material-icons">
                                                                 close

@@ -12,19 +12,21 @@ $arResult = [];
 $arResult["PROPERTY"] = Docs\Form::getIBlockProperty($arParams["IBLOCK_ID"]);
 
 if (Docs\Utils::checkAuthorization()) {
-    $arResult["compVisibility"] = true;
+    $arResult["compNotVisibility"] = false;
     if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
-        $arResult["compVisibility"] = false;
+        $arResult["compNotVisibility"] = "error with iblock settings";
     } else {
         if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
             if (!(Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]))) {
-                $arResult["compVisibility"] = false;
+                $arResult["compNotVisibility"] = "error with validate email address";
             }
         }
     }
 } else {
-    $arResult["compVisibility"] = false;
+    $arResult["compNotVisibility"] = "not authorized";
 }
+
+$arResult["isAdmin"] = Docs\Utils::isAdmin(Docs\Utils::currUserId());
 
 $arResult["SEND_EMAIL_TO_USER"] = $arParams["SEND_EMAIL_TO_USER"] == "Y" ? Docs\Utils::getUserEmail() : false;
 $arResult["SEND_EMAIL_TO_ADMIN"] = $arParams["SEND_EMAIL_TO_ADMIN"] == "Y" ? $arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"] : false;

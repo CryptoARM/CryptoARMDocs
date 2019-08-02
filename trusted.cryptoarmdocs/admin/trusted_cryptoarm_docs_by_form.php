@@ -43,8 +43,6 @@ $FilterArr = array(
     "find_iblock_elem_id",
     "find_iblock_name",
     "find_user_id",
-    "find_user_name",
-    "find_user_email",
 );
 
 $lAdmin->InitFilter($FilterArr);
@@ -54,8 +52,6 @@ if (CheckFilter()) {
         "ID" => $find_iblock_elem_id,
         "IBLOCK_ID" => $find_iblock_name,
         "CREATED_BY" => $find_user_id,
-        "USER_NAME" => $find_user_name,
-        "USER_EMAIL" => $find_user_email,
     );
 }
 
@@ -234,8 +230,6 @@ $oFilter = new CAdminFilter(
         Loc::getMessage("TR_CA_DOCS_FILTER_IBLOCK_ELEM_ID"),
         Loc::getMessage("TR_CA_DOCS_FILTER_IBLOCK_NAME"),
         Loc::getMessage("TR_CA_DOCS_FILTER_USER_ID"),
-        Loc::getMessage("TR_CA_DOCS_FILTER_USER_NAME"),
-        Loc::getMessage("TR_CA_DOCS_FILTER_USER_EMAIL"),
     )
 );
 ?>

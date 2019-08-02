@@ -241,11 +241,6 @@ class Form {
             'message' => 'Unknown error in Form::addIBlockForm',
         ];
 
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            return $res;
-        }
-
         $props = self::standardizationIBlockProps($props);
 
         $iBlockElement = new \CIBlockElement;
@@ -276,11 +271,6 @@ class Form {
             'success' => false,
             'message' => 'Unknown error in Form::createPDF',
         ];
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            return $res;
-        }
 
         $props = self::getIBlockElementInfo($iBlockId, $iBlockElementId);
 
