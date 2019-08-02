@@ -398,48 +398,6 @@ class Utils
         return $USER->IsAuthorized();
     }
 
-    public static function currUserId() {
-        global $USER;
-        return $USER->GetID();
-    }
-
-    public static function isAdmin($userId) {
-        return in_array(1, \CUser::getUserGroup($userId));
-    }
-
-    public static function getUserName($userId) {
-        $user = \CUser::GetByID($userId)->Fetch();
-        $userName = $user['NAME'] . ' ' . $user['LAST_NAME'];
-        if (!trim($userName)) {
-            $userName = $user['LOGIN'];
-        }
-        return $userName;
-    }
-
-    public static function getUserIdByEmail($email) {
-        $filter = array("EMAIL" => $email);
-        $user = \CUser::GetList(($by="id"), ($order="desc"), $filter)->Fetch();
-        return $user ? $user['ID'] : null;
-    }
-
-    public static function validateEmailAddress($emailAddress) {
-        if (filter_var($emailAddress, FILTER_VALIDATE_EMAIL)) {
-            return true;
-        }
-        return false;
-    }
-
-    public static function getUserEmail($userId = false) {
-        if (!$userId) {
-            $userId = self::currUserId();
-        }
-
-        $filter = array("id" => $userId);
-
-        $user = \CUser::GetList(($by = "id"), ($order = "desc"), $filter)->Fetch();
-        return $user ? $user['EMAIL'] : null;
-    }
-
     /**
      * Genereates UUID v.4
      */
@@ -519,21 +477,54 @@ class Utils
         return round($minNotNull/1024/1024, 2);
     }
 
-    public static function checkValueForNotEmpty($param) {
-        if ($param || $param === 0 || $param === 0.0 || $param === '0') {
-            return true;
-        }
-        return false;
+    public static function isNotEmpty($val) {
+        return ($val || $val === 0 || $val === 0.0 || $val === '0');
     }
 
-    public static function getUserLogin($userId = null) {
+    public static function validateEmailAddress($emailAddress) {
+        return filter_var($emailAddress, FILTER_VALIDATE_EMAIL);
+    }
+
+    public static function currUserId() {
+        global $USER;
+        return $USER->GetID();
+    }
+
+    public static function isAdmin($userId) {
+        return in_array(1, \CUser::getUserGroup($userId));
+    }
+
+    public static function getUser($userId = null) {
         if (!$userId) {
             $userId = self::currUserId();
         }
-
         $user = \CUser::GetByID($userId)->Fetch();
+        return $user;
+    }
 
-        return $user["LOGIN"];
+    public static function getUserName($userId = null) {
+        $user = Utils::getUser($userId);
+        $userName = $user['NAME'] . ' ' . $user['LAST_NAME'];
+        if (!trim($userName)) {
+            $userName = $user['LOGIN'];
+        }
+        return $userName;
+    }
+
+    public static function getUserEmail($userId = null) {
+        $user = Utils::getUser($userId);
+        return $user ? $user['EMAIL'] : null;
+    }
+
+    public static function getUserLogin($userId = null) {
+        $user = Utils::getUser($userId);
+        return $user ? $user["LOGIN"] : null;
+    }
+
+    public static function getUserIdByEmail($email) {
+        $filter = array("EMAIL" => $email);
+        $user = \CUser::GetList(($by="id"), ($order="desc"), $filter)->Fetch();
+        return $user ? $user['ID'] : null;
     }
 
 }

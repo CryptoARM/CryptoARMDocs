@@ -10,10 +10,10 @@ require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
 
 Loader::includeModule('iblock');
 
-
 class Form {
+
     public static function getIBlocks() {
-        $responce = \CIBlock::GetList(
+        $response = \CIBlock::GetList(
             [
                 "sort" => "asc",
                 "name" => "asc",
@@ -26,7 +26,7 @@ class Form {
 
         $iBlocks = [];
 
-        while ($arIblock = $responce->Fetch()) {
+        while ($arIblock = $response->Fetch()) {
             $iBlocks[htmlspecialcharsEx($arIblock["ID"])] = htmlspecialcharsEx($arIblock["NAME"]);
         }
 
@@ -42,7 +42,7 @@ class Form {
     }
 
     public static function getIBlockProperty($iBlockId) {
-        $responce = \CIBlockProperty::GetList(
+        $response = \CIBlockProperty::GetList(
             [
                 "sort" => "asc",
                 "name" => "asc",
@@ -55,7 +55,7 @@ class Form {
 
         $properties = [];
 
-        while ($prop_fields = $responce->GetNext()) {
+        while ($prop_fields = $response->GetNext()) {
             $properties[$prop_fields["ID"]]["ID"] = $prop_fields["ID"];
             $properties[$prop_fields["ID"]]["NAME"] = $prop_fields["NAME"];
             $properties[$prop_fields["ID"]]["PROPERTY_TYPE"] = $prop_fields["PROPERTY_TYPE"];
@@ -68,7 +68,7 @@ class Form {
             $properties[$prop_fields["ID"]]["USER_TYPE"] = $prop_fields["USER_TYPE"];
         }
 
-        $responceAdditional = \CIBlockPropertyEnum::GetList(
+        $responseAdditional = \CIBlockPropertyEnum::GetList(
             [
                 "sort" => "asc",
                 "name" => "asc",
@@ -79,7 +79,7 @@ class Form {
             ]
         );
 
-        while ($propAdd_fields = $responceAdditional->GetNext()) {
+        while ($propAdd_fields = $responseAdditional->GetNext()) {
             $properties[$propAdd_fields["PROPERTY_ID"]]["ADDITIONAL"][$propAdd_fields["ID"]] = $propAdd_fields["VALUE"];
         }
 
@@ -101,51 +101,18 @@ class Form {
             );
         }
 
-        $db_elemens = \CIBlockElement::GetList(
+        $dbElements = \CIBlockElement::GetList(
             [$by => $order],
             $arFilter
         );
 
-        while ($obElement = $db_elemens->GetNextElement()) {
+        while ($obElement = $dbElements->GetNextElement()) {
             $el = $obElement->GetFields();
             $el["PROPERTIES"] = $obElement->GetProperties();
             $iBlocksElements[$el["ID"]] = $el;
         }
 
         return $iBlocksElements;
-    }
-
-    public static function addIBlock($iBlockId, $props, $userId) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in Form::addIBlock",
-        ];
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            return $res;
-        }
-
-        $iBlockElement = new \CIBlockElement;
-
-        $response = [
-            "MODIFIED_BY" => $userId,
-            "IBLOCK_SECTION_ID" => false,
-            "IBLOCK_ID" => $iBlockId,
-            "PROPERTY_VALUES" => $props,
-            "NAME" => "Form",
-            "ACTIVE" => "Y",
-        ];
-
-        if ($iBlockElementId = $iBlockElement->Add($response)) {
-            $res = [
-                "success" => true,
-                "message" => "iBlockElement added",
-                "id" => $iBlockElementId,
-            ];
-        }
-
-        return $res;
     }
 
     public static function getIBlockElementInfo($iBlockId, $iBlockElementId) {
@@ -198,16 +165,12 @@ class Form {
         return $props;
     }
 
-    public static function getIBlockElementInfoByField($iBlockId, $iBlockElementId, $field) {
-        return self::getIBlockElementInfo($iBlockId, $iBlockElementId)[$field];
-    }
-
     public static function standardizationIBlockProps($props) {
         $someArray = [];
         foreach ($props as $key => $value) {
             if (stristr($key, "input_date_")) {
                 $key = str_ireplace("input_date_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = date_format(date_create($value), 'd.m.Y');
                 }
                 continue;
@@ -215,42 +178,42 @@ class Form {
             if (stristr($key, "input_checkbox_")) {
                 $key = str_ireplace("input_checkbox_", "", $key);
                 $keyValue = explode("_", $key);
-                if (Utils::checkValueForNotEmpty($keyValue)) {
+                if (Utils::isNotEmpty($keyValue)) {
                     $someArray[$keyValue[0]][] = $keyValue[1];
                 }
                 continue;
             }
             if (stristr($key, "input_text_")) {
                 $key = str_ireplace("input_text_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_number_")) {
                 $key = str_ireplace("input_number_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_radio_")) {
                 $key = str_ireplace("input_radio_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_select_")) {
                 $key = str_ireplace("input_select_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
             if (stristr($key, "input_html_")) {
                 $key = str_ireplace("input_html_", "", $key);
-                if (Utils::checkValueForNotEmpty($value)) {
+                if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
@@ -258,7 +221,7 @@ class Form {
             if (stristr($key, "input_file_")) {
                 $key = str_ireplace("input_file_", "", $key);
                 $keyValue = explode("_", $key);
-                if (Utils::checkValueForNotEmpty($keyValue)) {
+                if (Utils::isNotEmpty($keyValue)) {
                     if ($keyValue[2] == "Y") {
                         $someArray[$keyValue[0]][] = $value;
                     } else {
@@ -285,11 +248,24 @@ class Form {
 
         $props = self::standardizationIBlockProps($props);
 
-        $addResult = self::addIBlock($iBlockId, $props, Utils::currUserId());
+        $iBlockElement = new \CIBlockElement;
 
-        $res['success'] = true;
-        $res['message'] = $addResult['message'];
-        $res['data'] = $addResult['id'];
+        $prop = [
+            "MODIFIED_BY" => Utils::currUserId(),
+            "IBLOCK_SECTION_ID" => false,
+            "IBLOCK_ID" => $iBlockId,
+            "PROPERTY_VALUES" => $props,
+            "NAME" => "Form",
+            "ACTIVE" => "Y",
+        ];
+
+        if ($iBlockElementId = $iBlockElement->Add($prop)) {
+            $res = [
+                "success" => true,
+                "message" => "iBlockElement added",
+                "data" => $iBlockElementId,
+            ];
+        }
 
         return $res;
     }
@@ -358,7 +334,7 @@ class Form {
             if ($value["FILE"] == true) {
                 if ($value["MULTIPLE"] == "Y") {
                     foreach ($value["FILE_NAME"] as $key2 => $value2) {
-                        if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
+                        if (Utils::isNotEmpty($value["FILE_NAME"])) {
                             $pdfText .= '
                     <tr>
                         <td><b>' . $value["NAME"] . '</b></td>
@@ -371,7 +347,7 @@ class Form {
                         }
                     }
                 } else {
-                    if (Utils::checkValueForNotEmpty($value["FILE_NAME"])) {
+                    if (Utils::isNotEmpty($value["FILE_NAME"])) {
                         $pdfText .= '
                     <tr>
                         <td><b>' . $value["NAME"] . '</b></td>
@@ -387,7 +363,7 @@ class Form {
             }
 
             if ($value["MULTIPLE"] == "Y") {
-                if (Utils::checkValueForNotEmpty($value["VALUE"])) {
+                if (Utils::isNotEmpty($value["VALUE"])) {
                     $propertyString = "";
                     foreach ($value["VALUE"] as $property) {
                         $propertyString .= $property . '<br>';
@@ -403,7 +379,7 @@ class Form {
             }
 
             if ($value["VALUE"]["TYPE"] == "HTML") {
-                if (Utils::checkValueForNotEmpty($value['VALUE']['TEXT'])) {
+                if (Utils::isNotEmpty($value['VALUE']['TEXT'])) {
                     $pdfText .= '
                     <tr>
                         <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
@@ -412,7 +388,7 @@ class Form {
                 continue;
             }
 
-            if (Utils::checkValueForNotEmpty($value["VALUE"])) {
+            if (Utils::isNotEmpty($value["VALUE"])) {
                 $pdfText .= '
                 <tr>
                     <td><b>' . $value["NAME"] . '</b></td>
@@ -472,8 +448,6 @@ class Form {
             'message' => 'Unknown error in Form::sendEmail or nothing to send',
         ];
 
-        global $USER;
-
         if ($toUser) {
             $arEventFields = [
                 "EMAIL" => $toUser,
@@ -481,32 +455,30 @@ class Form {
 
             $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM", $arEventFields, "MAIL_TEMPLATE_ID_FORM");
 
-            if ($response["success"]) {
-                $res = [
-                    'success' => false,
-                    'message' => $response["message"],
-                ];
+            if (!$response["success"]) {
+                return $response;
             }
         }
 
         if ($toAdditional) {
-            if (Utils::validateEmailAddress($toAdditional)) {
-                $arEventFields = [
-                    "EMAIL" => $toAdditional,
-                    "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser)),
-                ];
+            if (!Utils::validateEmailAddress($toAdditional)) {
+                $res['message'] = 'Invalid email address: ' . $toAdditional;
+                return $res;
+            }
+            $arEventFields = [
+                "EMAIL" => $toAdditional,
+                "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser)),
+            ];
 
-                $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
+            $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
 
-                if ($response["success"]) {
-                    $res = [
-                        'success' => false,
-                        'message' => $response["message"],
-                    ];
-                }
+            if (!$response["success"]) {
+                return $response;
             }
         }
 
+        $res['success'] = true;
+        $res['message'] = "Emails with form were sent";
         return $res;
     }
 
@@ -523,14 +495,13 @@ class Form {
             $docsId = [];
 
             foreach ($docList as $doc) {
-                $docsId["ids"][] = $doc->getId();
+                $doc->remove();
             }
 
-            $responce = AjaxCommand::remove($docsId);
-            $responceIBlock = \CIBlockElement::Delete($id);
+            $responseIBlock = \CIBlockElement::Delete($id);
         }
 
-        if ($responceIBlock) {
+        if ($responseIBlock) {
             $res = [
                 "success" => true,
                 "message" => "ok",
@@ -539,4 +510,6 @@ class Form {
 
         return $res;
     }
+
 }
+
