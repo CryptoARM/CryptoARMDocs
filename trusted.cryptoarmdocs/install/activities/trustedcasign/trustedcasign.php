@@ -434,6 +434,7 @@ class CBPTrustedCASign
 
             $onSuccess = '() => { $(".bp-button-accept").click() }';
             echo "<script>";
+            echo "window.onload = function () {";
             echo "$('.bp-button-accept').hide();";
             echo "var signButton = document.createElement('input');";
 
@@ -458,6 +459,7 @@ class CBPTrustedCASign
             echo "var elemButtons = document.getElementsByClassName('bizproc-item-buttons');";
             echo "elemButtons[0].style.display = 'flex';";
             echo "elemButtons[0].insertBefore(signButton, elemButtons[0].firstChild);";
+            echo "}";
             echo "</script>";
 
         }
@@ -476,7 +478,8 @@ class CBPTrustedCASign
                     'TARGET_USER_STATUS' => CBPTaskUserStatus::Ok,
                     'NAME'  => 'review',
                     'VALUE' => 'Y',
-                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2"),
+                    // 'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2"),
+                    'TEXT' => '',
                 ),
             )
         );
