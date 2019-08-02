@@ -42,19 +42,18 @@ trustedCA.initVar = function(){
 
 // Modal window
 trustedCA.modalWindowSign = `
-    <div class="trca-modal-overlay" id="trca-modal-overlay">
-        <div class="trca-modal-window" id="trca-modal-window">
-            <div class="trca-modal-header" id="trca-modal-header"></div>
-            <div class="trca-modal-content">
-                <div class="trca-modal-content-icon" id=class="trca-modal-content-icon">
-                    <i class="material-icons" style="font-size: 41px;">info_outline</i>
-                </div>
-                <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
+    <div class="trca-modal-overlay" id="trca-modal-overlay"></div>
+    <div class="trca-modal-window" id="trca-modal-window">
+        <div class="trca-modal-header" id="trca-modal-header"></div>
+        <div class="trca-modal-content">
+            <div class="trca-modal-content-icon" id=class="trca-modal-content-icon">
+                <i class="material-icons" style="font-size: 41px;">info_outline</i>
             </div>
-            <div class="trca-modal-spinner" id="trca-modal-spinner"></div>
-            <div class="trca-modal-footer" id="trca-modal-footer">
-                <div class="trca-modal-close" id="trca-modal-close"></div>
-            </div>
+            <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
+        </div>
+        <div class="trca-modal-spinner" id="trca-modal-spinner"></div>
+        <div class="trca-modal-footer" id="trca-modal-footer">
+            <div class="trca-modal-close" id="trca-modal-close"></div>
         </div>
     </div>
 `;
