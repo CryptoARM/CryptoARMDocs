@@ -127,8 +127,6 @@ trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
             }
         }
     });
-    // Fixes random socket disconnects
-    trustedCA.socketInit();
 };
 
 
@@ -217,6 +215,8 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             }
         }
     });
+    // Fixes random socket disconnects
+    trustedCA.socketInit();
 };
 
 trustedCA.blockCheck = function (token, interval, onSuccess) {
@@ -316,6 +316,8 @@ trustedCA.verify = function (ids) {
             }
         }
     });
+    // Fixes random socket disconnects
+    trustedCA.socketInit();
 };
 
 

@@ -136,7 +136,7 @@ foreach ($docs->getList() as $doc) {
     );
 
     $downloadJs = "trustedCA.download([$docId], true)";
-    $docName = "<a style='cursor:pointer;' onclick='$downloadJs' title='" . Loc::getMessage('TR_CA_DOCS_DOWNLOAD_DOC') . "'>{$doc->getName()}</a>";
+    $docName = "<a style='cursor:pointer;' onclick='$downloadJs' ondblclick='event.stopPropagation()' title='" . Loc::getMessage('TR_CA_DOCS_DOWNLOAD_DOC') . "'>{$doc->getName()}</a>";
     $rows[] = array(
         'id' => $docId,
         'columns' => array(
