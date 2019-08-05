@@ -488,3 +488,28 @@ trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
         trustedCA.ajax('unshare', {ids}, onSuccess, onFailure);
     }
 };
+
+trustedCA.showPopupMessage = function (message, interval = 5000) {
+    trustedCA.popupMessageDiv = document.createElement("div");
+    trustedCA.popupMessageDiv.className = "trca-popup-window";
+    popupMessage = `
+        <div class="trca-popup-content">
+            <div class="trca-popup-icon">
+                <div class="material-icons">
+                    check_circles
+                </div>
+            </div>
+            <div class="trca-popup-message">
+               ${message}
+            </div>
+            <div class="trca-popup-close" onclick="document.body.removeChild(trustedCA.popupMessageDiv); clearInterval(intervalPopup);">
+                <div class="material-icons">
+                    close
+                </div>
+            </div>
+        </div>
+    `;
+    trustedCA.popupMessageDiv.innerHTML = popupMessage;
+    document.body.appendChild(trustedCA.popupMessageDiv);
+    intervalPopup =  setTimeout ( () => {document.body.removeChild(trustedCA.popupMessageDiv)}, interval );
+};

@@ -242,6 +242,47 @@
       to {left: 100%;}
   }
 
+/* Popup message */
+.trca-popup-window {
+    position: fixed;
+    left: auto;
+    bottom: 50px;
+    right: 40px;
+    width: 400px;
+    z-index: 1050;
+    background: white;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
+    box-shadow: 0px 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
+.trca-popup-window .trca-popup-content {
+    display: flex;
+}
+
+.trca-popup-window .trca-popup-icon {
+    color: rgb(33, 150, 243);
+    margin: auto 20px;
+}
+
+.trca-popup-window .trca-popup-icon .material-icons {
+    font-size: 36px;
+    width: 36px;
+}
+
+.trca-popup-window .trca-popup-message {
+    margin: 18px auto 24px auto;
+    word-break: break-word;
+}
+
+.trca-popup-window .trca-popup-close .material-icons {
+    font-size: 18px;
+    margin: 10px 10px 0 15px;
+    cursor: pointer;
+}
+
 /* Tooltips */
 [tooltip]{
     margin:20px 60px;

@@ -110,13 +110,14 @@ foreach ($docs->getList() as $doc) {
                 'templateName' => $workflowTemplate['NAME'],
                 'hasParameters' => $workflowTemplate['HAS_PARAMETERS']
             );
+            $popupMessage = Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_1') . $workflowTemplate['NAME'] . Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_2');
             $startWorkflowActions[] = array(
                 'TITLE' => $workflowTemplate['DESCRIPTION'],
                 'TEXT' => $workflowTemplate['NAME'],
                 'ONCLICK' => sprintf(
                     'BX.Bizproc.Starter.singleStart(%s, %s)',
                     Json::encode($starterParams),
-                    $gridBuilder->reloadGridJs
+                    $gridBuilder->reloadGridJs . ', trustedCA.showPopupMessage("' . $popupMessage . '")'
                 )
             );
         }

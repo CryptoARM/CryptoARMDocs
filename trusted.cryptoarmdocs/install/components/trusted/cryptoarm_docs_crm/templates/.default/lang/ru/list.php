@@ -5,3 +5,5 @@ $MESS['TR_CA_DOCS_CRM_LIST_TITLE'] = 'Личные документы польз
 $MESS['TR_CA_DOCS_CRM_ADD_DOC'] = 'Добавить документ';
 $MESS['TR_CA_DOCS_CRM_START_WORKFLOW'] = 'Новый бизнес-процесс';
 
+$MESS["TR_CA_DOCS_POPUP_MESSAGE_1"] = "Бизнес-процесс &#xAB;";
+$MESS["TR_CA_DOCS_POPUP_MESSAGE_2"] = "&#xBB; запущен";
