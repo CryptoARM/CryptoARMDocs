@@ -1,5 +1,7 @@
 <?php
 
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -11,24 +13,23 @@ Loader::includeModule('iblock');
 $arResult = [];
 $arResult["PROPERTY"] = Docs\Form::getIBlockProperty($arParams["IBLOCK_ID"]);
 
-if (Docs\Utils::checkAuthorization()) {
-    $arResult["compNotVisibility"] = false;
-    if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
-        $arResult["compNotVisibility"] = "error with iblock settings";
-    } else {
-        if ($arParams["SEND_EMAIL_TO_ADMIN"] === "Y") {
-            if (!(Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]))) {
-                $arResult["compNotVisibility"] = "error with validate email address";
-            }
-        }
+if (!Docs\Utils::checkAuthorization()) {
+    echo '<font color="#FF0000">ERROR not authorized</font>';
+    return;
+}
+if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
+    echo '<font color="#FF0000">ERROR iblock not specified</font>';
+    return;
+}
+if ($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]) {
+    if (!(Docs\Utils::validateEmailAddress($arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"]))) {
+        echo '<font color="#FF0000">ERROR incorrect email</font>';
+        return;
     }
-} else {
-    $arResult["compNotVisibility"] = "not authorized";
 }
 
-$arResult["isAdmin"] = Docs\Utils::isAdmin(Docs\Utils::currUserId());
-
 $arResult["SEND_EMAIL_TO_USER"] = $arParams["SEND_EMAIL_TO_USER"] == "Y" ? Docs\Utils::getUserEmail() : false;
-$arResult["SEND_EMAIL_TO_ADMIN"] = $arParams["SEND_EMAIL_TO_ADMIN"] == "Y" ? $arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"] : false;
+$arResult["SEND_EMAIL_TO_ADMIN_ADDRESS"] = $arParams["SEND_EMAIL_TO_ADMIN_ADDRESS"];
 
 $this->IncludeComponentTemplate();
+

@@ -46,8 +46,8 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - название документа
 ";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"] = "#SITE_NAME#: Документы подписанные в форме";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"] = "#SITE_NAME#: Форма успешно заполнена и документы подписаны #FILE_NAME#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"] = "#SITE_NAME#: вы заполнили и подписали форму";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"] = "#SITE_NAME#: Вы успешно заполнили и подписали форму: #FILE_NAME#";
 
 // email completed form and send it to admin
 $MESS["TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"] = "КриптоАРМ Документы - уведомление администратора о форме";
@@ -63,3 +63,4 @@ $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";
 
 $MESS["TR_CA_DOCS_BP_SIGN_TEMPLATE"] = "Выбор ответственных за подпись документа";
 $MESS["TR_CA_DOCS_BP_AGREED_TEMPLATE"] = "Отправить документ на согласование";
+

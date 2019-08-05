@@ -10,6 +10,10 @@ global $USER;
 
 Loader::includeModule('trusted.cryptoarmdocs');
 
+if (!Docs\Utils::checkAuthorization()) {
+    return;
+}
+
 $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
 $iBlockId = $_POST["iBlock_id"];

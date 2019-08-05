@@ -432,6 +432,16 @@ class Form {
         return $res;
     }
 
+    static function upload(&$doc, $extra) {
+        $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $extra["formId"]);
+        foreach ($docs->getList() as $doc) {
+            if ($doc->getType() !== DOC_TYPE_SIGNED_FILE) {
+                return false;
+            }
+        }
+        Form::sendEmail($docs->toIdArray(), $extra["send_email_to_user"], $extra["send_email_to_admin"]);
+    }
+
     static function sendEmail($docsIds, $toUser = false, $toAdditional = false) {
         $res = [
             'success' => false,
@@ -455,9 +465,11 @@ class Form {
                 $res['message'] = 'Invalid email address: ' . $toAdditional;
                 return $res;
             }
+            $doc = Database::getDocumentById($docsIds[0]);
+            $userId = $doc->getSignersToArray()[0];
             $arEventFields = [
                 "EMAIL" => $toAdditional,
-                "FORM_USER" => Utils::getUserName(Utils::getUserIdByEmail($toUser)),
+                "FORM_USER" => Utils::getUserName($userId),
             ];
 
             $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");

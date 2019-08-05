@@ -1,5 +1,7 @@
 <?php
 
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Loader;
@@ -11,8 +13,8 @@ $formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_
 
 $docSaveFormat = [
     "pdf" => "PDF",
-    "xml" => "XML",
-    "xsd" => "XSD",
+    // "xml" => "XML",
+    // "xsd" => "XSD",
 ];
 
 $formIBlocks += Docs\Form::getIBlocks();
@@ -50,17 +52,12 @@ $arComponentParameters = [
             "TYPE" => "CHECKBOX",
             "DEFAULT" => "N",
         ],
-        "SEND_EMAIL_TO_ADMIN" => [
-            "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_NAME"),
-            "TYPE" => "CHECKBOX",
-            "DEFAULT" => "N",
-        ],
         "SEND_EMAIL_TO_ADMIN_ADDRESS" => [
             "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_ADDRESS_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_NAME"),
             "TYPE" => "STRING",
             "DEFAULT" => "",
         ],
     ],
 ];
+
