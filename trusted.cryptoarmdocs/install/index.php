@@ -581,7 +581,7 @@ Class trusted_cryptoarmdocs extends CModule
 
         $templateIds = array();
         $templateIds[] = $this->ImportBPTemplateFromFile('SetSignResponsibility.bpt', Loc::getMessage("TR_CA_DOCS_BP_SIGN_TEMPLATE"));
-        //$templateIds[] = $this->ImportBPTemplateFromFile('AgreedOn.bpt', Loc::getMessage("TR_CA_DOCS_BP_AGREED_TEMPLATE"));
+        $templateIds[] = $this->ImportBPTemplateFromFile('AgreedOn.bpt', Loc::getMessage("TR_CA_DOCS_BP_AGREED_TEMPLATE"));
 
         Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID, implode(" ", $templateIds));
     }
@@ -597,10 +597,12 @@ Class trusted_cryptoarmdocs extends CModule
     function UninstallBPTemplates () {
         $templateIds = array();
         $templateIds = explode(" ", (Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID)));
-        foreach ($templateIds as $id) {
-            CBPWorkflowTemplateLoader::delete($id);
+        if ($templateIds) {
+            foreach ($templateIds as $id) {
+                CBPWorkflowTemplateLoader::delete($id);
             }
         }
+    }
 
 }
 
