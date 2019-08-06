@@ -19,8 +19,8 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
     <?echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN"))?>
     <p><?echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_SAVE_PROMPT")) ?></p>
     <p>
-        <input type="checkbox" name="savedata" id="savedata" value="Y" checked>
-        <label for="savedata"><?echo Loc::getMessage("MOD_UNINST_SAVE_TABLES")?></label>
+        <input type="checkbox" name="deletedata" id="deletedata" value="Y">
+        <label for="deletedata"><?echo Loc::getMessage("TR_CA_DOCS_UNINST_DELETE_DATA")?></label>
     </p>
     <input type="submit" name="uninst" value="<?echo Loc::getMessage("MOD_UNINST_DEL")?>">
 </form>
