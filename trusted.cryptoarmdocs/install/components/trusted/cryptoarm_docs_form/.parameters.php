@@ -9,7 +9,7 @@ use Bitrix\Main\Loader;
 Loader::includeModule('iblock');
 Loader::includeModule('trusted.cryptoarmdocs');
 
-$formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_IBLOCK_ID_NAME");
+$formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_IBLOCK_ID_NAME");
 
 $docSaveFormat = [
     "pdf" => "PDF",
@@ -22,13 +22,13 @@ $formIBlocks += Docs\Form::getIBlocks();
 $arComponentParameters = [
     "GROUPS" => [
         "SETTINGS" => [
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_GROUP_SETTINGS_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_GROUP_SETTINGS_NAME"),
         ],
     ],
     "PARAMETERS" => [
         "IBLOCK_ID" => [
             "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_IBLOCK_ID_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_IBLOCK_ID_NAME"),
             "TYPE" => "LIST",
             "REFRESH" => "Y",
             "MULTIPLE" => "N",
@@ -38,7 +38,7 @@ $arComponentParameters = [
         ],
         "FILE_FORMAT_SAVE" => [
             "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_FILE_FORMAT_SAVE_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_FILE_FORMAT_SAVE_NAME"),
             "TYPE" => "LIST",
             "REFRESH" => "Y",
             "MULTIPLE" => "N",
@@ -48,13 +48,13 @@ $arComponentParameters = [
         ],
         "SEND_EMAIL_TO_USER" => [
             "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_USER_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_SEND_EMAIL_TO_USER_NAME"),
             "TYPE" => "CHECKBOX",
             "DEFAULT" => "N",
         ],
         "SEND_EMAIL_TO_ADMIN_ADDRESS" => [
             "PARENT" => "SETTINGS",
-            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_NAME"),
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_SEND_EMAIL_TO_ADMIN_NAME"),
             "TYPE" => "STRING",
             "DEFAULT" => "",
         ],

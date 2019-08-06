@@ -43,5 +43,5 @@ $MESS["TR_CA_DOCS_MODAL_MESSAGE_MANY_1"] = "Документы переданы 
 $MESS["TR_CA_DOCS_MODAL_MESSAGE_MANY_2"] = "Для завершения процесса подпишите документы, либо нажмите ";
 $MESS["TR_CA_DOCS_MODAL_CANCEL"] = "Отменить подпись";
 
-$MESS["TR_CA_DOCS_COMP_SEND_FORM_INPUT_FILE"] = "Добавить файл";
+$MESS["TR_CA_DOCS_COMP_FORM_INPUT_FILE"] = "Добавить файл";
 

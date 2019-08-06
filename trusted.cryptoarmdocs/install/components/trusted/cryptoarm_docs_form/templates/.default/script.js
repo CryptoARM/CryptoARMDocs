@@ -1,4 +1,4 @@
-INPUT_FILE = BX.message('TR_CA_DOCS_COMP_SEND_FORM_INPUT_FILE');
+INPUT_FILE = BX.message('TR_CA_DOCS_COMP_FORM_INPUT_FILE');
 
 window.onload = function addAutoResize() {
     document.querySelectorAll('[data-autoresize]').forEach(function (element) {

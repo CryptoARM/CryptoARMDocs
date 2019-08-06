@@ -388,7 +388,7 @@ Class trusted_cryptoarmdocs extends CModule {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_send_form/");
+        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(

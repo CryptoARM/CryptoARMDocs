@@ -11,7 +11,7 @@ use Bitrix\Main\Localization\Loc;
 </iframe>
 
 <form enctype="multipart/form-data" target="trCaDocs__frame" id="crypto-arm-document__send-form" method="POST"
-      action="/bitrix/components/trusted/cryptoarm_docs_send_form/templates/.default/uploadDocs.php">
+      action="/bitrix/components/trusted/cryptoarm_docs_form/templates/.default/uploadDocs.php">
     <div class="crypto-arm-document__send-form">
         <div class="send-form-data">
             <?
@@ -100,7 +100,7 @@ use Bitrix\Main\Localization\Loc;
                                                     }
                                                     echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                 />
-                                                <?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_INPUT_FILE"); ?>
+                                                <?= Loc::getMessage("TR_CA_DOCS_COMP_FORM_INPUT_FILE"); ?>
                                             </div>
                                             <div class="trca-sf-upload-file-button"
                                                  id="<?= 'trca-sf-upload-file-button-' . $value['ID'] . '_0' ?>">
@@ -239,7 +239,7 @@ use Bitrix\Main\Localization\Loc;
         <p>
         <div class="trca-sf-button-sign">
             <input type="submit"/>
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FORM_BUTTON_SIGN"); ?>
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_FORM_BUTTON_SIGN"); ?>
         </div>
     </div>
 </form>
