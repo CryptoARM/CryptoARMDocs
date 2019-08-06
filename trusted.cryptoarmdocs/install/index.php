@@ -114,6 +114,11 @@ Class trusted_cryptoarmdocs extends CModule
         return IsModuleInstalled("crm");
     }
 
+    function bizprocSupport()
+    {
+        return IsModuleInstalled("bizproc");
+    }
+
     function InstallFiles()
     {
         CopyDirFiles(
@@ -136,7 +141,7 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
             true, true
         );
-        if ($this->crmSupport()) {
+        if ($this->bizprocSupport()) {
             CopyDirFiles(
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
