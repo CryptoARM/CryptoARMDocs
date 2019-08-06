@@ -8,7 +8,7 @@ use Bitrix\Main\Loader;
 Loader::includeModule('trusted.cryptoarmdocs');
 
 if ($USER->IsAuthorized()) {
-    $docs = Docs\Database::getDocumentsByOrder($arParams["ORDER"]); 
+    $docs = Docs\Database::getDocumentsByOrder($arParams["ORDER"]);
 } else {
     $docs = new Docs\DocumentCollection();
 }

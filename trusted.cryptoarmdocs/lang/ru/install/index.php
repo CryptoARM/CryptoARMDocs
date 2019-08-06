@@ -38,3 +38,6 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "#SITE_NAME#: получен �
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = "#SITE_NAME#: #SHARE_FROM# поделился документом #FILE_NAME#";
 
 $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";
+
+$MESS["TR_CA_DOCS_BP_SIGN_TEMPLATE"] = "Выбор ответственных за подпись документа";
+$MESS["TR_CA_DOCS_BP_AGREED_TEMPLATE"] = "Отправить документ на согласование";

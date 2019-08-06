@@ -93,6 +93,7 @@ Class trusted_cryptoarmdocs extends CModule
             $this->InstallIb();
             $this->InstallMenuItems();
             $this->InstallMailEvents();
+            $this->InstallBPTemplates();
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -343,6 +344,7 @@ Class trusted_cryptoarmdocs extends CModule
             }
             $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
+            $this->UninstallBPTemplates();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
@@ -524,6 +526,33 @@ Class trusted_cryptoarmdocs extends CModule
             CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
         }
     }
+
+    function InstallBPTemplates() {
+        CModule::IncludeModule('bizproc');
+        CModule::IncludeModule('bizprocdesigner');
+
+        $templateIds = array();
+        $templateIds[] = $this->ImportBPTemplateFromFile('SetSignResponsibility.bpt', Loc::getMessage("TR_CA_DOCS_BP_SIGN_TEMPLATE"));
+        //$templateIds[] = $this->ImportBPTemplateFromFile('AgreedOn.bpt', Loc::getMessage("TR_CA_DOCS_BP_AGREED_TEMPLATE"));
+
+        Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID, implode(" ", $templateIds));
+    }
+
+    function ImportBPTemplateFromFile ($filename, $templatename) {
+        $file = fopen(TR_CA_DOCS_MODULE_DIR . "resources/".$filename, 'r');
+        $data = fread($file, filesize(TR_CA_DOCS_MODULE_DIR . "resources/".$filename));
+        fclose($file);
+        $templateId = CBPWorkflowTemplateLoader::ImportTemplate(0, ["trusted.cryptoarmdocs", "Trusted\CryptoARM\Docs\WorkflowDocument", "TR_CA_DOC"], true, $templatename, "", $data);
+        return $templateId;
+    }
+
+    function UninstallBPTemplates () {
+        $templateIds = array();
+        $templateIds = explode(" ", (Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID)));
+        foreach ($templateIds as $id) {
+            CBPWorkflowTemplateLoader::delete($id);
+            }
+        }
 
 }
 

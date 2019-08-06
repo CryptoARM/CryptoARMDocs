@@ -54,3 +54,4 @@ define("PROVIDE_LICENSE", Option::get(TR_CA_DOCS_MODULE_ID, 'PROVIDE_LICENSE', '
 
 define('TR_CA_DB_TIME_FORMAT', 'YYYY-MM-DD HH:MI:SS');
 
+define("TR_CA_DOCS_TEMPLATE_ID", "tr_ca_docs_template_id");
