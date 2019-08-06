@@ -595,14 +595,10 @@ Class trusted_cryptoarmdocs extends CModule
     }
 
     function UninstallBPTemplates () {
-        $templateIds = array();
-        $templateIds = explode(" ", (Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID)));
-        if ($templateIds) {
-            foreach ($templateIds as $id) {
+        $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY));
+        foreach ($templateIds as $id) {
                 CBPWorkflowTemplateLoader::delete($id);
-            }
         }
     }
-
 }
 
