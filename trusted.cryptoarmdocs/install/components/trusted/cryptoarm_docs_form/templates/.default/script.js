@@ -126,3 +126,4 @@ function removeUploadFile(id, numInput) {
         $('#trca-sf-upload-file-remove-' + idInputElem).attr('onclick','removeUploadFile(' + id + ',' + numInput + ')');
     }
 }
+

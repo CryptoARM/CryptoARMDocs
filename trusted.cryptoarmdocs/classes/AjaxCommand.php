@@ -255,7 +255,6 @@ class AjaxCommand {
         $res["message"] = "File uploaded";
 
         // Detect document by form signing
-        Utils::dump($extra);
         if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
             Form::upload($doc, $extra);
         }

@@ -1,12 +1,11 @@
 <?php
-
 namespace Trusted\CryptoARM\Docs;
-
 use Bitrix\Main\Localization\Loc;
 
 require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
 
-class Protocol {
+class Protocol
+{
 
     const MAIN_TEXT = <<<HTML
 <div height="100px"></div>

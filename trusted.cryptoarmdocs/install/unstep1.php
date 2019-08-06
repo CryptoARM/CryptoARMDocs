@@ -1,5 +1,4 @@
 <?php
-
 use Bitrix\Main\Localization\Loc;
 
 if (!check_bitrix_sessid()) {
@@ -12,17 +11,17 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
 ?>
 
 <form action="<?= $APPLICATION->GetCurPage() ?>">
-    <?= bitrix_sessid_post() ?>
+<?=bitrix_sessid_post()?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
     <input type="hidden" name="id" value="trusted.cryptoarmdocs">
     <input type="hidden" name="uninstall" value="Y">
     <input type="hidden" name="step" value="2">
-    <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>
-    <p><? echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_SAVE_PROMPT")) ?></p>
+    <?echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN"))?>
+    <p><?echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_SAVE_PROMPT")) ?></p>
     <p>
-        <input type="checkbox" name="savedata" id="savedata" value="Y">
-        <label for="savedata"><? echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_CHECKBOX")) ?></label>
+        <input type="checkbox" name="savedata" id="savedata" value="Y" checked>
+        <label for="savedata"><?echo Loc::getMessage("MOD_UNINST_SAVE_TABLES")?></label>
     </p>
-    <input type="submit" name="uninst" value="<? echo Loc::getMessage("MOD_UNINST_DEL") ?>">
+    <input type="submit" name="uninst" value="<?echo Loc::getMessage("MOD_UNINST_DEL")?>">
 </form>
 

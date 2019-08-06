@@ -840,5 +840,6 @@ class Database
         $orderId = $rows->Fetch();
         return $orderId;
     }
+
 }
 

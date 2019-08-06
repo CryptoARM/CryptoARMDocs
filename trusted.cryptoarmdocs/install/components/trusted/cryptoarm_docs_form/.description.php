@@ -13,3 +13,4 @@ $arComponentDescription = [
 //    ),
     'CACHE_PATH' => 'Y',
 ];
+
