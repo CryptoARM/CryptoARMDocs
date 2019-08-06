@@ -684,12 +684,14 @@ class CBPTrustedCAApprove
         $doc = Docs\Database::getDocumentById($docId);
         $lastDoc = $doc->getLastDocument();
 
-        if (!in_array($userId, $lastDoc->getSignersToArray())) {
-            $arErrors[] = array(
-                'code' => 0,
-                'message' => GetMessage('BPAA_ACT_SIGN_ERROR'),
-            );
-            return false;
+        if ($arRequest["approve"]) {
+            if (!in_array($userId, $lastDoc->getSignersToArray())) {
+                $arErrors[] = array(
+                    'code' => 0,
+                    'message' => GetMessage('BPAA_ACT_SIGN_ERROR'),
+                );
+                return false;
+            }
         }
 
         // original code below

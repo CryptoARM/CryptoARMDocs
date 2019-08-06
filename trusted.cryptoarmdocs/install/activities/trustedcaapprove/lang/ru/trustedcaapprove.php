@@ -24,5 +24,5 @@ $MESS ['BPAA_ACT_COMMENT_ERROR'] = "Не заполнено поле: #COMMENT_L
 $MESS ['BPAA_ACT_BLOCK_BY'] = "Документ заблокирован пользователем ";
 $MESS ['BPAA_ACT_UNBLOCK'] = "Разблокировать";
 $MESS ['BPAA_ACT_SIGN'] = "Подписать";
-$MESS ['BPAA_ACT_SIGN_ERROR'] = "Подпишите документ чтобы закончить утверждение";
+$MESS ['BPAA_ACT_SIGN_ERROR'] = "Подпишите документ, чтобы закончить утверждение";
 ?>
