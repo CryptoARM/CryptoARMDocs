@@ -7,13 +7,12 @@ use Bitrix\Sale;
 
 Loc::loadMessages(__FILE__);
 
-Loader::includeModule("sale");
+Loader::includeModule('sale');
 
 /**
  * Helper functions and event handlers for documents by order functionality.
  */
-class DocumentsByOrder
-{
+class DocumentsByOrder {
     /**
      * Called when document by order gets signed and uploaded.
      *
@@ -21,16 +20,15 @@ class DocumentsByOrder
      * @param array $extra
      * @return void
      */
-    public static function upload(&$doc, $extra)
-    {
-        $role = $extra["role"];
+    public static function upload(&$doc, $extra) {
+        $role = $extra['role'];
         $props = $doc->getProperties();
-        $roleProp = $props->getPropByType("ROLES");
-        if ($roleProp){
-            if ($role == "CLIENT") {
+        $roleProp = $props->getPropByType('ROLES');
+        if ($roleProp) {
+            if ($role == 'CLIENT') {
                 DocumentsByOrder::signedByClient($doc, $roleProp);
             }
-            if ($role == "SELLER") {
+            if ($role == 'SELLER') {
                 DocumentsByOrder::signedBySeller($doc, $roleProp);
             }
         }
@@ -43,21 +41,20 @@ class DocumentsByOrder
      * @param Property &$roleProp
      * @return void
      */
-    private function signedByClient(&$doc, &$roleProp)
-    {
-        $event= Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_CLIENT", "");
-        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "");
+    private function signedByClient(&$doc, &$roleProp) {
+        $event = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_CLIENT', '');
+        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_CLIENT_ALL_DOCS', '');
         if ($event) {
-            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, "CLIENT");
+            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, 'CLIENT');
             if (!$waitForAllDocs || ($waitForAllDocs && $allDocsSigned)) {
                 DocumentsByOrder::changeOrderStatus($doc, $event);
             }
         }
         $rolePropValue = $roleProp->getValue();
-        if ($rolePropValue == "NONE") {
-            $roleProp->setValue("CLIENT");
+        if ($rolePropValue == 'NONE') {
+            $roleProp->setValue('CLIENT');
         }
-        if ($rolePropValue == "SELLER") {
+        if ($rolePropValue == 'SELLER') {
             DocumentsByOrder::signedByBoth($doc, $roleProp);
         }
     }
@@ -69,21 +66,20 @@ class DocumentsByOrder
      * @param Property &$roleProp
      * @return void
      */
-    private function signedBySeller(&$doc, &$roleProp)
-    {
-        $event= Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_SELLER", "");
-        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "");
+    private function signedBySeller(&$doc, &$roleProp) {
+        $event = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_SELLER', '');
+        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_SELLER_ALL_DOCS', '');
         if ($event) {
-            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, "SELLER");
+            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, 'SELLER');
             if (!$waitForAllDocs || ($waitForAllDocs && $allDocsSigned)) {
                 DocumentsByOrder::changeOrderStatus($doc, $event);
             }
         }
         $rolePropValue = $roleProp->getValue();
-        if ($rolePropValue == "NONE") {
-            $roleProp->setValue("SELLER");
+        if ($rolePropValue == 'NONE') {
+            $roleProp->setValue('SELLER');
         }
-        if ($rolePropValue == "CLIENT") {
+        if ($rolePropValue == 'CLIENT') {
             DocumentsByOrder::signedByBoth($doc, $roleProp);
         }
     }
@@ -95,17 +91,16 @@ class DocumentsByOrder
      * @param Property &$roleProp
      * @return void
      */
-    private function signedByBoth(&$doc, &$roleProp)
-    {
-        $event= Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_BOTH", "");
-        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_SIGNED_BY_BOTH_ALL_DOCS", "");
+    private function signedByBoth(&$doc, &$roleProp) {
+        $event = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_BOTH', '');
+        $waitForAllDocs = Option::get(TR_CA_DOCS_MODULE_ID, 'EVENT_SIGNED_BY_BOTH_ALL_DOCS', '');
         if ($event) {
-            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, "BOTH");
+            $allDocsSigned = DocumentsByOrder::allDocsSigned($doc, 'BOTH');
             if (!$waitForAllDocs || ($waitForAllDocs && $allDocsSigned)) {
                 DocumentsByOrder::changeOrderStatus($doc, $event);
             }
         }
-        $roleProp->setValue("BOTH");
+        $roleProp->setValue('BOTH');
     }
 
     /**
@@ -115,13 +110,12 @@ class DocumentsByOrder
      * @param string $status
      * @return void
      */
-    public static function changeOrderStatus($doc, $status)
-    {
+    public static function changeOrderStatus($doc, $status) {
         $props = $doc->getProperties();
-        $orderId = $props->getPropByType("ORDER")->getValue();
+        $orderId = $props->getPropByType('ORDER')->getValue();
         $order = Sale\Order::load($orderId);
         if ($order) {
-            $order->setField("STATUS_ID", $status);
+            $order->setField('STATUS_ID', $status);
             $order->save();
         }
     }
@@ -134,22 +128,27 @@ class DocumentsByOrder
      * @param Property $docRole
      * @return boolean
      */
-    private function allDocsSigned($doc, $docRole)
-    {
+    private function allDocsSigned($doc, $docRole) {
         $res = true;
-        $orderId = $doc->getProperties()->getPropByType("ORDER")->getValue();
+        $orderId = $doc
+            ->getProperties()
+            ->getPropByType('ORDER')
+            ->getValue();
         $orderDocs = Database::getDocumentsByOrder($orderId);
         foreach ($orderDocs->getList() as $orderDoc) {
             // Don't check the doc against itself
             if ($doc->getParentId() !== $orderDoc->getId()) {
-                $orderDocRole = $orderDoc->getProperties()->getPropByType("ROLES")->getValue();
-                if ($docRole == "BOTH") {
-                    if ($orderDocRole !== "BOTH") {
+                $orderDocRole = $orderDoc
+                    ->getProperties()
+                    ->getPropByType('ROLES')
+                    ->getValue();
+                if ($docRole == 'BOTH') {
+                    if ($orderDocRole !== 'BOTH') {
                         $res = false;
                         break;
                     }
                 } else {
-                    if ($docRole !== $orderDocRole && $orderDocRole !== "BOTH") {
+                    if ($docRole !== $orderDocRole && $orderDocRole !== 'BOTH') {
                         $res = false;
                         break;
                     }
@@ -167,22 +166,21 @@ class DocumentsByOrder
      * @param string JSON $extra
      * @return boolean
      */
-    public static function checkDocByRole($doc, $extra)
-    {
+    public static function checkDocByRole($doc, $extra) {
         // TODO: rename function
-        $status = $doc->getProperties()->getPropByType("ROLES");
+        $status = $doc->getProperties()->getPropByType('ROLES');
         if (!$status) {
             return true;
         }
         $statusValue = $status->getValue();
-        if ($extra == "CLIENT") {
-            if ($statusValue == "SELLER" || $statusValue == "NONE") {
+        if ($extra == 'CLIENT') {
+            if ($statusValue == 'SELLER' || $statusValue == 'NONE') {
                 return true;
             } else {
                 return false;
             }
-        } elseif ($extra == "SELLER") {
-            if ($statusValue == "CLIENT" || $statusValue == "NONE") {
+        } elseif ($extra == 'SELLER') {
+            if ($statusValue == 'CLIENT' || $statusValue == 'NONE') {
                 return true;
             } else {
                 return false;
@@ -197,32 +195,29 @@ class DocumentsByOrder
      * @param object Document $doc
      * @return string
      */
-    public static function getRoleString($doc)
-    {
-        $state = $doc->getProperties()->getPropByType("ROLES");
-        $str = "";
+    public static function getRoleString($doc) {
+        $state = $doc->getProperties()->getPropByType('ROLES');
+        $str = '';
         if ($state) {
             $state_value = $state->getValue();
             switch ($state_value) {
-                case "CLIENT":
-                    $str = Loc::getMessage("TR_CA_DOCS_ROLES_CLIENT");
+                case 'CLIENT':
+                    $str = Loc::getMessage('TR_CA_DOCS_ROLES_CLIENT');
                     break;
-                case "SELLER":
-                    $str = Loc::getMessage("TR_CA_DOCS_ROLES_SELLER");
+                case 'SELLER':
+                    $str = Loc::getMessage('TR_CA_DOCS_ROLES_SELLER');
                     break;
-                case "BOTH":
-                    $str = Loc::getMessage("TR_CA_DOCS_ROLES_BOTH");
+                case 'BOTH':
+                    $str = Loc::getMessage('TR_CA_DOCS_ROLES_BOTH');
                     break;
-                case "NONE":
-                    $str = Loc::getMessage("TR_CA_DOCS_ROLES_NONE");
+                case 'NONE':
+                    $str = Loc::getMessage('TR_CA_DOCS_ROLES_NONE');
                     break;
                 default:
             }
         } else {
-            $str = Loc::getMessage("TR_CA_DOCS_ROLES_NONE");
+            $str = Loc::getMessage('TR_CA_DOCS_ROLES_NONE');
         }
         return $str;
     }
-
 }
-

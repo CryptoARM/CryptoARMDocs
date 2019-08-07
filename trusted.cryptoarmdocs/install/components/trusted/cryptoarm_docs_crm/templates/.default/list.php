@@ -1,6 +1,6 @@
 <?php
 
-defined('B_PROLOG_INCLUDED') || die;
+defined('B_PROLOG_INCLUDED') || die();
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
@@ -11,11 +11,14 @@ use Bitrix\Main\Web\Json;
 Loader::includeModule('trusted.cryptoarmdocs');
 CJSCore::Init('bp_starter');
 
-UI\Extension::load("ui.buttons.icons");
+UI\Extension::load('ui.buttons.icons');
 
 $APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_CRM_LIST_TITLE'));
 
-Loc::loadMessages($_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/admin/trusted_cryptoarm_docs.php');
+Loc::loadMessages(
+    $_SERVER['DOCUMENT_ROOT'] .
+        '/bitrix/modules/trusted.cryptoarmdocs/admin/trusted_cryptoarm_docs.php'
+);
 
 $schema = array(
     'GRID_ID' => 'crm_docs_grid',
@@ -72,9 +75,8 @@ foreach ($docs->getList() as $doc) {
 
     $docStatusString = Docs\Utils::GetTypeString($doc);
     if ($docStatus !== DOC_STATUS_NONE) {
-        $docStatusString .= '<br>' .
-            Loc::getMessage('TR_CA_DOCS_STATUS') .
-            Docs\Utils::GetStatusString($doc);
+        $docStatusString .=
+            '<br>' . Loc::getMessage('TR_CA_DOCS_STATUS') . Docs\Utils::GetStatusString($doc);
     }
 
     $actions = array();
@@ -108,24 +110,30 @@ foreach ($docs->getList() as $doc) {
                 'documentId' => $docId,
                 'templateId' => $workflowTemplate['ID'],
                 'templateName' => $workflowTemplate['NAME'],
-                'hasParameters' => $workflowTemplate['HAS_PARAMETERS']
+                'hasParameters' => $workflowTemplate['HAS_PARAMETERS'],
             );
-            $popupMessage = Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_1') . $workflowTemplate['NAME'] . Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_2');
+            $popupMessage =
+                Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_1') .
+                $workflowTemplate['NAME'] .
+                Loc::getMessage('TR_CA_DOCS_POPUP_MESSAGE_2');
             $startWorkflowActions[] = array(
                 'TITLE' => $workflowTemplate['DESCRIPTION'],
                 'TEXT' => $workflowTemplate['NAME'],
                 'ONCLICK' => sprintf(
                     'BX.Bizproc.Starter.singleStart(%s, %s)',
                     Json::encode($starterParams),
-                    $gridBuilder->reloadGridJs . ', trustedCA.showPopupMessage("' . $popupMessage . '")'
-                )
+                    $gridBuilder->reloadGridJs .
+                        ', trustedCA.showPopupMessage("' .
+                        $popupMessage .
+                        '")'
+                ),
             );
         }
         // $actions[] = array('SEPARATOR' => true);
         $actions[] = array(
             'TITLE' => Loc::getMessage('TR_CA_DOCS_CRM_START_WORKFLOW'),
             'TEXT' => Loc::getMessage('TR_CA_DOCS_CRM_START_WORKFLOW'),
-            'MENU' => $startWorkflowActions
+            'MENU' => $startWorkflowActions,
         );
     }
 
@@ -136,7 +144,10 @@ foreach ($docs->getList() as $doc) {
     );
 
     $downloadJs = "trustedCA.download([$docId], true)";
-    $docName = "<a style='cursor:pointer;' onclick='$downloadJs' ondblclick='event.stopPropagation()' title='" . Loc::getMessage('TR_CA_DOCS_DOWNLOAD_DOC') . "'>{$doc->getName()}</a>";
+    $docName =
+        "<a style='cursor:pointer;' onclick='$downloadJs' ondblclick='event.stopPropagation()' title='" .
+        Loc::getMessage('TR_CA_DOCS_DOWNLOAD_DOC') .
+        "'>{$doc->getName()}</a>";
     $rows[] = array(
         'id' => $docId,
         'columns' => array(
@@ -159,7 +170,7 @@ ob_start();
         <?= Loc::getMessage('TR_CA_DOCS_CRM_ADD_DOC') ?>
     </div>
 </form>
-<?
+<?php
 $output = ob_get_contents();
 ob_end_clean();
 $APPLICATION->AddViewContent('pagetitle', $output, 100);

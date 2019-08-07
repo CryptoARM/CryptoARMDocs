@@ -6,15 +6,13 @@ namespace Trusted\CryptoARM\Docs;
  *
  * @see IEntity
  */
-class AjaxParams implements IEntity
-{
-
+class AjaxParams implements IEntity {
     /**
      * JSON string containing additional information
      *
      * @var string JSON
      */
-    protected $extra = "";
+    protected $extra = '';
 
     /**
      * Creates object from array
@@ -23,8 +21,7 @@ class AjaxParams implements IEntity
      * @param array $array
      * @return object AjaxParams
      */
-    public static function fromArray($array)
-    {
+    public static function fromArray($array) {
         $res = new AjaxParams();
         foreach ($array as $key => $value) {
             foreach ($res as $okey => &$ovalue) {
@@ -43,8 +40,7 @@ class AjaxParams implements IEntity
      * @param string $name
      * @return mixed
      */
-    protected static function fromArrayItem($array, $name)
-    {
+    protected static function fromArrayItem($array, $name) {
         $res = null;
         if (isset($array[$name])) {
             $res = $array[$name];
@@ -56,8 +52,7 @@ class AjaxParams implements IEntity
      * Returns extra string
      * @return string JSON
      */
-    function getExtra()
-    {
+    function getExtra() {
         return $this->extra;
     }
 
@@ -66,8 +61,7 @@ class AjaxParams implements IEntity
      * @param string $extra JSON
      * @return void
      */
-    function setExtra($extra)
-    {
+    function setExtra($extra) {
         $this->extra = $extra;
     }
 
@@ -76,8 +70,7 @@ class AjaxParams implements IEntity
      * @see fromArray
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         $res = array();
         foreach ($this as $key => $value) {
             if ($value) {
@@ -87,4 +80,3 @@ class AjaxParams implements IEntity
         return $res;
     }
 }
-

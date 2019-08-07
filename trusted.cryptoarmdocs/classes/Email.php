@@ -13,21 +13,21 @@ class Email {
      *                          [message]: operation result message
      */
     public static function sendEmail($docsList, $event, $arEventFields, $message_id) {
-         $res = array(
-            "success" => false,
-            "message" => "Unknown error in Email.sendEmail",
+        $res = array(
+            'success' => false,
+            'message' => 'Unknown error in Email.sendEmail',
         );
 
         // Only for email by order
-        $eventEmailSent = Option::get("trusted.cryptoarmdocs", "EVENT_EMAIL_SENT", "");
+        $eventEmailSent = Option::get('trusted.cryptoarmdocs', 'EVENT_EMAIL_SENT', '');
 
-        $MAIL_EVENT_ID = Option::get("trusted.cryptoarmdocs", $event, "");
-        $MAIL_TEMPLATE_ID = Option::get("trusted.cryptoarmdocs", $message_id, "");
+        $MAIL_EVENT_ID = Option::get('trusted.cryptoarmdocs', $event, '');
+        $MAIL_TEMPLATE_ID = Option::get('trusted.cryptoarmdocs', $message_id, '');
 
         if (!$MAIL_EVENT_ID || !$MAIL_TEMPLATE_ID) {
             return $res = array(
-                "success" => false,
-                "message" => "Mail template not configured",
+                'success' => false,
+                'message' => 'Mail template not configured',
             );
         }
 
@@ -49,43 +49,51 @@ class Email {
         $arEventFields = array_merge(
             array(
                 'SITE_URL' => TR_CA_HOST,
-                'FILE_NAMES' => implode(", ", $docNames),
+                'FILE_NAMES' => implode(', ', $docNames),
                 'RAND_UID' => Utils::generateUUID(),
             ),
             $arEventFields
         );
 
-        $sites = \CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+        $sites = \CSite::GetList($by = 'sort', $order = 'asc', array('ACTIVE' => 'Y'));
         $siteIds = array();
         while ($site = $sites->Fetch()) {
-            $siteIds[] = $site["ID"];
+            $siteIds[] = $site['ID'];
         }
 
-        if (\CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, $docLinks)) {
-
+        if (
+            \CEvent::Send(
+                $MAIL_EVENT_ID,
+                $siteIds,
+                $arEventFields,
+                'N',
+                $MAIL_TEMPLATE_ID,
+                $docLinks
+            )
+        ) {
             // Documents by order can change order status
-            if ($MAIL_TEMPLATE_ID == Option::get("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID", "")) {
+            if ($MAIL_TEMPLATE_ID == Option::get('trusted.cryptoarmdocs', 'MAIL_TEMPLATE_ID', '')) {
                 foreach ($docs as $doc) {
                     if ($eventEmailSent) {
                         DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);
                     }
                     // Add email tracking property
                     $docProps = $doc->getProperties();
-                    if ($emailProp = $docProps->getPropByType("EMAIL")) {
-                        $emailProp->setValue("SENT");
+                    if ($emailProp = $docProps->getPropByType('EMAIL')) {
+                        $emailProp->setValue('SENT');
                     } else {
-                        $docProps->add(new Property("EMAIL", "SENT"));
+                        $docProps->add(new Property('EMAIL', 'SENT'));
                     }
                     $doc->save();
                 }
             }
 
             $res = array(
-                "success" => true,
-                "message" => "OK",
+                'success' => true,
+                'message' => 'OK',
             );
         } else {
-            $res['message'] = "Error in CEvent::Send";
+            $res['message'] = 'Error in CEvent::Send';
         }
 
         return $res;

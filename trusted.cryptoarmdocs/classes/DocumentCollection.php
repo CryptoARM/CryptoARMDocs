@@ -7,9 +7,7 @@ namespace Trusted\CryptoARM\Docs;
  * @see IEntity
  * @see Collection
  */
-class DocumentCollection extends Collection implements IEntity
-{
-
+class DocumentCollection extends Collection implements IEntity {
     // TODO: add getIds method
 
     /**
@@ -19,8 +17,7 @@ class DocumentCollection extends Collection implements IEntity
      * @see toArray
      * @return DocumentCollection
      */
-    static function fromArray($array)
-    {
+    static function fromArray($array) {
         $docs = new DocumentCollection();
         foreach ($array as &$item) {
             $docs->add(Document::fromArray($item));
@@ -34,8 +31,7 @@ class DocumentCollection extends Collection implements IEntity
      * @param integer $i [0..n]
      * @return object Document
      */
-    function items($i)
-    {
+    function items($i) {
         return parent::items($i);
     }
 
@@ -44,8 +40,7 @@ class DocumentCollection extends Collection implements IEntity
      *
      * @return string JSON
      */
-    public function toJSON()
-    {
+    public function toJSON() {
         return json_encode($this->jsonSerialize());
     }
 
@@ -54,8 +49,7 @@ class DocumentCollection extends Collection implements IEntity
      *
      * @return array
      */
-    public function jsonSerialize()
-    {
+    public function jsonSerialize() {
         $a = array();
         foreach ($this->items_ as &$item) {
             $a[] = $item->jsonSerialize();
@@ -67,8 +61,7 @@ class DocumentCollection extends Collection implements IEntity
      * Converts document collection object to array.
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         $a = array();
         foreach ($this->items_ as &$item) {
             $a[] = $item->toArray();
@@ -76,8 +69,7 @@ class DocumentCollection extends Collection implements IEntity
         return $a;
     }
 
-    public function toIdArray()
-    {
+    public function toIdArray() {
         $a = array();
         foreach ($this->items_ as &$item) {
             $a[] = $item->getId();
@@ -85,8 +77,7 @@ class DocumentCollection extends Collection implements IEntity
         return $a;
     }
 
-    public function toIdAndFilenameArray()
-    {
+    public function toIdAndFilenameArray() {
         $a = array();
         foreach ($this->items_ as &$item) {
             $a[] = array(
@@ -96,6 +87,4 @@ class DocumentCollection extends Collection implements IEntity
         }
         return $a;
     }
-
 }
-

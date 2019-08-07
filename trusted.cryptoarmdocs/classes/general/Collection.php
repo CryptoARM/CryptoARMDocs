@@ -4,9 +4,7 @@ namespace Trusted\CryptoARM\Docs;
 /**
  * Represent multiple instances of object of the same class
  */
-class Collection
-{
-
+class Collection {
     /**
      * Holds collection items
      *
@@ -18,8 +16,7 @@ class Collection
      * Returns array with collection items
      * @return array
      */
-    function getList()
-    {
+    function getList() {
         return $this->items_;
     }
 
@@ -27,8 +24,7 @@ class Collection
      * Add item to collection
      * @param object $item
      */
-    public function add($item)
-    {
+    public function add($item) {
         if (isset($item)) {
             $this->items_[] = $item;
         }
@@ -39,8 +35,7 @@ class Collection
      * @param integer $i [0..n]
      * @return object
      */
-    public function items($i)
-    {
+    public function items($i) {
         return $this->items_[$i];
     }
 
@@ -48,10 +43,7 @@ class Collection
      * Returns number of items in collection
      * @return integer
      */
-    public function count()
-    {
+    public function count() {
         return count($this->items_);
     }
-
 }
-

@@ -1,6 +1,8 @@
 <?php
 
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
@@ -15,25 +17,28 @@ $docsInfo = array();
 $allIds = array();
 
 foreach ($docs->getList() as $doc) {
-    if ($arParams["CHECK_ORDER_PROPERTY"] === "N" &&  $doc->getProperties()->getPropByType("ORDER")) {
-            continue;
+    if (
+        $arParams['CHECK_ORDER_PROPERTY'] === 'N' &&
+        $doc->getProperties()->getPropByType('ORDER')
+    ) {
+        continue;
     } else {
         if ($doc->getOwner() == $currUserId) {
-            $accessLevel = "OWNER";
+            $accessLevel = 'OWNER';
         } elseif ($doc->accessCheck($currUserId, DOC_SHARE_SIGN)) {
-            $accessLevel = "SIGN";
+            $accessLevel = 'SIGN';
         } elseif ($doc->accessCheck($currUserId, DOC_SHARE_READ)) {
-            $accessLevel = "READ";
+            $accessLevel = 'READ';
         }
         $docsInfo[] = array(
-            "ID" => $doc->getId(),
-            "NAME" => $doc->getName(),
-            "TYPE" => $doc->getType(),
-            "TYPE_STRING" => Docs\Utils::getTypeString($doc),
-            "STATUS" => $doc->getStatus(),
-            "STATUS_STRING" => Docs\Utils::getStatusString($doc),
-            "ACCESS_LEVEL" => $accessLevel,
-            "OWNER_USERNAME" => Docs\Utils::getUserName($doc->getOwner()),
+            'ID' => $doc->getId(),
+            'NAME' => $doc->getName(),
+            'TYPE' => $doc->getType(),
+            'TYPE_STRING' => Docs\Utils::getTypeString($doc),
+            'STATUS' => $doc->getStatus(),
+            'STATUS_STRING' => Docs\Utils::getStatusString($doc),
+            'ACCESS_LEVEL' => $accessLevel,
+            'OWNER_USERNAME' => Docs\Utils::getUserName($doc->getOwner()),
         );
         $allIds[] = $doc->getId();
     }
@@ -46,4 +51,3 @@ $arResult = array(
 );
 
 $this->IncludeComponentTemplate();
-

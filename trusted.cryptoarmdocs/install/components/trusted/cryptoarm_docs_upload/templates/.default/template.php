@@ -1,5 +1,5 @@
 <?php
-defined('B_PROLOG_INCLUDED') || die;
+defined('B_PROLOG_INCLUDED') || die();
 
 if (!$USER->IsAuthorized()) {
     return;
@@ -21,13 +21,12 @@ $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 $redirect = false;
 
 foreach ($arParams['FILES'] as $fileHandle) {
-
     if (empty($_FILES[$fileHandle]['name'])) {
         continue;
     }
     $redirect = true;
 
-    $uniqid = (string)uniqid();
+    $uniqid = (string) uniqid();
     $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
     mkdir($newDocDir);
 
@@ -39,11 +38,10 @@ foreach ($arParams['FILES'] as $fileHandle) {
         $props = new Docs\PropertyCollection();
 
         foreach ($arParams['PROPS'] as $name => $value) {
-            $props->add(new Docs\Property((string)$name, (string)$value));
+            $props->add(new Docs\Property((string) $name, (string) $value));
         }
 
         $doc = Docs\Utils::createDocument($relativePath, $props);
-
     }
 
     unset($_FILES[$fileHandle]['name']);
@@ -53,4 +51,3 @@ if ($redirect) {
     LocalRedirect($request->getRequestUri());
     die();
 }
-

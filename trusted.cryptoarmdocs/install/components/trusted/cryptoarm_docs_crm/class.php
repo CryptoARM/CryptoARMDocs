@@ -1,5 +1,5 @@
 <?php
-defined('B_PROLOG_INCLUDED') || die;
+defined('B_PROLOG_INCLUDED') || die();
 
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
@@ -7,14 +7,12 @@ use Trusted\CryptoARM\Docs;
 
 Loader::includeModule('trusted.cryptoarmdocs');
 
-class TrustedCACrmComponent extends CBitrixComponent
-{
+class TrustedCACrmComponent extends CBitrixComponent {
     const SEF_DEFAULT_TEMPLATES = array(
         'wf_list' => 'wf/',
         'wf_edit' => 'wf/#WF_ID#',
         'list' => '',
     );
-
 
     public function executeComponent() {
         if (empty($this->arParams['SEF_MODE']) || $this->arParams['SEF_MODE'] != 'Y') {
@@ -31,7 +29,10 @@ class TrustedCACrmComponent extends CBitrixComponent
             $this->arParams['SEF_URL_TEMPLATES'] = array();
         }
 
-        $sefTemplates = array_merge(self::SEF_DEFAULT_TEMPLATES, $this->arParams['SEF_URL_TEMPLATES']);
+        $sefTemplates = array_merge(
+            self::SEF_DEFAULT_TEMPLATES,
+            $this->arParams['SEF_URL_TEMPLATES']
+        );
 
         $page = CComponentEngine::parseComponentPath(
             $this->arParams['SEF_FOLDER'],
@@ -53,13 +54,12 @@ class TrustedCACrmComponent extends CBitrixComponent
         $this->includeComponentTemplate($page);
     }
 
-
     private function getWorkflowTemplates() {
         if (!Loader::includeModule('bizproc')) {
             return null;
         }
-        return CBPDocument::GetWorkflowTemplatesForDocumentType(Docs\WorkflowDocument::getComplexDocumentType());
+        return CBPDocument::GetWorkflowTemplatesForDocumentType(
+            Docs\WorkflowDocument::getComplexDocumentType()
+        );
     }
-
 }
-

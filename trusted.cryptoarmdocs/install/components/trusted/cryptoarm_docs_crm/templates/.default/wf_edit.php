@@ -1,5 +1,5 @@
 <?php
-defined('B_PROLOG_INCLUDED') || die;
+defined('B_PROLOG_INCLUDED') || die();
 
 use Bitrix\Main\Context;
 use Bitrix\Main\Loader;
@@ -15,18 +15,13 @@ $urlTemplates = array(
     'LIST' => $arResult['SEF_FOLDER'] . $arResult['SEF_URL_TEMPLATES'],
 );
 
-$APPLICATION->IncludeComponent(
-    'bitrix:bizproc.workflow.edit',
-    '',
-    array(
-        'MODULE_ID' => 'trusted.cryptoarmdocs',
-        'ENTITY' => Docs\WorkflowDocument::class,
-        'DOCUMENT_TYPE' => 'TR_CA_DOC',
-        'ID' => (int)$arResult['VARIABLES']['WF_ID'],
-        'EDIT_PAGE_TEMPLATE' => $urlTemplates['EDIT'],
-        'LIST_PAGE_URL' => $urlTemplates['LIST'],
-        'SHOW_TOOLBAR' => 'Y',
-        'SET_TITLE' => 'Y',
-    )
-);
-
+$APPLICATION->IncludeComponent('bitrix:bizproc.workflow.edit', '', array(
+    'MODULE_ID' => 'trusted.cryptoarmdocs',
+    'ENTITY' => Docs\WorkflowDocument::class,
+    'DOCUMENT_TYPE' => 'TR_CA_DOC',
+    'ID' => (int) $arResult['VARIABLES']['WF_ID'],
+    'EDIT_PAGE_TEMPLATE' => $urlTemplates['EDIT'],
+    'LIST_PAGE_URL' => $urlTemplates['LIST'],
+    'SHOW_TOOLBAR' => 'Y',
+    'SET_TITLE' => 'Y',
+));

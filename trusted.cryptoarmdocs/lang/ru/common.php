@@ -38,4 +38,3 @@ $MESS['TR_CA_DOC_PDF_FILE_HASH'] = 'Hash файла';
 $MESS['TR_CA_DOC_PROP_DOCUMENT_ID'] = 'ID документа';
 $MESS['TR_CA_DOC_PROP_TYPE'] = 'Тип';
 $MESS['TR_CA_DOC_PROP_VALUE'] = 'Значение';
-

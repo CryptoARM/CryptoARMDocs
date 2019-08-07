@@ -3,15 +3,15 @@
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
-require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/bx_root.php");
-require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/bx_root.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/prolog_before.php';
 
-Loader::includeModule("trusted.cryptoarmdocs");
+Loader::includeModule('trusted.cryptoarmdocs');
 
-define("NO_KEEP_STATISTIC", true);
-define("BX_STATISTIC_BUFFER_USED", false);
-define("NO_LANG_FILES", true);
-define("NOT_CHECK_PERMISSIONS", true);
+define('NO_KEEP_STATISTIC', true);
+define('BX_STATISTIC_BUFFER_USED', false);
+define('NO_LANG_FILES', true);
+define('NOT_CHECK_PERMISSIONS', true);
 
 header('Content-Type: application/json; charset=' . LANG_CHARSET);
 
@@ -21,63 +21,62 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
-        case "share":
+        case 'share':
             $res = Docs\AjaxCommand::share($params);
             break;
-        case "sendEmail":
+        case 'sendEmail':
             $res = Docs\AjaxCommand::sendEmail($params);
             break;
-        case "activateJwtToken":
+        case 'activateJwtToken':
             $res = Docs\AjaxCommand::activateJwtToken($params);
             break;
-        case "registerAccountNumber":
+        case 'registerAccountNumber':
             $res = Docs\AjaxCommand::registerAccountNumber();
             break;
-        case "checkAccountBalance":
+        case 'checkAccountBalance':
             $res = Docs\AjaxCommand::checkAccountBalance($params);
             break;
-        case "getAccountHistory":
+        case 'getAccountHistory':
             $res = Docs\AjaxCommand::getAccountHistory($params);
             break;
-        case "sign":
+        case 'sign':
             $res = Docs\AjaxCommand::sign($params);
             break;
-        case "upload":
+        case 'upload':
             $res = Docs\AjaxCommand::upload($params);
             break;
-        case "verify":
+        case 'verify':
             $res = Docs\AjaxCommand::verify($params);
             break;
-        case "unblock":
+        case 'unblock':
             $res = Docs\AjaxCommand::unblock($params);
             break;
-        case "remove":
+        case 'remove':
             $res = Docs\AjaxCommand::remove($params);
             break;
-        case "download":
+        case 'download':
             $res = Docs\AjaxCommand::download($params);
             break;
-        case "content":
+        case 'content':
             $res = Docs\AjaxCommand::content($_GET);
             return $res;
             break;
-        case "protocol":
+        case 'protocol':
             $res = Docs\AjaxCommand::protocol($_GET);
             break;
-        case "check":
+        case 'check':
             $res = Docs\AjaxCommand::check($params);
             break;
-        case "blockCheck":
+        case 'blockCheck':
             $res = Docs\AjaxCommand::blockCheck($params);
             break;
-        case "unshare":
+        case 'unshare':
             $res = Docs\AjaxCommand::unshare($params);
             break;
         default:
-            $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
+            $res = array('success' => false, 'message' => "Unknown command '" . $command . "'");
     }
 }
 echo json_encode($res);
 
-require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");
-
+require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/main/include/epilog_after.php';

@@ -1,4 +1,1 @@
-<?
-$aMenuLinks = Array(
-);
-
+<?php $aMenuLinks = array();

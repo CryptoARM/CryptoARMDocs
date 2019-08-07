@@ -4,9 +4,7 @@ use Bitrix\Main\Localization\Loc;
 
 require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
 
-class Protocol
-{
-
+class Protocol {
     const MAIN_TEXT = <<<HTML
 <div height="100px"></div>
 <h1 style="text-align:center;">{MODULE_NAME}</h1>
@@ -31,7 +29,6 @@ class Protocol
 </table>
 HTML;
 
-
     const DOC_OWNER_ROW = <<<HTML
 <tr>
     <td><b>{DOC_OWNER}:</b></td>
@@ -39,43 +36,40 @@ HTML;
 </tr>
 HTML;
 
-
     const SIGNATURES = <<<HTML
 <div height="200px"></div>
 <div style="text-align:center;"><b>{DOC_SIGNATURES}</b></div><br>
 {DOC_SIGNATURES_VALUE}
 HTML;
 
-
-    static function replace($str, $dict)
-    {
+    static function replace($str, $dict) {
         foreach ($dict as $key => $value) {
             $str = str_replace($key, $value, $str);
         }
         return $str;
     }
 
-
-    static function createProtocol($doc)
-    {
-
+    static function createProtocol($doc) {
         $firstDoc = $doc->getFirstParent();
 
         $pdf = new \TCPDF(
-            'P',        // orientation - [P]ortrait or [L]andscape
-            'mm',       // measure unit
-            'A4',       // page format
-            true,       // unicode
-            'UTF-8',    // encoding for conversions
-            false,      // cache, deprecated
-            false       // pdf/a mode
+            'P', // orientation - [P]ortrait or [L]andscape
+            'mm', // measure unit
+            'A4', // page format
+            true, // unicode
+            'UTF-8', // encoding for conversions
+            false, // cache, deprecated
+            false // pdf/a mode
         );
 
         $docName = $doc->getName();
 
         $author = Loc::getMessage('TR_CA_DOC_MODULE_NAME');
         $title = Loc::getMessage('TR_CA_DOC_PROTOCOL_TITLE') . $docName;
-        $headerText = Loc::getMessage('TR_CA_DOC_MODULE_DESC') . "\n" . Loc::getMessage('TR_CA_DOC_PARTNER_URI');
+        $headerText =
+            Loc::getMessage('TR_CA_DOC_MODULE_DESC') .
+            "\n" .
+            Loc::getMessage('TR_CA_DOC_PARTNER_URI');
 
         $pdf->setCreator($author);
         $pdf->setAuthor($author);
@@ -92,7 +86,7 @@ HTML;
         $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
         $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
-        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
@@ -112,63 +106,57 @@ HTML;
         // set text shadow effect
         // $pdf->setTextShadow(array('enabled'=>true, 'depth_w'=>0.2, 'depth_h'=>0.2, 'color'=>array(196,196,196), 'opacity'=>1, 'blend_mode'=>'Normal'));
 
-        $mainText = self::replace(
-            self::MAIN_TEXT,
-            array(
-                '{MODULE_NAME}' => Loc::getMessage('TR_CA_DOC_MODULE_NAME'),
-                '{DOC_NAME}' => Loc::getMessage('TR_CA_DOC_NAME'),
-                '{DOC_NAME_VALUE}' => $docName,
-                '{DOC_FIRST_UPLOAD_TIME}' => Loc::getMessage('TR_CA_DOC_FIRST_UPLOAD_TIME'),
-                '{DOC_FIRST_UPLOAD_TIME_VALUE}' => $firstDoc->getCreated(),
-                '{DOC_HASH}' => Loc::getMessage('TR_CA_DOC_HASH'),
-                '{DOC_HASH_VALUE}' => $doc->getHash(),
-                '{DOC_ID}' => Loc::getMessage('TR_CA_DOC_ID'),
-                '{DOC_ID_VALUE}' => $doc->getId(),
-            )
-        );
+        $mainText = self::replace(self::MAIN_TEXT, array(
+            '{MODULE_NAME}' => Loc::getMessage('TR_CA_DOC_MODULE_NAME'),
+            '{DOC_NAME}' => Loc::getMessage('TR_CA_DOC_NAME'),
+            '{DOC_NAME_VALUE}' => $docName,
+            '{DOC_FIRST_UPLOAD_TIME}' => Loc::getMessage('TR_CA_DOC_FIRST_UPLOAD_TIME'),
+            '{DOC_FIRST_UPLOAD_TIME_VALUE}' => $firstDoc->getCreated(),
+            '{DOC_HASH}' => Loc::getMessage('TR_CA_DOC_HASH'),
+            '{DOC_HASH_VALUE}' => $doc->getHash(),
+            '{DOC_ID}' => Loc::getMessage('TR_CA_DOC_ID'),
+            '{DOC_ID_VALUE}' => $doc->getId(),
+        ));
 
         $docOwner = $doc->getOwner();
         if ($docOwner) {
-            $docOwnerText = self::replace(
-                self::DOC_OWNER_ROW,
-                array(
-                    '{DOC_OWNER}' => Loc::getMessage('TR_CA_DOC_OWNER'),
-                    '{DOC_OWNER_VALUE}' => Utils::getUserName($docOwner),
-                )
-            );
+            $docOwnerText = self::replace(self::DOC_OWNER_ROW, array(
+                '{DOC_OWNER}' => Loc::getMessage('TR_CA_DOC_OWNER'),
+                '{DOC_OWNER_VALUE}' => Utils::getUserName($docOwner),
+            ));
             $mainText = str_replace('{DOC_OWNER_ROW}', $docOwnerText, $mainText);
         } else {
             $mainText = str_replace('{DOC_OWNER_ROW}', '', $mainText);
         }
 
         $pdf->writeHTMLCell(
-            0,      // width
-            0,      // height
-            '',     // x
-            '',     // y
+            0, // width
+            0, // height
+            '', // x
+            '', // y
             $mainText,
-            0,      // border
-            1,      // next line
-            0,      // fill
-            true,   // reset height
-            '',     // align
-            true    // autopadding
+            0, // border
+            1, // next line
+            0, // fill
+            true, // reset height
+            '', // align
+            true // autopadding
         );
 
         if ($doc->getType() == DOC_TYPE_SIGNED_FILE) {
-            $signaturesText = self::replace(
-                self::SIGNATURES,
-                array(
-                    '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNATURES'),
-                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('time', 'name', 'org', 'algorithm')),
-                )
-            );
+            $signaturesText = self::replace(self::SIGNATURES, array(
+                '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNATURES'),
+                '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array(
+                    'time',
+                    'name',
+                    'org',
+                    'algorithm',
+                )),
+            ));
 
             $pdf->writeHTMLCell(0, 0, '', '', $signaturesText, 0, 1, 0, true, '', true);
         }
 
         $pdf->Output($doc->getName() . '_protocol.pdf', 'D');
     }
-
 }
-

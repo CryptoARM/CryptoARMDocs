@@ -1,3 +1,2 @@
-<?
-$PERM["ajax.php"]["*"]="R";
+<?php $PERM['ajax.php']['*'] = 'R';
 ?>

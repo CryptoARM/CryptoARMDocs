@@ -1,6 +1,8 @@
 <?php
 
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+    die();
+}
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
@@ -8,7 +10,7 @@ use Bitrix\Main\Loader;
 Loader::includeModule('trusted.cryptoarmdocs');
 
 if ($USER->IsAuthorized()) {
-    $docs = Docs\Database::getDocumentsByOrder($arParams["ORDER"]);
+    $docs = Docs\Database::getDocumentsByOrder($arParams['ORDER']);
 } else {
     $docs = new Docs\DocumentCollection();
 }
@@ -20,12 +22,12 @@ $allIds = array();
 
 foreach ($docList as $doc) {
     $docsInfo[] = array(
-        "ID" => $doc->getId(),
-        "NAME" => $doc->getName(),
-        "TYPE" => $doc->getType(),
-        "TYPE_STRING" => Docs\Utils::getTypeString($doc),
-        "STATUS" => $doc->getStatus(),
-        "STATUS_STRING" => Docs\Utils::getStatusString($doc),
+        'ID' => $doc->getId(),
+        'NAME' => $doc->getName(),
+        'TYPE' => $doc->getType(),
+        'TYPE_STRING' => Docs\Utils::getTypeString($doc),
+        'STATUS' => $doc->getStatus(),
+        'STATUS_STRING' => Docs\Utils::getStatusString($doc),
     );
     $allIds[] = $doc->getId();
 }
@@ -37,4 +39,3 @@ $arResult = array(
 );
 
 $this->IncludeComponentTemplate();
-

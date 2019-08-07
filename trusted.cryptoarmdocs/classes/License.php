@@ -2,20 +2,18 @@
 namespace Trusted\CryptoARM\Docs;
 use Bitrix\Main\Config\Option;
 
-class License
-{
-
+class License {
     public static function makeRequest($url, $data = null) {
         $res = array(
-            "success" => false,
-            "message" => "Unknown error in License::makeRequest",
-            "data" => "",
+            'success' => false,
+            'message' => 'Unknown error in License::makeRequest',
+            'data' => '',
         );
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_ENCODING, "");
+        curl_setopt($curl, CURLOPT_ENCODING, '');
         curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
@@ -31,9 +29,9 @@ class License
             $info = curl_getinfo($curl);
             if ($info['http_code'] == 200) {
                 $res = array(
-                    "success" => true,
-                    "message" => $responseList['message'],
-                    "data" => $responseList['data'],
+                    'success' => true,
+                    'message' => $responseList['message'],
+                    'data' => $responseList['data'],
                 );
             } else {
                 $res['message'] = 'Request error: ' . $responseList['message'];
@@ -50,7 +48,6 @@ class License
         return License::makeRequest(LICENSE_SERVICE_REGISTER_NEW_ACCOUNT_NUMBER);
     }
 
-
     public static function checkAccountBalance($accountNumber) {
         $url = LICENSE_SERVICE_ACCOUNT_CHECK_BALANCE . $accountNumber;
         return License::makeRequest($url);
@@ -64,7 +61,7 @@ class License
     public static function getOneTimeLicense() {
         $url = LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN . LICENSE_ACCOUNT_NUMBER;
         global $USER;
-        $userInfo = $USER->GetFullName() . " (" . $USER->GetID() . ")";
+        $userInfo = $USER->GetFullName() . ' (' . $USER->GetID() . ')';
         return License::makeRequest($url, array('user' => $userInfo));
     }
 
@@ -73,4 +70,3 @@ class License
         return License::makeRequest($url, array('days' => $days));
     }
 }
-

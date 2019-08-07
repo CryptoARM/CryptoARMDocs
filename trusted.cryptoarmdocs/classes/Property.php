@@ -9,9 +9,7 @@ namespace Trusted\CryptoARM\Docs;
  * @see IEntity
  * @see ISave
  */
-class Property implements IEntity, ISave
-{
-
+class Property implements IEntity, ISave {
     /**
      * Property ID. ID field in DB. Not the document ID!
      * @var integer
@@ -41,8 +39,7 @@ class Property implements IEntity, ISave
      * @param string $value Property value
      * @return void
      */
-    function __construct($type = null, $value = '')
-    {
+    function __construct($type = null, $value = '') {
         $this->type = $type;
         $this->value = $value;
     }
@@ -51,9 +48,8 @@ class Property implements IEntity, ISave
      * Returns property id.
      * @return integer
      */
-    function getId()
-    {
-        return (int)$this->id;
+    function getId() {
+        return (int) $this->id;
     }
 
     /**
@@ -61,8 +57,7 @@ class Property implements IEntity, ISave
      * @param integer $id
      * @return void
      */
-    function setId($id)
-    {
+    function setId($id) {
         $this->id = $id;
     }
 
@@ -70,9 +65,8 @@ class Property implements IEntity, ISave
      * Returns ID of the document associated with this property.
      * @return integer
      */
-    function getDocumentId()
-    {
-        return (int)$this->documentId;
+    function getDocumentId() {
+        return (int) $this->documentId;
     }
 
     /**
@@ -80,8 +74,7 @@ class Property implements IEntity, ISave
      * @param integer $docId
      * @return void
      */
-    function setDocumentId($docId)
-    {
+    function setDocumentId($docId) {
         $this->documentId = $docId;
     }
 
@@ -89,8 +82,7 @@ class Property implements IEntity, ISave
      * Returns property type.
      * @return string
      */
-    function getType()
-    {
+    function getType() {
         return $this->type;
     }
 
@@ -99,8 +91,7 @@ class Property implements IEntity, ISave
      * @param string $type
      * @return void
      */
-    function setType($type)
-    {
+    function setType($type) {
         $this->type = $type;
     }
 
@@ -108,8 +99,7 @@ class Property implements IEntity, ISave
      * Returns property value.
      * @return string
      */
-    function getValue()
-    {
+    function getValue() {
         return $this->value;
     }
 
@@ -118,8 +108,7 @@ class Property implements IEntity, ISave
      * @param string $value
      * @return void
      */
-    function setValue($value)
-    {
+    function setValue($value) {
         $this->value = $value;
     }
 
@@ -129,13 +118,12 @@ class Property implements IEntity, ISave
      * @param array $array
      * @return Property
      */
-    public static function fromArray($array)
-    {
+    public static function fromArray($array) {
         $res = new Property();
-        $res->id = $array["ID"];
-        $res->documentId = $array["DOCUMENT_ID"];
-        $res->type = $array["TYPE"];
-        $res->value = $array["VALUE"];
+        $res->id = $array['ID'];
+        $res->documentId = $array['DOCUMENT_ID'];
+        $res->type = $array['TYPE'];
+        $res->value = $array['VALUE'];
         return $res;
     }
 
@@ -144,13 +132,12 @@ class Property implements IEntity, ISave
      * @see fromArray
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         $res = array(
-            "ID" => $this->id,
-            "DOCUMENT_ID" => $this->documentId,
-            "TYPE" => $this->type,
-            "VALUE" => $this->value,
+            'ID' => $this->id,
+            'DOCUMENT_ID' => $this->documentId,
+            'TYPE' => $this->type,
+            'VALUE' => $this->value,
         );
         return $res;
     }
@@ -159,8 +146,7 @@ class Property implements IEntity, ISave
      * Adds/saves property in DB.
      * @return void
      */
-    public function save()
-    {
+    public function save() {
         Database::saveProperty($this, DB_TABLE_PROPERTY);
     }
 
@@ -168,10 +154,7 @@ class Property implements IEntity, ISave
      * Removes property
      * @return void
      */
-    public function remove()
-    {
+    public function remove() {
         Database::removeProperty($this);
     }
-
 }
-

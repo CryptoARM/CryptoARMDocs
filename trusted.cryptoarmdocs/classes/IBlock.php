@@ -23,7 +23,7 @@ class IBlock {
 
     public static function createType() {
         global $DB;
-        $ibType = new \CIBlockType;
+        $ibType = new \CIBlockType();
 
         // Check if ib type already exists
         if ($ibType->GetByID(TR_CA_IB_TYPE_ID)->Fetch()) {
@@ -31,19 +31,19 @@ class IBlock {
         }
 
         $ibTypeFields = array(
-            'ID' => TR_CA_IB_TYPE_ID,    // Unique ID
-            'SECTIONS' => 'N',      // Subsections
-            'IN_RSS' => 'N',        // RSS export
+            'ID' => TR_CA_IB_TYPE_ID, // Unique ID
+            'SECTIONS' => 'N', // Subsections
+            'IN_RSS' => 'N', // RSS export
             'LANG' => array(
                 'en' => array(
                     'NAME' => 'CryptoARM Forms',
                     'SECTION_NAME' => 'Sections',
-                    'ELEMENT_NAME' => 'Elements'
+                    'ELEMENT_NAME' => 'Elements',
                 ),
                 'ru' => array(
                     'NAME' => Loc::getMessage('TR_CA_IB_TYPE_NAME'),
                     'SECTION_NAME' => Loc::getMessage('TR_CA_IB_TYPE_SECTION_NAME'),
-                    'ELEMENT_NAME' => Loc::getMessage('TR_CA_IB_TYPE_ELEMENT_NAME')
+                    'ELEMENT_NAME' => Loc::getMessage('TR_CA_IB_TYPE_ELEMENT_NAME'),
                 ),
             ),
         );

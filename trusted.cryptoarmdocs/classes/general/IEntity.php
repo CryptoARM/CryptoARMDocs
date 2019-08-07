@@ -4,9 +4,7 @@ namespace Trusted\CryptoARM\Docs;
 /**
  * General object representation
  */
-interface IEntity
-{
-
+interface IEntity {
     /**
      * Creates object from array
      * @param array $array
@@ -18,4 +16,3 @@ interface IEntity
      */
     function toArray();
 }
-

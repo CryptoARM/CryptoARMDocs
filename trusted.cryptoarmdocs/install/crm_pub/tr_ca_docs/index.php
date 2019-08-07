@@ -3,7 +3,6 @@
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/header.php';
 
 if ($USER->IsAuthorized()) {
-
     $APPLICATION->IncludeComponent(
         'trusted:cryptoarm_docs_upload',
         '.default',
@@ -25,8 +24,6 @@ if ($USER->IsAuthorized()) {
         ),
         false
     );
-
 }
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/footer.php';
-

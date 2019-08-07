@@ -7,14 +7,13 @@ if (!check_bitrix_sessid()) {
 
 Loc::loadMessages(__FILE__);
 
-$APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
+$APPLICATION->SetTitle(Loc::getMessage('TR_CA_DOCS_INSTALL_TITLE'));
 
 // Finds records in DB for which files were deleted
-function getLostDocs()
-{
+function getLostDocs() {
     global $DOCUMENT_ROOT, $DB;
     $io = CBXVirtualIo::GetInstance();
-    $sql = "SELECT * FROM `tr_ca_docs` WHERE CHILD_ID is null";
+    $sql = 'SELECT * FROM `tr_ca_docs` WHERE CHILD_ID is null';
     $rows = $DB->Query($sql);
     $docs = array();
     while ($array = $rows->Fetch()) {
@@ -22,7 +21,7 @@ function getLostDocs()
     }
     $lostDocs = array();
     foreach ($docs as $doc) {
-        $path = $DOCUMENT_ROOT . urldecode($doc["PATH"]);
+        $path = $DOCUMENT_ROOT . urldecode($doc['PATH']);
         if (!$io->FileExists($path)) {
             $lostDocs[] = $doc;
         }
@@ -32,7 +31,7 @@ function getLostDocs()
 ?>
 
 <form action="<?= $APPLICATION->GetCurPage() ?>">
-<?=bitrix_sessid_post()?>
+<?= bitrix_sessid_post() ?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
     <input type="hidden" name="id" value="trusted.cryptoarmdocs">
     <input type="hidden" name="install" value="Y">
@@ -42,20 +41,22 @@ function getLostDocs()
     if ($lostDocs) {
         $lostDocsNames = array();
         foreach ($lostDocs as $doc) {
-            $lostDocsNames[] = $doc["PATH"];
-            $lostDocsIds[] = $doc["ID"];
+            $lostDocsNames[] = $doc['PATH'];
+            $lostDocsIds[] = $doc['ID'];
         }
-        CAdminMessage::ShowMessage(Loc::getMessage("TR_CA_DOCS_MISSING_FILES"));
-        echo "<p>";
-        echo Loc::getMessage("TR_CA_DOCS_MISSING_FILES_LIST") . "<br>";
-        echo implode("<br>", array_map("urldecode", $lostDocsNames));
-        echo "</p>";
-        echo '<input type="hidden" name="dropLostDocs" value="' . htmlentities(serialize($lostDocsIds)) . '">';
+        CAdminMessage::ShowMessage(Loc::getMessage('TR_CA_DOCS_MISSING_FILES'));
+        echo '<p>';
+        echo Loc::getMessage('TR_CA_DOCS_MISSING_FILES_LIST') . '<br>';
+        echo implode('<br>', array_map('urldecode', $lostDocsNames));
+        echo '</p>';
+        echo '<input type="hidden" name="dropLostDocs" value="' .
+            htmlentities(serialize($lostDocsIds)) .
+            '">';
     } else {
-        CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_ALL_FILES_FOUND"));
+        CAdminMessage::ShowNote(Loc::getMessage('TR_CA_DOCS_ALL_FILES_FOUND'));
     }
     ?>
-    <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_CONTINUE") ?>">
-    <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_CANCEL") ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage('TR_CA_DOCS_CONTINUE') ?>">
+    <input type="submit" name="choice" value="<?= Loc::getMessage('TR_CA_DOCS_CANCEL') ?>">
 </form>
 

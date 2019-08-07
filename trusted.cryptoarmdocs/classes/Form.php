@@ -11,23 +11,22 @@ require_once TR_CA_DOCS_MODULE_DIR_CLASSES . '/tcpdf_min/tcpdf.php';
 Loader::includeModule('iblock');
 
 class Form {
-
     public static function getIBlocks() {
         $response = \CIBlock::GetList(
             [
-                "sort" => "asc",
-                "name" => "asc",
+                'sort' => 'asc',
+                'name' => 'asc',
             ],
             [
-                "TYPE" => "tr_ca_docs_form",
-                "CHECK_PERMISSIONS" => "N",
+                'TYPE' => 'tr_ca_docs_form',
+                'CHECK_PERMISSIONS' => 'N',
             ]
         );
 
         $iBlocks = [];
 
         while ($arIblock = $response->Fetch()) {
-            $iBlocks[htmlspecialcharsEx($arIblock["ID"])] = htmlspecialcharsEx($arIblock["NAME"]);
+            $iBlocks[htmlspecialcharsEx($arIblock['ID'])] = htmlspecialcharsEx($arIblock['NAME']);
         }
 
         return $iBlocks;
@@ -44,43 +43,44 @@ class Form {
     public static function getIBlockProperty($iBlockId) {
         $response = \CIBlockProperty::GetList(
             [
-                "sort" => "asc",
-                "name" => "asc",
+                'sort' => 'asc',
+                'name' => 'asc',
             ],
             [
-                "ACTIVE" => "Y",
-                "IBLOCK_ID" => $iBlockId,
+                'ACTIVE' => 'Y',
+                'IBLOCK_ID' => $iBlockId,
             ]
         );
 
         $properties = [];
 
         while ($prop_fields = $response->GetNext()) {
-            $properties[$prop_fields["ID"]]["ID"] = $prop_fields["ID"];
-            $properties[$prop_fields["ID"]]["NAME"] = $prop_fields["NAME"];
-            $properties[$prop_fields["ID"]]["PROPERTY_TYPE"] = $prop_fields["PROPERTY_TYPE"];
-            $properties[$prop_fields["ID"]]["MULTIPLE"] = $prop_fields["MULTIPLE"];
-            $properties[$prop_fields["ID"]]["LIST_TYPE"] = $prop_fields["LIST_TYPE"];
-            $properties[$prop_fields["ID"]]["DEFAULT_VALUE"] = $prop_fields["DEFAULT_VALUE"];
-            $properties[$prop_fields["ID"]]["IS_REQUIRED"] = $prop_fields["IS_REQUIRED"];
-            $properties[$prop_fields["ID"]]["SORT"] = $prop_fields["SORT"];
-            $properties[$prop_fields["ID"]]["CODE"] = $prop_fields["CODE"];
-            $properties[$prop_fields["ID"]]["USER_TYPE"] = $prop_fields["USER_TYPE"];
+            $properties[$prop_fields['ID']]['ID'] = $prop_fields['ID'];
+            $properties[$prop_fields['ID']]['NAME'] = $prop_fields['NAME'];
+            $properties[$prop_fields['ID']]['PROPERTY_TYPE'] = $prop_fields['PROPERTY_TYPE'];
+            $properties[$prop_fields['ID']]['MULTIPLE'] = $prop_fields['MULTIPLE'];
+            $properties[$prop_fields['ID']]['LIST_TYPE'] = $prop_fields['LIST_TYPE'];
+            $properties[$prop_fields['ID']]['DEFAULT_VALUE'] = $prop_fields['DEFAULT_VALUE'];
+            $properties[$prop_fields['ID']]['IS_REQUIRED'] = $prop_fields['IS_REQUIRED'];
+            $properties[$prop_fields['ID']]['SORT'] = $prop_fields['SORT'];
+            $properties[$prop_fields['ID']]['CODE'] = $prop_fields['CODE'];
+            $properties[$prop_fields['ID']]['USER_TYPE'] = $prop_fields['USER_TYPE'];
         }
 
         $responseAdditional = \CIBlockPropertyEnum::GetList(
             [
-                "sort" => "asc",
-                "name" => "asc",
+                'sort' => 'asc',
+                'name' => 'asc',
             ],
             [
-                "ACTIVE" => "Y",
-                "IBLOCK_ID" => $iBlockId,
+                'ACTIVE' => 'Y',
+                'IBLOCK_ID' => $iBlockId,
             ]
         );
 
         while ($propAdd_fields = $responseAdditional->GetNext()) {
-            $properties[$propAdd_fields["PROPERTY_ID"]]["ADDITIONAL"][$propAdd_fields["ID"]] = $propAdd_fields["VALUE"];
+            $properties[$propAdd_fields['PROPERTY_ID']]['ADDITIONAL'][$propAdd_fields['ID']] =
+                $propAdd_fields['VALUE'];
         }
 
         return $properties;
@@ -94,22 +94,16 @@ class Form {
             return false;
         }
 
-        if (!$arFilter["IBLOCK_ID"]) {
-            $arFilter = array_merge(
-                $arFilter,
-                ["IBLOCK_ID" => $iBlocksId]
-            );
+        if (!$arFilter['IBLOCK_ID']) {
+            $arFilter = array_merge($arFilter, ['IBLOCK_ID' => $iBlocksId]);
         }
 
-        $dbElements = \CIBlockElement::GetList(
-            [$by => $order],
-            $arFilter
-        );
+        $dbElements = \CIBlockElement::GetList([$by => $order], $arFilter);
 
         while ($obElement = $dbElements->GetNextElement()) {
             $el = $obElement->GetFields();
-            $el["PROPERTIES"] = $obElement->GetProperties();
-            $iBlocksElements[$el["ID"]] = $el;
+            $el['PROPERTIES'] = $obElement->GetProperties();
+            $iBlocksElements[$el['ID']] = $el;
         }
 
         return $iBlocksElements;
@@ -130,35 +124,31 @@ class Form {
 
         foreach ($formProps as $key => $value) {
             $props[$key] = [
-                "NAME" => $value["NAME"],
-                "VALUE" => $value["VALUE"],
-                "MULTIPLE" => $value["MULTIPLE"],
+                'NAME' => $value['NAME'],
+                'VALUE' => $value['VALUE'],
+                'MULTIPLE' => $value['MULTIPLE'],
             ];
-            if (stristr($value["CODE"], "DOC_FILE")) {
-                if ($value["MULTIPLE"] == "Y") {
-                    foreach ($value["VALUE"] as $docId) {
-                        $doc = Database::getDocumentById((int)$docId);
+            if (stristr($value['CODE'], 'DOC_FILE')) {
+                if ($value['MULTIPLE'] == 'Y') {
+                    foreach ($value['VALUE'] as $docId) {
+                        $doc = Database::getDocumentById((int) $docId);
                         if (!$doc) {
                             continue;
                         }
-                        $props[$key]["FILE"] = true;
-                        $props[$key]["FILE_NAME"][] = $doc->getName();
-                        $props[$key]["HASH"][] = $doc->getHash();
+                        $props[$key]['FILE'] = true;
+                        $props[$key]['FILE_NAME'][] = $doc->getName();
+                        $props[$key]['HASH'][] = $doc->getHash();
                     }
                 } else {
-                    $doc = Database::getDocumentById((int)$value["VALUE"]);
+                    $doc = Database::getDocumentById((int) $value['VALUE']);
                     if (!$doc) {
                         continue;
                     }
-                    $props[$key] = array_merge(
-                        $props[$key],
-                        [
-                            "FILE" => true,
-                            "FILE_NAME" => $doc->getName(),
-                            "HASH" => $doc->getHash(),
-
-                        ]
-                    );
+                    $props[$key] = array_merge($props[$key], [
+                        'FILE' => true,
+                        'FILE_NAME' => $doc->getName(),
+                        'HASH' => $doc->getHash(),
+                    ]);
                 }
             }
         }
@@ -168,61 +158,61 @@ class Form {
     public static function standardizationIBlockProps($props) {
         $someArray = [];
         foreach ($props as $key => $value) {
-            if (stristr($key, "input_date_")) {
-                $key = str_ireplace("input_date_", "", $key);
+            if (stristr($key, 'input_date_')) {
+                $key = str_ireplace('input_date_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = date_format(date_create($value), 'd.m.Y');
                 }
                 continue;
             }
-            if (stristr($key, "input_checkbox_")) {
-                $key = str_ireplace("input_checkbox_", "", $key);
-                $keyValue = explode("_", $key);
+            if (stristr($key, 'input_checkbox_')) {
+                $key = str_ireplace('input_checkbox_', '', $key);
+                $keyValue = explode('_', $key);
                 if (Utils::isNotEmpty($keyValue)) {
                     $someArray[$keyValue[0]][] = $keyValue[1];
                 }
                 continue;
             }
-            if (stristr($key, "input_text_")) {
-                $key = str_ireplace("input_text_", "", $key);
+            if (stristr($key, 'input_text_')) {
+                $key = str_ireplace('input_text_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
-            if (stristr($key, "input_number_")) {
-                $key = str_ireplace("input_number_", "", $key);
+            if (stristr($key, 'input_number_')) {
+                $key = str_ireplace('input_number_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
-            if (stristr($key, "input_radio_")) {
-                $key = str_ireplace("input_radio_", "", $key);
+            if (stristr($key, 'input_radio_')) {
+                $key = str_ireplace('input_radio_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
-            if (stristr($key, "input_select_")) {
-                $key = str_ireplace("input_select_", "", $key);
+            if (stristr($key, 'input_select_')) {
+                $key = str_ireplace('input_select_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
-            if (stristr($key, "input_html_")) {
-                $key = str_ireplace("input_html_", "", $key);
+            if (stristr($key, 'input_html_')) {
+                $key = str_ireplace('input_html_', '', $key);
                 if (Utils::isNotEmpty($value)) {
                     $someArray[$key] = $value;
                 }
                 continue;
             }
-            if (stristr($key, "input_file_")) {
-                $key = str_ireplace("input_file_", "", $key);
-                $keyValue = explode("_", $key);
+            if (stristr($key, 'input_file_')) {
+                $key = str_ireplace('input_file_', '', $key);
+                $keyValue = explode('_', $key);
                 if (Utils::isNotEmpty($keyValue)) {
-                    if ($keyValue[2] == "Y") {
+                    if ($keyValue[2] == 'Y') {
                         $someArray[$keyValue[0]][] = $value;
                     } else {
                         $someArray[$keyValue[0]] = $value;
@@ -243,22 +233,22 @@ class Form {
 
         $props = self::standardizationIBlockProps($props);
 
-        $iBlockElement = new \CIBlockElement;
+        $iBlockElement = new \CIBlockElement();
 
         $prop = [
-            "MODIFIED_BY" => Utils::currUserId(),
-            "IBLOCK_SECTION_ID" => false,
-            "IBLOCK_ID" => $iBlockId,
-            "PROPERTY_VALUES" => $props,
-            "NAME" => "Form",
-            "ACTIVE" => "Y",
+            'MODIFIED_BY' => Utils::currUserId(),
+            'IBLOCK_SECTION_ID' => false,
+            'IBLOCK_ID' => $iBlockId,
+            'PROPERTY_VALUES' => $props,
+            'NAME' => 'Form',
+            'ACTIVE' => 'Y',
         ];
 
         if ($iBlockElementId = $iBlockElement->Add($prop)) {
             $res = [
-                "success" => true,
-                "message" => "iBlockElement added",
-                "data" => $iBlockElementId,
+                'success' => true,
+                'message' => 'iBlockElement added',
+                'data' => $iBlockElementId,
             ];
         }
 
@@ -266,7 +256,6 @@ class Form {
     }
 
     static function createPDF($iBlockId, $iBlockElementId) {
-
         $res = [
             'success' => false,
             'message' => 'Unknown error in Form::createPDF',
@@ -275,22 +264,26 @@ class Form {
         $props = self::getIBlockElementInfo($iBlockId, $iBlockElementId);
 
         $pdf = new \TCPDF(
-            'P',        // orientation - [P]ortrait or [L]andscape
-            'mm',       // measure unit
-            'A4',       // page format
-            true,       // unicode
-            'UTF-8',    // encoding for conversions
-            false,      // cache, deprecated
-            false       // pdf/a mode
+            'P', // orientation - [P]ortrait or [L]andscape
+            'mm', // measure unit
+            'A4', // page format
+            true, // unicode
+            'UTF-8', // encoding for conversions
+            false, // cache, deprecated
+            false // pdf/a mode
         );
 
         $pdfOwner = Utils::getUserName(Utils::currUserId());
-        $dateCreation = date("Y-m-d H:i:s");
+        $dateCreation = date('Y-m-d H:i:s');
 
         $author = Loc::getMessage('TR_CA_DOC_MODULE_NAME');
-        $title = Loc::getMessage('TR_CA_DOC_PDF_FORM_TITLE') . " " . $pdfOwner . " " . $dateCreation;
+        $title =
+            Loc::getMessage('TR_CA_DOC_PDF_FORM_TITLE') . ' ' . $pdfOwner . ' ' . $dateCreation;
         $title = Utils::mb_basename($title);
-        $headerText = Loc::getMessage('TR_CA_DOC_MODULE_DESC') . "\n" . Loc::getMessage('TR_CA_DOC_PARTNER_URI');
+        $headerText =
+            Loc::getMessage('TR_CA_DOC_MODULE_DESC') .
+            "\n" .
+            Loc::getMessage('TR_CA_DOC_PARTNER_URI');
 
         $pdf->setCreator($author);
         $pdf->setAuthor($author);
@@ -308,81 +301,123 @@ class Form {
         $pdf->SetFont('dejavuserif', '', 11);
         $pdf->AddPage();
 
-        $pdfText = '<div height="100px"></div>
-        <h1 style="text-align:center;">' . Loc::getMessage('TR_CA_DOC_MODULE_NAME') . '</h1>
+        $pdfText =
+            '<div height="100px"></div>
+        <h1 style="text-align:center;">' .
+            Loc::getMessage('TR_CA_DOC_MODULE_NAME') .
+            '</h1>
         <table width="600px">
             <tr>
-                <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_OWNER') . '</b></td>
-                <td>' . $pdfOwner . '</td>
+                <td><b>' .
+            Loc::getMessage('TR_CA_DOC_PDF_OWNER') .
+            '</b></td>
+                <td>' .
+            $pdfOwner .
+            '</td>
             </tr>
             <tr>
-                <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_CREATE_TIME') . '</b></td>
-                <td>' . $dateCreation . '</td>
+                <td><b>' .
+            Loc::getMessage('TR_CA_DOC_PDF_CREATE_TIME') .
+            '</b></td>
+                <td>' .
+            $dateCreation .
+            '</td>
             </tr>';
 
         foreach ($props as $key => $value) {
-            if ($value["FILE"] == true) {
-                if ($value["MULTIPLE"] == "Y") {
-                    foreach ($value["FILE_NAME"] as $key2 => $value2) {
-                        if (Utils::isNotEmpty($value["FILE_NAME"])) {
-                            $pdfText .= '
+            if ($value['FILE'] == true) {
+                if ($value['MULTIPLE'] == 'Y') {
+                    foreach ($value['FILE_NAME'] as $key2 => $value2) {
+                        if (Utils::isNotEmpty($value['FILE_NAME'])) {
+                            $pdfText .=
+                                '
                     <tr>
-                        <td><b>' . $value["NAME"] . '</b></td>
-                        <td>' . $value["FILE_NAME"][$key2] . '</td>
+                        <td><b>' .
+                                $value['NAME'] .
+                                '</b></td>
+                        <td>' .
+                                $value['FILE_NAME'][$key2] .
+                                '</td>
                     </tr>
                     <tr>
-                        <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
-                        <td>' . $value["HASH"][$key2] . '</td>
+                        <td><b>' .
+                                Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') .
+                                '</b></td>
+                        <td>' .
+                                $value['HASH'][$key2] .
+                                '</td>
                     </tr>';
                         }
                     }
                 } else {
-                    if (Utils::isNotEmpty($value["FILE_NAME"])) {
-                        $pdfText .= '
+                    if (Utils::isNotEmpty($value['FILE_NAME'])) {
+                        $pdfText .=
+                            '
                     <tr>
-                        <td><b>' . $value["NAME"] . '</b></td>
-                        <td>' . $value["FILE_NAME"] . '</td>
+                        <td><b>' .
+                            $value['NAME'] .
+                            '</b></td>
+                        <td>' .
+                            $value['FILE_NAME'] .
+                            '</td>
                     </tr>
                     <tr>
-                        <td><b>' . Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') . '</b></td>
-                        <td>' . $value["HASH"] . '</td>
+                        <td><b>' .
+                            Loc::getMessage('TR_CA_DOC_PDF_FILE_HASH') .
+                            '</b></td>
+                        <td>' .
+                            $value['HASH'] .
+                            '</td>
                     </tr>';
                     }
                 }
                 continue;
             }
 
-            if ($value["MULTIPLE"] == "Y") {
-                if (Utils::isNotEmpty($value["VALUE"])) {
-                    $propertyString = "";
-                    foreach ($value["VALUE"] as $property) {
+            if ($value['MULTIPLE'] == 'Y') {
+                if (Utils::isNotEmpty($value['VALUE'])) {
+                    $propertyString = '';
+                    foreach ($value['VALUE'] as $property) {
                         $propertyString .= $property . '<br>';
                     }
                     $propertyString = substr($propertyString, 0, -4);
-                    $pdfText .= '
+                    $pdfText .=
+                        '
                     <tr>
-                        <td><b>' . $value["NAME"] . '</b></td>
-                        <td>' . $propertyString . '</td>
+                        <td><b>' .
+                        $value['NAME'] .
+                        '</b></td>
+                        <td>' .
+                        $propertyString .
+                        '</td>
                     </tr>';
                 }
                 continue;
             }
 
-            if ($value["VALUE"]["TYPE"] == "HTML") {
+            if ($value['VALUE']['TYPE'] == 'HTML') {
                 if (Utils::isNotEmpty($value['VALUE']['TEXT'])) {
-                    $pdfText .= '
+                    $pdfText .=
+                        '
                     <tr>
-                        <td colspan="2">' . (htmlspecialchars_decode($value['VALUE']['TEXT'])) . '</td>
+                        <td colspan="2">' .
+                        htmlspecialchars_decode($value['VALUE']['TEXT']) .
+                        '</td>
                     </tr>';
                 }
                 continue;
             }
 
-            if (Utils::isNotEmpty($value["VALUE"])) {
-                $pdfText .= '
+            if (Utils::isNotEmpty($value['VALUE'])) {
+                $pdfText .=
+                    '
                 <tr>
-                    <td><b>' . $value["NAME"] . '</b></td>
-                    <td>' . $value["VALUE"] . '</td>
+                    <td><b>' .
+                    $value['NAME'] .
+                    '</b></td>
+                    <td>' .
+                    $value['VALUE'] .
+                    '</td>
                 </tr>';
             }
         }
@@ -390,24 +425,24 @@ class Form {
         $pdfText .= '</table>';
 
         $pdf->writeHTMLCell(
-            0,      // width
-            0,      // height
-            '',     // x
-            '',     // y
+            0, // width
+            0, // height
+            '', // x
+            '', // y
             $pdfText,
-            0,      // border
-            1,      // next line
-            0,      // fill
-            true,   // reset height
-            '',     // align
-            true    // autopadding
+            0, // border
+            1, // next line
+            0, // fill
+            true, // reset height
+            '', // align
+            true // autopadding
         );
 
         $title .= '.pdf';
 
         $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
-        $uniqid = (string)uniqid();
+        $uniqid = (string) uniqid();
         $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
         mkdir($newDocDir);
 
@@ -416,8 +451,8 @@ class Form {
 
         $pdf->Output($newDocDir, 'F');
         $props = new PropertyCollection();
-        $props->add(new Property("USER", (string)Utils::currUserId()));
-        $props->add(new Property("FORM", (string)$iBlockElementId["data"]));
+        $props->add(new Property('USER', (string) Utils::currUserId()));
+        $props->add(new Property('FORM', (string) $iBlockElementId['data']));
         $doc = Utils::createDocument($relativePath, $props);
         $docId = $doc->GetId();
 
@@ -433,13 +468,17 @@ class Form {
     }
 
     static function upload(&$doc, $extra) {
-        $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $extra["formId"]);
+        $docs = Database::getDocumentsByPropertyTypeAndValue('FORM', $extra['formId']);
         foreach ($docs->getList() as $doc) {
             if ($doc->getType() !== DOC_TYPE_SIGNED_FILE) {
                 return false;
             }
         }
-        Form::sendEmail($docs->toIdArray(), $extra["send_email_to_user"], $extra["send_email_to_admin"]);
+        Form::sendEmail(
+            $docs->toIdArray(),
+            $extra['send_email_to_user'],
+            $extra['send_email_to_admin']
+        );
     }
 
     static function sendEmail($docsIds, $toUser = false, $toAdditional = false) {
@@ -450,12 +489,17 @@ class Form {
 
         if ($toUser) {
             $arEventFields = [
-                "EMAIL" => $toUser,
+                'EMAIL' => $toUser,
             ];
 
-            $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM", $arEventFields, "MAIL_TEMPLATE_ID_FORM");
+            $response = Email::sendEmail(
+                $docsIds,
+                'MAIL_EVENT_ID_FORM',
+                $arEventFields,
+                'MAIL_TEMPLATE_ID_FORM'
+            );
 
-            if (!$response["success"]) {
+            if (!$response['success']) {
                 return $response;
             }
         }
@@ -468,30 +512,35 @@ class Form {
             $doc = Database::getDocumentById($docsIds[0]);
             $userId = $doc->getSignersToArray()[0];
             $arEventFields = [
-                "EMAIL" => $toAdditional,
-                "FORM_USER" => Utils::getUserName($userId),
+                'EMAIL' => $toAdditional,
+                'FORM_USER' => Utils::getUserName($userId),
             ];
 
-            $response = Email::sendEmail($docsIds, "MAIL_EVENT_ID_FORM_TO_ADMIN", $arEventFields, "MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
+            $response = Email::sendEmail(
+                $docsIds,
+                'MAIL_EVENT_ID_FORM_TO_ADMIN',
+                $arEventFields,
+                'MAIL_TEMPLATE_ID_FORM_TO_ADMIN'
+            );
 
-            if (!$response["success"]) {
+            if (!$response['success']) {
                 return $response;
             }
         }
 
         $res['success'] = true;
-        $res['message'] = "Emails with form were sent";
+        $res['message'] = 'Emails with form were sent';
         return $res;
     }
 
     static function removeIBlockAndDocs($ids) {
         $res = [
-            "success" => false,
-            "message" => "Unknown error in Form::removeIBlockAndDocs",
+            'success' => false,
+            'message' => 'Unknown error in Form::removeIBlockAndDocs',
         ];
 
         foreach ($ids as $id) {
-            $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $id);
+            $docs = Database::getDocumentsByPropertyTypeAndValue('FORM', $id);
             $docList = $docs->getList();
 
             $docsId = [];
@@ -505,13 +554,11 @@ class Form {
 
         if ($responseIBlock) {
             $res = [
-                "success" => true,
-                "message" => "ok",
+                'success' => true,
+                'message' => 'ok',
             ];
         }
 
         return $res;
     }
-
 }
-

@@ -9,7 +9,6 @@ if (!\CModule::IncludeModule('bizproc')) {
 }
 
 class WorkflowDocument implements \IBPWorkflowDocument {
-
     public static function getDocumentType($id) {
         return 'TR_CA_DOC';
     }
@@ -27,12 +26,16 @@ class WorkflowDocument implements \IBPWorkflowDocument {
         return $doc->getId();
     }
 
-    public static function DeleteDocument ($id) {
-        Database::getDocumentById($id)->getLastDocument()->remove();
+    public static function DeleteDocument($id) {
+        Database::getDocumentById($id)
+            ->getLastDocument()
+            ->remove();
     }
 
     public static function GetDocument($id) {
-        return Database::getDocumentById($id)->getLastDocument()->toArray();
+        return Database::getDocumentById($id)
+            ->getLastDocument()
+            ->toArray();
     }
 
     public static function GetDocumentFields($documentType) {
@@ -97,11 +100,21 @@ class WorkflowDocument implements \IBPWorkflowDocument {
         return "/bitrix/components/trusted/docs/ajax.php?command=content&id=$lastDocId";
     }
 
-    public static function canUserOperateDocument($operation, $userId, $documentId, $arParameters = array()) {
+    public static function canUserOperateDocument(
+        $operation,
+        $userId,
+        $documentId,
+        $arParameters = array()
+    ) {
         return true;
     }
 
-    public static function canUserOperateDocumentType($operation, $userId, $documentType, $arParameters = array()) {
+    public static function canUserOperateDocumentType(
+        $operation,
+        $userId,
+        $documentType,
+        $arParameters = array()
+    ) {
         // Can be used to disallow non-admins from accessing bp editor
         return true;
     }
@@ -129,7 +142,9 @@ class WorkflowDocument implements \IBPWorkflowDocument {
     }
 
     public static function IsDocumentLocked($id, $workflowId) {
-        return Database::getDocumentById($id)->getLastDocument()->getStatus() == DOC_STATUS_BLOCKED;
+        return Database::getDocumentById($id)
+            ->getLastDocument()
+            ->getStatus() == DOC_STATUS_BLOCKED;
     }
 
     public static function getAllowableOperations($documentType) {
@@ -163,6 +178,4 @@ class WorkflowDocument implements \IBPWorkflowDocument {
     public static function recoverDocumentFromHistory($id, $arDocument) {
         return false;
     }
-
 }
-

@@ -11,10 +11,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/
 
 Loc::loadMessages(__FILE__);
 
-Class trusted_cryptoarmdocs extends CModule
-{
+class trusted_cryptoarmdocs extends CModule {
     // Required by the marketplace standards
-    var $MODULE_ID = "trusted.cryptoarmdocs";
+    var $MODULE_ID = 'trusted.cryptoarmdocs';
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -22,66 +21,63 @@ Class trusted_cryptoarmdocs extends CModule
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    function trusted_cryptoarmdocs()
-    {
+    function trusted_cryptoarmdocs() {
         self::__construct();
     }
 
-    function __construct()
-    {
+    function __construct() {
         $arModuleVersion = array();
-        include __DIR__ . "/version.php";
-        $this->MODULE_NAME = Loc::getMessage("TR_CA_DOCS_MODULE_NAME");
-        $this->MODULE_DESCRIPTION = Loc::getMessage("TR_CA_DOCS_MODULE_DESCRIPTION");
-        $this->MODULE_VERSION = $arModuleVersion["VERSION"];
-        $this->MODULE_VERSION_DATE = $arModuleVersion["VERSION_DATE"];
-        $this->PARTNER_NAME = GetMessage("TR_CA_DOCS_PARTNER_NAME");
-        $this->PARTNER_URI = GetMessage("TR_CA_DOCS_PARTNER_URI");
+        include __DIR__ . '/version.php';
+        $this->MODULE_NAME = Loc::getMessage('TR_CA_DOCS_MODULE_NAME');
+        $this->MODULE_DESCRIPTION = Loc::getMessage('TR_CA_DOCS_MODULE_DESCRIPTION');
+        $this->MODULE_VERSION = $arModuleVersion['VERSION'];
+        $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
+        $this->PARTNER_NAME = GetMessage('TR_CA_DOCS_PARTNER_NAME');
+        $this->PARTNER_URI = GetMessage('TR_CA_DOCS_PARTNER_URI');
     }
 
-    function DoInstall()
-    {
+    function DoInstall() {
         global $DOCUMENT_ROOT, $APPLICATION;
 
         $context = Application::getInstance()->getContext();
         $request = $context->getRequest();
-        $step = (int)$request["step"];
+        $step = (int) $request['step'];
 
         if (!$this->d7Support()) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_d7.php"
+                Loc::getMessage('MOD_INSTALL_TITLE'),
+                $DOCUMENT_ROOT . '/bitrix/modules/' . $this->MODULE_ID . '/install/step_no_d7.php'
             );
         }
 
         $continue = true;
-        if ($request["choice"] == Loc::getMessage("TR_CA_DOCS_CANCEL_INSTALL")) {
+        if ($request['choice'] == Loc::getMessage('TR_CA_DOCS_CANCEL_INSTALL')) {
             $continue = false;
         }
         if ($step < 2 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step1.php"
+                Loc::getMessage('MOD_INSTALL_TITLE'),
+                $DOCUMENT_ROOT . '/bitrix/modules/' . $this->MODULE_ID . '/install/step1.php'
             );
         }
         if ($step == 2 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step2.php"
+                Loc::getMessage('MOD_INSTALL_TITLE'),
+                $DOCUMENT_ROOT . '/bitrix/modules/' . $this->MODULE_ID . '/install/step2.php'
             );
         }
         if ($step == 3 && $continue) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step3.php"
+                Loc::getMessage('MOD_INSTALL_TITLE'),
+                $DOCUMENT_ROOT . '/bitrix/modules/' . $this->MODULE_ID . '/install/step3.php'
             );
         }
         if ($step == 4 && $continue) {
-            if ($request["dropDB"] == "Y") {
+            if ($request['dropDB'] == 'Y') {
                 $this->UnInstallDB();
                 $this->UnInstallIb();
-            } elseif ($request["dropLostDocs"]) {
-                $lostDocs = unserialize($request["dropLostDocs"]);
+            } elseif ($request['dropLostDocs']) {
+                $lostDocs = unserialize($request['dropLostDocs']);
                 foreach ($lostDocs as $id) {
                     $this->dropDocumentChain($id);
                 }
@@ -98,82 +94,89 @@ Class trusted_cryptoarmdocs extends CModule
         }
         if (!$continue) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_INSTALL_TITLE"),
-                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_cancel.php"
+                Loc::getMessage('MOD_INSTALL_TITLE'),
+                $DOCUMENT_ROOT . '/bitrix/modules/' . $this->MODULE_ID . '/install/step_cancel.php'
             );
         }
     }
 
-    function d7Support()
-    {
-        return CheckVersion(ModuleManager::getVersion("main"), "14.00.00");
+    function d7Support() {
+        return CheckVersion(ModuleManager::getVersion('main'), '14.00.00');
     }
 
-    function crmSupport()
-    {
-        return IsModuleInstalled("crm");
+    function crmSupport() {
+        return IsModuleInstalled('crm');
     }
 
-    function bizprocSupport()
-    {
-        return IsModuleInstalled("bizproc");
+    function bizprocSupport() {
+        return IsModuleInstalled('bizproc');
     }
 
-    function InstallFiles()
-    {
+    function InstallFiles() {
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/components/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/components/",
-            true, true
+            $_SERVER['DOCUMENT_ROOT'] .
+                '/bitrix/modules/' .
+                $this->MODULE_ID .
+                '/install/components/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/components/',
+            true,
+            true
         );
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin/",
-            true, false
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $this->MODULE_ID . '/install/admin/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/admin/',
+            true,
+            false
         );
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/js/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/js/",
-            true, true
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $this->MODULE_ID . '/install/js/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/js/',
+            true,
+            true
         );
         CopyDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
-            true, true
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $this->MODULE_ID . '/install/themes/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/themes/',
+            true,
+            true
         );
         if ($this->bizprocSupport()) {
             CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
-                true, true
+                $_SERVER['DOCUMENT_ROOT'] .
+                    '/bitrix/modules/' .
+                    $this->MODULE_ID .
+                    '/install/activities/',
+                $_SERVER['DOCUMENT_ROOT'] . '/bitrix/activities/custom/',
+                true,
+                true
             );
             CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
-                $_SERVER["DOCUMENT_ROOT"],
-                true, true
+                $_SERVER['DOCUMENT_ROOT'] .
+                    '/bitrix/modules/' .
+                    $this->MODULE_ID .
+                    '/install/crm_pub/',
+                $_SERVER['DOCUMENT_ROOT'],
+                true,
+                true
             );
-            CUrlRewriter::Add(
-                array(
-                    'CONDITION' => '#^/tr_ca_docs/#',
-                    'RULE' => '',
-                    'ID' => 'trusted:cryptoarm_docs_crm',
-                    'PATH' => '/tr_ca_docs/index.php',
-                )
-            );
+            CUrlRewriter::Add(array(
+                'CONDITION' => '#^/tr_ca_docs/#',
+                'RULE' => '',
+                'ID' => 'trusted:cryptoarm_docs_crm',
+                'PATH' => '/tr_ca_docs/index.php',
+            ));
         }
         return true;
     }
 
-    function CreateDocsDir()
-    {
-        $docsDir = $_SERVER["DOCUMENT_ROOT"] . "/docs/";
+    function CreateDocsDir() {
+        $docsDir = $_SERVER['DOCUMENT_ROOT'] . '/docs/';
         if (!file_exists($docsDir)) {
             mkdir($docsDir);
         }
     }
 
-    function InstallModuleOptions()
-    {
+    function InstallModuleOptions() {
         $options = array(
             'DOCUMENTS_DIR' => '/docs/',
             'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
@@ -189,8 +192,7 @@ Class trusted_cryptoarmdocs extends CModule
         }
     }
 
-    function InstallDB()
-    {
+    function InstallDB() {
         global $DB;
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -233,159 +235,160 @@ Class trusted_cryptoarmdocs extends CModule
 
         if ($this->crmSupport()) {
             $this->AddMenuItem(
-                $siteInfo["DIR"] . ".top.menu.php",
+                $siteInfo['DIR'] . '.top.menu.php',
                 array(
                     Loc::getMessage('TR_CA_DOCS_CRM_MENU_TITLE'),
-                    $siteInfo["DIR"] . "tr_ca_docs/",
+                    $siteInfo['DIR'] . 'tr_ca_docs/',
                     array(),
                     array(),
-                    "IsModuleInstalled('" . $this->MODULE_ID . "')"
+                    "IsModuleInstalled('" . $this->MODULE_ID . "')",
                 ),
-                $siteInfo["LID"]
+                $siteInfo['LID']
             );
         }
     }
 
-    function InstallMailEvents()
-    {
-        $obEventType = new CEventType;
+    function InstallMailEvents() {
+        $obEventType = new CEventType();
         $events = array(
             // by order
             array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_DESCRIPTION"),
+                'LID' => 'ru',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_BY_ORDER',
+                'NAME' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_NAME'),
+                'DESCRIPTION' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_DESCRIPTION'),
             ),
 
             // to
             array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION"),
+                'LID' => 'ru',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_TO',
+                'NAME' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_TO_NAME'),
+                'DESCRIPTION' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION'),
             ),
 
             // share
             array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"),
+                'LID' => 'ru',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_SHARE',
+                'NAME' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_SHARE_NAME'),
+                'DESCRIPTION' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION'),
             ),
 
             // send completed form to user
             array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
+                'LID' => 'ru',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_FORM',
+                'NAME' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_FORM_NAME'),
+                'DESCRIPTION' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION'),
             ),
 
             // send completed form to admin
             array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"),
+                'LID' => 'ru',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+                'NAME' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME'),
+                'DESCRIPTION' => Loc::getMessage('TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION'),
             ),
         );
         foreach ($events as $event) {
             $obEventType->add($event);
         }
 
-        $obEventMessage = new CEventMessage;
-        $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
+        $obEventMessage = new CEventMessage();
+        $sites = CSite::GetList($by = 'sort', $order = 'asc', array('ACTIVE' => 'Y'));
         $siteIds = array();
         while ($site = $sites->Fetch()) {
-            $siteIds[] = $site["ID"];
+            $siteIds[] = $site['ID'];
         }
         $templates = array(
             // by order
             'MAIL_TEMPLATE_ID' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_BY_ORDER",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_BODY"),
+                'ACTIVE' => 'Y',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_BY_ORDER',
+                'LID' => $siteIds,
+                'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+                'EMAIL_TO' => '#EMAIL#',
+                'SUBJECT' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_SUBJECT'),
+                'BODY_TYPE' => 'html',
+                'MESSAGE' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_BODY'),
             ),
 
             // to
             'MAIL_TEMPLATE_ID_TO' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_TO",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"),
+                'ACTIVE' => 'Y',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_TO',
+                'LID' => $siteIds,
+                'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+                'EMAIL_TO' => '#EMAIL#',
+                'SUBJECT' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT'),
+                'BODY_TYPE' => 'html',
+                'MESSAGE' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY'),
             ),
 
             // share
             'MAIL_TEMPLATE_ID_SHARE' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_SHARE",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
+                'ACTIVE' => 'Y',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_SHARE',
+                'LID' => $siteIds,
+                'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+                'EMAIL_TO' => '#EMAIL#',
+                'SUBJECT' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT'),
+                'BODY_TYPE' => 'html',
+                'MESSAGE' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY'),
             ),
 
             // send completed form to user
             'MAIL_TEMPLATE_ID_FORM' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
+                'ACTIVE' => 'Y',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_FORM',
+                'LID' => $siteIds,
+                'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+                'EMAIL_TO' => '#EMAIL#',
+                'SUBJECT' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT'),
+                'BODY_TYPE' => 'html',
+                'MESSAGE' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY'),
             ),
 
             // send completed form to admin
             'MAIL_TEMPLATE_ID_FORM_TO_ADMIN' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY"),
+                'ACTIVE' => 'Y',
+                'EVENT_NAME' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+                'LID' => $siteIds,
+                'EMAIL_FROM' => '#DEFAULT_EMAIL_FROM#',
+                'EMAIL_TO' => '#EMAIL#',
+                'SUBJECT' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT'),
+                'BODY_TYPE' => 'html',
+                'MESSAGE' => Loc::getMessage('TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY'),
             ),
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
-            Option::set("trusted.cryptoarmdocs", $templateName, $templateId);
+            Option::set('trusted.cryptoarmdocs', $templateName, $templateId);
         }
     }
 
-    function DoUninstall()
-    {
+    function DoUninstall() {
         global $DOCUMENT_ROOT, $APPLICATION;
 
         $context = Application::getInstance()->getContext();
         $request = $context->getRequest();
-        $step = (int)$request["step"];
+        $step = (int) $request['step'];
 
         if ($step < 2) {
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_UNINSTALL_TITLE"),
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep1.php"
+                Loc::getMessage('MOD_UNINSTALL_TITLE'),
+                $_SERVER['DOCUMENT_ROOT'] .
+                    '/bitrix/modules/' .
+                    $this->MODULE_ID .
+                    '/install/unstep1.php'
             );
         }
         if ($step == 2) {
             $this->UnInstallFiles();
             $this->UnInstallModuleOptions();
-            $deletedata = $request["deletedata"];
-            if ($deletedata == "Y") {
+            $deletedata = $request['deletedata'];
+            if ($deletedata == 'Y') {
                 $this->UnInstallDB();
                 $this->UnInstallIb();
             }
@@ -394,47 +397,49 @@ Class trusted_cryptoarmdocs extends CModule
             $this->UninstallBPTemplates();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("MOD_UNINSTALL_TITLE"),
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/unstep2.php"
+                Loc::getMessage('MOD_UNINSTALL_TITLE'),
+                $_SERVER['DOCUMENT_ROOT'] .
+                    '/bitrix/modules/' .
+                    $this->MODULE_ID .
+                    '/install/unstep2.php'
             );
         }
     }
 
-    function UnInstallFiles()
-    {
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
-        DeleteDirFilesEx("/bitrix/components/trusted/docs/");
+    function UnInstallFiles() {
+        DeleteDirFilesEx('/bitrix/components/trusted/cryptoarm_docs_by_user/');
+        DeleteDirFilesEx('/bitrix/components/trusted/cryptoarm_docs_by_order/');
+        DeleteDirFilesEx('/bitrix/components/trusted/cryptoarm_docs_crm/');
+        DeleteDirFilesEx('/bitrix/components/trusted/cryptoarm_docs_form/');
+        DeleteDirFilesEx('/bitrix/components/trusted/cryptoarm_docs_upload/');
+        DeleteDirFilesEx('/bitrix/components/trusted/docs/');
         DeleteDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/admin"
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $this->MODULE_ID . '/install/admin/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/admin'
         );
-        DeleteDirFilesEx("/bitrix/js/" . $this->MODULE_ID);
+        DeleteDirFilesEx('/bitrix/js/' . $this->MODULE_ID);
         DeleteDirFiles(
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/themes/.default/",
-            $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default/"
+            $_SERVER['DOCUMENT_ROOT'] .
+                '/bitrix/modules/' .
+                $this->MODULE_ID .
+                '/install/themes/.default/',
+            $_SERVER['DOCUMENT_ROOT'] . '/bitrix/themes/.default/'
         );
-        DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
+        DeleteDirFilesEx('/bitrix/themes/.default/icons/' . $this->MODULE_ID);
 
         // CRM
-        DeleteDirFilesEx("/tr_ca_docs/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
-        CUrlRewriter::Delete(
-            array(
-                'ID' => 'trusted:cryptoarm_docs_crm',
-                'PATH' => '/tr_ca_docs/index.php',
-            )
-        );
+        DeleteDirFilesEx('/tr_ca_docs/');
+        DeleteDirFilesEx('/bitrix/activities/custom/trustedcasign/');
+        DeleteDirFilesEx('/bitrix/activities/custom/trustedcaapprove/');
+        CUrlRewriter::Delete(array(
+            'ID' => 'trusted:cryptoarm_docs_crm',
+            'PATH' => '/tr_ca_docs/index.php',
+        ));
 
         return true;
     }
 
-    function UnInstallModuleOptions()
-    {
+    function UnInstallModuleOptions() {
         $options = array(
             // 'DOCUMENTS_DIR',
             'MAIL_EVENT_ID',
@@ -449,15 +454,11 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_TEMPLATE_ID_FORM_TO_ADMIN',
         );
         foreach ($options as $option) {
-            Option::delete(
-                $this->MODULE_ID,
-                array('name' => $option)
-            );
+            Option::delete($this->MODULE_ID, array('name' => $option));
         }
     }
 
-    function UnInstallDB()
-    {
+    function UnInstallDB() {
         global $DB;
         if (Loader::includeModule('bizproc')) {
             $docs = Docs\Database::getDocuments();
@@ -465,9 +466,9 @@ Class trusted_cryptoarmdocs extends CModule
                 $doc->remove();
             }
         }
-        $sql = "DROP TABLE IF EXISTS `tr_ca_docs`";
+        $sql = 'DROP TABLE IF EXISTS `tr_ca_docs`';
         $DB->Query($sql);
-        $sql = "DROP TABLE IF EXISTS `tr_ca_docs_property`";
+        $sql = 'DROP TABLE IF EXISTS `tr_ca_docs_property`';
         $DB->Query($sql);
     }
 
@@ -480,15 +481,14 @@ Class trusted_cryptoarmdocs extends CModule
 
         if ($this->crmSupport()) {
             $this->DeleteMenuItem(
-                $siteInfo["DIR"] . ".top.menu.php",
-                $siteInfo["DIR"] . "tr_ca_docs/",
-                $siteInfo["LID"]
+                $siteInfo['DIR'] . '.top.menu.php',
+                $siteInfo['DIR'] . 'tr_ca_docs/',
+                $siteInfo['LID']
             );
         }
     }
 
-    function UnInstallMailEvents()
-    {
+    function UnInstallMailEvents() {
         $events = array(
             'TR_CA_DOCS_MAIL_BY_ORDER',
             'TR_CA_DOCS_MAIL_TO',
@@ -497,33 +497,28 @@ Class trusted_cryptoarmdocs extends CModule
             'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
         );
         foreach ($events as $event) {
-            $eventMessages = CEventMessage::GetList(
-                $by = 'id',
-                $order = 'desc',
-                array('TYPE' => $event)
-            );
-            $eventMessage = new CEventMessage;
+            $eventMessages = CEventMessage::GetList($by = 'id', $order = 'desc', array(
+                'TYPE' => $event,
+            ));
+            $eventMessage = new CEventMessage();
             while ($template = $eventMessages->Fetch()) {
-                $eventMessage->Delete((int)$template['ID']);
+                $eventMessage->Delete((int) $template['ID']);
             }
-            $eventType = new CEventType;
+            $eventType = new CEventType();
             $eventType->Delete($event);
         }
     }
 
-    function dropDocumentChain($id)
-    {
+    function dropDocumentChain($id) {
         global $DB;
         // Try to find parent doc
         $sql = 'SELECT `PARENT_ID` FROM `tr_ca_docs` WHERE `ID`=' . $id;
         $res = $DB->Query($sql)->Fetch();
-        $parentId = $res["PARENT_ID"];
+        $parentId = $res['PARENT_ID'];
 
-        $sql = 'DELETE FROM `tr_ca_docs`'
-            . 'WHERE ID = ' . $id;
+        $sql = 'DELETE FROM `tr_ca_docs`' . 'WHERE ID = ' . $id;
         $DB->Query($sql);
-        $sql = 'DELETE FROM `tr_ca_docs_property`'
-            . 'WHERE DOCUMENT_ID = ' . $id;
+        $sql = 'DELETE FROM `tr_ca_docs_property`' . 'WHERE DOCUMENT_ID = ' . $id;
         $DB->Query($sql);
 
         if ($parentId) {
@@ -536,12 +531,11 @@ Class trusted_cryptoarmdocs extends CModule
         return CSite::GetByID($siteID)->Fetch();
     }
 
-    function AddMenuItem($menuFile, $menuItem,  $siteID, $pos = -1)
-    {
+    function AddMenuItem($menuFile, $menuItem, $siteID, $pos = -1) {
         if (CModule::IncludeModule('fileman')) {
             $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
-            $arMenuItems = $arResult["aMenuLinks"];
-            $menuTemplate = $arResult["sMenuTemplate"];
+            $arMenuItems = $arResult['aMenuLinks'];
+            $menuTemplate = $arResult['sMenuTemplate'];
 
             $bFound = false;
             foreach ($arMenuItems as $item) {
@@ -552,11 +546,11 @@ Class trusted_cryptoarmdocs extends CModule
             }
 
             if (!$bFound) {
-                if ($pos<0 || $pos>=count($arMenuItems)) {
+                if ($pos < 0 || $pos >= count($arMenuItems)) {
                     $arMenuItems[] = $menuItem;
                 } else {
-                    for ($i=count($arMenuItems); $i>$pos; $i--) {
-                        $arMenuItems[$i] = $arMenuItems[$i-1];
+                    for ($i = count($arMenuItems); $i > $pos; $i--) {
+                        $arMenuItems[$i] = $arMenuItems[$i - 1];
                     }
                     $arMenuItems[$pos] = $menuItem;
                 }
@@ -567,13 +561,15 @@ Class trusted_cryptoarmdocs extends CModule
     }
 
     function DeleteMenuItem($menuFile, $menuLink, $siteID) {
-        if (CModule::IncludeModule("fileman")) {
+        if (CModule::IncludeModule('fileman')) {
             $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
-            $arMenuItems = $arResult["aMenuLinks"];
-            $menuTemplate = $arResult["sMenuTemplate"];
+            $arMenuItems = $arResult['aMenuLinks'];
+            $menuTemplate = $arResult['sMenuTemplate'];
 
-            foreach($arMenuItems as $key => $item) {
-                if($item[1] == $menuLink) unset($arMenuItems[$key]);
+            foreach ($arMenuItems as $key => $item) {
+                if ($item[1] == $menuLink) {
+                    unset($arMenuItems[$key]);
+                }
             }
 
             CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
@@ -585,25 +581,42 @@ Class trusted_cryptoarmdocs extends CModule
         CModule::IncludeModule('bizprocdesigner');
 
         $templateIds = array();
-        $templateIds[] = $this->ImportBPTemplateFromFile('SetSignResponsibility.bpt', Loc::getMessage("TR_CA_DOCS_BP_SIGN_TEMPLATE"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('AgreedOn.bpt', Loc::getMessage("TR_CA_DOCS_BP_AGREED_TEMPLATE"));
+        $templateIds[] = $this->ImportBPTemplateFromFile(
+            'SetSignResponsibility.bpt',
+            Loc::getMessage('TR_CA_DOCS_BP_SIGN_TEMPLATE')
+        );
+        $templateIds[] = $this->ImportBPTemplateFromFile(
+            'AgreedOn.bpt',
+            Loc::getMessage('TR_CA_DOCS_BP_AGREED_TEMPLATE')
+        );
 
-        Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID, implode(" ", $templateIds));
+        Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID, implode(' ', $templateIds));
     }
 
-    function ImportBPTemplateFromFile ($filename, $templatename) {
-        $file = fopen(TR_CA_DOCS_MODULE_DIR . "resources/".$filename, 'r');
-        $data = fread($file, filesize(TR_CA_DOCS_MODULE_DIR . "resources/".$filename));
+    function ImportBPTemplateFromFile($filename, $templatename) {
+        $file = fopen(TR_CA_DOCS_MODULE_DIR . 'resources/' . $filename, 'r');
+        $data = fread($file, filesize(TR_CA_DOCS_MODULE_DIR . 'resources/' . $filename));
         fclose($file);
-        $templateId = CBPWorkflowTemplateLoader::ImportTemplate(0, ["trusted.cryptoarmdocs", "Trusted\CryptoARM\Docs\WorkflowDocument", "TR_CA_DOC"], true, $templatename, "", $data);
+        $templateId = CBPWorkflowTemplateLoader::ImportTemplate(
+            0,
+            ['trusted.cryptoarmdocs', 'Trusted\CryptoARM\Docs\WorkflowDocument', 'TR_CA_DOC'],
+            true,
+            $templatename,
+            '',
+            $data
+        );
         return $templateId;
     }
 
-    function UninstallBPTemplates () {
-        $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
+    function UninstallBPTemplates() {
+        $templateIds = preg_split(
+            '/ /',
+            Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID),
+            null,
+            PREG_SPLIT_NO_EMPTY
+        );
         foreach ($templateIds as $id) {
             CBPWorkflowTemplateLoader::delete($id);
         }
     }
 }
-

@@ -8,9 +8,7 @@ Loc::loadMessages(__FILE__);
 /**
  * Various utility functions
  */
-class Utils
-{
-
+class Utils {
     /**
      * Creates new document
      *
@@ -18,8 +16,7 @@ class Utils
      * @param PropertyCollection $properties User-set properties
      * @return object Document
      */
-    public static function createDocument($file, $properties = null)
-    {
+    public static function createDocument($file, $properties = null) {
         $name = Utils::mb_basename($file);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
@@ -31,8 +28,8 @@ class Utils
         $doc->save();
         // TODO: log document properties
         Utils::log(array(
-            "action" => "created",
-            "docs" => $doc,
+            'action' => 'created',
+            'docs' => $doc,
         ));
         return $doc;
     }
@@ -50,7 +47,12 @@ class Utils
      *               [docsUnsigned]: documents not signed
      *               [docsOk]: documents that passed all checks
      */
-    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true) {
+    public static function checkDocuments(
+        $ids,
+        $level = DOC_SHARE_READ,
+        $allowBlocked = true,
+        $allowSigned = true
+    ) {
         $res = array(
             'docsNotFound' => array(),
             'docsNoAccess' => array(),
@@ -98,7 +100,7 @@ class Utils
     public static function mb_basename($path) {
         if (preg_match('@^.*[\\\\/]([^\\\\/]+)$@s', $path, $matches)) {
             return $matches[1];
-        } else if (preg_match('@^([^\\\\/]+)$@s', $path, $matches)) {
+        } elseif (preg_match('@^([^\\\\/]+)$@s', $path, $matches)) {
             return $matches[1];
         }
         return '';
@@ -110,10 +112,9 @@ class Utils
      * @param object Document $doc
      * @return string
      */
-    public static function getTypeString($doc)
-    {
+    public static function getTypeString($doc) {
         $docType = $doc->getType();
-        return Loc::getMessage("TR_CA_DOCS_TYPE_" . $docType);
+        return Loc::getMessage('TR_CA_DOCS_TYPE_' . $docType);
     }
 
     /**
@@ -122,10 +123,9 @@ class Utils
      * @param object Document $doc
      * @return string
      */
-    public static function getStatusString($doc)
-    {
+    public static function getStatusString($doc) {
         $docStatus = $doc->getStatus();
-        return Loc::getMessage("TR_CA_DOCS_STATUS_" . $docStatus);
+        return Loc::getMessage('TR_CA_DOCS_STATUS_' . $docStatus);
     }
 
     /**
@@ -134,8 +134,7 @@ class Utils
      * @param string $filepath
      * @param string $filename
      */
-    public static function download($filepath, $filename)
-    {
+    public static function download($filepath, $filename) {
         if (file_exists($filepath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
@@ -147,7 +146,7 @@ class Utils
             ob_clean();
             flush();
             readfile($filepath);
-            exit;
+            exit();
         }
     }
 
@@ -160,16 +159,17 @@ class Utils
      * @param string $type
      * @return boolean
      */
-    public static function propertyTypeValidation($type)
-    {
+    public static function propertyTypeValidation($type) {
         $res = true;
-        $len = mb_strlen($type, "UTF-8");
-        if ($len = 0 || $len > 50)
+        $len = mb_strlen($type, 'UTF-8');
+        if ($len = 0 || $len > 50) {
             $res = false;
-        $cyr = Loc::getMessage("TR_CA_DOCS_CYR");
-        $pattern = "/^[A-Za-z" . $cyr . "0-9\-\_\.]*$/u";
-        if (!preg_match($pattern, $type))
+        }
+        $cyr = Loc::getMessage('TR_CA_DOCS_CYR');
+        $pattern = '/^[A-Za-z' . $cyr . "0-9\-\_\.]*$/u";
+        if (!preg_match($pattern, $type)) {
             $res = false;
+        }
         return $res;
     }
 
@@ -183,14 +183,15 @@ class Utils
      * @param string $value
      * @return boolean
      */
-    public static function propertyValueValidation($value)
-    {
+    public static function propertyValueValidation($value) {
         $res = true;
-        $len = mb_strlen($value, "UTF-8");
-        if ($len = 0 || $len > 255)
+        $len = mb_strlen($value, 'UTF-8');
+        if ($len = 0 || $len > 255) {
             $res = false;
-        if (preg_match("[\ \t\n\r\0\x0B]", $value))
+        }
+        if (preg_match("[\ \t\n\r\0\x0B]", $value)) {
             $res = false;
+        }
         return $res;
     }
 
@@ -203,14 +204,15 @@ class Utils
      * @param string $value
      * @return boolean
      */
-    public static function propertyNumericalIdValidation($value)
-    {
+    public static function propertyNumericalIdValidation($value) {
         $res = true;
-        $len = mb_strlen($value, "UTF-8");
-        if ($len = 0 || $len > 255)
+        $len = mb_strlen($value, 'UTF-8');
+        if ($len = 0 || $len > 255) {
             $res = false;
-        if (!preg_match("/^\d+$/", $value))
+        }
+        if (!preg_match("/^\d+$/", $value)) {
             $res = false;
+        }
         return $res;
     }
 
@@ -225,9 +227,8 @@ class Utils
      * @param mixed $adaptive
      * @return string
      */
-    public static function tail($filepath, $lines = 1, $adaptive = true)
-    {
-        $f = @fopen($filepath, "rb");
+    public static function tail($filepath, $lines = 1, $adaptive = true) {
+        $f = @fopen($filepath, 'rb');
         if ($f === false) {
             return false;
         }
@@ -236,7 +237,7 @@ class Utils
         if (!$adaptive) {
             $buffer = 4096;
         } else {
-            $buffer = ($lines < 2 ? 64 : ($lines < 10 ? 512 : 4096));
+            $buffer = $lines < 2 ? 64 : ($lines < 10 ? 512 : 4096);
         }
         // Jump to last character
         fseek($f, -1, SEEK_END);
@@ -246,8 +247,8 @@ class Utils
             $lines -= 1;
         }
         // Start reading
-        $output = "";
-        $chunk = "";
+        $output = '';
+        $chunk = '';
         // While we would like more
         while (ftell($f) > 0 && $lines >= 0) {
             // Figure out how far back we should jump
@@ -257,7 +258,7 @@ class Utils
             // Read a chunk and prepend it to our output
             $output = ($chunk = fread($f, $seek)) . $output;
             // Jump back to where we started reading
-            fseek($f, -mb_strlen($chunk, "8bit"), SEEK_CUR);
+            fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
             // Decrease our line counter
             $lines -= substr_count($chunk, "\n");
         }
@@ -280,33 +281,32 @@ class Utils
      *                        [extra]: extra info associated with action
      * @return void
      */
-    public static function log($logArray)
-    {
-        $logFile = fopen(TR_CA_DOCS_LOG_FILE, "a");
-        $logTime = date("Y-m-d H:i:s", time());
-        $logAction = $logArray["action"];
-        $logDocs = $logArray["docs"];
-        $logExtra = $logArray["extra"];
+    public static function log($logArray) {
+        $logFile = fopen(TR_CA_DOCS_LOG_FILE, 'a');
+        $logTime = date('Y-m-d H:i:s', time());
+        $logAction = $logArray['action'];
+        $logDocs = $logArray['docs'];
+        $logExtra = $logArray['extra'];
         if ($logDocs) {
             $logDocsParsed = array();
-            if (get_class($logDocs) === "Trusted\CryptoARM\Docs\Document") {
-                $logDocsParsed[] = $logDocs->getId() . "(" . $logDocs->getName() . ")";
+            if (get_class($logDocs) === 'Trusted\CryptoARM\Docs\Document') {
+                $logDocsParsed[] = $logDocs->getId() . '(' . $logDocs->getName() . ')';
             }
-            if (get_class($logDocs) === "Trusted\CryptoARM\Docs\DocumentCollection") {
+            if (get_class($logDocs) === 'Trusted\CryptoARM\Docs\DocumentCollection') {
                 foreach ($logDocs->getList() as $doc) {
-                    $logDocsParsed[] = $doc->getId() . "(" .$doc->getName() . ")";
+                    $logDocsParsed[] = $doc->getId() . '(' . $doc->getName() . ')';
                 }
             }
         }
         fwrite($logFile, $logTime);
         if ($logAction) {
-            fwrite($logFile, " action:" . print_r($logAction, true));
+            fwrite($logFile, ' action:' . print_r($logAction, true));
         }
         if ($logDocsParsed) {
-            fwrite($logFile, " docs:" . implode(",", $logDocsParsed));
+            fwrite($logFile, ' docs:' . implode(',', $logDocsParsed));
         }
-        if ($logExtra && $logExtra != "null") {
-            fwrite($logFile, " extra:" . print_r($logExtra, true));
+        if ($logExtra && $logExtra != 'null') {
+            fwrite($logFile, ' extra:' . print_r($logExtra, true));
         }
         fwrite($logFile, "\n");
         fclose($logFile);
@@ -319,9 +319,9 @@ class Utils
      * @return void
      */
     public static function dump(...$vars) {
-        $file = fopen($_SERVER["DOCUMENT_ROOT"] . "/log.txt", 'a');
-        $time = date("H:i:s ");
-        fwrite($file, $time . str_repeat("=", 30) . "\n");
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/log.txt', 'a');
+        $time = date('H:i:s ');
+        fwrite($file, $time . str_repeat('=', 30) . "\n");
         foreach ($vars as $var) {
             fwrite($file, print_r($var, true) . "\n\n");
         }
@@ -336,8 +336,15 @@ class Utils
             return;
         }
         $res = '';
-        foreach($stacktrace as $n => $node) {
-            $res .= "$n. ".basename($node['file']) .": " .$node['function'] ." (" .$node['line'].")\n";
+        foreach ($stacktrace as $n => $node) {
+            $res .=
+                "$n. " .
+                basename($node['file']) .
+                ': ' .
+                $node['function'] .
+                ' (' .
+                $node['line'] .
+                ")\n";
         }
         Utils::dump($res);
     }
@@ -348,10 +355,9 @@ class Utils
      * @param mixed $msg
      * @return void
      */
-    public static function printAndDie($var)
-    {
-        header("HTTP/1.1 500 Internal Server Error");
-        echo "<pre>" . print_r($var, true) . "</pre>";
+    public static function printAndDie($var) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo '<pre>' . print_r($var, true) . '</pre>';
         die();
     }
 
@@ -361,8 +367,8 @@ class Utils
      * @return bool
      */
     public static function isSecure() {
-        return ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || $_SERVER['SERVER_PORT'] == 443);
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ||
+            $_SERVER['SERVER_PORT'] == 443;
     }
 
     /**
@@ -370,7 +376,7 @@ class Utils
      * @return bool Return Y/N
      */
     public static function CheckDocumentsDir($dir) {
-        $docRoot = $_SERVER["DOCUMENT_ROOT"];
+        $docRoot = $_SERVER['DOCUMENT_ROOT'];
         $fullPath = $docRoot . $dir;
         // Expand extra /../
         $fullPath = realpath($fullPath);
@@ -378,17 +384,17 @@ class Utils
         // Check if we are in bitrix root
         $len = strlen($docRoot);
         if (strncmp($fullPath, $docRoot, $len) < 0 || strcmp($fullPath, $docRoot) == 0) {
-            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+            return Loc::getMessage('TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY');
         }
 
         // Check for entering bitrix system directory
-        if (preg_match("/^\/bitrix\/.*/", $dir)) {
-            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY");
+        if (preg_match('/^\/bitrix\/.*/', $dir)) {
+            return Loc::getMessage('TR_CA_DOCS_DOCS_DIR_CANNOT_USE_SYSTEM_DIRECTORY');
         }
 
         // Check for permissions
         if (!is_readable($fullPath) && !is_writable($fullPath)) {
-            return Loc::getMessage("TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY");
+            return Loc::getMessage('TR_CA_DOCS_DOCS_DIR_NO_ACCESS_TO_DIRECTORY');
         }
         return true;
     }
@@ -402,9 +408,11 @@ class Utils
      * Genereates UUID v.4
      */
     public static function generateUUID() {
-        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
 
             // 16 bits for "time_mid"
             mt_rand(0, 0xffff),
@@ -419,7 +427,9 @@ class Utils
             mt_rand(0, 0x3fff) | 0x8000,
 
             // 48 bits for "node"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
         );
     }
 
@@ -429,29 +439,29 @@ class Utils
      * @param string $input String like "10mb" or "1G"
      * @return int|null Number of bytes
      */
-    public static function byteconvert($input){
+    public static function byteconvert($input) {
         preg_match('/(\d+)(\w*)/', $input, $matches);
         $type = strtolower($matches[2]);
-        $amount = (int)$matches[1];
+        $amount = (int) $matches[1];
         switch ($type) {
-            case "":
-            case "b":
+            case '':
+            case 'b':
                 $output = $amount;
                 break;
-            case "k":
-            case "kb":
+            case 'k':
+            case 'kb':
                 $output = $amount * 1024;
                 break;
-            case "m":
-            case "mb":
+            case 'm':
+            case 'mb':
                 $output = $amount * 1024 * 1024;
                 break;
-            case "g":
-            case "gb":
+            case 'g':
+            case 'gb':
                 $output = $amount * 1024 * 1024 * 1024;
                 break;
-            case "t":
-            case "tb":
+            case 't':
+            case 'tb':
                 $output = $amount * 1024 * 1024 * 1024 * 1024;
                 break;
             default:
@@ -466,19 +476,19 @@ class Utils
      */
     public static function maxUploadFileSize() {
         $minMaxSize = array(
-            "uploadMax" => Utils::byteconvert(ini_get('upload_max_filesize')),
-            "postMax" => Utils::byteconvert(ini_get('post_max_size')),
-            "diskMax" => (int)Option::get("main", "disk_space") * 1024 * 1024,
+            'uploadMax' => Utils::byteconvert(ini_get('upload_max_filesize')),
+            'postMax' => Utils::byteconvert(ini_get('post_max_size')),
+            'diskMax' => (int) Option::get('main', 'disk_space') * 1024 * 1024,
         );
 
         // Like min(), but casts to int and ignores 0
         $minNotNull = min(array_diff(array_map('intval', $minMaxSize), array(0)));
 
-        return round($minNotNull/1024/1024, 2);
+        return round($minNotNull / 1024 / 1024, 2);
     }
 
     public static function isNotEmpty($val) {
-        return ($val || $val === 0 || $val === 0.0 || $val === '0');
+        return $val || $val === 0 || $val === 0.0 || $val === '0';
     }
 
     public static function validateEmailAddress($emailAddress) {
@@ -518,14 +528,12 @@ class Utils
 
     public static function getUserLogin($userId = null) {
         $user = Utils::getUser($userId);
-        return $user ? $user["LOGIN"] : null;
+        return $user ? $user['LOGIN'] : null;
     }
 
     public static function getUserIdByEmail($email) {
-        $filter = array("EMAIL" => $email);
-        $user = \CUser::GetList(($by="id"), ($order="desc"), $filter)->Fetch();
+        $filter = array('EMAIL' => $email);
+        $user = \CUser::GetList($by = 'id', $order = 'desc', $filter)->Fetch();
         return $user ? $user['ID'] : null;
     }
-
 }
-

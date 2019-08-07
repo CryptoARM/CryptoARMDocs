@@ -6,16 +6,13 @@ namespace Trusted\CryptoARM\Docs;
  *
  * @see Collection
  */
-class PropertyCollection extends Collection
-{
-
+class PropertyCollection extends Collection {
     /**
      * Returns property from collection by index.
      * @param integer $i [0..n]
      * @return Property
      */
-    function items($i)
-    {
+    function items($i) {
         return parent::items($i);
     }
 
@@ -24,8 +21,7 @@ class PropertyCollection extends Collection
      * @param string $type
      * @return Property|null
      */
-    function getPropByType($type)
-    {
+    function getPropByType($type) {
         $list = $this->getList();
         $res = null;
         foreach ($list as $item) {
@@ -42,8 +38,7 @@ class PropertyCollection extends Collection
      * @param string $type
      * @return PropertyCollection|null
      */
-    function getPropsByType($type)
-    {
+    function getPropsByType($type) {
         $list = $this->getList();
         $res = new PropertyCollection();
         foreach ($list as $item) {
@@ -59,8 +54,7 @@ class PropertyCollection extends Collection
      * @param string $type
      * @return Property|null
      */
-    function getPropByTypeAndValue($type, $value)
-    {
+    function getPropByTypeAndValue($type, $value) {
         $list = $this->getList();
         $res = null;
         foreach ($list as $item) {
@@ -71,6 +65,4 @@ class PropertyCollection extends Collection
         }
         return $res;
     }
-
 }
-
