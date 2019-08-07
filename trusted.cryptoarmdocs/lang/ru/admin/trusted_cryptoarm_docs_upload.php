@@ -23,7 +23,6 @@ $MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_DOESNT_EXIST"] = "Несуществующий
 
 $MESS["TR_CA_DOCS_UPLOAD_ACCESS_DENIED"] = "Недостаточно прав для создания файла";
 $MESS["TR_CA_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимально допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
-// TODO: File exists error is deprecated. Need to be fixed in all upload pages
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS1"] = "Файл с именем";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS2"] = "уже существует";
 $MESS["TR_CA_DOCS_UPLOAD_PHPERROR"] = "Недостаточно прав для загрузки PHP файла";
@@ -41,3 +40,5 @@ $MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_NOTE"] = " Цифровой номер зак�
 $MESS["TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE1"] = "Размер загружаемых файлов не должен превышать ";
 $MESS["TR_CA_DOCS_UPLOAD_DOC_MAX_SIZE2"] = " Mb.";
 $MESS["TR_CA_DOCS_UPLOAD_ERROR"] = "Один или несколько файлов не были загружены. ";
+
+$MESS["TR_CA_DOCS_UPLOAD_ADD_FILE"] = "Добавить файл";

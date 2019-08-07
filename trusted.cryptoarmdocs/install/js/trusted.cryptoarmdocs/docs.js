@@ -38,6 +38,7 @@ trustedCA.initVar = function(){
     MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
+    NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
 };
 
 // Modal window
@@ -471,9 +472,9 @@ trustedCA.reloadGrid = function (gridId) {
 };
 
 
-trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null){
+trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null) {
     if (file.size/1024/1024  >= maxSize){
-        alert(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2);
+        trustedCA.showPopupMessage(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2, 'highlight_off', 'negative');
         if (typeof onFailure === 'function') {
             onFailure();
         }
@@ -484,6 +485,24 @@ trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure =
     }
 };
 
+trustedCA.checkAccessFile = function (file, onSuccess, onFailure) {
+    let fr = new FileReader();
+    fr.onloadend = () => {
+        if (fr.error) {
+            let message = NO_ACCESS_FILE + String.fromCharCode(171) + file.name + String.fromCharCode(187);
+            trustedCA.showPopupMessage(message, 'highlight_off', 'negative');
+            if (typeof onFailure === 'function') {
+                onFailure();
+            }
+        } else {
+            if (typeof onSuccess === 'function') {
+                onSuccess();
+            }
+        }
+    };
+    fr.readAsDataURL(file);
+};
+
 trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
     message = UNSHARE_CONFIRM;
     if (force ? true : confirm(message)) {
@@ -491,14 +510,19 @@ trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
     }
 };
 
-trustedCA.showPopupMessage = function (message, interval = 5000) {
+trustedCA.showPopupMessage = function (message, icon = 'info_outline', style = '', interval = 5000) {
+    let oldPopupMessageDiv = document.querySelectorAll('.trca-popup-window');
+    oldPopupMessageDiv.forEach( (element) => {
+        document.body.removeChild(element)
+        clearInterval(intervalPopup);
+    });
     trustedCA.popupMessageDiv = document.createElement("div");
     trustedCA.popupMessageDiv.className = "trca-popup-window";
     popupMessage = `
-        <div class="trca-popup-content">
-            <div class="trca-popup-icon">
+        <div class="trca-popup-content ${style}">
+            <div class="trca-popup-icon ${style}">
                 <div class="material-icons">
-                    check_circles
+                    ${icon}
                 </div>
             </div>
             <div class="trca-popup-message">

@@ -262,9 +262,25 @@
     display: flex;
 }
 
+.trca-popup-window .trca-popup-content.negative{
+    background-color: #ffe1e1;
+}
+
+.trca-popup-window .trca-popup-content.positive{
+    background-color: #e2ffd9;
+}
+
 .trca-popup-window .trca-popup-icon {
-    color: rgb(33, 150, 243);
     margin: auto 20px;
+    color: rgb(33, 150, 243);
+}
+
+.trca-popup-window .trca-popup-icon.negative{
+    color: #dd3d3d;;
+}
+
+.trca-popup-window .trca-popup-icon.positive{
+    color: green;
 }
 
 .trca-popup-window .trca-popup-icon .material-icons {
@@ -273,7 +289,7 @@
 }
 
 .trca-popup-window .trca-popup-message {
-    margin: 18px auto 24px auto;
+    margin: 18px auto 24px 0;
     word-break: break-word;
 }
 

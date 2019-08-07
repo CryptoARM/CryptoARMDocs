@@ -206,13 +206,17 @@ function dirSelectorAct(filename, path, site)
                     </tr>
                     <?
                     $maxSize  = Docs\Utils::maxUploadFileSize();
-                    $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, null, () => { this.value = null; event.stopImmediatePropagation() })";
                     ?>
-                    <? for ($i = 1; $i <= 5; $i++): ?>
+                    <? for ($i = 1; $i <= 5; $i++):
+                        $onFailure = "() => { this.value = null; let element = document.getElementById('trca-adm-input-file_$i');";
+                        $onFailure .= " element.childNodes[1].childNodes[0].innerHTML = '" . Loc::getMessage("TR_CA_DOCS_UPLOAD_ADD_FILE") . "' }";
+                        $accessFileJS = "trustedCA.checkAccessFile(this.files[0], null, $onFailure)";
+                        $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, $accessFileJS, $onFailure)";
+                    ?>
                         <tr>
 
                             <td class="adm-detail-content-cell-l">
-                                <div class="trca-adm-input-file">
+                                <div class="trca-adm-input-file" id="trca-adm-input-file_<?= $i?>">
                                     <input type="file" name="file_<?= $i ?>" size="30"
                                         maxlength="255" value=""
                                         onchange="<?= $sizeFileJS ?>">

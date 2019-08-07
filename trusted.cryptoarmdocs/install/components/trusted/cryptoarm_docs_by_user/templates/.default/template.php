@@ -270,8 +270,11 @@ $APPLICATION->IncludeComponent(
         <?
         if ($arParams["ALLOW_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) {
-            $maxSize  = Docs\Utils::maxUploadFileSize();
-            $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, () => { $('#document-footer__download').submit() }, () => { $('#document-footer__input').val(null) })";
+                $maxSize  = Docs\Utils::maxUploadFileSize();
+                $onSuccess = "() => { $('#document-footer__download').submit() }";
+                $onFailure = "() => { $('#document-footer__input').val(null) }";
+                $accessFileJS = "() => { trustedCA.checkAccessFile(this.files[0], $onSuccess, $onFailure) }";
+                $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, $accessFileJS, $onFailure)";
         ?>
                 <div class="document-card__footer">
                     <form enctype="multipart/form-data" method="POST" id="document-footer__download">
