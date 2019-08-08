@@ -93,7 +93,9 @@ Class trusted_cryptoarmdocs extends CModule
             $this->InstallIb();
             $this->InstallMenuItems();
             $this->InstallMailEvents();
-            $this->InstallBPTemplates();
+            if ($this->bizprocSupport()) {
+                $this->InstallBPTemplates();
+            }
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -391,7 +393,9 @@ Class trusted_cryptoarmdocs extends CModule
             }
             $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
-            $this->UninstallBPTemplates();
+            if ($this->bizprocSupport()) {
+                $this->UninstallBPTemplates();
+            }
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
@@ -601,7 +605,25 @@ Class trusted_cryptoarmdocs extends CModule
 
     function UninstallBPTemplates () {
         $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
+        global $DB;
         foreach ($templateIds as $id) {
+            $dbResult = $DB->Query(
+                "SELECT COUNT('x') as CNT ".
+                "FROM b_bp_workflow_instance WI ".
+                "WHERE WI.WORKFLOW_TEMPLATE_ID = ".intval($id)." "
+            );
+
+            if ($arResult = $dbResult->Fetch()) {
+                $cnt = intval($arResult["CNT"]);
+                if ($cnt > 0) {
+                    $dbResult = $DB->Query("SELECT ID FROM b_bp_workflow_instance WI WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
+                    while ($arResult = $dbResult->Fetch()) {
+                        CBPAllTaskService::DeleteByWorkflow($arResult["ID"]);
+                    }
+                    $DB->Query("DELETE FROM b_bp_workflow_instance WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
+                    $DB->Query("DELETE FROM b_bp_workflow_state WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
+                }
+            }
             CBPWorkflowTemplateLoader::delete($id);
         }
     }
