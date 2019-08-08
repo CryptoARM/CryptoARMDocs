@@ -18,6 +18,8 @@ if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     die();
 };
 
+CJSCore::Init(array("popup"));
+
 Loader::includeModule($module_id);
 Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trusted_cryptoarm_docs.php");
 
@@ -72,7 +74,9 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
 
     switch ($_REQUEST['action']) {
         case "remove":
-            Docs\Form::removeIBlockAndDocs($ids);
+            echo '<script>';
+            echo 'window.parent.trustedCA.removeForm(' . json_encode($ids) . ', () => { window.parent.' . $reloadTableJs . ' })';
+            echo '</script>';
             break;
     }
 }

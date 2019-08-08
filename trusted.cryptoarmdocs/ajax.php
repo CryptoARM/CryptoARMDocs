@@ -73,6 +73,9 @@ if (isset($command)) {
         case "unshare":
             $res = Docs\AjaxCommand::unshare($params);
             break;
+        case "removeForm":
+            $res = Docs\Form::removeIBlockAndDocs($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

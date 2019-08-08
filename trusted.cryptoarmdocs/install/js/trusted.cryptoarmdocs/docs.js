@@ -11,6 +11,8 @@ trustedCA.initVar = function(){
     HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
     REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
     REMOVE_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM_MANY');
+    REMOVE_FORM_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_FORM_ACTION_CONFIRM');
+    REMOVE_FORM_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_FORM_ACTION_CONFIRM_MANY');
     LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
     LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
     LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
@@ -507,6 +509,17 @@ trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
     message = UNSHARE_CONFIRM;
     if (force ? true : confirm(message)) {
         trustedCA.ajax('unshare', {ids}, onSuccess, onFailure);
+    }
+};
+
+trustedCA.removeForm = function (ids, onSuccess = null, onFailure = null) {
+    if (ids.length != 1) {
+        message = REMOVE_FORM_ACTION_CONFIRM_MANY;
+    } else {
+        message = REMOVE_FORM_ACTION_CONFIRM
+    }
+    if (confirm(message)) {
+        trustedCA.ajax('removeForm', {ids}, onSuccess, onFailure);
     }
 };
 

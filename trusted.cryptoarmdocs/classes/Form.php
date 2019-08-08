@@ -490,6 +490,10 @@ class Form {
             "message" => "Unknown error in Form::removeIBlockAndDocs",
         ];
 
+        if ($ids["ids"]) {
+            $ids = $ids["ids"];
+        }
+
         foreach ($ids as $id) {
             $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $id);
             $docList = $docs->getList();
