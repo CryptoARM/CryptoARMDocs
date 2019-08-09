@@ -148,7 +148,7 @@
     min-height: 217px;
     z-index: 1050;
     background: white;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(1.01);
     border-radius: 3px;
     -webkit-box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
     box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
