@@ -325,7 +325,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $docViewField .= $docId . "])' title='" . Loc::getMessage("TR_CA_DOCS_VERIFY_DOC") . "'/>";
         $docViewField .= "<a class='trca-tn-document' title='" . Loc::getMessage("TR_CA_DOCS_DOWNLOAD_DOC") . " ";
         $docViewField .= Loc::getMessage("TR_CA_DOCS_OPEN_QUOTE") . $doc->getName() . Loc::getMessage("TR_CA_DOCS_CLOSE_QOUTE");
-        $docViewField .= "' onclick='trustedCA.download([";
+        $docViewField .= "' ondblclick='event.stopPropagation()' onclick='trustedCA.download([";
         $docViewField .= $docId;
         $docViewField .= "], true)'>";
         $docViewField .= $docName . "</a>";
