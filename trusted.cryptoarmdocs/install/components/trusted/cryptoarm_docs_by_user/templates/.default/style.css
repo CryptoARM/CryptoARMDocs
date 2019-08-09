@@ -33,6 +33,7 @@ main.document-card {
     width: auto;
     height: auto;
     font-size: 15px;
+    line-height: 1.4
 }
 
 .document-item__text .document-text__description {
@@ -94,7 +95,7 @@ main.document-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    line-height: 135%;
+    line-height: 1.3;
     width: 86%;
 }
 
