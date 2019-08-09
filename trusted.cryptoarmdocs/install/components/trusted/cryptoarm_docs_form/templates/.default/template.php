@@ -87,17 +87,8 @@ use Bitrix\Main\Localization\Loc;
                                                 <input type="file"
                                                        id="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
                                                        name="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
+                                                       onchange="checkSizeNReadNWrite(<?= $value['ID'] . ', 0,' . "'" .$multiple . "'" ?>)"
                                                     <?
-                                                    if ($value["MULTIPLE"] == "Y") {
-                                                        $multiple = "'" . $multiple . "'";
-                                                        ?>
-                                                        onchange="addInputTypeFileField(<?= $value['ID'] . ', 0,' . $multiple ?>)"
-                                                        <?
-                                                    } else {
-                                                        ?>
-                                                        onchange="showUploadFile(<?= $value['ID'] . ', 0' ?>)"
-                                                        <?
-                                                    }
                                                     echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                 />
                                                 <?= Loc::getMessage("TR_CA_DOCS_COMP_FORM_INPUT_FILE"); ?>

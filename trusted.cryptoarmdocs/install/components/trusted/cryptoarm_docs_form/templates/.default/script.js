@@ -1,4 +1,5 @@
 INPUT_FILE = BX.message('TR_CA_DOCS_COMP_FORM_INPUT_FILE');
+MAX_FILE_SIZE = BX.message('TR_CA_DOCS_MAX_FILE_SIZE');
 
 window.onload = function addAutoResize() {
     document.querySelectorAll('[data-autoresize]').forEach(function (element) {
@@ -12,7 +13,7 @@ window.onload = function addAutoResize() {
     });
 };
 
-function showUploadFile (id, numInput, multiple = '') {
+function showUploadFile(id, numInput, multiple = '') {
     let idInputElem = id + '_' + numInput;
     let fileName = $('#input_file_' + idInputElem + multiple)[0].files[0].name;
     $('#trca-sf-upload-file-name-' + idInputElem).text(fileName);
@@ -23,14 +24,14 @@ function showUploadFile (id, numInput, multiple = '') {
     $('#trca-sf-upload-file-name-' + idInputElem).prop('title', fileName);
 }
 
-function hideUploadFile (id) {
+function hideUploadFile(id) {
     let idInputElem = id + "_0";
     $('#input_file_' + idInputElem).val(null);
     $('#trca-sf-upload-file-button-' + idInputElem).hide();
     $('#trca-sf-upload-input-' + idInputElem).show();
 }
 
-function createInputDiv (id, numOfInputs, multiple) {
+function createInputDiv(id, numOfInputs, multiple) {
     let idInputElem = id + "_" + numOfInputs;
     let inputDiv = document.createElement("div");
     inputDiv.className = "trca-sf-upload-input";
@@ -39,7 +40,7 @@ function createInputDiv (id, numOfInputs, multiple) {
     let inputDivText = `
         <input type="file" id="input_file_${idInputElem + multiple}"
             name="input_file_${idInputElem + multiple}"
-            onchange="addInputTypeFileField(${id}, ${numOfInputs}, '${multiple}')">
+            onchange="checkSizeReadNWrite(${id}, ${numOfInputs}, '${multiple}')">
         </input>
         ${INPUT_FILE}`;
     inputDiv.innerHTML = inputDivText;
@@ -47,7 +48,7 @@ function createInputDiv (id, numOfInputs, multiple) {
     return inputDiv;
 }
 
-function createUploadFileDiv (id, numOfInputs) {
+function createUploadFileDiv(id, numOfInputs) {
     let idInputElem = id + '_' + numOfInputs;
     let fileDiv = document.createElement("div");
     fileDiv.className = "trca-sf-upload-file-button";
@@ -73,22 +74,46 @@ function createUploadFileDiv (id, numOfInputs) {
     return fileDiv;
 }
 
-function changeDelete (id, numOfInputs, multiple) {
+function changeDelete(id, numOfInputs, multiple) {
     let parentIncrement = numOfInputs - 1;
     let changeDelete = "input_file_" + id + "_" + parentIncrement + multiple;
     document.getElementById(changeDelete).removeAttribute("onchange");
 }
 
-function getNumberLastInputFile (id) {
+function getNumberLastInputFile(id) {
     let inputsInDiv = $('#trca-sf-upload-button-' + id);
     numOfInputs = inputsInDiv.find("input").length;
 
     return numOfInputs;
 }
 
+function checkSizeNReadNWrite(id, numInput, multiple) {
+    let inputId = "#" + "input_file_" + id + "_" + numInput + multiple;
+    let inputEntity = $(inputId);
+    let fileEntity = inputEntity.get(0).files[0];
+    let onSuccess;
+    if (multiple == "_Y") {
+        onSuccess = () => {
+            addInputTypeFileField(id, numInput, multiple)
+        };
+    } else {
+        onSuccess = () => {
+            showUploadFile(id, numInput, multiple)
+        };
+    }
+    let onFailure = () => {
+        inputEntity.val(null)
+    };
+
+    let accessFileJS = () => {
+        trustedCA.checkAccessFile(fileEntity, onSuccess, onFailure)
+    };
+    trustedCA.checkFileSize(fileEntity, MAX_FILE_SIZE, accessFileJS, onFailure);
+}
+
 function addInputTypeFileField(id, numInput, multiple) {
     showUploadFile(id, numInput, multiple);
-    let numOfInputs  = getNumberLastInputFile(id);
+    let numOfInputs = getNumberLastInputFile(id);
 
     let parent = document.getElementById("trca-sf-upload-button-" + id);
     let inputFileDiv = document.createElement("div");
@@ -104,18 +129,18 @@ function addInputTypeFileField(id, numInput, multiple) {
 
 function removeUploadFile(id, numInput) {
     document.getElementById("trca-sf-upload-button-input-" + id + '_' + numInput).remove();
-    let numOfInputs  = getNumberLastInputFile(id);
+    let numOfInputs = getNumberLastInputFile(id);
 
-    for (numInput; numInput < numOfInputs; numInput++){
+    for (numInput; numInput < numOfInputs; numInput++) {
         let nextElement = numInput + 1;
         let idInputElem = id + '_' + numInput;
         let idNextInputElem = id + '_' + nextElement;
         let inputFile = document.getElementById("input_file_" + idNextInputElem + "_Y");
         inputFile.id = "input_file_" + idInputElem + "_Y";
-        $('#input_file_' + idInputElem + '_Y').attr('name',"input_file_" + idInputElem + "_Y");
+        $('#input_file_' + idInputElem + '_Y').attr('name', "input_file_" + idInputElem + "_Y");
 
-        if (typeof inputFile.onchange === 'function'){
-            $('#input_file_' + idInputElem + '_Y').attr('onchange','addInputTypeFileField(' + id + ',' + numInput +",'_Y')");
+        if (typeof inputFile.onchange === 'function') {
+            $('#input_file_' + idInputElem + '_Y').attr('onchange', 'addInputTypeFileField(' + id + ',' + numInput + ",'_Y')");
         }
 
         document.getElementById("trca-sf-upload-button-input-" + idNextInputElem).id = "trca-sf-upload-button-input-" + idInputElem;
@@ -123,7 +148,6 @@ function removeUploadFile(id, numInput) {
         document.getElementById("trca-sf-upload-file-button-" + idNextInputElem).id = "trca-sf-upload-file-button-" + idInputElem;
         document.getElementById("trca-sf-upload-file-name-" + idNextInputElem).id = "trca-sf-upload-file-name-" + idInputElem;
         document.getElementById("trca-sf-upload-file-remove-" + idNextInputElem).id = "trca-sf-upload-file-remove-" + idInputElem;
-        $('#trca-sf-upload-file-remove-' + idInputElem).attr('onclick','removeUploadFile(' + id + ',' + numInput + ')');
+        $('#trca-sf-upload-file-remove-' + idInputElem).attr('onclick', 'removeUploadFile(' + id + ',' + numInput + ')');
     }
 }
-
