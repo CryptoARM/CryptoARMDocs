@@ -63,4 +63,5 @@ $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";
 
 $MESS["TR_CA_DOCS_BP_SIGN_TEMPLATE"] = "Выбор ответственных за подпись документа";
 $MESS["TR_CA_DOCS_BP_AGREED_TEMPLATE"] = "Отправить документ на согласование";
+$MESS["TR_CA_DOCS_BP_SERVICE_NOTE"] = "Служебная записка";
 

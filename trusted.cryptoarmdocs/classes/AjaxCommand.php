@@ -470,6 +470,7 @@ class AjaxCommand {
      * Sends document file
      *
      * @param array $params [id]: document id
+     *                      [force]: return doc with exact id
      *                      [file]: path to file
      * @return void
      */
@@ -481,8 +482,12 @@ class AjaxCommand {
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
-                $last = $doc->getLastDocument();
-                $file = $last->getFullPath();
+                if ($params["force"]) {
+                    $file = $doc->getFullPath();
+                } else {
+                    $doc = $doc->getLastDocument();
+                    $file = $doc->getFullPath();
+                }
                 Utils::download($file, $doc->getName());
             } else {
                 header("HTTP/1.1 500 Internal Server Error");

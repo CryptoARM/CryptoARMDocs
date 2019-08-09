@@ -10,12 +10,14 @@ if (!\CModule::IncludeModule('bizproc')) {
 
 class WorkflowDocument implements \IBPWorkflowDocument {
 
+    public static $docType = 'TR_CA_DOC';
+
     public static function getDocumentType($id) {
-        return 'TR_CA_DOC';
+        return self::$docType;
     }
 
     public static function getComplexDocumentType() {
-        return [TR_CA_DOCS_MODULE_ID, self::class, 'TR_CA_DOC'];
+        return [TR_CA_DOCS_MODULE_ID, self::class, self::$docType];
     }
 
     public static function getComplexDocumentId($id) {
@@ -93,8 +95,8 @@ class WorkflowDocument implements \IBPWorkflowDocument {
         if (!$doc) {
             return '';
         }
-        $lastDocId = $doc->getLastDocument()->getId();
-        return "/bitrix/components/trusted/docs/ajax.php?command=content&id=$lastDocId";
+        $lastDocId = $doc->getFirstParent()->getId();
+        return "/bitrix/components/trusted/docs/ajax.php?command=content&id=$lastDocId&force=true";
     }
 
     public static function canUserOperateDocument($operation, $userId, $documentId, $arParameters = array()) {
@@ -142,11 +144,20 @@ class WorkflowDocument implements \IBPWorkflowDocument {
 
         return array(
             'group_1' => $adminGroup['NAME'],
+            'author' => Loc::getMessage('TR_CA_DOC_OWNER'),
         );
     }
 
     public static function getUsersFromUserGroup($group, $id) {
         $group = strtolower($group);
+
+        if ($group === 'author'){
+            // No doc id in workflow editor
+            if ($id !== self::$docType ) {
+                $doc = Database::getDocumentById($id);
+                return array($doc->getOwner());
+            }
+        }
 
         $groupId = intval(str_replace('group_', '', $group));
         if ($groupId <= 0) {
