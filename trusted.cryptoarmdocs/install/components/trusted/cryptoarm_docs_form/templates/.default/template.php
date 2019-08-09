@@ -87,7 +87,7 @@ use Bitrix\Main\Localization\Loc;
                                                 <input type="file"
                                                        id="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
                                                        name="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
-                                                       onchange="checkSizeNReadNWrite(<?= $value['ID'] . ', 0,' . "'" .$multiple . "'" ?>)"
+                                                       onchange="checkSizeNReadNWrite(<?= $value['ID'] . ', 0,' . "'" .$multiple . "'" . ',' . $arResult["MAX_UPLOAD_FILE_SIZE"] ?>)"
                                                     <?
                                                     echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                 />

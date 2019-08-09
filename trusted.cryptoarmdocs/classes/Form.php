@@ -484,14 +484,26 @@ class Form {
         return $res;
     }
 
-    static function removeIBlockAndDocs($ids) {
+    static function removeIBlockAndDocs($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Form::removeIBlockAndDocs",
         ];
 
-        if ($ids["ids"]) {
-            $ids = $ids["ids"];
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if (!Utils::isAdmin(Utils::currUserId())) {
+            $res['message'] = 'No access';
+            return $res;
+        }
+
+        if ($params["ids"]) {
+            $ids = $params["ids"];
+        } else {
+            return $res;
         }
 
         foreach ($ids as $id) {

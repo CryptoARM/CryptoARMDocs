@@ -48,5 +48,3 @@ $MESS["TR_CA_DOCS_MODAL_CANCEL"] = "Отменить подпись";
 $MESS["TR_CA_DOCS_COMP_FORM_INPUT_FILE"] = "Добавить файл";
 
 $MESS["TR_CA_DOCS_NO_ACCESS_FILE"] = "Не удалось загрузить файл ";
-
-$MESS["TR_CA_DOCS_MAX_FILE_SIZE"] = Docs\Utils::maxUploadFileSize();

@@ -18,8 +18,6 @@ if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     die();
 };
 
-CJSCore::Init(array("popup"));
-
 Loader::includeModule($module_id);
 Loc::loadMessages($docRoot . "/bitrix/modules/" . $module_id . "/admin/trusted_cryptoarm_docs.php");
 
@@ -120,7 +118,7 @@ $lAdmin->AddHeaders(
     )
 );
 
-while ($arRes = $rsData->NavNext(true, "f_")) {
+while ($arRes = $rsData->NavNext(true)) {
 
     $row = &$lAdmin->AddRow($arRes["ID"], $arRes);
 
@@ -236,7 +234,10 @@ $oFilter = new CAdminFilter(
         Loc::getMessage("TR_CA_DOCS_FILTER_USER_ID"),
     )
 );
+$reloadDocJS = $sTableID . ".GetAdminList('')";
 ?>
+
+<a id="trca-reload-doc" onclick="<?= $reloadDocJS ?>"></a>
 
 <?php
 if (!Docs\Utils::isSecure()) {

@@ -1,5 +1,4 @@
 INPUT_FILE = BX.message('TR_CA_DOCS_COMP_FORM_INPUT_FILE');
-MAX_FILE_SIZE = BX.message('TR_CA_DOCS_MAX_FILE_SIZE');
 
 window.onload = function addAutoResize() {
     document.querySelectorAll('[data-autoresize]').forEach(function (element) {
@@ -87,28 +86,20 @@ function getNumberLastInputFile(id) {
     return numOfInputs;
 }
 
-function checkSizeNReadNWrite(id, numInput, multiple) {
+function checkSizeNReadNWrite(id, numInput, multiple, maxFileSize) {
     let inputId = "#" + "input_file_" + id + "_" + numInput + multiple;
     let inputEntity = $(inputId);
     let fileEntity = inputEntity.get(0).files[0];
     let onSuccess;
-    if (multiple == "_Y") {
-        onSuccess = () => {
-            addInputTypeFileField(id, numInput, multiple)
-        };
+    if (multiple === "_Y") {
+        onSuccess = () => { addInputTypeFileField(id, numInput, multiple) };
     } else {
-        onSuccess = () => {
-            showUploadFile(id, numInput, multiple)
-        };
+        onSuccess = () => { showUploadFile(id, numInput, multiple) };
     }
-    let onFailure = () => {
-        inputEntity.val(null)
-    };
+    let onFailure = () => { inputEntity.val(null) };
 
-    let accessFileJS = () => {
-        trustedCA.checkAccessFile(fileEntity, onSuccess, onFailure)
-    };
-    trustedCA.checkFileSize(fileEntity, MAX_FILE_SIZE, accessFileJS, onFailure);
+    let accessFileJS = () => { trustedCA.checkAccessFile(fileEntity, onSuccess, onFailure) };
+    trustedCA.checkFileSize(fileEntity, maxFileSize, accessFileJS, onFailure);
 }
 
 function addInputTypeFileField(id, numInput, multiple) {
