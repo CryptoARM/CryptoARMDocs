@@ -51,6 +51,7 @@ $MESS["TR_CA_DOCS_COL_MAIL"] = "Статус письма";
 
 $MESS["TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"] = "ID заполненной формы";
 $MESS["TR_CA_DOCS_COL_IBLOCK_NAME"] = "Форма";
+$MESS["TR_CA_DOCS_COL_DATE_CREATE"] = "Дата и время заполнения";
 
 $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 

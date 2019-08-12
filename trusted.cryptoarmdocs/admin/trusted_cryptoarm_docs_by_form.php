@@ -43,6 +43,7 @@ $FilterArr = array(
     "find_iblock_elem_id",
     "find_iblock_name",
     "find_user_id",
+    "find_date_create",
 );
 
 $lAdmin->InitFilter($FilterArr);
@@ -52,6 +53,7 @@ if (CheckFilter()) {
         "ID" => $find_iblock_elem_id,
         "IBLOCK_ID" => $find_iblock_name,
         "CREATED_BY" => $find_user_id,
+        "DATA_CREATE" => $find_date_create,
     );
 }
 
@@ -111,6 +113,12 @@ $lAdmin->AddHeaders(
             "default" => true,
         ),
         array(
+            "id" => "DATE_CREATE",
+            "content" => Loc::getMessage("TR_CA_DOCS_COL_DATE_CREATE"),
+            "sort" => "DATE_CREATE",
+            "default" => true,
+        ),
+        array(
             "id" => "DOCS",
             "content" => Loc::getMessage("TR_CA_DOCS_COL_DOCS"),
             "default" => true,
@@ -121,6 +129,8 @@ $lAdmin->AddHeaders(
 while ($arRes = $rsData->NavNext(true)) {
 
     $row = &$lAdmin->AddRow($arRes["ID"], $arRes);
+
+    Docs\Utils::dump($arRes);
 
     $iBlockElementId = $arRes["ID"];
 
@@ -133,6 +143,8 @@ while ($arRes = $rsData->NavNext(true)) {
     $iBlockNameViewField = $arRes["IBLOCK_NAME"];
 
     $userId = $arRes["CREATED_BY"];
+
+    $dateCreateViewField = $arRes["DATE_CREATE"];
 
     $userNameViewField = Docs\Utils::getUserName($userId) . "<br />";
     $userNameViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $userId . "'";
@@ -181,6 +193,7 @@ while ($arRes = $rsData->NavNext(true)) {
     $row->AddViewField("IBLOCK_ELEMENT_ID", $iBlockElementIdViewField);
     $row->AddViewField("IBLOCK_NAME", $iBlockNameViewField);
     $row->AddViewField("USER_NAME", $userNameViewField);
+    $row->AddViewField("DATE_CREATE", $dateCreateViewField);
     $row->AddViewField("DOCS", "<small>" . $docViewField . "</small>");
 
     // context menu
