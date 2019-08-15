@@ -67,7 +67,7 @@ if ($iBlockElementId["success"]) {
     ];
 
     echo '<script>';
-    echo 'let onSuccess = () => { alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_SIGN_SUCCESS") . '") };';
+    echo 'let onSuccess = () => { setTimeout(() => { alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_SIGN_SUCCESS") . '") }, 1000); };';
     echo 'window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ', onSuccess )';
     echo '</script>';
 }

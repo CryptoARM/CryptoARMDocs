@@ -39,7 +39,7 @@ function createInputDiv(id, numOfInputs, multiple) {
     let inputDivText = `
         <input type="file" id="input_file_${idInputElem + multiple}"
             name="input_file_${idInputElem + multiple}"
-            onchange="checkSizeReadNWrite(${id}, ${numOfInputs}, '${multiple}')">
+            onchange="checkSizeNReadNWrite(${id}, ${numOfInputs}, '${multiple}')">
         </input>
         ${INPUT_FILE}`;
     inputDiv.innerHTML = inputDivText;
@@ -141,4 +141,40 @@ function removeUploadFile(id, numInput) {
         document.getElementById("trca-sf-upload-file-remove-" + idNextInputElem).id = "trca-sf-upload-file-remove-" + idInputElem;
         $('#trca-sf-upload-file-remove-' + idInputElem).attr('onclick', 'removeUploadFile(' + id + ',' + numInput + ')');
     }
+}
+
+function resetForm() {
+    setTimeout(() => {
+        document.getElementById("crypto-arm-document__send-form").reset();
+
+        let inputs = $("form#crypto-arm-document__send-form input[type=file]");
+        let massiveOfId = [];
+        if (inputs.length != 0) {
+            inputs.each(function (i, elem) {
+                let id = elem.id.replace("input_file_", "");
+                let SomeMassive = id.split("_");
+
+                if (!massiveOfId[SomeMassive[0]]) {
+                    massiveOfId[SomeMassive[0]] = [];
+                }
+                massiveOfId[SomeMassive[0]][SomeMassive[1]] = (SomeMassive[2] === "Y");
+            });
+        }
+
+        massiveOfId.forEach((item, i) => {
+            if (massiveOfId[i]) {
+                if (massiveOfId[i][0] == true) {
+                    let iterations = massiveOfId[i].length;
+                    massiveOfId[i].forEach(() => {
+                        if (iterations - 1 !== 0) {
+                            removeUploadFile(i, 0);
+                            iterations--;
+                        }
+                    });
+                } else {
+                    hideUploadFile(i)
+                }
+            }
+        });
+    }, 1000);
 }

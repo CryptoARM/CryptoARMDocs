@@ -60,12 +60,13 @@ use Bitrix\Main\Localization\Loc;
                                     {
                                         ?>
                                         <div class="trca-sf-input">
-                                        <textarea data-autoresize
-                                                  id="<?= "input_text_" . $value["ID"] ?>"
-                                                  name="<?= "input_text_" . $value["ID"] ?>"
-                                                  placeholder="<?= $value["HINT"] ?>"
-                                            <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
-                                        ><?= $value["DEFAULT_VALUE"] ?></textarea>
+                                            <input type="text"
+                                                   id="<?= "input_text_" . $value["ID"] ?>"
+                                                   name="<?= "input_text_" . $value["ID"] ?>"
+                                                   placeholder="<?= $value["HINT"] ?>"
+                                                   value="<?= $value["DEFAULT_VALUE"] ?>"
+                                                <? echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
+                                            />
                                             <div class="trca-sf-input-footer"></div>
                                         </div>
                                         <?
@@ -230,7 +231,7 @@ use Bitrix\Main\Localization\Loc;
         <p>
         <div class="trca-sf-button-sign">
             <input type="submit"
-                   onclick='setTimeout(() => this.form.reset(), 1000)'
+                   onclick='resetForm()'
             />
             <?= Loc::getMessage("TR_CA_DOCS_COMP_FORM_BUTTON_SIGN"); ?>
         </div>

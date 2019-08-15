@@ -15,7 +15,7 @@
 }
 
 /* Input TEXT and NUMBER */
-.crypto-arm-document__send-form textarea,
+.crypto-arm-document__send-form input[type=text],
 .crypto-arm-document__send-form input[type=number] {
     width: 100%;
     border: none;
@@ -37,7 +37,7 @@
     width: auto;
 }
 
-.crypto-arm-document__send-form textarea {
+.crypto-arm-document__send-form input[type=text] {
     box-sizing: border-box;
     resize: none;
 }
@@ -56,7 +56,7 @@
     bottom: 2px;
 }
 
-.crypto-arm-document__send-form textarea:focus + .trca-sf-input-footer,
+.crypto-arm-document__send-form input[type=text]:focus + .trca-sf-input-footer,
 .crypto-arm-document__send-form input[type=date]:focus + .trca-sf-input-footer,
 .crypto-arm-document__send-form input[type=number]:focus + .trca-sf-input-footer {
     animation: trca-sf-input-add-line .3s cubic-bezier(0.4, 0, 0.2, 1);
