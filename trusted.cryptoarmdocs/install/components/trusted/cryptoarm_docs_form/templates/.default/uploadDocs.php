@@ -5,6 +5,7 @@ require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_be
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Localization\Loc;
 
 global $USER;
 
@@ -65,7 +66,10 @@ if ($iBlockElementId["success"]) {
         "formId" => $iBlockElementId["data"],
     ];
 
-    echo '<script>window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ')</script>';
+    echo '<script>';
+    echo 'let onSuccess = () => { alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_SIGN_SUCCESS") . '") };';
+    echo 'window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ', onSuccess )';
+    echo '</script>';
 }
 
 unset($_FILES);
