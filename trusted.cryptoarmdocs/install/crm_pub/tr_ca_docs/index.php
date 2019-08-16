@@ -2,6 +2,13 @@
 
 require $_SERVER['DOCUMENT_ROOT'] . '/bitrix/header.php';
 
+use Bitrix\Main\Loader;
+
+if (CModule::IncludeModuleEx('trusted.cryptoarmdocs') == MODULE_DEMO_EXPIRED) {
+    echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
+    return false;
+};
+
 if ($USER->IsAuthorized()) {
 
     $APPLICATION->IncludeComponent(

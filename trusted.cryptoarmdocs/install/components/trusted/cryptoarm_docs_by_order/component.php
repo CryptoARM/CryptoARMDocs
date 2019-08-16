@@ -5,6 +5,11 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
+if (CModule::IncludeModuleEx('trusted.cryptoarmdocs') == MODULE_DEMO_EXPIRED) {
+    echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
+    return false;
+};
+
 Loader::includeModule('trusted.cryptoarmdocs');
 
 if ($USER->IsAuthorized()) {

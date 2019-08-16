@@ -8,6 +8,11 @@ use Bitrix\Main\UI;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Web\Json;
 
+if (CModule::IncludeModuleEx('trusted.cryptoarmdocs') == MODULE_DEMO_EXPIRED) {
+    echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
+    return false;
+};
+
 Loader::includeModule('trusted.cryptoarmdocs');
 CJSCore::Init('bp_starter');
 
