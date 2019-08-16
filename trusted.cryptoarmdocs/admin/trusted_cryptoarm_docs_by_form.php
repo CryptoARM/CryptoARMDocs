@@ -130,8 +130,6 @@ while ($arRes = $rsData->NavNext(true)) {
 
     $row = &$lAdmin->AddRow($arRes["ID"], $arRes);
 
-    Docs\Utils::dump($arRes);
-
     $iBlockElementId = $arRes["ID"];
 
     $iBlockElementIdViewField = "[<a href='";

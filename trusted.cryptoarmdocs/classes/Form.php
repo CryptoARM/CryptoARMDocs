@@ -503,6 +503,7 @@ class Form {
         if ($params["ids"]) {
             $ids = $params["ids"];
         } else {
+            $res['message'] = 'No ids were given';
             return $res;
         }
 
