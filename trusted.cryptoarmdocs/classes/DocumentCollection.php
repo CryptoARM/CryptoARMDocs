@@ -1,6 +1,9 @@
 <?php
 namespace Trusted\CryptoARM\Docs;
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/general/Collection.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/general/IEntity.php';
+
 /**
  * Represents multiple documents in one object.
  *

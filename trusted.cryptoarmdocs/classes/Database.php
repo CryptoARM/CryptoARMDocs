@@ -2,6 +2,10 @@
 namespace Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/DocumentCollection.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Document.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/WorkflowDocument.php';
+
 /**
  * DB interaction class.
  */

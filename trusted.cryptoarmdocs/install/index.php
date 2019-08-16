@@ -8,6 +8,8 @@ use Bitrix\Main\Loader;
 use Trusted\CryptoARM\Docs;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/include.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/IBlock.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Database.php';
 
 Loc::loadMessages(__FILE__);
 
