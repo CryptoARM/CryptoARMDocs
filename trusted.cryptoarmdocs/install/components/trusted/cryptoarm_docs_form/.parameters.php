@@ -9,7 +9,7 @@ use Bitrix\Main\Loader;
 Loader::includeModule('iblock');
 Loader::includeModule('trusted.cryptoarmdocs');
 
-$formIBlocks["default"] = Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_IBLOCK_ID_NAME");
+$formIBlocks[0] = Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_IBLOCK_ID_NAME");
 
 $docSaveFormat = [
     "pdf" => "PDF",
@@ -43,7 +43,7 @@ $arComponentParameters = [
             "REFRESH" => "Y",
             "MULTIPLE" => "N",
             "VALUES" => $docSaveFormat,
-            "DEFAULT" => $docSaveFormat["default"],
+            "DEFAULT" => $docSaveFormat[0],
             "ADDITIONAL_VALUES" => "N",
         ],
         "SEND_EMAIL_TO_USER" => [

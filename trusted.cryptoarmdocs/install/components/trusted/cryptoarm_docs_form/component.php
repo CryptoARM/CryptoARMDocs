@@ -22,7 +22,7 @@ if (!Docs\Utils::checkAuthorization()) {
     echo '<font color="#FF0000">ERROR not authorized</font>';
     return;
 }
-if ($arParams["IBLOCK_ID"] == "default" || $arParams["IBLOCK_ID"] == null) {
+if ($arParams["IBLOCK_ID"] == 0 || $arParams["IBLOCK_ID"] == null) {
     echo '<font color="#FF0000">ERROR iblock not specified</font>';
     return;
 }
