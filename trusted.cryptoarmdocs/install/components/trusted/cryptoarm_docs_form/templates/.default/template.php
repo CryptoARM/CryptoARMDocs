@@ -230,9 +230,7 @@ use Bitrix\Main\Localization\Loc;
         </div>
         <p>
         <div class="trca-sf-button-sign">
-            <input type="submit"
-                   onclick='resetForm()'
-            />
+            <input type="submit"/>
             <?= Loc::getMessage("TR_CA_DOCS_COMP_FORM_BUTTON_SIGN"); ?>
         </div>
     </div>
