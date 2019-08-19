@@ -243,7 +243,7 @@ trustedCA.showModalWindow = function(ids) {
     $('#trca-modal-close').attr('onclick', "trustedCA.unblock([" + ids + "], () => {$('#trca-modal-window').hide(); $('#trca-modal-overlay').hide()})");
     if (ids.length === 1){
         $('#trca-modal-header').text(MODAL_MESSAGE_1);
-        $('#trca-modal-content-message').text(MODAL_MESSAGE_2 + '«' + MODAL_CANCEL + '».');
+        $('#trca-modal-content-message').text(MODAL_MESSAGE_2 + String.fromCharCode(171) + MODAL_CANCEL + String.fromCharCode(187) + '.');
     } else {
         $('#trca-modal-header').text(MODAL_MESSAGE_MANY_1);
         $('#trca-modal-content-message').text(MODAL_MESSAGE_MANY_2 + '«' + MODAL_CANCEL + '».');
