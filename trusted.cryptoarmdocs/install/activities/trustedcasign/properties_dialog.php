@@ -13,6 +13,12 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 	<td><?=CBPDocument::ShowParameterField("string", 'review_name', $arCurrentValues['review_name'], Array('size'=>'50'))?></td>
 </tr>
 <tr>
+	<td align="right" width="40%" valign="top"><?= GetMessage("BPAR_PD_DOC_ID") ?>:</td>
+	<td valign="top"><?=CBPDocument::ShowParameterField("string", 'document_id', $arCurrentValues['document_id'], Array('size'=>'47'))?>
+	<?= GetMessage("BPAR_PD_DOC_ID_MESSAGE") ?>
+	</td>
+</tr>
+<tr>
 	<td align="right" width="40%" valign="top"><?= GetMessage("BPAR_PD_DESCR") ?>:</td>
 	<td valign="top"><?=CBPDocument::ShowParameterField("text", 'review_description', $arCurrentValues['review_description'], Array('rows'=>'7'))?></td>
 </tr>

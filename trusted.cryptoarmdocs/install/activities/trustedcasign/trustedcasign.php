@@ -60,6 +60,7 @@ class CBPTrustedCASign
             "LastReviewer" => null,
             "LastReviewerComment" => '',
             'DelegationType' => 0,
+            'DocumentId' => '',
         );
 
         $this->SetPropertiesTypes(array(
@@ -145,6 +146,11 @@ class CBPTrustedCASign
         $arParameters["ShowComment"] = $this->IsPropertyExists("ShowComment") ? $this->ShowComment : "Y";
         if ($arParameters["ShowComment"] != "Y" && $arParameters["ShowComment"] != "N")
             $arParameters["ShowComment"] = "Y";
+        if ($this->DocumentId) {
+            $arParameters["DocId"] = $this->DocumentId;
+        } else {
+            $arParameters["DocId"] = $documentId[2];
+        }
 
         $arParameters["CommentRequired"] = $this->IsPropertyExists("CommentRequired") ? $this->CommentRequired : "N";
         $arParameters["AccessControl"] = $this->IsPropertyExists("AccessControl") && $this->AccessControl == 'Y' ? 'Y' : 'N';
@@ -170,7 +176,8 @@ class CBPTrustedCASign
                 "PARAMETERS" => $arParameters,
                 'IS_INLINE' => $arParameters["ShowComment"] == "Y" ? 'N' : 'Y',
                 'DELEGATION_TYPE' => (int)$this->DelegationType,
-                'DOCUMENT_NAME' => $documentService->GetDocumentName($documentId)
+                'DOCUMENT_NAME' => $documentService->GetDocumentName($documentId),
+                'DOC_ID' => $this->DocumentId,
             )
         );
         $this->TaskId = $this->taskId;
@@ -419,7 +426,7 @@ class CBPTrustedCASign
                 $required = '<span style="color: red">*</span>';
             }
 
-            $docId = $arTask["DOCUMENT_ID"];
+            $docId = $arTask['PARAMETERS']['DocId'];
             $doc = Docs\Database::getDocumentById($docId)->getLastDocument();
             $lastDocId = $doc->getId();
 
@@ -489,7 +496,7 @@ class CBPTrustedCASign
     {
         $arErrors = array();
 
-        $docId = $arTask["DOCUMENT_ID"];
+        $docId = $arTask['PARAMETERS']['DocId'];
         $doc = Docs\Database::getDocumentById($docId);
         $lastDoc = $doc->getLastDocument();
 
@@ -646,6 +653,7 @@ class CBPTrustedCASign
             "TimeoutDurationType" => "timeout_duration_type",
             "AccessControl" => "access_control",
             "DelegationType" => "delegation_type",
+            "DocumentId" => "document_id",
         );
 
         if (!is_array($arWorkflowParameters))
@@ -756,6 +764,7 @@ class CBPTrustedCASign
             "timeout_duration_type" => "TimeoutDurationType",
             "access_control" => "AccessControl",
             "delegation_type" => "DelegationType",
+            "document_id" => "DocumentId"
         );
 
         $arProperties = array();

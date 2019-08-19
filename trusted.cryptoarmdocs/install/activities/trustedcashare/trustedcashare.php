@@ -45,7 +45,9 @@ class CBPTrustedCAShare
 		$arId=$rootActivity->GetDocumentId();
 
 		if ($this->rDocID){
-			$docId = $this->rDocID;
+			$doc = Docs\Database::getDocumentById($this->rDocID)->getLastDocument();
+            $lastDocId = $doc->getId();
+			$docId = $lastDocId;
 		} else {
 			$docId=$arId[2];
 		}

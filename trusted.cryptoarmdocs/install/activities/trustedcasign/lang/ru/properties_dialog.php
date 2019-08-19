@@ -1,6 +1,8 @@
 <?
 $MESS["BPAR_PD_REVIEWERS"] = "Требуется подпись пользователей";
 $MESS["BPAR_PD_DESCR"] = "Описание задания";
+$MESS["BPAR_PD_DOC_ID"] = "ID документа";
+$MESS["BPAR_PD_DOC_ID_MESSAGE"] = "если поле пустое, значение берётся из документа, с которого начат бизнес-процесс";
 $MESS["BPAR_PD_NAME"] = "Название задания";
 $MESS["BPAR_PD_APPROVE_TYPE"] = "Должны подписать";
 $MESS["BPAR_PD_APPROVE_TYPE_ALL"] = "Все сотрудники";
