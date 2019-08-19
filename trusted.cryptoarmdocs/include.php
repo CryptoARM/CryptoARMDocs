@@ -18,6 +18,7 @@ global $TR_CA_DOCS_MODULE_IS_LOADING;
 $TR_CA_DOCS_MODULE_IS_LOADING = true;
 require_once TR_CA_DOCS_MODULE_DIR . 'install/activities/trustedcasign/trustedcasign.php';
 require_once TR_CA_DOCS_MODULE_DIR . 'install/activities/trustedcaapprove/trustedcaapprove.php';
+require_once TR_CA_DOCS_MODULE_DIR . 'install/activities/trustedcaupload/trustedcaupload.php';
 $TR_CA_DOCS_MODULE_IS_LOADING = false;
 
 CJSCore::RegisterExt(
