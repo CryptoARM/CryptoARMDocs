@@ -95,9 +95,9 @@ Class trusted_cryptoarmdocs extends CModule
             $this->InstallIb();
             $this->InstallMenuItems();
             $this->InstallMailEvents();
-            // if ($this->bizprocSupport()) {
-            //     $this->InstallBPTemplates();
-            // }
+            if ($this->bizprocSupport()) {
+                $this->InstallBPTemplates();
+            }
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -395,9 +395,9 @@ Class trusted_cryptoarmdocs extends CModule
             }
             $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
-            // if ($this->bizprocSupport()) {
-            //     $this->UninstallBPTemplates();
-            // }
+            if ($this->bizprocSupport()) {
+                $this->UninstallBPTemplates();
+            }
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),
