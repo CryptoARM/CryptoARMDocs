@@ -20,9 +20,11 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
     <input type="hidden" name="step" value="2">
     <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>
     <?
+    //check on active workflows, based on installed Cryptoarm templates. Sends warning, if founds some
     if (IsModuleInstalled("bizproc")) {
         $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
         global $DB;
+        $found = false;
         foreach ($templateIds as $id) {
             $dbResult = $DB->Query(
                 "SELECT COUNT('x') as CNT ".
@@ -31,10 +33,12 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
             );
 
             if ($arResult = $dbResult->Fetch()) {
-                $cnt = intval($arResult["CNT"]);
-                if ($cnt > 0) { echo CAdminMessage::ShowMessage(Loc::getMessage("TR_CA_DOCS_UNINST_TEMPLATES")); }
+                $count = intval($arResult["CNT"]);
+                if ($count > 0) {$found = true;}
             }
         }
+
+        if ($found) {echo CAdminMessage::ShowMessage(Loc::getMessage("TR_CA_DOCS_UNINST_TEMPLATES")); }
     }
     ?>
     <div style="border-top: 1px solid;
