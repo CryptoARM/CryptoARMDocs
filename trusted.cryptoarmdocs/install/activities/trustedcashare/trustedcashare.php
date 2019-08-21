@@ -69,6 +69,7 @@ class CBPTrustedCAShare
 			}
 
 			$activity = $this->arActivities[0];
+			$activity->AddStatusChangeHandler(self::ClosedEvent, $this);
 			$this->workflow->ExecuteActivity($activity);
 
 			foreach ($userIds as $value) {
@@ -83,16 +84,16 @@ class CBPTrustedCAShare
         	}
 
 			$activity = $this->arActivities[1];
+			$activity->AddStatusChangeHandler(self::ClosedEvent, $this);
 			$this->workflow->ExecuteActivity($activity);
 		}
 
-		if ($this->isInEventActivityMode) {
-			return CBPActivityExecutionStatus::Closed;
-		}
-
-        $this->isInEventActivityMode = false;
         return CBPActivityExecutionStatus::Executing;
+	}
 
+	protected function OnEvent(CBPActivity $sender) {
+        $sender->RemoveStatusChangeHandler(self::ClosedEvent, $this);
+        $this->workflow->CloseActivity($this);
     }
 
 	public static function GetPropertiesDialog($documentType, $activityName, $arWorkflowTemplate, $arWorkflowParameters, $arWorkflowVariables, $arCurrentValues = null, $formName = "")
