@@ -15,20 +15,20 @@
 }
 
 /* Input TEXT and NUMBER */
-.crypto-arm-document__send-form input[type=text],
-.crypto-arm-document__send-form input[type=number] {
+.crypto-arm-document__send-form .trca-sf-input input[type=text],
+.crypto-arm-document__send-form .trca-sf-input-number input[type=number] {
     width: 100%;
     border: none;
     border-bottom: 1px solid #ccc;
 }
 
-.crypto-arm-document__send-form input[type=number] {
+.crypto-arm-document__send-form .trca-sf-input-number input[type=number] {
     -moz-appearance: textfield;
     appearance: textfield;
 }
 
-.crypto-arm-document__send-form input[type=number]::-webkit-inner-spin-button,
-.crypto-arm-document__send-form input[type=number]::-webkit-outer-spin-button {
+.crypto-arm-document__send-form .trca-sf-input-number input[type=number]::-webkit-inner-spin-button,
+.crypto-arm-document__send-form .trca-sf-input-number input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
 }
 
@@ -37,7 +37,7 @@
     width: auto;
 }
 
-.crypto-arm-document__send-form input[type=text] {
+.crypto-arm-document__send-form .trca-sf-input input[type=text] {
     box-sizing: border-box;
     resize: none;
 }
@@ -56,9 +56,9 @@
     bottom: 2px;
 }
 
-.crypto-arm-document__send-form input[type=text]:focus + .trca-sf-input-footer,
-.crypto-arm-document__send-form input[type=date]:focus + .trca-sf-input-footer,
-.crypto-arm-document__send-form input[type=number]:focus + .trca-sf-input-footer {
+.crypto-arm-document__send-form .trca-sf-input input[type=text]:focus + .trca-sf-input-footer,
+.crypto-arm-document__send-form .trca-sf-date input[type=date]:focus + .trca-sf-input-footer,
+.crypto-arm-document__send-form .trca-sf-input-number input[type=number]:focus + .trca-sf-input-footer {
     animation: trca-sf-input-add-line .3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: scaleX(1);
 }
@@ -131,7 +131,7 @@
     cursor: pointer;
 }
 
-.crypto-arm-document__send-form input[type="radio"] {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio] {
     box-sizing: border-box;
     padding: 0;
     position: absolute;
@@ -144,20 +144,20 @@
     word-wrap: break-word;
 }
 
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:before,
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label:before,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label:after {
     border: 2px solid #5a5a5a;
 }
 
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:before,
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:after,
-.crypto-arm-document__send-form input[type="radio"]:checked + label:before,
-.crypto-arm-document__send-form input[type="radio"]:checked + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label:before,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label:after,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:before,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:after {
     border-radius: 50%;
 }
 
-.crypto-arm-document__send-form input[type="radio"] + label:before,
-.crypto-arm-document__send-form input[type="radio"] + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio] + label:before,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio] + label:after {
     content: '';
     position: absolute;
     left: 0;
@@ -169,13 +169,13 @@
     transition: .28s ease;
 }
 
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label:after {
     -webkit-transform: scale(0);
     transform: scale(0);
 }
 
-.crypto-arm-document__send-form input[type="radio"]:not(:checked) + label,
-.crypto-arm-document__send-form input[type="radio"]:checked + label {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:not(:checked) + label,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label {
     position: relative;
     padding-left: 35px;
     cursor: pointer;
@@ -186,14 +186,14 @@
     user-select: none;
 }
 
-.crypto-arm-document__send-form input[type="radio"]:checked + label:after,
-.crypto-arm-document__send-form input[type="radio"]:checked + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:after,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:after {
     background-color: #2196f3;
 }
 
-.crypto-arm-document__send-form input[type="radio"]:checked + label:after,
-.crypto-arm-document__send-form input[type="radio"]:checked + label:before,
-.crypto-arm-document__send-form input[type="radio"]:checked + label:after {
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:after,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:before,
+.crypto-arm-document__send-form .trca-sf-radioBTN input[type=radio]:checked + label:after {
     border: 2px solid #2196f3;
 }
 
@@ -212,13 +212,13 @@
     margin-top: 2px;
 }
 
-.crypto-arm-document__send-form input[type=checkbox]:checked,
-.crypto-arm-document__send-form input[type=checkbox]:not(:checked) {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:checked,
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:not(:checked) {
     position: absolute;
     visibility: hidden;
 }
 
-.crypto-arm-document__send-form input[type=checkbox] + label {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox] + label {
     position: relative;
     cursor: pointer;
     width: 20px;
@@ -226,8 +226,8 @@
     margin-top: 5px;
 }
 
-.crypto-arm-document__send-form input[type=checkbox] + label:after,
-.crypto-arm-document__send-form input[type=checkbox] + label:before {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox] + label:after,
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox] + label:before {
     content: '';
     position: absolute;
     left: 0;
@@ -236,11 +236,11 @@
     z-index: 1;
 }
 
-.crypto-arm-document__send-form input[type="checkbox"]:checked + label {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:checked + label {
     background-color: rgb(33, 150, 243);
 }
 
-.crypto-arm-document__send-form input[type="checkbox"]:checked + label:before {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:checked + label:before {
     top: 2px;
     left: 1px;
     width: 6px;
@@ -253,14 +253,14 @@
     transform-origin: 100% 100%;
 }
 
-.crypto-arm-document__send-form input[type="checkbox"]:checked + label:after {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:checked + label:after {
     top: 0;
     width: 16px;
     height: 16px;
     z-index: 0;
 }
 
-.crypto-arm-document__send-form input[type="checkbox"]:not(:checked) + label:after {
+.crypto-arm-document__send-form .trca-sf-checkbox input[type=checkbox]:not(:checked) + label:after {
     height: 16px;
     width: 16px;
     background-color: transparent;

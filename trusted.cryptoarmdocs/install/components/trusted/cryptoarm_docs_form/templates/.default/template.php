@@ -16,15 +16,15 @@ use Bitrix\Main\Localization\Loc;
         <div class="send-form-data">
             <?
             foreach ($arResult["PROPERTY"] as $key => $value) {
-            ?>
+                ?>
                 <div class="input-string">
                     <?
                     if ($value["USER_TYPE"] !== "HTML") {
-                    ?>
+                        ?>
                         <div class="export-item-title">
                             <?= $value["NAME"] ?>
                         </div>
-                    <?
+                        <?
                     }
                     switch ($value["PROPERTY_TYPE"]) {
                         // STRING
@@ -88,7 +88,7 @@ use Bitrix\Main\Localization\Loc;
                                                 <input type="file"
                                                        id="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
                                                        name="<?= "input_file_" . $value["ID"] . "_0" . $multiple ?>"
-                                                       onchange="checkSizeNReadNWrite(<?= $value['ID'] . ', 0,' . "'" .$multiple . "'" . ',' . $arResult["MAX_UPLOAD_FILE_SIZE"] ?>)"
+                                                       onchange="checkSizeNReadNWrite(<?= $value['ID'] . ', 0,' . "'" . $multiple . "'" . ',' . $arResult["MAX_UPLOAD_FILE_SIZE"] ?>)"
                                                     <?
                                                     echo $value["IS_REQUIRED"] == "Y" ? "required" : "" ?>
                                                 />
