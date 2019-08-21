@@ -439,57 +439,34 @@ class CBPTrustedCASign
                 '<textarea rows="3" cols="50" name="task_comment"></textarea>'.
                 '</td></tr>';
 
-            $onSuccess = '() => { $(".bp-button-accept").click() }';
+            $onSuccess = '() => { $("#trca-BP-accept").click() }';
             echo "<script>";
             echo "window.onload = function () {";
-            echo "$('.bp-button-accept').hide();";
-            echo "var signButton = document.createElement('input');";
+            echo "$('#trca-BP-button').attr('onclick','trustedCA.sign([ $lastDocId ], null, $onSuccess )');";
 
             if ($doc->getStatus() === DOC_STATUS_BLOCKED) {
                 $blockUser = $doc->getBlockBy();
-                $blockMessage = GetMessage('BPAA_ACT_BLOCK_BY') . Docs\Utils::getUserName(CUser::GetByID($blockUser));
+                $blockMessage = GetMessage('BPAA_ACT_BLOCK_BY') . Docs\Utils::getUserName($blockUser);
                 $form .= "<tr><td>$blockMessage</td><td></td></tr>";
                 if ($blockUser == $USER->GetID()) {
-                    echo "signButton.className = 'bp-button bp-button-transparent';";
-                    echo "signButton.setAttribute('type', 'button');";
-                    echo "signButton.setAttribute('style', 'border: none; margin: 3px 3px 3px 0;');";
-                    echo "signButton.setAttribute('value', '" . GetMessage('BPAA_ACT_UNBLOCK') . "');";
-                    echo "signButton.onclick = () => {trustedCA.unblock([ $lastDocId ], () => { location.reload() })};";
+                    echo "$('#trca-BP-button').attr('onclick','trustedCA.unblock([ $lastDocId ], () => { location.reload() })');";
+                    echo "$('#trca-BP-button').attr('class','ui-btn');";
+                    echo "$('#trca-BP-button').text('" . GetMessage('BPAA_ACT_UNBLOCK') . "');";
+                } else {
+                    echo "$('#trca-BP-button').hide();";
                 }
-            } else {
-                echo "signButton.className = 'ui-btn ui-btn-success';";
-                echo "signButton.setAttribute('type', 'button');";
-                echo "signButton.setAttribute('style', 'height: 35px; margin: 3px 3px 3px 0; line-height: 0px;');";
-                echo "signButton.setAttribute('value', '" . GetMessage('BPAA_ACT_SIGN') . "');";
-                echo "signButton.onclick = () => {trustedCA.sign([ $lastDocId ], null ,  $onSuccess )};";
             }
-            echo "var elemButtons = document.getElementsByClassName('bizproc-item-buttons');";
-            echo "elemButtons[0].style.display = 'flex';";
-            echo "elemButtons[0].insertBefore(signButton, elemButtons[0].firstChild);";
+
             echo "}";
             echo "</script>";
 
         }
 
-        $buttons = '<input type="button" name="review" value="'.(strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2")).'"/>';
+        $buttons = '<div id="trca-BP-button" class="ui-btn ui-btn-success" style="border: none; height: 34px; line-height: 34px;">';
+        $buttons .= GetMessage("BPAR_ACT_BUTTON2") . '</div>';
+        $buttons .= '<input type="submit"  id="trca-BP-accept" style="display: none" name="review" value="">';
 
         return array($form, $buttons);
-    }
-
-    public static function getTaskControls($arTask)
-    {
-        return array(
-            'BUTTONS' => array(
-                array(
-                    'TYPE'  => 'submit',
-                    'TARGET_USER_STATUS' => CBPTaskUserStatus::Ok,
-                    'NAME'  => 'review',
-                    'VALUE' => 'Y',
-                    // 'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButtonMessage"]) > 0 ? $arTask["PARAMETERS"]["TaskButtonMessage"] : GetMessage("BPAR_ACT_BUTTON2"),
-                    'TEXT' => '',
-                ),
-            )
-        );
     }
 
     public static function PostTaskForm($arTask, $userId, $arRequest, &$arErrors, $userName = "", $realUserId = null)

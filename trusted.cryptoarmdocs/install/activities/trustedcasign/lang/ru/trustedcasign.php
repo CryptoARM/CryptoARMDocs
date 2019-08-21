@@ -1,7 +1,7 @@
 <?
 $MESS ['BPAR_ACT_COMMENT'] = "Комментарий";
 $MESS ['BPAR_ACT_INFO'] = "Подписали #PERCENT#% (#REVIEWED# из #TOTAL#)";
-$MESS ['BPAR_ACT_BUTTON2'] = "Проверить подпись";
+$MESS ['BPAR_ACT_BUTTON2'] = "Подписать";
 $MESS ['BPAR_ACT_REVIEWED'] = "Подписывание документа завершено.";
 $MESS ['BPAR_ACT_TRACK2'] = "Подпись документа пользователями из списка: #VAL#";
 $MESS ['BPAR_ACT_REVIEW_TRACK'] = "Пользователь #PERSON# подписал документ #COMMENT#";
