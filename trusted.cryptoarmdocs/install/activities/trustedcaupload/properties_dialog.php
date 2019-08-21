@@ -14,7 +14,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 </td>
 </tr>
 <tr>
-	<td align="right"><span class="adm-required-field"><?= GetMessage("BPAR_PD_DOC_ID") ?>:</span></td>
-	<td><?=CBPDocument::ShowParameterField("string", 'docId', $arCurrentValues['docId'], Array('size'=>'30'))?>
-</td>
+	<td align="right"><?= GetMessage("BPAR_PD_RECIPIENT") ?>:</td>
+	<td><?=CBPDocument::ShowParameterField("user", 'Recipient', $arCurrentValues['Recipient'], Array('size'=>'30'))?></td>
 </tr>

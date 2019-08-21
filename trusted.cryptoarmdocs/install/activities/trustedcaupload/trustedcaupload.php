@@ -5,6 +5,8 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+global $APPLICATION;
+$APPLICATION->AddHeadScript("/bitrix/activities/custom/trustedcaupload/script.js");
 
 if (!Loader::includeModule('bizproc')) {
     return;
@@ -29,25 +31,35 @@ class CBPTrustedCAUpload
 
 	private $isInEventActivityMode = false;
 
+    private $arReviewOriginalResults = array();
+
 	public function __construct($name)
 	{
 		parent::__construct($name);
 		$this->arProperties = array(
 			"Name" => null,
-			'docId' => '',
 			'Responsible' => null,
+			"Recipient" => null,
 		);
 
 		$this->SetPropertiesTypes(
 			array(
-				'docId' => array(
-					'Type' => 'string,'
-				),
 				'Responsible' => array (
+					'Type' => 'user',
+				),
+				'Recipient' => array (
 					'Type' => 'user',
 				)
 			)
 		);
+	}
+
+	protected function ReInitialize()
+    {
+        parent::ReInitialize();
+
+        $this->TaskId = 0;
+        $this->arReviewOriginalResults = array();
 	}
 
 	public function Execute()
@@ -149,39 +161,56 @@ class CBPTrustedCAUpload
             return;
 		}
 
-		CBPActivity::SetVariable($this->arProperties['docId'], $arEventParameters['DOC_ID']);
-
 		$taskService = $this->workflow->GetService('TaskService');
 		$taskService->MarkCompleted($this->taskId, $arEventParameters['REAL_USER_ID'], CBPTaskUserStatus::Ok);
 
-		$this->WriteToTrackingService(Loc::getMessage('FINISHED', array('#ACTIVITY#' => $this->Name)));
+		$result = "Continue";
 
-		$this->taskStatus = CBPTaskStatus::CompleteOk;
-		$this->Unsubscribe($this);
-		$this->workflow->CloseActivity($this);
+		$this->arReviewOriginalResults[] = $arEventParameters["USER_ID"];
+
+		if ($this->Recipient) {
+			$RecipientTmp = $this->Recipient;
+			if (!is_array($RecipientTmp)) {
+				$RecipientTmp = array($RecipientTmp);
+			}
+			$Recipient = CBPHelper::ExtractUsers($RecipientTmp, $this->GetDocumentId(), false);
+
+			$docTmp = Docs\Database::getDocumentById($arEventParameters["DOC_ID"])->getLastDocument();
+            $lastDocId = $docTmp->getId();
+
+			$doc = Docs\Database::getDocumentById($lastDocId);
+			$access = $doc->accessCheck(Docs\Utils::currUserId());
+			if ($access === true) {
+				foreach ($Recipient as $value) {
+					$doc->share($value, DOC_SHARE_SIGN);
+					$doc->save();
+				}
+			}
+		}
+
+		$allAproved = true;
+		foreach ($arUsers as $userId)
+		{
+			if (!in_array($userId, $this->arReviewOriginalResults))
+				$allAproved = false;
+		}
+
+		if ($allAproved)
+			$result = "Finish";
+
+		if ($result != "Continue") {
+			$this->WriteToTrackingService(Loc::getMessage('FINISHED', array('#ACTIVITY#' => $this->Name)));
+
+			$this->taskStatus = CBPTaskStatus::CompleteOk;
+			$this->Unsubscribe($this);
+			$this->workflow->CloseActivity($this);
+		}
 
 	}
 
 	public static function ShowTaskForm($arTask, $userId, $userName = "")
     {
 		$maxSize  = Docs\Utils::maxUploadFileSize();
-		echo '<script>';
-		echo 'trustedBPcheckFile = function(file, maxSize) {';
-		echo '	onFailure = () => {';
-		echo '		$("#trca-BP-uploadFile-input").val(null);';
-		echo '		$("#trca-BP-uploadFile").attr("class","ui-btn");';
-		echo ' 		$("#trca-BP-uploadFile").prop("disabled", true);';
-		echo '		$("#trca-BP-uploadFile-addFile")[0].lastChild.nodeValue = "' . GetMessage('BPAA_ACT_ADD_FILE') . '";';
-		echo ' 	};';
-		echo ' onSuccess = () => {trustedCA.checkAccessFile(file, trustedBPremakeSign(file), onFailure)};';
-		echo ' trustedCA.checkFileSize(file, maxSize, onSuccess, onFailure );';
-		echo ' };';
-		echo 'trustedBPremakeSign = function(file) {';
-		echo '	$("#trca-BP-uploadFile").attr("class","ui-btn ui-btn-success");';
-		echo '	$("#trca-BP-uploadFile").prop("disabled", false);';
-		echo '	$("#trca-BP-uploadFile-addFile")[0].lastChild.nodeValue = file.name;';
-		echo '};';
-		echo '</script>';
 
 		$form = '<tr><td colspan="2">';
 		$form .= '<div class="ui-btn ui-btn-primary" id="trca-BP-uploadFile-addFile" style="border: none; height: 34px; line-height: 32px;">';
@@ -191,47 +220,23 @@ class CBPTrustedCAUpload
 		$form .= GetMessage('BPAA_ACT_ADD_FILE');
 		$form .= '</div></td></tr>';
 
-		$buttons = '<input class="ui-btn" type="submit"  id="trca-BP-uploadFile" style="border: none; height: 34px; line-height: 0;"';
-		$buttons .= 'name="finish" value="' . GetMessage('BPAA_ACT_UPLOAD_FILE') . '" disabled>';
+		$buttons = '<div class="ui-btn"  id="trca-BP-uploadFile-sign" style="border: none; height: 34px; line-height: 32px;">';
+		$buttons .= GetMessage('BPAA_ACT_SIGN') . '</div>';
+		$buttons .= '<input type="submit"  id="trca-BP-uploadFile" style="display: none" name="docId" value="">';
 
 		return array($form, $buttons);
 	}
 
 	public static function PostTaskForm($arTask, $userId, $arRequest, &$arErrors, $userName = '', $realUserId = null)
     {
-
-		global $USER;
 		$arErrors = array();
 
+		$docId = $_POST["docId"];
+        $doc = Docs\Database::getDocumentById($docId);
+        $lastDoc = $doc->getLastDocument();
+
 		try {
-			if (!Docs\Utils::checkAuthorization()) {
-				return;
-			}
-
-			$DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
-
-			foreach ($_FILES as $key => $value) {
-				$fileName = $_FILES[$key]["name"];
-				if ($fileName) {
-					$uniqid = (string)uniqid();
-					$newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
-					mkdir($newDocDir);
-
-					$newDocFilename = Docs\Utils::mb_basename($fileName);
-					$absolutePath = $newDocDir . $newDocFilename;
-					$relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $newDocFilename;
-
-					if (move_uploaded_file($_FILES[$key]["tmp_name"], $absolutePath)) {
-						$props = new Docs\PropertyCollection();
-						$props->add(new Docs\Property("USER", (string)$USER->GetID()));
-
-						$doc = Docs\Utils::createDocument($relativePath, $props);
-						$fileId = $doc->getId();
-					}
-				}
-			}
-
-			if (!$fileId) {
+			if (!in_array($userId, $lastDoc->getSignersToArray())) {
 				$arErrors[] = array(
 					'code' => 0,
 					'message' => GetMessage('BPAA_ACT_UPLOAD_ERROR'),
@@ -242,7 +247,7 @@ class CBPTrustedCAUpload
 					"USER_ID" => $userId,
 					"REAL_USER_ID" => $realUserId,
 					"USER_NAME" => $userName,
-					"DOC_ID" => $fileId,
+					"DOC_ID" => $docId,
 				);
 
 				CBPRuntime::SendExternalEvent($arTask["WORKFLOW_ID"], $arTask["ACTIVITY_NAME"], $arEventParameters);
@@ -286,9 +291,9 @@ class CBPTrustedCAUpload
 	{
 		if (! is_array($arCurrentValues)) {
 			$arCurrentValues = array(
-				'docId' => '',
 				'Responsible' => '',
 				'Name' => '',
+				'Recipient' => '',
 			);
 
 			$arCurrentActivity = &CBPWorkflowTemplateLoader::FindActivityByName(
@@ -297,6 +302,11 @@ class CBPTrustedCAUpload
 				$arCurrentValues = array_merge($arCurrentValues,$arCurrentActivity['Properties']);
 				$arCurrentValues['Responsible'] = CBPHelper::UsersArrayToString(
                     $arCurrentValues['Responsible'],
+                    $arWorkflowTemplate,
+					$documentType
+				);
+				$arCurrentValues['Recipient'] = CBPHelper::UsersArrayToString(
+                    $arCurrentValues['Recipient'],
                     $arWorkflowTemplate,
 					$documentType
 				);
@@ -322,19 +332,17 @@ class CBPTrustedCAUpload
     {
 		$arErrors = array();
 
-		$deleteInVrible = array('{=Variable:','}');
-		$varible = str_replace($deleteInVrible, '', $arCurrentValues['docId']);
-		if (array_key_exists($varible , $arWorkflowVariables)) {
-			$varibleID = $varible;
-		}
-
 		$arProperties = array(
-			"docId" => $varibleID,
 			'Responsible' => CBPHelper::UsersStringToArray(
                 $arCurrentValues['Responsible'],
                 $documentType,
                 $arErrors
-            ),
+			),
+			'Recipient' => CBPHelper::UsersStringToArray(
+                $arCurrentValues['Recipient'],
+                $documentType,
+                $arErrors
+			),
 			"Name" => $arCurrentValues["Name"],
 		);
 
@@ -364,14 +372,6 @@ class CBPTrustedCAUpload
 			);
 		}
 
-		if (empty($arTestProperties['docId'])){
-			$arErrors[] = array(
-				'code' => 'NotExist',
-				'message' => GetMessage("BPAR_ACT_PROP_EMPTY1"),
-			);
-		}
-
-        return array_merge($arErrors, parent::ValidateProperties($arTestProperties, $user));
-    }
-
+		return array_merge($arErrors, parent::ValidateProperties($arTestProperties, $user));
+	}
 }

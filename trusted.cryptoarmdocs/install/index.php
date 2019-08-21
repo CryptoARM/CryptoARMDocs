@@ -430,6 +430,7 @@ Class trusted_cryptoarmdocs extends CModule
         DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
         DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
         DeleteDirFilesEx("/bitrix/activities/custom/trustedcashare/");
+        DeleteDirFilesEx("/bitrix/activities/custom/trustedcaupload/");
         CUrlRewriter::Delete(
             array(
                 'ID' => 'trusted:cryptoarm_docs_crm',
