@@ -6,6 +6,8 @@ use Bitrix\Main\Localization\Loc;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
+Loader::includeModule('trusted.cryptoarmdocs');
+
 if (!Loader::includeModule('bizproc')) {
     return;
 }
@@ -40,14 +42,12 @@ class CBPTrustedCAShare
 		$arId=$rootActivity->GetDocumentId();
 
 		if ($this->rDocID){
-			$doc = Docs\Database::getDocumentById($this->rDocID)->getLastDocument();
-            $lastDocId = $doc->getId();
-			$docId = $lastDocId;
+			$docId =$this->rDocID;
 		} else {
 			$docId=$arId[2];
 		}
 
-		$doc = Docs\Database::getDocumentById($docId);
+		$doc = Docs\Database::getDocumentById($docId)->getLastDocument();
 		$access = $doc->accessCheck(Docs\Utils::currUserId());
 
 		$arUsersTmp = $this->Responsible;
@@ -56,6 +56,7 @@ class CBPTrustedCAShare
 		}
 
 		$userIds = CBPHelper::ExtractUsers($arUsersTmp, $arId, false);
+		Docs\Utils::dump($userIds);
 
 		if ($access === true) {
 			if (count($this->arActivities) <= 0) {

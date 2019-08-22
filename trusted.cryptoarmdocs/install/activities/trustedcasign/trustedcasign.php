@@ -2,6 +2,8 @@
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
+Loader::includeModule('trusted.cryptoarmdocs');
+
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 if (!Loader::includeModule('bizproc')) {
