@@ -1,4 +1,4 @@
 <?
-$MESS["BPAR_PD_USER"] = "Ответственый";
+$MESS["BPAR_PD_USER"] = "Ответственный";
 $MESS["BPAR_PD_NAME"] = "Название задания";
-$MESS["BPAR_PD_RECIPIENT"] = "Получатель документа";
+$MESS["BPAR_PD_RECIPIENT"] = "Получатель загруженного документа (отчёта о выполнении)";

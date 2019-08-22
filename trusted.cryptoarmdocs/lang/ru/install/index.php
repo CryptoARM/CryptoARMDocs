@@ -66,5 +66,6 @@ $MESS["TR_CA_DOCS_BP_AGREED_TEMPLATE"] = "Отправить документ н
 $MESS["TR_CA_DOCS_BP_SERVICE_NOTE"] = "Служебная записка";
 $MESS["TR_CA_DOCS_BP_ACQUAINTANCE"] = "Рассылка документа для ознакомления";
 $MESS["TR_CA_DOCS_BP_MONEY_DEMAND"] = "Заявка на получение денежных средств";
+$MESS["TR_CA_DOCS_BP_ORDER"] = "Приказ (задание) сотрудникам";
 
 
