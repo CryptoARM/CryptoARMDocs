@@ -8,12 +8,6 @@ if (!Loader::includeModule('bizproc')) {
     return;
 }
 
-// Prevent recursive module include
-global $TR_CA_DOCS_MODULE_IS_LOADING;
-if (!$TR_CA_DOCS_MODULE_IS_LOADING) {
-    Loader::includeModule('trusted.cryptoarmdocs');
-}
-
 if (class_exists("CBPTrustedCASign")) {
     return;
 }

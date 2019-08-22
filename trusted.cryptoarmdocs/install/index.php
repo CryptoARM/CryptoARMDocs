@@ -386,7 +386,7 @@ Class trusted_cryptoarmdocs extends CModule
             );
         }
         if ($step == 2) {
-            $this->UnInstallFiles();
+
             $this->UnInstallModuleOptions();
             $deletedata = $request["deletedata"];
             if ($deletedata == "Y") {
@@ -398,6 +398,7 @@ Class trusted_cryptoarmdocs extends CModule
             if ($this->bizprocSupport()) {
                 $this->UninstallBPTemplates();
             }
+            $this->UnInstallFiles();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_UNINSTALL_TITLE"),

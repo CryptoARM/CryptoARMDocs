@@ -1,22 +1,16 @@
 <?
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
-
 use Trusted\CryptoARM\Docs;
 use Bitrix\Bizproc\FieldType;
 use Bitrix\Main\Loader;
 use Bitrix\Main\Localization\Loc;
 
-Loc::loadMessages(__FILE__);
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 
 if (!Loader::includeModule('bizproc')) {
     return;
 }
 
-// Prevent recursive module include
-global $TR_CA_DOCS_MODULE_IS_LOADING;
-if (!$TR_CA_DOCS_MODULE_IS_LOADING) {
-    Loader::includeModule('trusted.cryptoarmdocs');
-}
+Loc::loadMessages(__FILE__);
 
 if (class_exists("CBPTrustedCAShare")) {
     return;
@@ -24,6 +18,7 @@ if (class_exists("CBPTrustedCAShare")) {
 
 class CBPTrustedCAShare
 	extends CBPCompositeActivity
+
 {
 	public function __construct ($name) {
 
