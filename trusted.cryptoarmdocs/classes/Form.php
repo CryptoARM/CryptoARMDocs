@@ -94,12 +94,10 @@ class Form {
             return false;
         }
 
-        if (!$arFilter["IBLOCK_ID"]) {
-            $arFilter = array_merge(
-                $arFilter,
-                ["IBLOCK_ID" => $iBlocksId]
-            );
-        }
+        $arFilter = array_merge(
+            $arFilter,
+            ["IBLOCK_TYPE" => TR_CA_IB_TYPE_ID]
+        );
 
         $dbElements = \CIBlockElement::GetList(
             [$by => $order],

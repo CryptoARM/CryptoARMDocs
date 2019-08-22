@@ -9,6 +9,7 @@ use Bitrix\Main\Localization\Loc;
 Loc::loadMessages(__FILE__);
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/include.php';
 
 Loader::includeModule('iblock');
 
@@ -18,6 +19,16 @@ class IBlock {
     }
 
     public static function uninstall() {
+        $iBlockElements = Form::getIBlockElements("ID", "ASC", ["IBLOCK_TYPE" => TR_CA_IB_TYPE_ID]);
+        foreach ($iBlockElements as $key => $value ) {
+            \CIBlockElement::Delete($key);
+        }
+
+        $iBlockIds = Form::getIBlocksId();
+        foreach ($iBlockIds as $iBlockId) {
+            \CIBlock::Delete($iBlockId);
+        }
+
         \CIBlockType::Delete(TR_CA_IB_TYPE_ID);
     }
 
