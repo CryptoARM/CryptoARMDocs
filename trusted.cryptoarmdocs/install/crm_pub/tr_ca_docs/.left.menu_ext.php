@@ -3,7 +3,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
     die();
 }
 
-IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/trusted.cryptoarmdocs/install/crm_pub/tr_ca_docs/.left.menu_ext.php");
+IncludeModuleLangFile($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/trusted.cryptoarmdocs/crm_pub/tr_ca_docs/.left.menu_ext.php");
 
 $aMenuLinks = array(
     array(
