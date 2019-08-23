@@ -149,3 +149,13 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
         </select>
     </td>
 </tr>
+
+<tr>
+  <td align="center" width="40%" valign="top"><span class="adm-required-field">
+  <td width="60%" valign="top">
+    <?echo BeginNote();?>
+      <?=GetMessage("DESCRIPTION")?><br>
+	  <?=GetMessage("DESCRIPTION2")?><br>
+    <?echo EndNote();?>
+  </td>
+</tr>

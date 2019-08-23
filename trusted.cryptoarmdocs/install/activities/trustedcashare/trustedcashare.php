@@ -56,7 +56,6 @@ class CBPTrustedCAShare
 		}
 
 		$userIds = CBPHelper::ExtractUsers($arUsersTmp, $arId, false);
-		Docs\Utils::dump($userIds);
 
 		if ($access === true) {
 			if (count($this->arActivities) <= 0) {

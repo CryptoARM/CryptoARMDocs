@@ -20,3 +20,14 @@ Loc::loadMessages(__FILE__);
     <?= GetMessage("DOCID_EMPTY") ?>
   </td>
 </tr>
+
+<tr>
+  <td align="right" width="40%" valign="top"><span class="adm-required-field">
+  <td width="60%" valign="top">
+    <?echo BeginNote();?>
+      <?=GetMessage("DESCRIPTION")?><br>
+      <?=GetMessage("DESCRIPTION2")?><br>
+      <?=GetMessage("DESCRIPTION3")?>
+    <?echo EndNote();?>
+  </td>
+</tr>
