@@ -92,13 +92,21 @@ function checkSizeNReadNWrite(id, numInput, multiple, maxFileSize) {
     let fileEntity = inputEntity.get(0).files[0];
     let onSuccess;
     if (multiple === "_Y") {
-        onSuccess = () => { addInputTypeFileField(id, numInput, multiple) };
+        onSuccess = () => {
+            addInputTypeFileField(id, numInput, multiple)
+        };
     } else {
-        onSuccess = () => { showUploadFile(id, numInput, multiple) };
+        onSuccess = () => {
+            showUploadFile(id, numInput, multiple)
+        };
     }
-    let onFailure = () => { inputEntity.val(null) };
+    let onFailure = () => {
+        inputEntity.val(null)
+    };
 
-    let accessFileJS = () => { trustedCA.checkAccessFile(fileEntity, onSuccess, onFailure) };
+    let accessFileJS = () => {
+        trustedCA.checkAccessFile(fileEntity, onSuccess, onFailure)
+    };
     trustedCA.checkFileSize(fileEntity, maxFileSize, accessFileJS, onFailure);
 }
 
@@ -177,4 +185,18 @@ function resetForm() {
             }
         });
     }, 1000);
+}
+
+function consentToDataProcessing() {
+    let elements = document.getElementsByClassName("consentElement");
+    for (let i = 0; i < elements.length; i++) {
+        let elem = elements[i];
+        if (!elem.checked) {
+            let msg = elem.getAttribute("data-msg");
+            event.preventDefault();
+            alert(msg);
+            return false
+        }
+    }
+    return true;
 }

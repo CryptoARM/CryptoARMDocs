@@ -56,6 +56,7 @@ class Form {
         $properties = [];
 
         while ($prop_fields = $response->GetNext()) {
+//            $properties[$prop_fields["ID"]] = $prop_fields;
             $properties[$prop_fields["ID"]]["ID"] = $prop_fields["ID"];
             $properties[$prop_fields["ID"]]["NAME"] = $prop_fields["NAME"];
             $properties[$prop_fields["ID"]]["PROPERTY_TYPE"] = $prop_fields["PROPERTY_TYPE"];
@@ -66,6 +67,7 @@ class Form {
             $properties[$prop_fields["ID"]]["SORT"] = $prop_fields["SORT"];
             $properties[$prop_fields["ID"]]["CODE"] = $prop_fields["CODE"];
             $properties[$prop_fields["ID"]]["USER_TYPE"] = $prop_fields["USER_TYPE"];
+            $properties[$prop_fields["ID"]]["HINT"] = $prop_fields["HINT"];
         }
 
         $responseAdditional = \CIBlockPropertyEnum::GetList(

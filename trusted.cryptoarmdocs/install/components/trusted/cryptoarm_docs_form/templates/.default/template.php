@@ -13,6 +13,23 @@ function createHTMLElement($value) {
     <?
 }
 
+function createDataConsentElement($value) {
+    ?>
+    <div class="trca-sf-checkbox">
+        <input type="checkbox"
+               class="consentElement"
+               id="<?= "input_data_consent_" . $value["ID"] ?>"
+               name="<?= "input_data_consent_" . $value["ID"] ?>"
+               data-msg="<?= $value["HINT"] ?>"
+        />
+        <label for="<?= "input_data_consent_" . $value["ID"] ?>"></label>
+        <div class="trca-sf-checkbox-value">
+            <?= htmlspecialchars_decode($value["DEFAULT_VALUE"]["TEXT"]) ?>
+        </div>
+    </div>
+    <?
+}
+
 function createDateInput($value) {
     ?>
     <div class="trca-sf-date">
@@ -169,7 +186,8 @@ function createRadioButtonElement($value) {
 </iframe>
 
 <form enctype="multipart/form-data" target="trCaDocs__frame" id="crypto-arm-document__send-form" method="POST"
-      action="/bitrix/components/trusted/cryptoarm_docs_form/templates/.default/uploadDocs.php">
+      action="/bitrix/components/trusted/cryptoarm_docs_form/templates/.default/uploadDocs.php"
+      onSubmit="consentToDataProcessing();">
     <div class="crypto-arm-document__send-form">
         <div class="send-form-data">
             <?
@@ -191,7 +209,11 @@ function createRadioButtonElement($value) {
                                 switch ($value["USER_TYPE"]) {
                                     case "HTML" :
                                         {
-                                            echo htmlspecialchars_decode($value["DEFAULT_VALUE"]["TEXT"]);
+                                            if (stristr($value["CODE"], "DATA_CONSENT")) {
+                                                createDataConsentElement($value);
+                                            } else {
+                                                echo htmlspecialchars_decode($value["DEFAULT_VALUE"]["TEXT"]);
+                                            }
                                             createHTMLElement($value);
                                         }
                                         break;
