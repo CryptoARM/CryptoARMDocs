@@ -104,18 +104,23 @@
     border-width: 6px 6px 0 6px;
     width: 0;
     position: relative;
-    top: 16px;
+    top: 11px;
+    height: 20px;
     right: 15px;
 }
 
 .crypto-arm-document__send-form .send-form-data .trca-sf-selector select {
     border: none;
-    padding: 5px 25px 5px 10px;
+    padding: 4px 25px 5px 10px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     -ms-appearance: none;
     z-index: 10;
+    height: 31px;
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.35;
     background-color: rgba(255, 255, 255, 0.1);
     border-bottom: 1px solid #ccc;
 }
@@ -267,6 +272,9 @@
     border: 2px solid rgba(0, 0, 0, 0.54);
     top: 0;
     z-index: 0;
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
 }
 
 /* Upload button */
