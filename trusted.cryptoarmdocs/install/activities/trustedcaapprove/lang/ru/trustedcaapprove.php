@@ -3,6 +3,7 @@ $MESS ['BPAA_ACT_BUTTON1'] = "Утвердить документ";
 $MESS ['BPAA_LOG_Y'] = "Утвержден";
 $MESS ['BPAA_ACT_COMMENT'] = "Комментарий";
 $MESS ['BPAA_LOG_COMMENTS'] = "Комментарий";
+$MESS ['BPAA_ACT_BUTTON1'] = "Утвердить документ";
 $MESS ['BPAA_ACT_BUTTON2'] = "Отклонить";
 $MESS ['BPAA_LOG_N'] = "Отклонен";
 $MESS ['BPAA_ACT_NO_ACTION'] = "Не указано действие";
@@ -23,6 +24,5 @@ $MESS ['BPAA_ACT_COMMENT_ERROR'] = "Не заполнено поле: #COMMENT_L
 
 $MESS ['BPAA_ACT_BLOCK_BY'] = "Документ заблокирован пользователем ";
 $MESS ['BPAA_ACT_UNBLOCK'] = "Разблокировать";
-$MESS ['BPAA_ACT_SIGN'] = "Подписать";
-$MESS ['BPAA_ACT_SIGN_ERROR'] = "Подпишите документ, чтобы закончить утверждение";
+
 ?>

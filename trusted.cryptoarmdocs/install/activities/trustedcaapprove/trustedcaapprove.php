@@ -631,45 +631,34 @@ class CBPTrustedCAApprove
                 '<textarea rows="3" cols="50" name="task_comment"></textarea>'.
                 '</td></tr>';
 
+            $onSuccess = '() => { $("#trca-BP-accept").click() }';
+            echo "<script>";
+            echo "window.onload = function () {";
+            echo "$('#trca-BP-button').attr('onclick','trustedCA.sign([ $lastDocId ], null, $onSuccess )');";
+
             if ($doc->getStatus() === DOC_STATUS_BLOCKED) {
                 $blockUser = $doc->getBlockBy();
-                $blockMessage = GetMessage('BPAA_ACT_BLOCK_BY') . Docs\Utils::getUserName(CUser::GetByID($blockUser));
+                $blockMessage = GetMessage('BPAA_ACT_BLOCK_BY') . Docs\Utils::getUserName($blockUser);
                 $form .= "<tr><td>$blockMessage</td><td></td></tr>";
                 if ($blockUser == $USER->GetID()) {
-                    $form .= '<tr><td colspan="2"><input type="button" class="bp-button bp-button-transparent" style="border: none" value="' . GetMessage('BPAA_ACT_UNBLOCK') . '" onclick="trustedCA.unblock([' . $lastDocId . '], () => { location.reload() })" /></td></tr>';
+                    echo "$('#trca-BP-button').attr('onclick','trustedCA.unblock([ $lastDocId ], () => { location.reload() })');";
+                    echo "$('#trca-BP-button').attr('class','ui-btn');";
+                    echo "$('#trca-BP-button').text('" . GetMessage('BPAA_ACT_UNBLOCK') . "');";
+                } else {
+                    echo "$('#trca-BP-button').hide();";
                 }
-            } else {
-                $form .= '<tr><td colspan="2"><input type="button" class="bp-button bp-button-accept" style="border: none" value="' . GetMessage('BPAA_ACT_SIGN') . '" onclick="trustedCA.sign([' . $lastDocId . '], null, null)" /></td></tr>';
             }
+
+            echo "}";
+            echo "</script>";
         }
 
         $buttons =
-            '<input type="submit" name="approve" value="'.(strlen($arTask["PARAMETERS"]["TaskButton1Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton1Message"] : GetMessage("BPAA_ACT_BUTTON1")).'"/>'.
-            '<input type="submit" name="nonapprove" value="'.(strlen($arTask["PARAMETERS"]["TaskButton2Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton2Message"] : GetMessage("BPAA_ACT_BUTTON2")).'"/>';
+            '<div id="trca-BP-button" class="ui-btn ui-btn-success" style="border: none; height: 34px; line-height: 34px;">' . GetMessage("BPAA_ACT_BUTTON1") . '</div>'.
+            '<input type="submit"  id="trca-BP-accept" style="display: none" name="approve" value=" "/>'.
+            '<input type="submit" class="ui-btn ui-btn-danger" style="height: 34px;margin-left: 7px;line-height: 0;" name="nonapprove" value="' . GetMessage("BPAA_ACT_BUTTON2") . '"/>';
 
         return array($form, $buttons);
-    }
-
-    public static function getTaskControls($arTask)
-    {
-        return array(
-            'BUTTONS' => array(
-                array(
-                    'TYPE'  => 'submit',
-                    'TARGET_USER_STATUS' => CBPTaskUserStatus::Yes,
-                    'NAME'  => 'approve',
-                    'VALUE' => 'Y',
-                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButton1Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton1Message"] : GetMessage("BPAA_ACT_BUTTON1")
-                ),
-                array(
-                    'TYPE'  => 'submit',
-                    'TARGET_USER_STATUS' => CBPTaskUserStatus::No,
-                    'NAME'  => 'nonapprove',
-                    'VALUE' => 'Y',
-                    'TEXT'  => strlen($arTask["PARAMETERS"]["TaskButton2Message"]) > 0 ? $arTask["PARAMETERS"]["TaskButton2Message"] : GetMessage("BPAA_ACT_BUTTON2")
-                )
-            )
-        );
     }
 
     public static function PostTaskForm($arTask, $userId, $arRequest, &$arErrors, $userName = "", $realUserId = null)
