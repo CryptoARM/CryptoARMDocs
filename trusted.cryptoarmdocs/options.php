@@ -56,7 +56,8 @@ $moduleOptions = array(
     "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ", "MAIL_EVENT_ID_TO", "MAIL_TEMPLATE_ID_TO",
     "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID",
     "MAIL_EVENT_ID_FORM", "MAIL_TEMPLATE_ID_FORM",
-    "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN"
+    "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN",
+    "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY"
 );
 
 function UpdateOption($option, $value = false) {
@@ -99,6 +100,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("MAIL_TEMPLATE_ID_FORM");
         UpdateOption("MAIL_EVENT_ID_FORM_TO_ADMIN");
         UpdateOption("MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
+        UpdateOption("RECAPTCHA_KEY_SITE");
+        UpdateOption("RECAPTCHA_SECRET_KEY");
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -616,6 +619,40 @@ $tabControl->Begin();
                 }
                 ?>
             </select>
+        </td>
+    </tr>
+
+    <tr class="heading">
+        <td colspan="2">reCAPTCHA</td>
+    </tr>
+
+    <tr>
+        <td>
+            <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE") ?>
+        </td>
+        <td style="display: flex; align-items: center;">
+            <input id="RECAPTCHA_KEY_SITE"
+                   name="RECAPTCHA_KEY_SITE"
+                   value="<?= $RECAPTCHA_KEY_SITE ?>"
+                   placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE_PLACEHOLDER") ?>"
+                   maxlength="40"
+                   type="text"
+                   style="width: 500px"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY") ?>
+        </td>
+        <td style="display: flex; align-items: center;">
+            <input id="RECAPTCHA_SECRET_KEY"
+                   name="RECAPTCHA_SECRET_KEY"
+                   value="<?= $RECAPTCHA_SECRET_KEY ?>"
+                   placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY_PLACEHOLDER") ?>"
+                   maxlength="40"
+                   type="text"
+                   style="width: 500px"/>
         </td>
     </tr>
 

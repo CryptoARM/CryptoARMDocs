@@ -91,6 +91,11 @@ $MESS["TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_TEMPLATE_ID"] = "Почтовый шабл
 $MESS["TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_NOT_SELECTED"] = "Не выбрано";
 $MESS["TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_DESCRIPTION"] = "Для удобства отправки администатору оповещения о успешно заполненной формы пользователем модуль автоматически создает почтовое событие и привязанный к нему стандартный шаблон. Вы можете отредактировать шаблон по своему усмотрению.<br /><br />В шаблоне письма можно использовать следующие поля:<br />#EMAIL# - почтовый ящик пользователя, на который будет отправлено письмо,<br />#FILE_NAMES# - список названий документов,<br />#FORM_USER# - автор заполненной формы.";
 
+$MESS["TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE"] = "reCAPTCHA ключ сайта";
+$MESS["TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE_PLACEHOLDER"] = "Введите сюда ключ сайта";
+$MESS["TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY"] = "reCAPTCHA секретный ключ";
+$MESS["TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY_PLACEHOLDER"] = "Введите сюда секретный ключ";
+
 $MESS["TR_CA_DOCS_LOGS_LAST_100"] = "Последние 100 операций:";
 $MESS["TR_CA_DOCS_LOGS_NO_LOG_FILE"] = "Записи об операциях отсутствуют.";
 $MESS["TR_CA_DOCS_LOGS_DOWNLOAD"] = "Скачать полный журнал операций";

@@ -358,7 +358,7 @@
 
 /* Button - Sign Documents */
 .crypto-arm-document__send-form .trca-sf-button-sign {
-    margin: 12px;
+    margin: 12px 16px;
     height: 36px;
     width: 200px;
     background-color: rgb(33, 150, 243);
@@ -392,3 +392,6 @@
     cursor: pointer;
 }
 
+.crypto-arm-document__send-form #recaptcha-sf {
+    padding: 16px 17px;
+}

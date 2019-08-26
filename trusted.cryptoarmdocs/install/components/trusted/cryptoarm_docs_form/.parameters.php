@@ -58,6 +58,12 @@ $arComponentParameters = [
             "TYPE" => "STRING",
             "DEFAULT" => "",
         ],
+        "ENABLE_RECAPTCHA" => [
+            "PARENT" => "SETTINGS",
+            "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_FORM_PARAMETERS_ENABLE_RECAPTCHA_NAME"),
+            "TYPE" => "CHECKBOX",
+            "DEFAULT" => "N",
+        ],
     ],
 ];
 

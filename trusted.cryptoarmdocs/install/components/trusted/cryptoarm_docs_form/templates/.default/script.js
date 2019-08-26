@@ -195,8 +195,6 @@ function consentToDataProcessing() {
             let msg = elem.getAttribute("data-msg");
             event.preventDefault();
             alert(msg);
-            return false
         }
     }
-    return true;
 }

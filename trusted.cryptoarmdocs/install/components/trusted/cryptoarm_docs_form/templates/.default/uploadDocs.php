@@ -15,6 +15,26 @@ if (!Docs\Utils::checkAuthorization()) {
     return;
 }
 
+if (isset($_POST["g-recaptcha-response"])) {
+    $recaptchaSecretKey = Option::get(TR_CA_DOCS_MODULE_ID, "RECAPTCHA_SECRET_KEY", "");
+
+    $response = null;
+    $reCaptcha = new Docs\ReCaptcha();
+    $reCaptcha->ReCaptcha($recaptchaSecretKey);
+
+    if ($_POST["g-recaptcha-response"]) {
+        $response = $reCaptcha->verifyResponse(
+            $_SERVER["REMOTE_ADDR"],
+            $_POST["g-recaptcha-response"]
+        );
+    }
+
+    if (!($response != null && $response->success)) {
+        echo '<script>alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_RECAPTCHA_FAILED") . '")</script>';
+        return;
+    }
+}
+
 $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
 $iBlockId = $_POST["iBlock_id"];
@@ -67,7 +87,7 @@ if ($iBlockElementId["success"]) {
     ];
 
     echo '<script>';
-    echo 'let onSuccess = () => { setTimeout(() => { parent.resetForm(); alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_SIGN_SUCCESS") . '"); }, 1000); };';
+    echo 'let onSuccess = () => { parent.grecaptcha.reset(); setTimeout(() => { parent.resetForm(); alert("' . Loc::getMessage("TR_CA_DOCS_COMP_FORM_SIGN_SUCCESS") . '"); }, 1000); };';
     echo 'window.parent.trustedCA.sign(' . json_encode($fileListToUpdate) . ', ' . json_encode($extra) . ', onSuccess )';
     echo '</script>';
 }

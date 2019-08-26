@@ -265,6 +265,14 @@ function createRadioButtonElement($value) {
                 </div>
                 <?
             }
+            if ($arParams["ENABLE_RECAPTCHA"] === "Y") {
+                ?>
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                <div id="recaptcha-sf">
+                    <div class="g-recaptcha" data-sitekey="<?= $arResult["RECAPTCHA_SITE_KEY"] ?>"></div>
+                </div>
+                <?
+            }
             ?>
             <input type="hidden"
                    id="iBlock_id"
