@@ -88,6 +88,15 @@ class Form {
         return $properties;
     }
 
+    public static function getMainDocumentByFormId($id) {
+        $form = \CIBlockElement::GetList(
+            ['SORT' => 'ASC'],
+            ['ID' => $id]
+        )->GetNextElement()->GetFields();
+
+        return (int)$form["NAME"];
+    }
+
     public static function getIBlockElements($by, $order, $arFilter) {
         $iBlocksId = self::getIBlocksId();
         $iBlocksElements = [];
@@ -414,10 +423,12 @@ class Form {
         $newDocDir .= $title;
         $relativePath = '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/' . $title;
 
+        $elementId = (string)$iBlockElementId["data"];
+
         $pdf->Output($newDocDir, 'F');
         $props = new PropertyCollection();
         $props->add(new Property("USER", (string)Utils::currUserId()));
-        $props->add(new Property("FORM", (string)$iBlockElementId["data"]));
+        $props->add(new Property("FORM", $elementId));
         $doc = Utils::createDocument($relativePath, $props);
         $docId = $doc->GetId();
 
@@ -427,6 +438,8 @@ class Form {
                 'message' => 'PDF created',
                 'data' => $docId,
             ];
+            $iBlockElem = new \CIBlockElement;
+            $iBlockElem->Update($elementId, ["NAME" => $docId]);
         }
 
         return $res;
@@ -495,10 +508,8 @@ class Form {
             return $res;
         }
 
-        if (!Utils::isAdmin(Utils::currUserId())) {
-            $res['message'] = 'No access';
-            return $res;
-        }
+        global $USER;
+        $userId = $USER->GetID();
 
         if ($params["ids"]) {
             $ids = $params["ids"];
@@ -508,6 +519,16 @@ class Form {
         }
 
         foreach ($ids as $id) {
+            $createdBy = \CIBlockElement::GetList(
+                ['SORT' => 'ASC'],
+                ['ID' => $id]
+            )->GetNextElement()->GetFields()["CREATED_BY"];
+
+            if ($createdBy != $userId) {
+                $res['message'] = 'No access';
+                return $res;
+            }
+
             $docs = Database::getDocumentsByPropertyTypeAndValue("FORM", $id);
             $docList = $docs->getList();
 

@@ -12,5 +12,5 @@ $arComponentDescription = array(
         "NAME" => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOC"),
     ),
     'CACHE_PATH' => 'Y',
-    'COMPLEX' => 'Y'
+    'COMPLEX' => 'N'
 );

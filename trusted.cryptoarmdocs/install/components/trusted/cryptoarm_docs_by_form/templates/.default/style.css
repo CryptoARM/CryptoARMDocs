@@ -1,0 +1,281 @@
+#main-document {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    background-color: rgb(238, 238, 238);
+    font-family: 'Open Sans', sans-serif;
+}
+
+main.document-card {
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+}
+
+.document-card__title_form {
+    border-radius: 2px 2px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.document-item__text {
+    width: 60%;
+}
+
+.document-item__text .document-text__title {
+    color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: auto;
+    height: auto;
+    font-size: 15px;
+    line-height: 1.4
+}
+
+.document-item__text .document-text__description {
+    color: rgba(0, 0, 0, 0.38);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: auto;
+    height: auto;
+    font-size: 14px;
+}
+
+.document-item__text .document-text__share {
+    color: rgba(0, 0, 0, 0.38);
+    width: auto;
+    height: auto;
+    font-size: 14px;
+}
+
+.document-card__content .document-content__item {
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.document-card .document-card__content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.document-card .document-card__footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.document-content__item .document-item__left_form,
+.document-content__item .document-item__right_form {
+    display: flex;
+    align-items: center;
+}
+
+.document-content__item .document-item__left_form {
+    justify-content: flex-start;
+    width: 50%;
+}
+@media(max-width: 1024px){
+    .document-content__item .document-item__left_form {
+        width: 40%;
+    }
+}
+
+.document-content__item .document-item__left_form .date_create {
+    margin-right: 24px;
+}
+
+.document-content__item .document-item__left_form .date_create,
+.document-content__item .document-item__left_form .iblock_name {
+    color: rgba(0, 0, 0, 0.54);
+    white-space: nowrap;
+    width: auto;
+    height: auto;
+    font-size: 15px;
+    line-height: 1.4
+}
+
+.document-content__item .document-item__right_form {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.document-card__content .document-item__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.3;
+    width: 86%;
+}
+
+.document-card__title_form {
+    background-color: rgb(33, 150, 243);
+    font-size: 24px;
+    font-weight: 300;
+    color: #fff;
+    padding: 16px;
+}
+
+.document-content__item {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.document-card .document-card__title_form i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu ul {
+    margin: 0;
+    list-style: none;
+    padding-left: 20px;
+    display: none;
+    background-color: #ffffff;
+}
+
+.menu .title {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+div#sweeties ul {
+    height: auto;
+    padding: 8px 0;
+    width: auto;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+div#sweeties ul > div {
+    padding: 16px;
+    font-size: 16px;
+    color: rgba(0,0,0,0.54);
+    display: flex;
+}
+
+div#sweeties ul > div:hover {
+    background-color: rgb(238,238,238);
+    cursor: pointer;
+    z-index: 9999;
+}
+
+div#sweeties ul > div > div {
+    font-size: 24px;
+    color: rgba(0,0,0,0.54);
+    margin-right: 24px;
+}
+
+#ul_by_form {
+    display: none;
+    position: absolute;
+    width: 191.672px;
+    height: 224px;
+    margin: -15px -150px;
+    z-index: 9999;
+    box-shadow: 0 0 0 99999px rgba(0,0,0,.6);
+}
+
+.document-card__content .document-item__left_form i {
+    padding: 0 16px;
+    font-size: 36px;
+    width: 36px;
+}
+
+.document-card__content .document-item__left_form .material-icons {
+    /*.material-icons {*/
+    padding: 0 16px;
+    font-size: 36px;
+    width: 64px;
+    height: 40px;
+
+}
+
+.icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon_content {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.document-card__title_form .icon-wrapper:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.document-item__right_form .icon-wrapper:hover {
+    background-color: rgba(33, 150, 243, 0.12);
+}
+
+.document-card__content .document-item__right_form i {
+    align-self: center;
+    width: 24px;
+    height: 24px;
+    margin: 0 16px;
+    color: rgb(33, 150, 243);
+}
+
+p {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.document-item__text {
+    padding: 16px 0;
+}
+
+.document-item__right_form {
+    padding: 4px 8px;
+}
+
+.document-card__footer .document-footer__action {
+    margin: 12px;
+    height: 36px;
+    width: 106px;
+    background-color: rgb(33, 150, 243);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.document-card__footer .document-footer__action:hover {
+    opacity: 0.95;
+}
+
+.document-card__footer .document-footer__action:active {
+    opacity: 0.80;
+    box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2);
+    transition: 0.5s;
+}
+
+.document-card__footer .document-footer__input {
+    height: 37px;
+    width: 106px;
+    position: absolute;
+    opacity: 0;
+}
