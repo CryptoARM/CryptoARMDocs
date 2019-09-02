@@ -627,6 +627,14 @@ $tabControl->Begin();
     </tr>
 
     <tr>
+        <td colspan="2">
+            <?
+            echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_ATTENTION"), EndNote();
+            ?>
+        </td>
+    </tr>
+
+    <tr>
         <td>
             <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE") ?>
         </td>
