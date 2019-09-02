@@ -95,9 +95,9 @@ Class trusted_cryptoarmdocs extends CModule
             $this->InstallIb();
             $this->InstallMenuItems();
             $this->InstallMailEvents();
-            if ($this->bizprocSupport()) {
-                $this->InstallBPTemplates();
-            }
+            // if ($this->bizprocSupport()) {
+            //     $this->InstallBPTemplates();
+            // }
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -146,11 +146,11 @@ Class trusted_cryptoarmdocs extends CModule
             true, true
         );
         if ($this->bizprocSupport()) {
-            CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
-                true, true
-            );
+            // CopyDirFiles(
+            //     $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
+            //     $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
+            //     true, true
+            // );
             CopyDirFiles(
                 $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
                 $_SERVER["DOCUMENT_ROOT"],
@@ -395,9 +395,9 @@ Class trusted_cryptoarmdocs extends CModule
             }
             $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
-            if ($this->bizprocSupport()) {
-                $this->UninstallBPTemplates();
-            }
+            // if ($this->bizprocSupport()) {
+            //     $this->UninstallBPTemplates();
+            // }
             $this->UnInstallFiles();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
@@ -428,10 +428,10 @@ Class trusted_cryptoarmdocs extends CModule
 
         // CRM
         DeleteDirFilesEx("/tr_ca_docs/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcashare/");
-        DeleteDirFilesEx("/bitrix/activities/custom/trustedcaupload/");
+        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
+        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
+        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcashare/");
+        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcaupload/");
         CUrlRewriter::Delete(
             array(
                 'ID' => 'trusted:cryptoarm_docs_crm',
