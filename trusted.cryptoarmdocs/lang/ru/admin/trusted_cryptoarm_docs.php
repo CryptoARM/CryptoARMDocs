@@ -40,6 +40,7 @@ $MESS["TR_CA_DOCS_COL_CREATED"] = "Дата последней подписи";
 $MESS["TR_CA_DOCS_COL_SIGN"] = "Информация о сертификате подписи";
 $MESS["TR_CA_DOCS_COL_TYPE"] = "Тип документа";
 $MESS["TR_CA_DOCS_COL_STATUS"] = "Статус документа";
+$MESS["TR_CA_DOCS_COL_OWNER"] = "Владелец документа";
 
 $MESS["TR_CA_DOCS_COL_USER_ID"] = "ID";
 $MESS["TR_CA_DOCS_COL_DOCS"] = "Документы";
@@ -58,8 +59,11 @@ $MESS["TR_CA_DOCS_STATUS"] = "<b>Статус: </b>";
 // Actions
 $MESS["TR_CA_DOCS_ACT_SIGN"] = "Подписать";
 $MESS["TR_CA_DOCS_ACT_UNBLOCK"] = "Разблокировать";
+$MESS["TR_CA_DOCS_ACT_VERIFY"] = "Проверить подпись";
+$MESS["TR_CA_DOCS_ACT_SHARE_DOC"] = "Поделиться документом";
 $MESS["TR_CA_DOCS_ACT_PROTOCOL"] = "Скачать протокол";
 $MESS["TR_CA_DOCS_ACT_REMOVE"] = "Удалить";
+$MESS["TR_CA_DOCS_ACT_UNSHARE"] = "Отказаться от документа";
 
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить документы покупателю";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Отправить документы на e-mail";

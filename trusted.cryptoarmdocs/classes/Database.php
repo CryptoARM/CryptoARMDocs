@@ -478,13 +478,26 @@ class Database
         $find_signatures = (string)$filter['SIGNATURES'];
         $find_type = (string)$filter['TYPE'];
         $find_status = (string)$filter['STATUS'];
+        $find_shareUser = (string)$filter['SHARE_USER'];
+        $find_owner = (string)$filter['OWNER'];
 
         global $DB;
         $sql = "
             SELECT
                 TD.ID
             FROM
-                " . DB_TABLE_DOCUMENTS . " TD
+                " . DB_TABLE_DOCUMENTS . " as TD ";
+        if ($find_shareUser !== "" ||  $find_owner !== "")
+            $sql .= "RIGHT JOIN tr_ca_docs_property as TDP ON TDP.DOCUMENT_ID = TD.ID ";
+        if ($find_shareUser !== "" &&  $find_owner !== "")
+            $sql .= "RIGHT JOIN (SELECT TDP.DOCUMENT_ID
+                     FROM
+                        tr_ca_docs_property as TDP
+                     WHERE
+                        (TDP.TYPE = 'USER' OR TDP.TYPE = 'SHARE_READ') AND
+                        TDP.VALUE = '" . $find_shareUser . "'
+                        ) as TMP ON TMP.DOCUMENT_ID = TDP.DOCUMENT_ID ";
+        $sql .= "
             WHERE
                 isnull(TD.CHILD_ID)";
         if ($find_docId !== "")
@@ -497,6 +510,18 @@ class Database
             $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status !== "")
             $sql .= " AND TD.STATUS = " . $find_status;
+        if ($find_shareUser !== "" &&  $find_owner !== ""){
+            $sql .= " AND TDP.DOCUMENT_ID = TD.ID
+                      AND TDP.TYPE = 'USER'
+                      AND TDP.VALUE = '" . $find_owner . "'";
+        } else {
+            if ($find_shareUser !== "")
+                $sql .= " AND (TDP.TYPE = 'USER' OR TDP.TYPE = 'SHARE_READ') AND
+                        TDP.VALUE = '" . $find_shareUser . "'";
+            if ($find_owner !== "")
+                $sql .= " AND TDP.TYPE = 'USER' AND
+                        TDP.VALUE = '" . $find_owner . "'";
+        }
 
         $sOrder = '';
         if (is_array($arOrder)) {

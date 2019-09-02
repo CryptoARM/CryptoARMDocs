@@ -55,6 +55,7 @@ class GridBuilder
                     'default' => $values['DEFAULT'],
                     'type' => $values['FILTER_TYPE'],
                     'items' => $values['FILTER_ITEMS'],
+                    'params' =>  $values['FILTER_PARAMS'],
                 );
             }
         }
@@ -73,7 +74,27 @@ class GridBuilder
                     $this->filter[str_replace('_to' , '', $k)]['TO'] = ConvertDateTime($v, TR_CA_DB_TIME_FORMAT);
                     continue;
                 }
-
+                if ($k == 'ID') {
+                    $this->filter['DOC'] = $v;
+                    continue;
+                }
+                if ($k == 'NAME') {
+                    $this->filter['FILE_NAME'] = $v;
+                    continue;
+                } elseif ($k == 'FIND' && !$this->filter['FILE_NAME']) {
+                    $this->filter['FILE_NAME'] = $v;
+                    continue;
+                }
+                if ($k == 'TYPE') {
+                    if (count($v) === 1) {
+                        $this->filter['TYPE'] = $v['0'];
+                    }
+                    continue;
+                }
+                if ($k == 'OWNER') {
+                    $this->filter['OWNER'] = $v;
+                    continue;
+                }
                 // Regular filter values
                 if (array_key_exists($k, $schema['STRUCTURE'])) {
                     $this->filter[$k] = $v;
@@ -86,31 +107,37 @@ class GridBuilder
         $this->sort = $this->sortData['sort'];
 
         if (empty($this->sort)) {
-            $sort = array('ID' => 'asc');
+            $this->sort = array('DOC' => 'asc');
+        } elseif ($this->sort['NAME']) {
+            $this->sort = array ('FILE_NAME' => $this->sort['NAME']);
+        } elseif ($this->sort['ID']) {
+            $this->sort = array ('DOC' => $this->sort['ID']);
         }
-
         $this->pagination = $this->options->getNavParams();
-
-        $this->navigation = new Ui\PageNavigation($this->gridId);
-        $this->navigation
-             ->allowAllRecords(true)
-             ->setPageSize($this->pagination['nPageSize'])
-             ->initFromUri();
-
-        $count = null;
-        // Use provided count
-        // TODO: find count
-        $this->navigation->setRecordCount($count);
-
-        if ($this->navigation->allRecordsShown()) {
-            $this->pagination = false;
-        } else {
-            $this->pagination['iNumPage'] = $this->navigation->getCurrentPage();
-        }
 
         $this->onchange = new Grid\Panel\Snippet\Onchange();
 
-        $this->actionPanel = array();
+        $snippet = new \Bitrix\Main\Grid\Panel\Snippet();
+        $this->actionPanel = array(
+            'GROUPS' => array(
+                'TYPE' => array(
+                    'ITEMS' => array(
+                        $snippet ->getRemoveButton( array(
+                            'ONCHANGE'  =>  array(
+                               array (
+                                  'ACTION' => \Bitrix\Main\Grid\Panel\Actions::CALLBACK,
+                                  'DATA' => array(
+                                     array(
+                                        'JS' => "BX.adminUiList.SendSelected('" . $this->gridId . "');"
+                                    )
+                                 )
+                              )
+                           )
+                        )),
+                    ),
+                )
+            ),
+        );
 
         $this->reloadGridJs = "trustedCA.reloadGrid.bind(this,'" . $this->gridId . "')";
 
@@ -165,7 +192,7 @@ class GridBuilder
                 'GRID_ID' => $this->gridId,
                 'COLUMNS' => $this->columns,
                 'ROWS' => $rows,
-                'SHOW_ROW_CHECKBOXES' => false,
+                'SHOW_ROW_CHECKBOXES' => true,
                 'NAV_OBJECT' => $this->navigation,
                 'AJAX_MODE' => 'Y',
                 'AJAX_ID' => \CAjax::getComponentID(
@@ -175,15 +202,15 @@ class GridBuilder
                 ),
                 'PAGE_SIZES' => $this->pageSizes,
                 'AJAX_OPTION_JUMP' => 'N',
-                'SHOW_CHECK_ALL_CHECKBOXES' => false,
+                'SHOW_CHECK_ALL_CHECKBOXES' => true,
                 'SHOW_ROW_ACTIONS_MENU' => true,
                 'SHOW_GRID_SETTINGS_MENU' => true,
                 'SHOW_NAVIGATION_PANEL' => true,
                 'SHOW_PAGINATION' => $this->showPagination,
-                'SHOW_SELECTED_COUNTER' => false,
+                'SHOW_SELECTED_COUNTER' => true,
                 'SHOW_TOTAL_COUNTER' => $this->showTotalCounter,
                 'SHOW_PAGESIZE' => $this->showPageSize,
-                'SHOW_ACTION_PANEL' => false,
+                'SHOW_ACTION_PANEL' => true,
                 'ACTION_PANEL' => $this->actionPanel,
                 'ALLOW_COLUMNS_SORT' => true,
                 'ALLOW_COLUMNS_RESIZE' => true,
