@@ -93,11 +93,7 @@ Class trusted_cryptoarmdocs extends CModule
             $this->InstallModuleOptions();
             $this->InstallDB();
             $this->InstallIb();
-            $this->InstallMenuItems();
             $this->InstallMailEvents();
-            // if ($this->bizprocSupport()) {
-            //     $this->InstallBPTemplates();
-            // }
             ModuleManager::registerModule($this->MODULE_ID);
         }
         if (!$continue) {
@@ -145,26 +141,6 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/",
             true, true
         );
-        if ($this->bizprocSupport()) {
-            // CopyDirFiles(
-            //     $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/activities/",
-            //     $_SERVER["DOCUMENT_ROOT"] . "/bitrix/activities/custom/",
-            //     true, true
-            // );
-            CopyDirFiles(
-                $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/crm_pub/",
-                $_SERVER["DOCUMENT_ROOT"],
-                true, true
-            );
-            CUrlRewriter::Add(
-                array(
-                    'CONDITION' => '#^/tr_ca_docs/#',
-                    'RULE' => '',
-                    'ID' => 'trusted:cryptoarm_docs_crm',
-                    'PATH' => '/tr_ca_docs/index.php',
-                )
-            );
-        }
         return true;
     }
 
@@ -230,24 +206,6 @@ Class trusted_cryptoarmdocs extends CModule
 
     function InstallIb() {
         Docs\IBlock::install();
-    }
-
-    function InstallMenuItems() {
-        $siteInfo = $this->getSiteInfo();
-
-        if ($this->crmSupport()) {
-            $this->AddMenuItem(
-                $siteInfo["DIR"] . ".top.menu.php",
-                array(
-                    Loc::getMessage('TR_CA_DOCS_CRM_MENU_TITLE'),
-                    $siteInfo["DIR"] . "tr_ca_docs/",
-                    array(),
-                    array(),
-                    "IsModuleInstalled('" . $this->MODULE_ID . "')"
-                ),
-                $siteInfo["LID"]
-            );
-        }
     }
 
     function InstallMailEvents()
@@ -393,11 +351,13 @@ Class trusted_cryptoarmdocs extends CModule
                 $this->UnInstallDB();
                 $this->UnInstallIb();
             }
-            $this->UnInstallMenuItems();
             $this->UnInstallMailEvents();
-            // if ($this->bizprocSupport()) {
-            //     $this->UninstallBPTemplates();
-            // }
+
+            if (IsModuleInstalled('trusted.cryptoarmdocsBP')) {
+                CModule::includeModule('trusted.cryptoarmdocsBP');
+                trusted_cryptoarmdocsBP::DoUninstall();
+            }
+
             $this->UnInstallFiles();
             ModuleManager::unRegisterModule($this->MODULE_ID);
             $APPLICATION->IncludeAdminFile(
@@ -411,7 +371,9 @@ Class trusted_cryptoarmdocs extends CModule
     {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
+        if ($this->crmSupport()) {
+            DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
+        }
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
@@ -425,19 +387,6 @@ Class trusted_cryptoarmdocs extends CModule
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/themes/.default/"
         );
         DeleteDirFilesEx("/bitrix/themes/.default/icons/" . $this->MODULE_ID);
-
-        // CRM
-        DeleteDirFilesEx("/tr_ca_docs/");
-        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcasign/");
-        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcaapprove/");
-        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcashare/");
-        // DeleteDirFilesEx("/bitrix/activities/custom/trustedcaupload/");
-        CUrlRewriter::Delete(
-            array(
-                'ID' => 'trusted:cryptoarm_docs_crm',
-                'PATH' => '/tr_ca_docs/index.php',
-            )
-        );
 
         return true;
     }
@@ -484,18 +433,6 @@ Class trusted_cryptoarmdocs extends CModule
         Docs\IBlock::uninstall();
     }
 
-    function UnInstallMenuItems() {
-        $siteInfo = $this->getSiteInfo();
-
-        if ($this->crmSupport()) {
-            $this->DeleteMenuItem(
-                $siteInfo["DIR"] . ".top.menu.php",
-                $siteInfo["DIR"] . "tr_ca_docs/",
-                $siteInfo["LID"]
-            );
-        }
-    }
-
     function UnInstallMailEvents()
     {
         $events = array(
@@ -537,103 +474,6 @@ Class trusted_cryptoarmdocs extends CModule
 
         if ($parentId) {
             $this->dropDocumentChain($parentId);
-        }
-    }
-
-    function getSiteInfo() {
-        $siteID = CSite::GetDefSite();
-        return CSite::GetByID($siteID)->Fetch();
-    }
-
-    function AddMenuItem($menuFile, $menuItem,  $siteID, $pos = -1)
-    {
-        if (CModule::IncludeModule('fileman')) {
-            $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
-            $arMenuItems = $arResult["aMenuLinks"];
-            $menuTemplate = $arResult["sMenuTemplate"];
-
-            $bFound = false;
-            foreach ($arMenuItems as $item) {
-                if ($item[1] == $menuItem[1]) {
-                    $bFound = true;
-                    break;
-                }
-            }
-
-            if (!$bFound) {
-                if ($pos<0 || $pos>=count($arMenuItems)) {
-                    $arMenuItems[] = $menuItem;
-                } else {
-                    for ($i=count($arMenuItems); $i>$pos; $i--) {
-                        $arMenuItems[$i] = $arMenuItems[$i-1];
-                    }
-                    $arMenuItems[$pos] = $menuItem;
-                }
-
-                CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
-            }
-        }
-    }
-
-    function DeleteMenuItem($menuFile, $menuLink, $siteID) {
-        if (CModule::IncludeModule("fileman")) {
-            $arResult = CFileMan::GetMenuArray(Application::getDocumentRoot() . $menuFile);
-            $arMenuItems = $arResult["aMenuLinks"];
-            $menuTemplate = $arResult["sMenuTemplate"];
-
-            foreach($arMenuItems as $key => $item) {
-                if($item[1] == $menuLink) unset($arMenuItems[$key]);
-            }
-
-            CFileMan::SaveMenu(array($siteID, $menuFile), $arMenuItems, $menuTemplate);
-        }
-    }
-
-    function InstallBPTemplates() {
-        CModule::IncludeModule('bizproc');
-        CModule::IncludeModule('bizprocdesigner');
-
-        $templateIds = array();
-        $templateIds[] = $this->ImportBPTemplateFromFile('MoneyDemand.bpt', Loc::getMessage("TR_CA_DOCS_BP_MONEY_DEMAND"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('Acquaintance.bpt', Loc::getMessage("TR_CA_DOCS_BP_ACQUAINTANCE"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('SetSignResponsibility.bpt', Loc::getMessage("TR_CA_DOCS_BP_SIGN_TEMPLATE"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('Order.bpt', Loc::getMessage("TR_CA_DOCS_BP_ORDER"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('ServiceNote.bpt', Loc::getMessage("TR_CA_DOCS_BP_SERVICE_NOTE"));
-        $templateIds[] = $this->ImportBPTemplateFromFile('AgreedOn.bpt', Loc::getMessage("TR_CA_DOCS_BP_AGREED_TEMPLATE"));
-
-        Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID, implode(" ", $templateIds));
-    }
-
-    function ImportBPTemplateFromFile ($filename, $templatename) {
-        $file = fopen(TR_CA_DOCS_MODULE_DIR . "resources/".$filename, 'r');
-        $data = fread($file, filesize(TR_CA_DOCS_MODULE_DIR . "resources/".$filename));
-        fclose($file);
-        $templateId = CBPWorkflowTemplateLoader::ImportTemplate(0, ["trusted.cryptoarmdocs", "Trusted\CryptoARM\Docs\WorkflowDocument", "TR_CA_DOC"], true, $templatename, "", $data);
-        return $templateId;
-    }
-
-    function UninstallBPTemplates () {
-        $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
-        global $DB;
-        foreach ($templateIds as $id) {
-            $dbResult = $DB->Query(
-                "SELECT COUNT('x') as CNT ".
-                "FROM b_bp_workflow_instance WI ".
-                "WHERE WI.WORKFLOW_TEMPLATE_ID = ".intval($id)." "
-            );
-
-            if ($arResult = $dbResult->Fetch()) {
-                $cnt = intval($arResult["CNT"]);
-                if ($cnt > 0) {
-                    $dbResult = $DB->Query("SELECT ID FROM b_bp_workflow_instance WI WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
-                    while ($arResult = $dbResult->Fetch()) {
-                        CBPAllTaskService::DeleteByWorkflow($arResult["ID"]);
-                    }
-                    $DB->Query("DELETE FROM b_bp_workflow_instance WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
-                    $DB->Query("DELETE FROM b_bp_workflow_state WHERE WORKFLOW_TEMPLATE_ID = ".intval($id)."");
-                }
-            }
-            CBPWorkflowTemplateLoader::delete($id);
         }
     }
 }
