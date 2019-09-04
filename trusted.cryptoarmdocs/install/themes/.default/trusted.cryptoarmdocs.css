@@ -98,7 +98,7 @@
 .trca-tn-document {
     cursor: pointer;
     display: inline-block;
-    width: 85%;
+    max-width: 85%;
     text-overflow: ellipsis;
     overflow: hidden;
     margin-left: 8px;
@@ -114,7 +114,7 @@
 .trca-tn-document-main {
     cursor: pointer;
     display: inline-block;
-    width: 85%;
+    max-width: 85%;
     text-overflow: ellipsis;
     overflow: hidden;
     margin-left: 8px;
