@@ -10,7 +10,9 @@ use Bitrix\Main\Application;
     <div id="main-document">
         <main class="document-card">
             <div class="document-card__title_form">
-                <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_FORM_TITLE") ?>
+                <?=
+                Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_FORM_TITLE")
+                ?>
             </div>
 
             <div class="document-card__content">
@@ -27,6 +29,7 @@ use Bitrix\Main\Application;
                     }
 
                     $docIds = json_encode($docIds);
+                    $mainDocId = $form["NAME"];
 
                     $zipName = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_FORM_ZIP_FILE_NAME") . $form["DATE_CREATE"];
 
@@ -68,18 +71,39 @@ use Bitrix\Main\Application;
                     <div class="document-content__item">
                         <div class="document-item__left_form">
                             <div class="material-icons" style="<?= $iconCss ?>">
-                                <?= $icon ?>
+                                <?=
+                                $icon
+                                ?>
                             </div>
                             <div class="date_create">
-                                <?= $form["DATE_CREATE"] ?>
+                                <?=
+                                $form["DATE_CREATE"]
+                                ?>
                             </div>
                             <div class="iblock_name">
-                                <?= $form["IBLOCK_NAME"] ?>
+                                <?=
+                                $form["IBLOCK_NAME"]
+                                ?>
                             </div>
                         </div>
                         <div class="document-item__right_form">
                             <div class="icon_content">
-                                <? $downloadJs = "trustedCA.download($docIds, '$zipName')" ?>
+                                <?
+                                $viewJs = "trustedCA.download([$mainDocId], true)";
+                                ?>
+                                <a href="<?= Docs\Form::getFirstDocument($mainDocId) ?>" target="_blank">
+                                    <div class="icon-wrapper"
+                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_FORM_VIEW"); ?>"
+                                         >
+                                        <i class="material-icons">
+                                            pageview
+                                        </i>
+                                    </div>
+                                </a>
+
+                                <?
+                                $downloadJs = "trustedCA.content($docIds, '$zipName')"
+                                ?>
                                 <div class="icon-wrapper"
                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_FORM_DOWNLOAD"); ?>"
                                      onclick="<?= $downloadJs ?>">
@@ -88,6 +112,7 @@ use Bitrix\Main\Application;
                                     </i>
                                 </div>
                                 <?
+                                if ($arResult["PERMISSION_REMOVE"]) {
                                     $removeJs = "trustedCA.removeForm([$formId], trustedCA.reloadDoc)";
                                     ?>
                                     <div class="icon-wrapper"
@@ -98,6 +123,7 @@ use Bitrix\Main\Application;
                                         </i>
                                     </div>
                                     <?
+                                }
                                 ?>
                             </div>
                         </div>

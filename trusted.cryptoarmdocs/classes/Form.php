@@ -551,5 +551,14 @@ class Form {
         return $res;
     }
 
+    static function getFirstDocument($id) {
+        $doc = Database::getDocumentById($id);
+        if (!$doc) {
+            return '';
+        }
+        $lastDocId = $doc->getFirstParent()->getId();
+        return "/bitrix/components/trusted/docs/ajax.php?command=content&id=$lastDocId&force=true&view=true";
+    }
+
 }
 

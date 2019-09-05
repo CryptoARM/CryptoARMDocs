@@ -151,6 +151,21 @@ class Utils
         }
     }
 
+    public static function view($filepath, $filename)
+    {
+        if (file_exists($filepath)) {
+            header('Content-type: application/pdf');
+            header('Content-Disposition: inline; filename="' . $filename . '"');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Length: ' . filesize($filepath));
+            header('Accept-Ranges: bytes');
+            ob_clean();
+            flush();
+            readfile($filepath);
+            exit;
+        }
+    }
+
     /**
      * Validation for user-set Property Type field.
      *
