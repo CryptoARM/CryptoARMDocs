@@ -6,6 +6,10 @@ use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
 
+$this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
+$urlComponents = "/bitrix/modules/trusted.cryptoarmdocs/install/js/trusted.cryptoarmdocs/components.js";
+$this->addExternalJS($_SERVER["REQUEST_SCHEME"]. '://' . $_SERVER["HTTP_HOST"] . $urlComponents);
+
 $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
@@ -20,52 +24,27 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
 
 <a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
-<div id="main-document">
-    <main class="document-card">
-        <div class="document-card__title">
-            <?= $title ?>
+<div id="trca-docs-by-order">
+    <trca-docs>
+        <header-title title="<?= $title ?>">
             <? if (!empty($allIds)) { ?>
-                <div id="sweeties" class="menu">
-                    <div class="icon-wrapper">
-                        <div class="material-icons title">
-                            more_vert
-                        </div>
-                    </div>
-                    <ul id="ul_by_order">
-                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
-                        <div onclick="<?= $emailAllJs ?>">
-                            <div class="material-icons">
-                                email
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS_ALL"); ?>
-                        </div>
-                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'})" ?>
-                        <div onclick="<?= $signAllJs ?>">
-                            <div class="material-icons">
-                                create
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>
-                        </div>
-                        <? $verifyAllJs = "trustedCA.verify($allIdsJs)" ?>
-                        <div onclick="<?= $verifyAllJs ?>">
-                            <div class="material-icons">
-                                info
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY_ALL"); ?>
-                        </div>
-                        <? $downloadAllJs = "trustedCA.download($allIdsJs, '$zipName')" ?>
-                        <div onclick="<?= $downloadAllJs ?>">
-                            <div class="material-icons">
-                                save_alt
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD_ALL"); ?>
-                        </div>
-                    </ul>
-                </div>
+                <header-menu>
+                    <header-menu-button icon="email" :id="<?= $allIdsJs ?>" @button-click="sendEmail"
+                                       message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="create" :id="<?= $allIdsJs ?>" @button-click="sign"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="info" :id="<?= $allIdsJs ?>" @button-click="verify"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="save_alt" onclick="<?= "trustedCA.download($allIdsJs, '$zipName')"?>"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD_ALL"); ?>">
+                    </header-menu-button>
+                </header-menu>
             <? } ?>
-        </div>
-
-        <div class="document-card__content">
+        </header-title>
+        <docs-content>
             <?
             if (is_array($docs)) {
                 foreach ($docs as $doc) {
@@ -103,86 +82,63 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                         }
                     }
             ?>
-            <div class="document-content__item">
-                <div class="document-item__left">
-                    <div class="material-icons" style="<?= $iconCss ?>">
-                        <?= $icon ?>
-                    </div>
-                    <div class="document-item__text">
-                        <div class="document-text__title">
-                            <?= $doc["NAME"] ?>
-                        </div>
-                        <div class="document-text__description">
-                            <?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($docId)) ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="document-item__right">
-                    <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
-                    <div class="icon-wrapper"
-                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS"); ?>"
-                         onclick="<?=$emailJs?>">
-                        <i class="material-icons">
-                            email
-                        </i>
-                    </div>
-                    <? $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'})" ?>
-                    <div class="icon-wrapper"
-                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>"
-                         onclick="<?= $signJs ?>">
-                        <i class="material-icons">
-                            create
-                        </i>
-                    </div>
+            <docs-items>
+                <doc-name color="<?= $iconCss ?>" icon="<?= $icon ?>" name=<?= $doc["NAME"] ?>
+                          description="<?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($docId)) ?>">
+                </doc-name>
+                <doc-buttons>
+                    <doc-button icon="email" :id="<?= $docId ?>" @button-click="sendEmail"
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SEND_DOCS"); ?>">
+                    </doc-button>
+                    <doc-button icon="create" :id="<?= $docId ?>" @button-click="sign"
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_SIGN"); ?>">
+                    </doc-button>
                     <?
-                    $verifyJs = "trustedCA.verify([$docId])";
                     if ($docType === DOC_TYPE_SIGNED_FILE) {
                     ?>
-                        <div class="icon-wrapper"
-                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>"
-                            onclick="<?= $verifyJs ?>">
-                            <i class="material-icons">
-                                info
-                            </i>
-                        </div>
+                    <doc-button icon="info" :id="<?= $docId ?>" @button-click="verify"
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_VERIFY"); ?>">
+                    </doc-button>
                     <?
                     }
                     ?>
-                    <? $downloadJs = "trustedCA.download([$docId], true)" ?>
-                    <div class="icon-wrapper"
-                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>"
-                         onclick="<?= $downloadJs ?>">
-                        <i class="material-icons">
-                            save_alt
-                        </i>
-                    </div>
-                    <? $protocolJs = "trustedCA.protocol($docId)" ?>
-                    <div class="icon-wrapper"
-                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_PROTOCOL"); ?>"
-                         onclick="<?= $protocolJs ?>">
-                        <i class="material-icons">
-                            description
-                        </i>
-                    </div>
-                </div>
-            </div>
+                    <doc-button icon="save_alt" :id="<?= $docId ?>" @button-click="download"
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_DOWNLOAD"); ?>">
+                    </doc-button>
+                    <doc-button icon="description" :id="<?= $docId ?>" @button-click="protocol"
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_ORDER_PROTOCOL"); ?>">
+                    </doc-button>
+                </doc-buttons>
+            </docs-items>
         <?
                 }
             }
         ?>
-        </div>
-    </main>
+        </docs-content>
+    </trca-docs>
 </div>
 
 <script>
-    $(".document-card__title").click(function () {
-        $('#ul_by_order').toggle();
-    });
-    $(document).on('click', function (e) {
-        if (!$(e.target).closest(".title").length) {
-            $('#ul_by_order').hide();
+    new Vue({
+        el: '#trca-docs-by-order',
+        methods: {
+            sendEmail: function(id) {
+                trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', '{}', 'MAIL_TEMPLATE_ID_TO');
+            },
+            sign: function(id) {
+                trustedCA.sign(id, {role: 'CLIENT'});
+            },
+            verify: function(id) {
+                trustedCA.verify(id);
+            },
+            download: function(id) {
+                trustedCA.download(id, true);
+            },
+            protocol: function(idAr) {
+                id = idAr[0];
+                trustedCA.protocol(id)
+            }
         }
-        e.stopPropagation();
-    });
+    })
 </script>
 
