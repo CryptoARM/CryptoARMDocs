@@ -7,8 +7,7 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
 
 $this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
-$urlComponents = "/bitrix/modules/trusted.cryptoarmdocs/install/js/trusted.cryptoarmdocs/components.js";
-$this->addExternalJS($_SERVER["REQUEST_SCHEME"]. '://' . $_SERVER["HTTP_HOST"] . $urlComponents);
+$this->addExternalJS("/bitrix/modules/trusted.cryptoarmdocs/install/js/trusted.cryptoarmdocs/components.js");
 
 $app = Application::getInstance();
 $context = $app->getContext();
