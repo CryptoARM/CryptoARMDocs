@@ -88,7 +88,7 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
                     }
             ?>
             <docs-items>
-                <doc-name color="<?= $iconCss ?>" icon="<?= $icon ?>" name=<?= $doc["NAME"] ?>
+                <doc-name color="<?= $iconCss ?>" icon="<?= $icon ?>" name="<?= $doc["NAME"] ?>"
                           description="<?= Docs\DocumentsByOrder::getRoleString(Docs\Database::getDocumentById($docId)) ?>">
                 </doc-name>
                 <doc-buttons>
@@ -128,7 +128,8 @@ $zipName = $title . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")
         el: '#trca-docs-by-order',
         methods: {
             sendEmail: function(id) {
-                trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', '{}', 'MAIL_TEMPLATE_ID_TO');
+                let object = new Object ();
+                trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
             },
             sign: function(id) {
                 trustedCA.sign(id, {role: 'CLIENT'});
