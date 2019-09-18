@@ -47,11 +47,25 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
                 margin: 16px 0;
                 display: inline-block;
                 padding: 15px 30px 15px 18px;">
+        <?php if (IsModuleInstalled('trusted.cryptoarmdocsbp')||IsModuleInstalled('trusted.cryptoarmdocsforms')) {?>
+            <p>
+                <input type="checkbox" name="deletemodules" id="deletemodules" value="Y">
+                <label for="deletemodules"><? echo Loc::getMessage("TR_CA_DOCS_UNINST_DELETE_MODULES") ?></label>
+            </p>
+        <?php }?>
+        <?php if (IsModuleInstalled('trusted.cryptoarmdocsforms')) {?>
+            <p>
+                <input type="checkbox" name="deleteiblocks" id="deleteiblocks" value="Y">
+                <label for="deleteiblocks"><? echo Loc::getMessage("TR_CA_DOCS_UNINST_DELETE_IBLOCKS") ?></label>
+            </p>
+            <p><? echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_SAVE_PROMPT2")) ?></p>
+        <?php }?>
         <p>
             <input type="checkbox" name="deletedata" id="deletedata" value="Y">
             <label for="deletedata"><? echo Loc::getMessage("TR_CA_DOCS_UNINST_DELETE_DATA") ?></label>
         </p>
         <p><? echo nl2br(Loc::getMessage("TR_CA_DOCS_UNINST_SAVE_PROMPT")) ?></p>
+
     </div>
     <br/>
     <input type="submit" name="uninst" value="<? echo Loc::getMessage("MOD_UNINST_DEL") ?>">

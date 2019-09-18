@@ -35,18 +35,22 @@ if ($APPLICATION->GetGroupRight("trusted.cryptoarmdocs") >= "R") {
             "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_USER")
         );
 
-        if (Loader::includeModule("sale")) {
-            $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER"),
-                "url" => "trusted_cryptoarm_docs_by_order.php",
-                "more_url" => array("trusted_cryptoarm_docs_upload_by_order.php"),
-                "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER")
-            );
+        if (isModuleInstalled('trusted.cryptoarmdocsorders')) {
+            if (Loader::includeModule("sale")) {
+                $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER"),
+                    "url" => "trusted_cryptoarm_docs_by_order.php",
+                    "more_url" => array("trusted_cryptoarm_docs_upload_by_order.php"),
+                    "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_ORDER")
+                );
+            }
         }
 
-        $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM"),
-            "url" => "trusted_cryptoarm_docs_by_form.php",
-            "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM")
-        );
+        if (isModuleInstalled('trusted.cryptoarmdocsforms')) {
+            $menuItems[] = array("text" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM"),
+                "url" => "trusted_cryptoarm_docs_by_form.php",
+                "title" => Loc::getMessage("TR_CA_DOCS_MENU_DOCUMENTS_BY_FORM")
+            );
+        }
 
         $aMenu["items"] = $menuItems;
         return $aMenu;

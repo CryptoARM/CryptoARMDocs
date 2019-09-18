@@ -4,7 +4,6 @@ use Bitrix\Main\Loader;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/DocumentCollection.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Document.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/WorkflowDocument.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/PropertyCollection.php';
 
 /**
@@ -179,7 +178,7 @@ class Database
         }
         if (Loader::includeModule('bizproc')) {
             \CBPDocument::OnDocumentDelete(
-                WorkflowDocument::getComplexDocumentId($doc->getId()),
+                Database::getComplexDocumentId($doc->getId()),
                 $errors = array()
             );
         }
@@ -187,6 +186,10 @@ class Database
         if ($parent) {
             Database::removeDocumentRecursively($parent);
         }
+    }
+
+    public static function getComplexDocumentId($id) {
+        return [TR_CA_DOCS_MODULE_ID, self::class, $id];
     }
 
     /**

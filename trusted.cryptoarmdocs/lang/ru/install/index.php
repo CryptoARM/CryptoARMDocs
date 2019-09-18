@@ -68,4 +68,8 @@ $MESS["TR_CA_DOCS_BP_ACQUAINTANCE"] = "Ознакомление с докуме�
 $MESS["TR_CA_DOCS_BP_MONEY_DEMAND"] = "Заявка на получение денежных средств";
 $MESS["TR_CA_DOCS_BP_ORDER"] = "Приказ выбранным сотрудникам с прикреплением отчёта о выполнении";
 
+$MESS["TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION"] = "бизнес";
+$MESS["TR_CA_DOCS_CORP_REDACTION"] = "Корпоративный";
+$MESS["TR_CA_DOCS_ENTERPRISE_REDACTION"] = "Энтерпрайз";
+
 

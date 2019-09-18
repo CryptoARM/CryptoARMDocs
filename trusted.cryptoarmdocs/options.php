@@ -28,18 +28,22 @@ $aTabs[] = array(
     "TAB" => Loc::getMessage("TR_CA_DOCS_LICENSE_TAB"),
     "TITLE" => Loc::getMessage("TR_CA_DOCS_LICENSE_TAB_TITLE")
 );
-if($saleModule) {
+if (isModuleInstalled('trusted.cryptoarmdocsorders')) {
+    if($saleModule) {
+        $aTabs[] = array(
+            "DIV" => "TR_CA_DOCS_order",
+            "TAB" => Loc::getMessage("TR_CA_DOCS_ORDER_TAB"),
+            "TITLE" => Loc::getMessage("TR_CA_DOCS_ORDER_TAB_TITLE")
+        );
+    }
+}
+if (isModuleInstalled('trusted.cryptoarmdocsforms')) {
     $aTabs[] = array(
-        "DIV" => "TR_CA_DOCS_order",
-        "TAB" => Loc::getMessage("TR_CA_DOCS_ORDER_TAB"),
-        "TITLE" => Loc::getMessage("TR_CA_DOCS_ORDER_TAB_TITLE")
+        "DIV" => "TR_CA_DOCS_form",
+        "TAB" => Loc::getMessage("TR_CA_DOCS_FORM_TAB"),
+        "TITLE" => Loc::getMessage("TR_CA_DOCS_FORM_TAB_TITLE")
     );
 }
-$aTabs[] = array(
-    "DIV" => "TR_CA_DOCS_form",
-    "TAB" => Loc::getMessage("TR_CA_DOCS_FORM_TAB"),
-    "TITLE" => Loc::getMessage("TR_CA_DOCS_FORM_TAB_TITLE")
-);
 $aTabs[] = array(
     "DIV" => "TR_CA_DOCS_logs",
     "TAB" => Loc::getMessage("TR_CA_DOCS_LOGS_TAB"),
@@ -318,351 +322,355 @@ $tabControl->Begin();
             </td>
         </tr>
 
-        <? if ($saleModule): ?>
+        <? if (isModuleInstalled('trusted.cryptoarmdocsorders')) : ?>
+            <? if ($saleModule): ?>
+            <?= $tabControl->BeginNextTab(); ?>
+
+            <tr class="heading">
+                <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_EVENTS_HEADING") ?></td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <?
+                    echo BeginNote(), Loc::getMessage("TR_CA_DOCS_EVENTS_DESCRIPTION"), EndNote();
+                    ?>
+                </td>
+            </tr>
+
+            <?
+            $dbResultList = CSaleStatus::GetList(
+                array("SORT" => "ASC"),
+                array("LID" => "ru"),
+                false,
+                false,
+                array("ID", "NAME")
+            );
+            $orderStatuses = array();
+            while ($status = $dbResultList->Fetch()) {
+                $orderStatuses[] = array(
+                    "ID" => $status["ID"],
+                    "NAME" => $status["NAME"],
+                );
+            }
+            ?>
+
+            <tr>
+                <td width="30%" class="trustedcryptoarmdocs_opt_multiline_cell"> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_CLIENT") ?> </td>
+                <td width="70%">
+                    <select name="EVENT_SIGNED_BY_CLIENT" id="EVENT_SIGNED_BY_CLIENT">
+                        <option value="" <?= $EVENT_SIGNED_BY_CLIENT ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+                        <?
+                        foreach ($orderStatuses as $status) {
+                            $statusId = htmlspecialcharsbx($status["ID"]);
+                            $statusName = htmlspecialcharsbx($status["NAME"]);
+                            $sel = $EVENT_SIGNED_BY_CLIENT == $statusId ? " selected" : "";
+                            echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="checkbox"
+                        <?= (($EVENT_SIGNED_BY_CLIENT_ALL_DOCS) ? "checked='checked'" : "") ?>
+                        name="EVENT_SIGNED_BY_CLIENT_ALL_DOCS"
+                        value="true"/>
+                    <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_SELLER") ?> </td>
+                <td>
+                    <select name="EVENT_SIGNED_BY_SELLER" id="EVENT_SIGNED_BY_SELLER">
+                        <option value="" <?= $EVENT_SIGNED_BY_SELLER ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+                        <?
+                        foreach ($orderStatuses as $status) {
+                            $statusId = htmlspecialcharsbx($status["ID"]);
+                            $statusName = htmlspecialcharsbx($status["NAME"]);
+                            $sel = $EVENT_SIGNED_BY_SELLER == $statusId ? " selected" : "";
+                            echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="checkbox"
+                        <?= (($EVENT_SIGNED_BY_SELLER_ALL_DOCS) ? "checked='checked'" : "") ?>
+                        name="EVENT_SIGNED_BY_SELLER_ALL_DOCS"
+                        value="true"/>
+                    <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_BOTH") ?> </td>
+                <td>
+                    <select name="EVENT_SIGNED_BY_BOTH" id="EVENT_SIGNED_BY_BOTH">
+                        <option value="" <?= $EVENT_SIGNED_BY_BOTH ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+                        <?
+                        foreach ($orderStatuses as $status) {
+                            $statusId = htmlspecialcharsbx($status["ID"]);
+                            $statusName = htmlspecialcharsbx($status["NAME"]);
+                            $sel = $EVENT_SIGNED_BY_BOTH == $statusId ? " selected" : "";
+                            echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="checkbox"
+                        <?= (($EVENT_SIGNED_BY_BOTH_ALL_DOCS) ? "checked='checked'" : "") ?>
+                        name="EVENT_SIGNED_BY_BOTH_ALL_DOCS"
+                        value="true"/>
+                    <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_EMAIL_SENT") ?> </td>
+                <td>
+                    <select name="EVENT_EMAIL_SENT" id="EVENT_EMAIL_SENT">
+                        <option value="" <?= $EVENT_EMAIL_SENT ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+                        <?
+                        foreach ($orderStatuses as $status) {
+                            $statusId = htmlspecialcharsbx($status["ID"]);
+                            $statusName = htmlspecialcharsbx($status["NAME"]);
+                            $sel = $EVENT_EMAIL_SENT == $statusId ? " selected" : "";
+                            echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_EMAIL_READ") ?> </td>
+                <td>
+                    <select name="EVENT_EMAIL_READ" id="EVENT_EMAIL_READ">
+                        <option value="" <?= $EVENT_EMAIL_READ ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+                        <?
+                        foreach ($orderStatuses as $status) {
+                            $statusId = htmlspecialcharsbx($status["ID"]);
+                            $statusName = htmlspecialcharsbx($status["NAME"]);
+                            $sel = $EVENT_EMAIL_READ == $statusId ? " selected" : "";
+                            echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_EMAIL_HEADING") ?></td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
+                    <?
+                    echo BeginNote(), Loc::getMessage("TR_CA_DOCS_EMAIL_DESCRIPTION"), EndNote();
+                    ?>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <?= Loc::getMessage("TR_CA_DOCS_EMAIL_MAIL_EVENT_ID") ?>
+                </td>
+                <td>
+                    <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
+                        <option value="" <?= $MAIL_EVENT_ID ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
+                        while ($event = $events->Fetch()) {
+                            $eventId = htmlspecialcharsbx($event["ID"]);
+                            $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                            $eventName = htmlspecialcharsbx($event["NAME"]);
+                            $sel = $MAIL_EVENT_ID == $eventTypeName ? " selected" : "";
+                            echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_EMAIL_TEMPLATE_ID") ?> </td>
+                <td>
+                    <select name="MAIL_TEMPLATE_ID" id="MAIL_TEMPLATE_ID">
+                        <option value="" <?= $MAIL_TEMPLATE_ID ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID));
+                        while ($template = $templates->Fetch()) {
+                            $templateId = htmlspecialcharsbx($template["ID"]);
+                            $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                            $sel = $MAIL_TEMPLATE_ID == $templateId ? " selected" : "";
+                            echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <? endif; ?>
+        <? endif; ?>
+
+    <? if (isModuleInstalled('trusted.cryptoarmdocsforms')): ?>
         <?= $tabControl->BeginNextTab(); ?>
 
-        <tr class="heading">
-            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_EVENTS_HEADING") ?></td>
-        </tr>
+            <tr class="heading">
+                <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_HEADING") ?></td>
+            </tr>
 
-        <tr>
-            <td colspan="2">
-                <?
-                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_EVENTS_DESCRIPTION"), EndNote();
-                ?>
-            </td>
-        </tr>
-
-        <?
-        $dbResultList = CSaleStatus::GetList(
-            array("SORT" => "ASC"),
-            array("LID" => "ru"),
-            false,
-            false,
-            array("ID", "NAME")
-        );
-        $orderStatuses = array();
-        while ($status = $dbResultList->Fetch()) {
-            $orderStatuses[] = array(
-                "ID" => $status["ID"],
-                "NAME" => $status["NAME"],
-            );
-        }
-        ?>
-
-        <tr>
-            <td width="30%" class="trustedcryptoarmdocs_opt_multiline_cell"> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_CLIENT") ?> </td>
-            <td width="70%">
-                <select name="EVENT_SIGNED_BY_CLIENT" id="EVENT_SIGNED_BY_CLIENT">
-                    <option value="" <?= $EVENT_SIGNED_BY_CLIENT ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+            <tr>
+                <td colspan="2">
                     <?
-                    foreach ($orderStatuses as $status) {
-                        $statusId = htmlspecialcharsbx($status["ID"]);
-                        $statusName = htmlspecialcharsbx($status["NAME"]);
-                        $sel = $EVENT_SIGNED_BY_CLIENT == $statusId ? " selected" : "";
-                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
-                    }
+                    echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_DESCRIPTION"), EndNote();
                     ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="checkbox"
-                       <?= (($EVENT_SIGNED_BY_CLIENT_ALL_DOCS) ? "checked='checked'" : "") ?>
-                       name="EVENT_SIGNED_BY_CLIENT_ALL_DOCS"
-                       value="true"/>
-                <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
-            </td>
-        </tr>
+                </td>
+            </tr>
 
-        <tr>
-            <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_SELLER") ?> </td>
-            <td>
-                <select name="EVENT_SIGNED_BY_SELLER" id="EVENT_SIGNED_BY_SELLER">
-                    <option value="" <?= $EVENT_SIGNED_BY_SELLER ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+            <tr>
+                <td width="40%">
+                    <?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_MAIL_EVENT_ID") ?>
+                </td>
+                <td width="60%">
+                    <select name="MAIL_EVENT_ID_FORM" id="MAIL_EVENT_ID_FORM">
+                        <option value="" <?= $MAIL_EVENT_ID_FORM ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order = "TYPE_ID");
+                        while ($event = $events->Fetch()) {
+                            $eventId = htmlspecialcharsbx($event["ID"]);
+                            $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                            $eventName = htmlspecialcharsbx($event["NAME"]);
+                            $sel = $MAIL_EVENT_ID_FORM == $eventTypeName ? " selected" : "";
+                            echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_TEMPLATE_ID") ?> </td>
+                <td>
+                    <select name="MAIL_TEMPLATE_ID_FORM" id="MAIL_TEMPLATE_ID_FORM">
+                        <option value="" <?= $MAIL_TEMPLATE_ID_FORM ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_FORM));
+                        while ($template = $templates->Fetch()) {
+                            $templateId = htmlspecialcharsbx($template["ID"]);
+                            $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                            $sel = $MAIL_TEMPLATE_ID_FORM == $templateId ? " selected" : "";
+                            echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_HEADING") ?></td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
                     <?
-                    foreach ($orderStatuses as $status) {
-                        $statusId = htmlspecialcharsbx($status["ID"]);
-                        $statusName = htmlspecialcharsbx($status["NAME"]);
-                        $sel = $EVENT_SIGNED_BY_SELLER == $statusId ? " selected" : "";
-                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
-                    }
+                    echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_DESCRIPTION"), EndNote();
                     ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="checkbox"
-                       <?= (($EVENT_SIGNED_BY_SELLER_ALL_DOCS) ? "checked='checked'" : "") ?>
-                       name="EVENT_SIGNED_BY_SELLER_ALL_DOCS"
-                       value="true"/>
-                <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
-            </td>
-        </tr>
+                </td>
+            </tr>
 
-        <tr>
-            <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_BY_BOTH") ?> </td>
-            <td>
-                <select name="EVENT_SIGNED_BY_BOTH" id="EVENT_SIGNED_BY_BOTH">
-                    <option value="" <?= $EVENT_SIGNED_BY_BOTH ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
+            <tr>
+                <td width="40%">
+                    <?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_MAIL_EVENT_ID") ?>
+                </td>
+                <td width="60%">
+                    <select name="MAIL_EVENT_ID_FORM_TO_ADMIN" id="MAIL_EVENT_ID_FORM_TO_ADMIN">
+                        <option value="" <?= $MAIL_EVENT_ID_FORM_TO_ADMIN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order = "TYPE_ID");
+                        while ($event = $events->Fetch()) {
+                            $eventId = htmlspecialcharsbx($event["ID"]);
+                            $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                            $eventName = htmlspecialcharsbx($event["NAME"]);
+                            $sel = $MAIL_EVENT_ID_FORM_TO_ADMIN == $eventTypeName ? " selected" : "";
+                            echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td> <?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_TEMPLATE_ID") ?> </td>
+                <td>
+                    <select name="MAIL_TEMPLATE_ID_FORM_TO_ADMIN" id="MAIL_TEMPLATE_ID_FORM_TO_ADMIN">
+                        <option value="" <?= $MAIL_TEMPLATE_ID_FORM_TO_ADMIN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_NOT_SELECTED") ?></option>
+                        <?
+                        $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_FORM_TO_ADMIN));
+                        while ($template = $templates->Fetch()) {
+                            $templateId = htmlspecialcharsbx($template["ID"]);
+                            $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                            $sel = $MAIL_TEMPLATE_ID_FORM_TO_ADMIN == $templateId ? " selected" : "";
+                            echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td colspan="2">reCAPTCHA</td>
+            </tr>
+
+            <tr>
+                <td colspan="2">
                     <?
-                    foreach ($orderStatuses as $status) {
-                        $statusId = htmlspecialcharsbx($status["ID"]);
-                        $statusName = htmlspecialcharsbx($status["NAME"]);
-                        $sel = $EVENT_SIGNED_BY_BOTH == $statusId ? " selected" : "";
-                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
-                    }
+                    echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_ATTENTION"), EndNote();
                     ?>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="checkbox"
-                       <?= (($EVENT_SIGNED_BY_BOTH_ALL_DOCS) ? "checked='checked'" : "") ?>
-                       name="EVENT_SIGNED_BY_BOTH_ALL_DOCS"
-                       value="true"/>
-                <?= Loc::getMessage("TR_CA_DOCS_EVENTS_SIGNED_WAIT_ALL_DOCS") ?>
-            </td>
-        </tr>
+                </td>
+            </tr>
 
-        <tr>
-            <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_EMAIL_SENT") ?> </td>
-            <td>
-                <select name="EVENT_EMAIL_SENT" id="EVENT_EMAIL_SENT">
-                    <option value="" <?= $EVENT_EMAIL_SENT ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
-                    <?
-                    foreach ($orderStatuses as $status) {
-                        $statusId = htmlspecialcharsbx($status["ID"]);
-                        $statusName = htmlspecialcharsbx($status["NAME"]);
-                        $sel = $EVENT_EMAIL_SENT == $statusId ? " selected" : "";
-                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
-                    }
-                    ?>
-                </select>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE") ?>
+                </td>
+                <td style="display: flex; align-items: center;">
+                    <input id="RECAPTCHA_KEY_SITE"
+                        name="RECAPTCHA_KEY_SITE"
+                        value="<?= $RECAPTCHA_KEY_SITE ?>"
+                        placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE_PLACEHOLDER") ?>"
+                        maxlength="40"
+                        type="text"
+                        style="width: 500px"/>
+                </td>
+            </tr>
 
-        <tr>
-            <td> <?= Loc::getMessage("TR_CA_DOCS_EVENTS_EMAIL_READ") ?> </td>
-            <td>
-                <select name="EVENT_EMAIL_READ" id="EVENT_EMAIL_READ">
-                    <option value="" <?= $EVENT_EMAIL_READ ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EVENTS_DO_NOTHING") ?></option>
-                    <?
-                    foreach ($orderStatuses as $status) {
-                        $statusId = htmlspecialcharsbx($status["ID"]);
-                        $statusName = htmlspecialcharsbx($status["NAME"]);
-                        $sel = $EVENT_EMAIL_READ == $statusId ? " selected" : "";
-                        echo "<option value='" . $statusId . "'" . $sel . ">" . $statusId . " - " . $statusName . "</option>";
-                    }
-                    ?>
-                </select>
-            </td>
-        </tr>
-
-        <tr class="heading">
-            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_EMAIL_HEADING") ?></td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                <?
-                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_EMAIL_DESCRIPTION"), EndNote();
-                ?>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <?= Loc::getMessage("TR_CA_DOCS_EMAIL_MAIL_EVENT_ID") ?>
-            </td>
-            <td>
-                <select name="MAIL_EVENT_ID" id="MAIL_EVENT_ID">
-                    <option value="" <?= $MAIL_EVENT_ID ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SELECTED") ?></option>
-                    <?
-                    $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
-                    while ($event = $events->Fetch()) {
-                        $eventId = htmlspecialcharsbx($event["ID"]);
-                        $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
-                        $eventName = htmlspecialcharsbx($event["NAME"]);
-                        $sel = $MAIL_EVENT_ID == $eventTypeName ? " selected" : "";
-                        echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
-                    }
-                    ?>
-                </select>
-            </td>
-        </tr>
-
-        <tr>
-            <td> <?= Loc::getMessage("TR_CA_DOCS_EMAIL_TEMPLATE_ID") ?> </td>
-            <td>
-                <select name="MAIL_TEMPLATE_ID" id="MAIL_TEMPLATE_ID">
-                    <option value="" <?= $MAIL_TEMPLATE_ID ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SELECTED") ?></option>
-                    <?
-                    $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID));
-                    while ($template = $templates->Fetch()) {
-                        $templateId = htmlspecialcharsbx($template["ID"]);
-                        $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
-                        $sel = $MAIL_TEMPLATE_ID == $templateId ? " selected" : "";
-                        echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
-                    }
-                    ?>
-                </select>
-            </td>
-        </tr>
-
+            <tr>
+                <td>
+                    <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY") ?>
+                </td>
+                <td style="display: flex; align-items: center;">
+                    <input id="RECAPTCHA_SECRET_KEY"
+                        name="RECAPTCHA_SECRET_KEY"
+                        value="<?= $RECAPTCHA_SECRET_KEY ?>"
+                        placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY_PLACEHOLDER") ?>"
+                        maxlength="40"
+                        type="text"
+                        style="width: 500px"/>
+                </td>
+            </tr>
     <? endif; ?>
-
-    <?= $tabControl->BeginNextTab(); ?>
-
-    <tr class="heading">
-        <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_HEADING") ?></td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            <?
-            echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_DESCRIPTION"), EndNote();
-            ?>
-        </td>
-    </tr>
-
-    <tr>
-        <td width="40%">
-            <?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_MAIL_EVENT_ID") ?>
-        </td>
-        <td width="60%">
-            <select name="MAIL_EVENT_ID_FORM" id="MAIL_EVENT_ID_FORM">
-                <option value="" <?= $MAIL_EVENT_ID_FORM ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_NOT_SELECTED") ?></option>
-                <?
-                $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order = "TYPE_ID");
-                while ($event = $events->Fetch()) {
-                    $eventId = htmlspecialcharsbx($event["ID"]);
-                    $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
-                    $eventName = htmlspecialcharsbx($event["NAME"]);
-                    $sel = $MAIL_EVENT_ID_FORM == $eventTypeName ? " selected" : "";
-                    echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
-                }
-                ?>
-            </select>
-        </td>
-    </tr>
-
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_TEMPLATE_ID") ?> </td>
-        <td>
-            <select name="MAIL_TEMPLATE_ID_FORM" id="MAIL_TEMPLATE_ID_FORM">
-                <option value="" <?= $MAIL_TEMPLATE_ID_FORM ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_EMAIL_NOT_SELECTED") ?></option>
-                <?
-                $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_FORM));
-                while ($template = $templates->Fetch()) {
-                    $templateId = htmlspecialcharsbx($template["ID"]);
-                    $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
-                    $sel = $MAIL_TEMPLATE_ID_FORM == $templateId ? " selected" : "";
-                    echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
-                }
-                ?>
-            </select>
-        </td>
-    </tr>
-
-    <tr class="heading">
-        <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_HEADING") ?></td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            <?
-            echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_DESCRIPTION"), EndNote();
-            ?>
-        </td>
-    </tr>
-
-    <tr>
-        <td width="40%">
-            <?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_MAIL_EVENT_ID") ?>
-        </td>
-        <td width="60%">
-            <select name="MAIL_EVENT_ID_FORM_TO_ADMIN" id="MAIL_EVENT_ID_FORM_TO_ADMIN">
-                <option value="" <?= $MAIL_EVENT_ID_FORM_TO_ADMIN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_NOT_SELECTED") ?></option>
-                <?
-                $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order = "TYPE_ID");
-                while ($event = $events->Fetch()) {
-                    $eventId = htmlspecialcharsbx($event["ID"]);
-                    $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
-                    $eventName = htmlspecialcharsbx($event["NAME"]);
-                    $sel = $MAIL_EVENT_ID_FORM_TO_ADMIN == $eventTypeName ? " selected" : "";
-                    echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
-                }
-                ?>
-            </select>
-        </td>
-    </tr>
-
-    <tr>
-        <td> <?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_TEMPLATE_ID") ?> </td>
-        <td>
-            <select name="MAIL_TEMPLATE_ID_FORM_TO_ADMIN" id="MAIL_TEMPLATE_ID_FORM_TO_ADMIN">
-                <option value="" <?= $MAIL_TEMPLATE_ID_FORM_TO_ADMIN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_FORM_TO_ADMIN_EMAIL_NOT_SELECTED") ?></option>
-                <?
-                $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_FORM_TO_ADMIN));
-                while ($template = $templates->Fetch()) {
-                    $templateId = htmlspecialcharsbx($template["ID"]);
-                    $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
-                    $sel = $MAIL_TEMPLATE_ID_FORM_TO_ADMIN == $templateId ? " selected" : "";
-                    echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
-                }
-                ?>
-            </select>
-        </td>
-    </tr>
-
-    <tr class="heading">
-        <td colspan="2">reCAPTCHA</td>
-    </tr>
-
-    <tr>
-        <td colspan="2">
-            <?
-            echo BeginNote(), Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_ATTENTION"), EndNote();
-            ?>
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE") ?>
-        </td>
-        <td style="display: flex; align-items: center;">
-            <input id="RECAPTCHA_KEY_SITE"
-                   name="RECAPTCHA_KEY_SITE"
-                   value="<?= $RECAPTCHA_KEY_SITE ?>"
-                   placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_KEY_SITE_PLACEHOLDER") ?>"
-                   maxlength="40"
-                   type="text"
-                   style="width: 500px"/>
-        </td>
-    </tr>
-
-    <tr>
-        <td>
-            <?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY") ?>
-        </td>
-        <td style="display: flex; align-items: center;">
-            <input id="RECAPTCHA_SECRET_KEY"
-                   name="RECAPTCHA_SECRET_KEY"
-                   value="<?= $RECAPTCHA_SECRET_KEY ?>"
-                   placeholder="<?= Loc::getMessage("TR_CA_DOCS_FORM_RECAPTCHA_SECRET_KEY_PLACEHOLDER") ?>"
-                   maxlength="40"
-                   type="text"
-                   style="width: 500px"/>
-        </td>
-    </tr>
 
     <?= $tabControl->BeginNextTab(); ?>
 

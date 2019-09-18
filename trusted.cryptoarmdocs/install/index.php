@@ -8,8 +8,11 @@ use Bitrix\Main\Loader;
 use Trusted\CryptoARM\Docs;
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/include.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/IBlock.php';
+// require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/IBlock.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Database.php';
+require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client_partner.php";
+require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client.php";
+
 
 Loc::loadMessages(__FILE__);
 
@@ -92,9 +95,42 @@ Class trusted_cryptoarmdocs extends CModule
             $this->CreateDocsDir();
             $this->InstallModuleOptions();
             $this->InstallDB();
-            $this->InstallIb();
+            // $this->InstallIb();
             $this->InstallMailEvents();
+
             ModuleManager::registerModule($this->MODULE_ID);
+
+            $modulesNeeded = array('trusted.cryptoarmdocsforms');
+            $modulesForSmallBusiness = array('trusted.cryptoarmdocsorders');
+            $modulesForCorportal = array('trusted.cryptoarmdocsbp');
+
+            $errorMessage = "";
+            $stableVersionsOnly = COption::GetOptionString("main", "stable_versions_only", "Y");
+            $arUpdateList = CUpdateClient::GetUpdatesList($errorMessage, LANG, $stableVersionsOnly);
+            $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
+
+            switch($bitrixRedaction) {
+                case (strpos(strtolower($bitrixRedaction), Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION'))!=null):
+                    $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness);
+                    break;
+                case (strpos($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION'))!=null):
+                case (strpos($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION'))!=null):
+                    $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness, $modulesForCorportal);
+                    break;
+            }
+
+            foreach($modulesNeeded as $module){
+                 $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module."/";
+                if(!file_exists($modulesPathDir)) {
+                    $strError = '';
+                    CUpdateClientPartner::LoadModuleNoDemand($module,$strError,'Y',false);
+                }
+                if (!IsModuleInstalled($module)) {
+                    $className = str_replace(".", "_", $module);
+                    $className::DoInstall();
+                }
+            }
+
         }
         if (!$continue) {
             $APPLICATION->IncludeAdminFile(
@@ -159,8 +195,8 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
             'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
-            'MAIL_EVENT_ID_FORM' => 'TR_CA_DOCS_MAIL_FORM',
-            'MAIL_EVENT_ID_FORM_TO_ADMIN' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+            // 'MAIL_EVENT_ID_FORM' => 'TR_CA_DOCS_MAIL_FORM',
+            // 'MAIL_EVENT_ID_FORM_TO_ADMIN' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
@@ -204,9 +240,9 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
     }
 
-    function InstallIb() {
-        Docs\IBlock::install();
-    }
+    // function InstallIb() {
+    //     Docs\IBlock::install();
+    // }
 
     function InstallMailEvents()
     {
@@ -236,21 +272,21 @@ Class trusted_cryptoarmdocs extends CModule
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"),
             ),
 
-            // send completed form to user
-            array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
-            ),
+            // // send completed form to user
+            // array(
+            //     "LID" => "ru",
+            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
+            //     "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
+            //     "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
+            // ),
 
-            // send completed form to admin
-            array(
-                "LID" => "ru",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"),
-                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"),
-            ),
+            // // send completed form to admin
+            // array(
+            //     "LID" => "ru",
+            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
+            //     "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"),
+            //     "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"),
+            // ),
         );
         foreach ($events as $event) {
             $obEventType->add($event);
@@ -299,29 +335,29 @@ Class trusted_cryptoarmdocs extends CModule
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
             ),
 
-            // send completed form to user
-            'MAIL_TEMPLATE_ID_FORM' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
-            ),
+            // // send completed form to user
+            // 'MAIL_TEMPLATE_ID_FORM' => array(
+            //     "ACTIVE" => "Y",
+            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
+            //     "LID" => $siteIds,
+            //     "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+            //     "EMAIL_TO" => "#EMAIL#",
+            //     "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"),
+            //     "BODY_TYPE" => "html",
+            //     "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
+            // ),
 
-            // send completed form to admin
-            'MAIL_TEMPLATE_ID_FORM_TO_ADMIN' => array(
-                "ACTIVE" => "Y",
-                "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-                "LID" => $siteIds,
-                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-                "EMAIL_TO" => "#EMAIL#",
-                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT"),
-                "BODY_TYPE" => "html",
-                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY"),
-            ),
+            // // send completed form to admin
+            // 'MAIL_TEMPLATE_ID_FORM_TO_ADMIN' => array(
+            //     "ACTIVE" => "Y",
+            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
+            //     "LID" => $siteIds,
+            //     "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+            //     "EMAIL_TO" => "#EMAIL#",
+            //     "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT"),
+            //     "BODY_TYPE" => "html",
+            //     "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY"),
+            // ),
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
@@ -346,16 +382,34 @@ Class trusted_cryptoarmdocs extends CModule
         if ($step == 2) {
 
             $this->UnInstallModuleOptions();
+
+            $deleteiblocks = $request["deleteiblocks"];
+            if ($deleteiblocks == "Y") {
+                trusted_cryptoarmdocsforms::UnInstallIb();
+            }
+
             $deletedata = $request["deletedata"];
             if ($deletedata == "Y") {
                 $this->UnInstallDB();
-                $this->UnInstallIb();
+
             }
+
             $this->UnInstallMailEvents();
 
-            if (IsModuleInstalled('trusted.cryptoarmdocsBP')) {
-                CModule::includeModule('trusted.cryptoarmdocsBP');
-                trusted_cryptoarmdocsBP::DoUninstall();
+            $deletedata = $request["deletemodules"];
+            if ($deletedata == "Y") {
+                if (IsModuleInstalled('trusted.cryptoarmdocsbp')) {
+                    CModule::includeModule('trusted.cryptoarmdocsbp');
+                    trusted_cryptoarmdocsbp::DoUninstall();
+                }
+                if (IsModuleInstalled('trusted.cryptoarmdocsforms')) {
+                    CModule::includeModule('trusted.cryptoarmdocsforms');
+                    trusted_cryptoarmdocsforms::DoUninstall();
+                }
+                if (IsModuleInstalled('trusted.cryptoarmdocsorders')) {
+                    CModule::includeModule('trusted.cryptoarmdocsorders');
+                    trusted_cryptoarmdocsorders::DoUninstall();
+                }
             }
 
             $this->UnInstallFiles();
@@ -371,10 +425,10 @@ Class trusted_cryptoarmdocs extends CModule
     {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
-        if ($this->crmSupport()) {
-            DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
-        }
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
+        // if ($this->crmSupport()) {
+        //     DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
+        // }
+        // DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
@@ -401,10 +455,10 @@ Class trusted_cryptoarmdocs extends CModule
             'MAIL_TEMPLATE_ID_TO',
             'MAIL_EVENT_ID_SHARE',
             'MAIL_TEMPLATE_ID_SHARE',
-            'MAIL_EVENT_ID_FORM',
-            'MAIL_TEMPLATE_ID_FORM',
-            'MAIL_EVENT_ID_FORM_TO_ADMIN',
-            'MAIL_TEMPLATE_ID_FORM_TO_ADMIN',
+            // 'MAIL_EVENT_ID_FORM',
+            // 'MAIL_TEMPLATE_ID_FORM',
+            // 'MAIL_EVENT_ID_FORM_TO_ADMIN',
+            // 'MAIL_TEMPLATE_ID_FORM_TO_ADMIN',
         );
         foreach ($options as $option) {
             Option::delete(
@@ -429,9 +483,9 @@ Class trusted_cryptoarmdocs extends CModule
         $DB->Query($sql);
     }
 
-    function UnInstallIb() {
-        Docs\IBlock::uninstall();
-    }
+    // function UnInstallIb() {
+    //     Docs\IBlock::uninstall();
+    // }
 
     function UnInstallMailEvents()
     {
@@ -439,8 +493,8 @@ Class trusted_cryptoarmdocs extends CModule
             'TR_CA_DOCS_MAIL_BY_ORDER',
             'TR_CA_DOCS_MAIL_TO',
             'TR_CA_DOCS_MAIL_SHARE',
-            'TR_CA_DOCS_MAIL_FORM',
-            'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+            // 'TR_CA_DOCS_MAIL_FORM',
+            // 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
         );
         foreach ($events as $event) {
             $eventMessages = CEventMessage::GetList(
