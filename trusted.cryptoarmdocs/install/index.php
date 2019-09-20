@@ -110,11 +110,11 @@ Class trusted_cryptoarmdocs extends CModule
             $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
 
             switch($bitrixRedaction) {
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION'))):
+                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
                     $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness);
                     break;
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION'))):
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION'))):
+                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
+                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
                     $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness, $modulesForCorportal);
                     break;
             }
