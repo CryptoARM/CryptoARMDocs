@@ -84,7 +84,7 @@ Class trusted_cryptoarmdocs extends CModule
         if ($step == 4 && $continue) {
             if ($request["dropDB"] == "Y") {
                 $this->UnInstallDB();
-                $this->UnInstallIb();
+                // $this->UnInstallIb();
             } elseif ($request["dropLostDocs"]) {
                 $lostDocs = unserialize($request["dropLostDocs"]);
                 foreach ($lostDocs as $id) {
