@@ -17,6 +17,9 @@ Vue.component ("header-title", {
 })
 
 Vue.component ("header-menu", {
+    props: {
+        id: String
+    },
     template:`
     <div class="trca-docs-header-menu" @click="showHeaderMenu">
         <div class="trca-docs-header-menu-icon">
@@ -24,16 +27,17 @@ Vue.component ("header-menu", {
                 more_vert
             </div>
         </div>
-        <ul id="trca-docs-header-menu-items">
+        <ul :id="id">
             <slot></slot>
         </ul>
     </div>`,
     methods: {
         showHeaderMenu: function() {
-            $('#trca-docs-header-menu-items').toggle();
+            $("#" + this.id).toggle();
             $(document).on('click', function (e) {
                 if (!$(e.target).closest(".title").length) {
-                    $('#trca-docs-header-menu-items').hide();
+                    $("#trca-docs-header-menu-by-user").hide();
+                    $("#trca-docs-header-menu-by-order").hide();
                 }
                 e.stopPropagation();
             });
@@ -92,8 +96,19 @@ Vue.component ("doc-name", {
             </div>
             <div class="trca-docs-content-doc-description" v-html="description">
             </div>
+            <slot></slot>
         </div>
     </div>`,
+})
+
+Vue.component ("doc-name-owner", {
+    props: {
+        owner: String
+    },
+    template: `
+    <div class="trca-docs-content-doc-description">
+        {{ owner }}
+    </div>`
 })
 
 Vue.component ("doc-buttons", {
@@ -124,3 +139,27 @@ Vue.component ("doc-button", {
     }
 })
 
+Vue.component ("docs-upload-file", {
+    props: {
+        maxSize: Number,
+        title: String
+    },
+    template: `
+    <div class="trca-docs-footer">
+        <form enctype="multipart/form-data" method="POST" id="trca-docs-footer-upload">
+            <div class="trca-docs-footer-upload-button">
+                <input id="trca-docs-footer-upload-input" class="trca-docs-footer-upload-input"
+                       name="tr_ca_upload_comp_by_user" type="file" @change="buttonClick">
+                {{ title }}
+            </div>
+        </form>
+    </div>`,
+    methods: {
+        buttonClick: function(event ,maxSize) {
+            file = event.target.files[0];
+            let onFailure = () => { $('#trca-docs-footer-input').val(null) };
+            let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
+            trustedCA.checkFileSize(file, maxSize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
+        }
+    }
+})

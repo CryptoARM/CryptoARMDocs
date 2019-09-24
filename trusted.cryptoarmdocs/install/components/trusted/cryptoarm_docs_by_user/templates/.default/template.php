@@ -6,6 +6,15 @@ use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
 
+$this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
+CJSCore::RegisterExt(
+    "components",
+    array(
+        "js" => "/bitrix/js/trusted.cryptoarmdocs/components.js",
+    )
+);
+CUtil::InitJSCore(array('components'));
+
 $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
@@ -39,69 +48,49 @@ $APPLICATION->IncludeComponent(
 );
 ?>
 
-<div id="main-document">
-    <main class="document-card">
-        <div class="document-card__title_user">
+<div id="trca-docs-by-user">
+    <trca-docs>
+        <header-title title="<?= $compTitle ?>">
             <?
-            echo $compTitle;
             if (!empty($allIds)) {
-            ?>
-                <div id="sweeties" class="menu">
-                    <div class="icon-wrapper">
-                        <div class="material-icons title">
-                            more_vert
-                        </div>
-                    </div>
-                    <ul id="ul_by_user">
-                        <? $emailAllJs = "trustedCA.promptAndSendEmail($allIdsJs, 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
-                        <div onclick="<?= $emailAllJs ?>">
-                            <div class="material-icons">
-                                email
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>
-                        </div>
-                        <? $signAllJs = "trustedCA.sign($allIdsJs, {'role': 'CLIENT'})"; ?>
-                        <div onclick="<?= $signAllJs ?>">
-                            <div class="material-icons">
-                                create
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>
-                        </div>
-                        <? $verifyAllJs = "trustedCA.verify($allIdsJs)" ?>
-                        <div onclick="<?= $verifyAllJs ?>">
-                            <div class="material-icons">
-                                info
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>
-                        </div>
-                        <? $downloadAllJs = "trustedCA.download($allIdsJs, '$zipName')" ?>
-                        <div onclick="<?= $downloadAllJs ?>">
-                            <div class="material-icons">
-                                save_alt
-                            </div>
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>
-                        </div>
-                        <?
-                        if ($arParams["ALLOW_REMOVAL"] === 'Y') {
-                        ?>
-                            <? $removeAllJs = "trustedCA.remove($allIdsJs, false, trustedCA.reloadDoc)" ?>
-                            <div onclick="<?= $removeAllJs ?>">
-                                <div class="material-icons">
-                                    delete
-                                </div>
-                                <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>
-                            </div>
-                        <?
-                        }
-                        ?>
-                    </ul>
-                </div>
-            <?
+                ?>
+                <header-menu id="trca-docs-header-menu-by-user">
+                    <header-menu-button icon="email"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="sendEmail"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="create"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="sign"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="info"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="verify"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="save_alt"
+                                        onclick="<?= "trustedCA.download($allIdsJs, '$zipName')"?>"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>">
+                    </header-menu-button>
+                <?
+                if ($arParams["ALLOW_REMOVAL"] === 'Y') {
+                ?>
+                    <header-menu-button icon="delete"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="remove"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>">
+                    </header-menu-button>
+                <?
+                }
+                ?>
+                </header-menu>
+                <?
             }
-            ?>
-        </div>
-
-        <div class="document-card__content">
+        ?>
+        </header-title>
+        <docs-content>
             <?
             if (is_array($docs)) {
                 foreach ($docs as $doc) {
@@ -138,169 +127,143 @@ $APPLICATION->IncludeComponent(
                                 break;
                         }
                     }
-            ?>
-                    <div class="document-content__item">
-                        <div class="document-item__left">
-                            <div class="material-icons" style="<?= $iconCss ?>">
-                                <?= $icon ?>
-                            </div>
-                            <div class="document-item__text">
-                                <div class="document-text__title">
-                                    <?= $doc["NAME"] ?>
-                                </div>
-                                <div class="document-text__description">
-                                    <?
-                                    if ($docStatus === DOC_STATUS_BLOCKED) {
-                                        echo $doc['STATUS_STRING'];
-                                    } else {
-                                        echo $doc['TYPE_STRING'];
-                                    }
-                                    ?>
-                                </div>
-                                <div class="document-text__share">
-                                    <?
-                                    echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER");
-                                    if ($docAccessLevel == "OWNER") {
-                                        echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER2");
-                                    } else {
-                                        echo $doc['OWNER_USERNAME'];
-                                    }
-                                    ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="document-item__right_user">
-                            <div class="icon_content">
-                                <? $emailJs = "trustedCA.promptAndSendEmail([$docId], 'MAIL_EVENT_ID_TO', {}, 'MAIL_TEMPLATE_ID_TO')" ?>
-                                <div class="icon-wrapper"
-                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>"
-                                     onclick="<?= $emailJs ?>">
-                                    <i class="material-icons">
-                                        email
-                                    </i>
-                                </div>
-                                <?
-                                if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
-                                    $signJs = "trustedCA.sign([$docId], {'role': 'CLIENT'})";
-                                ?>
-                                    <div class="icon-wrapper"
-                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>"
-                                         onclick="<?= $signJs ?>">
-                                        <i class="material-icons">
-                                            create
-                                        </i>
-                                    </div>
-                                <?
-                                }
-                                $verifyJs = "trustedCA.verify([$docId])";
-                                if ($docType === DOC_TYPE_SIGNED_FILE) {
-                                ?>
-                                    <div class="icon-wrapper"
-                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>"
-                                        onclick="<?= $verifyJs ?>">
-                                        <i class="material-icons">
-                                            info
-                                        </i>
-                                    </div>
-                                <?
-                                }
-                                ?>
-                                <? $downloadJs = "trustedCA.download([$docId])" ?>
-                                <div class="icon-wrapper"
-                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>"
-                                     onclick="<?= $downloadJs ?>">
-                                    <i class="material-icons">
-                                        save_alt
-                                    </i>
-                                </div>
-                                <? $protocolJs = "trustedCA.protocol($docId)" ?>
-                                <div class="icon-wrapper"
-                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>"
-                                     onclick="<?= $protocolJs ?>">
-                                    <i class="material-icons">
-                                        description
-                                    </i>
-                                </div>
-                                <?
-                                if ($docAccessLevel == "OWNER") {
-                                    $shareJs = "trustedCA.promptAndShare([$docId], 'SHARE_SIGN')"
-                                ?>
-                                    <div class="icon-wrapper"
-                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>"
-                                         onclick="<?= $shareJs ?>">
-                                        <i class="material-icons">
-                                            share
-                                        </i>
-                                    </div>
-                                    <?
-                                    if ($arParams["ALLOW_REMOVAL"] === 'Y') {
-                                        $removeJs = "trustedCA.remove([$docId], false, trustedCA.reloadDoc)";
-                                    ?>
-                                        <div class="icon-wrapper"
-                                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"); ?>"
-                                             onclick="<?= $removeJs ?>">
-                                            <i class="material-icons">
-                                                delete
-                                            </i>
-                                        </div>
-                                <?
-                                    }
-
-                                } elseif ($docAccessLevel === "SIGN" || $docAccessLevel === "READ") {
-                                    $unshareJs = "trustedCA.unshare([$docId], false, trustedCA.reloadDoc)";
-                                ?>
-                                    <div class="icon-wrapper"
-                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"); ?>"
-                                         onclick="<?= $unshareJs ?>">
-                                        <i class="material-icons">
-                                            close
-                                        </i>
-                                    </div>
-                                    <?
-                                }
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-            <?
+                ?>
+                <docs-items>
+                    <doc-name color="<?= $iconCss ?>" icon="<?= $icon ?>" name="<?= $doc["NAME"] ?>"
+                            description="<?
+                            if ($docStatus === DOC_STATUS_BLOCKED) {
+                                echo $doc['STATUS_STRING'];
+                            } else {
+                                echo $doc['TYPE_STRING'];
+                            }
+                        ?>">
+                        <doc-name-owner owner="<?
+                            echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER");
+                            if ($docAccessLevel == "OWNER") {
+                                echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER2");
+                            } else {
+                                echo $doc['OWNER_USERNAME'];
+                            }
+                        ?>">
+                        </doc-name-owner>
+                    </doc-name>
+                    <doc-buttons>
+                        <doc-button icon="email"
+                                    :id="<?= $docId ?>"
+                                    @button-click="sendEmail"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>">
+                        </doc-button>
+                        <?
+                        if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
+                        ?>
+                        <doc-button icon="create"
+                                    :id="<?= $docId ?>"
+                                    @button-click="sign"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>">
+                        </doc-button>
+                        <?
+                        }
+                        if ($docType === DOC_TYPE_SIGNED_FILE) {
+                        ?>
+                        <doc-button icon="info"
+                                    :id="<?= $docId ?>"
+                                    @button-click="verify"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
+                        </doc-button>
+                        <?
+                        }
+                        ?>
+                        <doc-button icon="save_alt"
+                                    :id="<?= $docId ?>"
+                                    @button-click="download"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
+                        </doc-button>
+                        <doc-button icon="description"
+                                    :id="<?= $docId ?>"
+                                    @button-click="protocol"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
+                        </doc-button>
+                        <?
+                        if ($docAccessLevel == "OWNER") {
+                        ?>
+                            <doc-button icon="share"
+                                        :id="<?= $docId ?>"
+                                        @button-click="share"
+                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
+                            </doc-button>
+                            <?
+                            if ($arParams["ALLOW_REMOVAL"] === 'Y') {
+                            ?>
+                                <doc-button icon="delete"
+                                            :id="<?= $docId ?>"
+                                            @button-click="remove"
+                                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_REMOVE"); ?>">
+                                </doc-button>
+                        <?
+                            }
+                        } elseif ($docAccessLevel === "SIGN" || $docAccessLevel === "READ") {
+                        ?>
+                        <doc-button icon="close"
+                                    :id="<?= $docId ?>"
+                                    @button-click="unshare"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"); ?>">
+                        </doc-button>
+                        <?
+                        }
+                        ?>
+                    </docs-buttons>
+                </docs-items>
+                <?
                 }
             }
             ?>
-        </div>
+        </docs-content>
         <?
         if ($arParams["ALLOW_ADDING"] === 'Y') {
             if ($USER->IsAuthorized()) {
                 $maxSize  = Docs\Utils::maxUploadFileSize();
-                $onSuccess = "() => { $('#document-footer__download').submit() }";
-                $onFailure = "() => { $('#document-footer__input').val(null) }";
-                $accessFileJS = "() => { trustedCA.checkAccessFile(this.files[0], $onSuccess, $onFailure) }";
-                $sizeFileJS = "trustedCA.checkFileSize(this.files[0], $maxSize, $accessFileJS, $onFailure)";
-        ?>
-                <div class="document-card__footer">
-                    <form enctype="multipart/form-data" method="POST" id="document-footer__download">
-                        <div class="document-footer__action">
-                            <input id="document-footer__input" class="document-footer__input" name="tr_ca_upload_comp_by_user" type="file" style="font-size: 0"
-                                    onchange="<?= $sizeFileJS ?>">
-                            <?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>
-                        </div>
-                    </form>
-                </div>
-        <?
+                ?>
+                <docs-upload-file maxSize="<?= $maxSize ?>"
+                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>">
+                </docs-upload-file>
+                <?
             }
         }
         ?>
-    </main>
+    </trca-docs>
 </div>
 
 <script>
-    $(".document-card__title_user").click(function () {
-        $('#ul_by_user').toggle();
-    });
-    $(document).on('click', function (e) {
-        if (!$(e.target).closest(".title").length) {
-            $('#ul_by_user').hide();
+   new Vue({
+        el: '#trca-docs-by-user',
+        methods: {
+            sendEmail: function(id) {
+                let object = new Object ();
+                trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
+            },
+            sign: function(id) {
+                trustedCA.sign(id, {role: 'CLIENT'});
+            },
+            verify: function(id) {
+                trustedCA.verify(id);
+            },
+            download: function(id) {
+                trustedCA.download(id, true);
+            },
+            protocol: function(idAr) {
+                id = idAr[0];
+                trustedCA.protocol(id)
+            },
+            share: function(id) {
+                trustedCA.promptAndShare(id, 'SHARE_SIGN');
+            },
+            remove: function(id) {
+                trustedCA.remove(id, false, trustedCA.reloadDoc);
+            },
+            share: function(id) {
+                trustedCA.unshare(id, false, trustedCA.reloadDoc);
+            },
         }
-        e.stopPropagation();
-    });
+    })
 </script>
 
