@@ -525,6 +525,7 @@ class Database
                 $sql .= " AND TDP.TYPE = 'USER' AND
                         TDP.VALUE = '" . $find_owner . "'";
         }
+        $sql .= " GROUP BY TD.ID";
 
         $sOrder = '';
         if (is_array($arOrder)) {
