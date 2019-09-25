@@ -260,7 +260,7 @@ $APPLICATION->IncludeComponent(
             remove: function(id) {
                 trustedCA.remove(id, false, trustedCA.reloadDoc);
             },
-            share: function(id) {
+            unshare: function(id) {
                 trustedCA.unshare(id, false, trustedCA.reloadDoc);
             },
         }
