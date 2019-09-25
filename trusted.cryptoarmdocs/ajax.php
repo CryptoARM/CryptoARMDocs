@@ -7,6 +7,7 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/bx_root.php");
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
 Loader::includeModule("trusted.cryptoarmdocs");
+Loader::includeModule("trusted.cryptoarmdocsforms");
 
 define("NO_KEEP_STATISTIC", true);
 define("BX_STATISTIC_BUFFER_USED", false);
