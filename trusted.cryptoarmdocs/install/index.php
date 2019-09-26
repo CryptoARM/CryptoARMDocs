@@ -119,18 +119,30 @@ Class trusted_cryptoarmdocs extends CModule
                     break;
             }
 
+            $modulesOutOfDate = array();
+
             foreach($modulesNeeded as $module){
-                 $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module."/";
+                $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module."/";
                 if(!file_exists($modulesPathDir)) {
                     $strError = '';
                     CUpdateClientPartner::LoadModuleNoDemand($module,$strError,'Y',false);
                 }
-                if (!IsModuleInstalled($module)) {
-                    $className = str_replace(".", "_", $module);
+
+                $className = str_replace(".", "_", $module);
+                if (!IsModuleInstalled($module) && $className::CoreAndModuleAreCompatible()==="ok") {
                     $className::DoInstall();
+                } elseif (IsModuleInstalled($module) && $className::CoreAndModuleAreCompatible()!=="ok") {
+                    $modulesOutOfDate[] = $module;
                 }
             }
 
+            if ($modulesOutOfDate) {
+                Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_OUT_OF_DATE, implode(", ", $modulesOutOfDate));
+                $APPLICATION->IncludeAdminFile(
+                    Loc::getMessage("MOD_INSTALL_TITLE"),
+                    $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_some_modules_out_of_date.php"
+                );
+            }
         }
         if (!$continue) {
             $APPLICATION->IncludeAdminFile(
@@ -424,7 +436,7 @@ Class trusted_cryptoarmdocs extends CModule
     function UnInstallFiles()
     {
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_user/");
-        DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
+        //DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_by_order/");
         // if ($this->crmSupport()) {
         //     DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_crm/");
         // }
