@@ -1,6 +1,7 @@
 <?php
 
 namespace Trusted\CryptoARM\Docs;
+use Bitrix\Main\Loader;
 use DateTime;
 
 /**
@@ -256,7 +257,10 @@ class AjaxCommand {
 
         // Detect document by form signing
         if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
-            Form::upload($doc, $extra);
+            if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+                Loader::includeModule("trusted.cryptoarmdocsforms");
+                Form::upload($doc, $extra);
+            }
         }
 
         Utils::log(array(
