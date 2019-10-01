@@ -43,4 +43,3 @@ $MESS["TR_CA_DOCS_UPLOAD_ERROR"] = "Один или несколько файл�
 
 $MESS["TR_CA_DOCS_UPLOAD_ADD_FILE"] = "Добавить файл";
 
-$MESS["TR_CA_DOCS_MODULE_CORE_DOES_NOT_EXIST"] = "Не установлено ядро trusted.cryptoarmdocs";

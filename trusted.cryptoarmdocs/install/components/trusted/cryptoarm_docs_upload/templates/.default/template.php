@@ -14,7 +14,20 @@ $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
 
-Loader::includeModule('trusted.cryptoarmdocs');
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+Loader::includeModule($module_id);
 
 $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 

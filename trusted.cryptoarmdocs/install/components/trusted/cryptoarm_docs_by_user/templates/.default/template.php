@@ -6,11 +6,25 @@ use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
 
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
 $this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
 CJSCore::RegisterExt(
     "components",
     array(
-        "js" => "/bitrix/js/trusted.cryptoarmdocs/components.js",
+        "js" => "/bitrix/js/" . $module_id . "/components.js",
     )
 );
 CUtil::InitJSCore(array('components'));

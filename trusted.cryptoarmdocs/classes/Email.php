@@ -19,10 +19,10 @@ class Email {
         );
 
         // Only for email by order
-        $eventEmailSent = Option::get("trusted.cryptoarmdocs", "EVENT_EMAIL_SENT", "");
+        $eventEmailSent = Option::get(TR_CA_DOCS_MODULE_ID, "EVENT_EMAIL_SENT", "");
 
-        $MAIL_EVENT_ID = Option::get("trusted.cryptoarmdocs", $event, "");
-        $MAIL_TEMPLATE_ID = Option::get("trusted.cryptoarmdocs", $message_id, "");
+        $MAIL_EVENT_ID = Option::get(TR_CA_DOCS_MODULE_ID, $event, "");
+        $MAIL_TEMPLATE_ID = Option::get(TR_CA_DOCS_MODULE_ID, $message_id, "");
 
         if (!$MAIL_EVENT_ID || !$MAIL_TEMPLATE_ID) {
             return $res = array(
@@ -64,7 +64,7 @@ class Email {
         if (\CEvent::Send($MAIL_EVENT_ID, $siteIds, $arEventFields, "N", $MAIL_TEMPLATE_ID, $docLinks)) {
 
             // Documents by order can change order status
-            if ($MAIL_TEMPLATE_ID == Option::get("trusted.cryptoarmdocs", "MAIL_TEMPLATE_ID", "")) {
+            if ($MAIL_TEMPLATE_ID == Option::get(TR_CA_DOCS_MODULE_ID, "MAIL_TEMPLATE_ID", "")) {
                 foreach ($docs as $doc) {
                     if ($eventEmailSent) {
                         DocumentsByOrder::changeOrderStatus($doc, $eventEmailSent);

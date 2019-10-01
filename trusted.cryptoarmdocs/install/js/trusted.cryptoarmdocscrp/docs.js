@@ -246,7 +246,7 @@ trustedCA.showModalWindow = function(ids) {
         $('#trca-modal-content-message').text(MODAL_MESSAGE_2 + String.fromCharCode(171) + MODAL_CANCEL + String.fromCharCode(187) + '.');
     } else {
         $('#trca-modal-header').text(MODAL_MESSAGE_MANY_1);
-        $('#trca-modal-content-message').text(MODAL_MESSAGE_MANY_2 + '«' + MODAL_CANCEL + '».');
+        $('#trca-modal-content-message').text(MODAL_MESSAGE_MANY_2 + String.fromCharCode(171) + MODAL_CANCEL + String.fromCharCode(187) + '.');
     }
     $('#trca-modal-close').text(MODAL_CANCEL);
 }

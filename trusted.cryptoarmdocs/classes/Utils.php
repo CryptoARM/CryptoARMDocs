@@ -542,5 +542,21 @@ class Utils
         return $user ? $user['ID'] : null;
     }
 
+    //returns the name of currently installed core
+    public static function getCoreId() {
+        $coreIds = array(
+            'trusted.cryptoarmdocsstart',
+            'trusted.cryptoarmdocsbusiness',
+            'trusted.cryptoarmdocscrp',
+        );
+        foreach ($coreIds as $coreId) {
+            $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+            if(file_exists($corePathDir)) {
+                $moduleId = $coreId;
+            }
+        }
+        return $moduleId;
+    }
+
 }
 
