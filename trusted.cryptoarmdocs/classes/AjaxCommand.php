@@ -417,25 +417,54 @@ class AjaxCommand {
             }
         }
 
-        if (!file_exists($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/")) {
-            mkdir($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/", 0744);
+        $temporaryFileStorage = $_SERVER["DOCUMENT_ROOT"] . "upload/tmp/TCA-DocsTmp/";
+
+        if (!file_exists($temporaryFileStorage)) {
+            mkdir($temporaryFileStorage, 0744);
         }
 
         if ($docsFound->count()) {
             $filename = $params["filename"] ? $params["filename"] . ".zip" : "TCA-Docs.zip";
-            $archivePath = $_SERVER["DOCUMENT_ROOT"] . "/" . $filename;
+            $sDirTmpName = \randString(10);                        // Temporary folder name
+
+            $sDirTmpPath = $temporaryFileStorage . "$sDirTmpName/";
+            mkdir($sDirTmpPath, 0744, true);
+            $archivePath = $temporaryFileStorage . "$filename";
             $archiveObject = \CBXArchive::GetArchive($archivePath);
-            $archiveObject->SetOptions(
-                array(
-                    "REMOVE_PATH" => $_SERVER["DOCUMENT_ROOT"],
-                )
-            );
-            $docsFoundPaths = array();
+            $archiveObject->SetOptions(["REMOVE_PATH" => $sDirTmpPath]);
+            $docsFoundPaths = [];
+
             foreach ($docsFound->getList() as $doc) {
                 $docPath = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
-                $docsFoundPaths[] = $docPath;
+                $docName = $doc->getName();
+                if (!file_exists($sDirTmpPath . $docName)) {
+                    $newDocPath = $sDirTmpPath . $docName;
+                    copy($docPath, $newDocPath);
+                } else {
+                    $filenameExploded = explode(".", $docName);
+                    $fileExt = "." . (end($filenameExploded));
+                    if ($fileExt == ".sig") {
+                        $docNameWithoutSignExt = substr($docName, 0, -4);
+                        $filenameExploded = explode(".", $docNameWithoutSignExt);
+                        $fileExt = "." . (end($filenameExploded)) . ".sig";
+                    }
+                    $docNameWithoutExt = substr($docName, 0, -strlen($fileExt));
+                    $i = 1;
+                    while (file_exists($sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt)) {
+                        $i++;
+                    }
+                    copy($docPath, $sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt);
+                    $newDocPath = $sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt;
+                }
+                $docsFoundPaths[] = $newDocPath;
             }
             $archiveObject->Pack($docsFoundPaths);
+
+            foreach($docsFoundPaths as $file){
+                if(is_file($file)) unlink($file);
+            }
+
+            rmdir($sDirTmpPath);
         }
 
         if ($docsNotFound) {
