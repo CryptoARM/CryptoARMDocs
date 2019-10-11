@@ -5,9 +5,9 @@ use Bitrix\Main\ModuleManager;
 
 Loc::loadMessages(__FILE__);
 
-if ($APPLICATION->GetGroupRight("trusted.cryptoarmdocs") >= "R") {
+if ($APPLICATION->GetGroupRight(TR_CA_DOCS_MODULE_ID) >= "R") {
 
-    if (ModuleManager::isModuleInstalled('trusted.cryptoarmdocs')) {
+    if (ModuleManager::isModuleInstalled(TR_CA_DOCS_MODULE_ID)) {
         $aMenu = array(
             "parent_menu" => "global_menu_services",
             "section" => "trusted_cryptoarm_docs",

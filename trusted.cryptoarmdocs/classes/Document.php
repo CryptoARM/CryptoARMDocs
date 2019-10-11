@@ -4,8 +4,8 @@ use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/general/IEntity.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/general/ISave.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/general/IEntity.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/general/ISave.php';
 
 /**
  * Represents a single document

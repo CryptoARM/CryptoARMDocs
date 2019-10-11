@@ -2,7 +2,7 @@
 
 use Bitrix\Main\Config\Option;
 
-define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocs");
+define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocscrp");
 
 define("TR_CA_HOST", preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
 
@@ -54,4 +54,7 @@ define("PROVIDE_LICENSE", Option::get(TR_CA_DOCS_MODULE_ID, 'PROVIDE_LICENSE', '
 
 define('TR_CA_DB_TIME_FORMAT', 'YYYY-MM-DD HH:MI:SS');
 
-define("TR_CA_DOCS_TEMPLATE_ID", "tr_ca_docs_template_id");
+// define("TR_CA_DOCS_TEMPLATE_ID", "tr_ca_docs_template_id");
+
+define("TR_CA_DOCS_MODULES_OUT_OF_DATE", "tr_ca_docs_modules_out_of_date");
+define("TR_CA_DOCS_MODULES_WERE_NOT_INSTALLED", "tr_ca_docs_modules_were_not_installed");

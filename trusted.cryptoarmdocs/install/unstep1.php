@@ -15,14 +15,14 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
 <form action="<?= $APPLICATION->GetCurPage() ?>">
     <?= bitrix_sessid_post() ?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <input type="hidden" name="id" value="trusted.cryptoarmdocs">
+    <input type="hidden" name="id" value="trusted.cryptoarmdocscrp">
     <input type="hidden" name="uninstall" value="Y">
     <input type="hidden" name="step" value="2">
     <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>
     <?
     //check on active workflows, based on installed Cryptoarm templates. Sends warning, if founds some
     if (IsModuleInstalled("bizproc")) {
-        $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
+        $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_BP_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
         global $DB;
         $found = false;
         foreach ($templateIds as $id) {
@@ -47,7 +47,12 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
                 margin: 16px 0;
                 display: inline-block;
                 padding: 15px 30px 15px 18px;">
-        <?php if (IsModuleInstalled('trusted.cryptoarmdocsbp')||IsModuleInstalled('trusted.cryptoarmdocsforms')) {?>
+        <?php
+        if (IsModuleInstalled('trusted.cryptoarmdocsbp')||
+            IsModuleInstalled('trusted.cryptoarmdocsforms')||
+            IsModuleInstalled('trusted.cryptoarmdocsorders')||
+            IsModuleInstalled('trusted.id')) {
+        ?>
             <p>
                 <input type="checkbox" name="deletemodules" id="deletemodules" value="Y">
                 <label for="deletemodules"><? echo Loc::getMessage("TR_CA_DOCS_UNINST_DELETE_MODULES") ?></label>

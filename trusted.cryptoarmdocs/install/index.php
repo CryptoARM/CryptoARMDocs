@@ -7,19 +7,31 @@ use Bitrix\Main\EventManager;
 use Bitrix\Main\Loader;
 use Trusted\CryptoARM\Docs;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/include.php';
-// require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/IBlock.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Database.php';
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/include.php';
 require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client_partner.php";
 require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client.php";
 
-
 Loc::loadMessages(__FILE__);
 
-Class trusted_cryptoarmdocs extends CModule
+Class trusted_cryptoarmdocscrp extends CModule
 {
     // Required by the marketplace standards
-    var $MODULE_ID = "trusted.cryptoarmdocs";
+
+    var $MODULE_ID = "trusted.cryptoarmdocscrp";
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -27,7 +39,7 @@ Class trusted_cryptoarmdocs extends CModule
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    function trusted_cryptoarmdocs()
+    function trusted_cryptoarmdocscrp()
     {
         self::__construct();
     }
@@ -100,7 +112,7 @@ Class trusted_cryptoarmdocs extends CModule
 
             ModuleManager::registerModule($this->MODULE_ID);
 
-            $modulesNeeded = array();
+            $modulesNeeded = array("trusted.id");
             $modulesForSmallBusiness = array('trusted.cryptoarmdocsorders', 'trusted.cryptoarmdocsforms');
             $modulesForCorportal = array('trusted.cryptoarmdocsbp');
 
@@ -121,23 +133,32 @@ Class trusted_cryptoarmdocs extends CModule
 
             if ($modulesNeeded) {
                 $modulesOutOfDate = array();
-                foreach($modulesNeeded as $module){
-                    $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$module."/";
+                $modulesWereNotInstalled = array();
+                foreach($modulesNeeded as $moduleName){
+                    $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleName."/";
+                    $moduleDownloaded = true;
                     if(!file_exists($modulesPathDir)) {
                         $strError = '';
-                        CUpdateClientPartner::LoadModuleNoDemand($module,$strError,'Y',false);
+                        $moduleDownloaded = CUpdateClientPartner::LoadModuleNoDemand($moduleName,$strError,'N',false);
+                        CModule::CreateModuleObject($moduleName);
+                        if (!$moduleDownloaded) {
+                            $modulesWereNotInstalled[] = $moduleName;
+                        }
                     }
 
-                    $className = str_replace(".", "_", $module);
-                    if (!IsModuleInstalled($module) && $className::CoreAndModuleAreCompatible()==="ok") {
-                        $className::DoInstall();
-                    } elseif (IsModuleInstalled($module) && $className::CoreAndModuleAreCompatible()!=="ok") {
-                        $modulesOutOfDate[] = $module;
+                    if ($moduleDownloaded) {
+                        $className = str_replace(".", "_", $moduleName);
+                        if (!IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible()==="ok") {
+                            $className::DoInstall();
+                        } elseif (IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible()!=="ok") {
+                            $modulesOutOfDate[] = $moduleName;
+                        }
                     }
                 }
 
-                if ($modulesOutOfDate) {
+                if ($modulesOutOfDate || $modulesWereNotInstalled) {
                     Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_OUT_OF_DATE, implode(", ", $modulesOutOfDate));
+                    Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_WERE_NOT_INSTALLED, implode(", ", $modulesWereNotInstalled));
                     $APPLICATION->IncludeAdminFile(
                         Loc::getMessage("MOD_INSTALL_TITLE"),
                         $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_some_modules_out_of_date.php"
@@ -374,7 +395,7 @@ Class trusted_cryptoarmdocs extends CModule
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
-            Option::set("trusted.cryptoarmdocs", $templateName, $templateId);
+            Option::set(TR_CA_DOCS_MODULE_ID, $templateName, $templateId);
         }
     }
 
@@ -422,6 +443,10 @@ Class trusted_cryptoarmdocs extends CModule
                 if (IsModuleInstalled('trusted.cryptoarmdocsorders')) {
                     CModule::includeModule('trusted.cryptoarmdocsorders');
                     trusted_cryptoarmdocsorders::DoUninstall();
+                }
+                if (IsModuleInstalled('trusted.id')) {
+                    CModule::includeModule('trusted.id');
+                     trusted_id::DoUninstall();
                 }
             }
 

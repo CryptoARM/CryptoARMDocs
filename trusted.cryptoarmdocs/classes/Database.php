@@ -2,9 +2,9 @@
 namespace Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/DocumentCollection.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/Document.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocs/classes/PropertyCollection.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/DocumentCollection.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/Document.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/PropertyCollection.php';
 Loader::includeModule("trusted.cryptoarmdocsbp");
 
 /**
