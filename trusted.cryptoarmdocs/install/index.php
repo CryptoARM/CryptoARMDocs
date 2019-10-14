@@ -97,7 +97,9 @@ Class trusted_cryptoarmdocscrp extends CModule
         if ($step == 4 && $continue) {
             if ($request["dropDB"] == "Y") {
                 $this->UnInstallDB();
-                // $this->UnInstallIb();
+            } elseif ($request["dropDBandIB"] == "Y") {
+                $this->UnInstallDB();
+                trusted_cryptoarmdocsforms::UnInstallIb();
             } elseif ($request["dropLostDocs"]) {
                 $lostDocs = unserialize($request["dropLostDocs"]);
                 foreach ($lostDocs as $id) {
