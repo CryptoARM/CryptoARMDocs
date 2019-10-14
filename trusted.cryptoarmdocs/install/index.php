@@ -22,6 +22,7 @@ foreach ($coreIds as $coreId) {
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/include.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
 require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client_partner.php";
 require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/update_client.php";
 

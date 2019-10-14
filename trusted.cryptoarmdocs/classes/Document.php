@@ -4,8 +4,22 @@ use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/general/IEntity.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . TR_CA_DOCS_MODULE_ID . '/classes/general/ISave.php';
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/general/IEntity.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/general/ISave.php';
 
 /**
  * Represents a single document
