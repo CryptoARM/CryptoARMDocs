@@ -3,3 +3,4 @@
 .idea
 .eslintrc
 /snap
+/trusted.cryptoarmdocs/.vscode/
