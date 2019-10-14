@@ -398,7 +398,7 @@ Class trusted_cryptoarmdocscrp extends CModule
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
-            Option::set(TR_CA_DOCS_MODULE_ID, $templateName, $templateId);
+            Option::set($this->MODULE_ID, $templateName, $templateId);
         }
     }
 
