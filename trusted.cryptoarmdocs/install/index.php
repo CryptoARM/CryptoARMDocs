@@ -232,8 +232,7 @@ Class trusted_cryptoarmdocscrp extends CModule
             'MAIL_EVENT_ID' => 'TR_CA_DOCS_MAIL_BY_ORDER',
             'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
-            // 'MAIL_EVENT_ID_FORM' => 'TR_CA_DOCS_MAIL_FORM',
-            // 'MAIL_EVENT_ID_FORM_TO_ADMIN' => 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+            'MAIL_EVENT_ID_REQUIRED_SIGN' => 'TR_CA_DOCS_MAIL_REQUIRED_SIGN',
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
@@ -309,22 +308,15 @@ Class trusted_cryptoarmdocscrp extends CModule
                 "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"),
             ),
 
-            // // send completed form to user
-            // array(
-            //     "LID" => "ru",
-            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-            //     "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_NAME"),
-            //     "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_DESCRIPTION"),
-            // ),
-
-            // // send completed form to admin
-            // array(
-            //     "LID" => "ru",
-            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-            //     "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_NAME"),
-            //     "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_FORM_TO_ADMIN_DESCRIPTION"),
-            // ),
+            // required sign
+            array(
+                "LID" => "ru",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_REQUIRED_SIGN",
+                "NAME" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_REQUIRED_SIGN_NAME"),
+                "DESCRIPTION" => Loc::getMessage("TR_CA_DOCS_MAIL_EVENT_REQUIRED_SIGN_DESCRIPTION"),
+            ),
         );
+
         foreach ($events as $event) {
             $obEventType->add($event);
         }
@@ -372,29 +364,17 @@ Class trusted_cryptoarmdocscrp extends CModule
                 "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"),
             ),
 
-            // // send completed form to user
-            // 'MAIL_TEMPLATE_ID_FORM' => array(
-            //     "ACTIVE" => "Y",
-            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM",
-            //     "LID" => $siteIds,
-            //     "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-            //     "EMAIL_TO" => "#EMAIL#",
-            //     "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_SUBJECT"),
-            //     "BODY_TYPE" => "html",
-            //     "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_BODY"),
-            // ),
-
-            // // send completed form to admin
-            // 'MAIL_TEMPLATE_ID_FORM_TO_ADMIN' => array(
-            //     "ACTIVE" => "Y",
-            //     "EVENT_NAME" => "TR_CA_DOCS_MAIL_FORM_TO_ADMIN",
-            //     "LID" => $siteIds,
-            //     "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
-            //     "EMAIL_TO" => "#EMAIL#",
-            //     "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_SUBJECT"),
-            //     "BODY_TYPE" => "html",
-            //     "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_FORM_TO_ADMIN_BODY"),
-            // ),
+            // send require sign
+            'MAIL_TEMPLATE_ID_REQUIRED_SIGN' => array(
+                "ACTIVE" => "Y",
+                "EVENT_NAME" => "TR_CA_DOCS_MAIL_REQUIRED_SIGN",
+                "LID" => $siteIds,
+                "EMAIL_FROM" => "#DEFAULT_EMAIL_FROM#",
+                "EMAIL_TO" => "#EMAIL#",
+                "SUBJECT" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_SUBJECT"),
+                "BODY_TYPE" => "html",
+                "MESSAGE" => Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_BODY"),
+            ),
         );
         foreach ($templates as $templateName => $template) {
             $templateId = $obEventMessage->add($template);
@@ -496,10 +476,8 @@ Class trusted_cryptoarmdocscrp extends CModule
             'MAIL_TEMPLATE_ID_TO',
             'MAIL_EVENT_ID_SHARE',
             'MAIL_TEMPLATE_ID_SHARE',
-            // 'MAIL_EVENT_ID_FORM',
-            // 'MAIL_TEMPLATE_ID_FORM',
-            // 'MAIL_EVENT_ID_FORM_TO_ADMIN',
-            // 'MAIL_TEMPLATE_ID_FORM_TO_ADMIN',
+            'MAIL_EVENT_ID_REQUIRED_SIGN',
+            'MAIL_TEMPLATE_ID_REQUIRED_SIGN',
         );
         foreach ($options as $option) {
             Option::delete(
@@ -534,8 +512,7 @@ Class trusted_cryptoarmdocscrp extends CModule
             'TR_CA_DOCS_MAIL_BY_ORDER',
             'TR_CA_DOCS_MAIL_TO',
             'TR_CA_DOCS_MAIL_SHARE',
-            // 'TR_CA_DOCS_MAIL_FORM',
-            // 'TR_CA_DOCS_MAIL_FORM_TO_ADMIN',
+            'TR_CA_DOCS_MAIL_REQUIRED_SIGN',
         );
         foreach ($events as $event) {
             $eventMessages = CEventMessage::GetList(

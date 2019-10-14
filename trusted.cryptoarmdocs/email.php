@@ -47,6 +47,19 @@ if ($orderId) {
     }
 }
 
+$docsId = explode(".", $_GET["docs_id"]);
+$userId = (int)$_GET["user_id"];
+if (!empty($docsId[0]) && $userId) {
+    foreach ($docsId as $docId) {
+        $doc = Docs\Database::getDocumentById($docId);
+        $props = $doc->getProperties();
+        if ($emailProp = $props->getPropByType("EMAIL_" . $userId)) {
+            $emailProp->setValue("READ");
+        }
+        $doc->save();
+    }
+}
+
 $image = "email.png";
 $imageInfo = getimagesize($image);
 $imageMimetype = $imageInfo["mime"];

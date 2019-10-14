@@ -58,7 +58,7 @@ $moduleOptions = array(
     "EVENT_SIGNED_BY_CLIENT", "EVENT_SIGNED_BY_SELLER", "EVENT_SIGNED_BY_BOTH",
     "EVENT_SIGNED_BY_CLIENT_ALL_DOCS", "EVENT_SIGNED_BY_SELLER_ALL_DOCS", "EVENT_SIGNED_BY_BOTH_ALL_DOCS",
     "EVENT_EMAIL_SENT", "EVENT_EMAIL_READ", "MAIL_EVENT_ID_TO", "MAIL_TEMPLATE_ID_TO",
-    "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID",
+    "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID", "MAIL_EVENT_ID_REQUIRED_SIGN", "MAIL_TEMPLATE_ID_REQUIRED_SIGN",
     "MAIL_EVENT_ID_FORM", "MAIL_TEMPLATE_ID_FORM",
     "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN",
     "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY"
@@ -98,6 +98,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("EVENT_EMAIL_READ");
         UpdateOption("MAIL_EVENT_ID");
         UpdateOption("MAIL_TEMPLATE_ID");
+        UpdateOption("MAIL_EVENT_ID_REQUIRED_SIGN");
+        UpdateOption("MAIL_TEMPLATE_ID_REQUIRED_SIGN");
         UpdateOption("MAIL_EVENT_ID_TO");
         UpdateOption("MAIL_TEMPLATE_ID_TO");
         UpdateOption("MAIL_EVENT_ID_FORM");
@@ -212,6 +214,57 @@ $tabControl->Begin();
                         $templateId = htmlspecialcharsbx($template["ID"]);
                         $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
                         $sel = $MAIL_TEMPLATE_ID_TO == $templateId ? " selected" : "";
+                        echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_REQUIRED_SIGN_EMAIL_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_REQUIRED_SIGN_EMAIL_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_MAIL_EVENT_ID") ?>
+            </td>
+            <td>
+                <select name="MAIL_EVENT_ID_REQUIRED_SIGN" id="MAIL_EVENT_ID_REQUIRED_SIGN">
+                    <option value="" <?= $MAIL_EVENT_ID_REQUIRED_SIGN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $events = CEventType::GetList(array("LID" => LANGUAGE_ID), $order="TYPE_ID");
+                    while ($event = $events->Fetch()) {
+                        $eventId = htmlspecialcharsbx($event["ID"]);
+                        $eventTypeName = htmlspecialcharsbx($event["EVENT_NAME"]);
+                        $eventName = htmlspecialcharsbx($event["NAME"]);
+                        $sel = $MAIL_EVENT_ID_REQUIRED_SIGN == $eventTypeName ? " selected" : "";
+                        echo "<option value='" . $eventTypeName . "'" . $sel . ">" . $eventId . " - " . $eventName . "</option>";
+                    }
+                    ?>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td> <?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_TEMPLATE_ID") ?> </td>
+            <td>
+                <select name="MAIL_TEMPLATE_ID_REQUIRED_SIGN" id="MAIL_TEMPLATE_ID_REQUIRED_SIGN">
+                    <option value="" <?= $MAIL_TEMPLATE_ID_REQUIRED_SIGN ? "" : "selected" ?>><?= Loc::getMessage("TR_CA_DOCS_DEFAULT_EMAIL_NOT_SELECTED") ?></option>
+                    <?
+                    $templates = CEventMessage::GetList($by = "id", $order = "asc", array("TYPE_ID" => $MAIL_EVENT_ID_REQUIRED_SIGN));
+                    while ($template = $templates->Fetch()) {
+                        $templateId = htmlspecialcharsbx($template["ID"]);
+                        $templateSubject = htmlspecialcharsbx($template["SUBJECT"]);
+                        $sel = $MAIL_TEMPLATE_ID_REQUIRED_SIGN == $templateId ? " selected" : "";
                         echo "<option value='" . $templateId . "'" . $sel . ">" . $templateId . " - " . $templateSubject . "</option>";
                     }
                     ?>
