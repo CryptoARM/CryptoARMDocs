@@ -80,6 +80,23 @@ class Email {
                 }
             }
 
+            if ($MAIL_TEMPLATE_ID == Option::get(TR_CA_DOCS_MODULE_ID, "MAIL_TEMPLATE_ID_REQUIRED_SIGN", "")) {
+                foreach ($docs as $doc) {
+                    // Add email tracking property
+                    $docProps = $doc->getProperties();
+                    $userId = $arEventFields["USER_ID"];
+                    if ($emailProp = $docProps->getPropByType("EMAIL_" . $userId)) {
+                        $emailProp->setValue("SENT");
+                    } else {
+                        $docProps->add(new Property("EMAIL_" . $userId, "SENT"));
+                    }
+                    if (!$requireProp = $docProps->getPropByTypeAndValue("REQUIRE", $userId)) {
+                        $docProps->add(new Property("REQUIRE", $userId));
+                    }
+                    $doc->save();
+                }
+            }
+
             $res = array(
                 "success" => true,
                 "message" => "OK",

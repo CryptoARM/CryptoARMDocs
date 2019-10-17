@@ -31,6 +31,8 @@ $MESS["TR_CA_DOCS_ACT_SEND_MAIL_FAILURE"] = "Ошибка: письмо не о�
 $MESS["TR_CA_DOCS_ACT_SHARE"] = "Укажите e-mail пользователя 1С-Битрикс:";
 $MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_1"] = "Пользователь c e-mail ";
 $MESS["TR_CA_DOCS_ACT_SHARE_SUCCESS_2"] = " получил доступ к документу";
+$MESS["TR_CA_DOCS_ACT_REQUIRE_SUCCESS_1"] = "Пользователю c e-mail ";
+$MESS["TR_CA_DOCS_ACT_REQUIRE_SUCCESS_2"] = " отправлен запрос на подпись";
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_1"] = "Пользователь с e-mail ";
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " не найден";
 

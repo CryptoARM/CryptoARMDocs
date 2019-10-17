@@ -750,9 +750,9 @@ class AjaxCommand {
             return $res;
         }
 
-        $docIds = $params["ids"];
         $email = $params["email"];
         $level = $params["level"];
+        $sendEmail = array_key_exists("sendEmail", $params) ? $params["sendEmail"] : true;
 
         $userId = Utils::getUserIdByEmail($email);
         if (!$userId) {
@@ -794,13 +794,15 @@ class AjaxCommand {
             $ownerId = $doc->getOwner();
             $shareFrom = Utils::getUserName($ownerId) ?: "";
 
-            $arEventFields = array(
-                "EMAIL" => $email,
-                "FILE_NAME" => $fileName,
-                "SHARE_FROM" => $shareFrom,
-            );
+            if ($sendEmail) {
+                $arEventFields = [
+                    "EMAIL" => $email,
+                    "FILE_NAME" => $fileName,
+                    "SHARE_FROM" => $shareFrom,
+                ];
 
-            Email::sendEmail([$docId], "MAIL_EVENT_ID_SHARE", $arEventFields, "MAIL_TEMPLATE_ID_SHARE");
+                Email::sendEmail([$docId], "MAIL_EVENT_ID_SHARE", $arEventFields, "MAIL_TEMPLATE_ID_SHARE");
+            }
             $doc->share($userId, $level);
             $doc->save();
         }
@@ -900,5 +902,81 @@ class AjaxCommand {
     }
 
 
+    public function requireToSign($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.requireToSign",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No autorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $ids = $params["ids"];
+        $userEmail = $params["email"];
+        $userId = Utils::getUserIdByEmail($userEmail);
+
+        if (!$userId) {
+            return $res["message"] = "No user";
+        }
+
+        $params["sendEmail"] = false;
+        $params["level"] = DOC_SHARE_SIGN;
+
+        $response = self::share($params);
+
+        if ($response["success"]) {
+            $res = array_merge(
+                $res,
+                Utils::checkDocuments($ids, null, true)
+            );
+
+            if (!$res['docsOk']->count()) {
+                $res["message"] = "Documents not found";
+                return $res;
+            }
+
+            $docsToRequireSign = array_merge(
+                $res['docsOk']->toIdArray(),
+                $res['docsFileNotFound']->toIdArray(),
+                $res['docsBlocked']->toIdArray()
+            );
+
+            $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+            $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+            $res['docsOk'] = $res['docsOk']->toIdArray();
+
+            if (!$docsToRequireSign) {
+                $res["message"] = "Nothing to require";
+                return $res;
+            }
+
+            foreach ($docsToRequireSign as $docId) {
+                $doc = Database::getDocumentById($docId);
+                $fileName[] = $doc->getName();
+                $ownerId = $doc->getOwner();
+            }
+            $requireFrom = Utils::getUserName($ownerId) ? : "";
+            $arEventFields = [
+                "EMAIL" => $userEmail,
+                "FILE_NAME" => $fileName,
+                "REQUESTING_USER" => $requireFrom,
+                "DOCS_ID" => implode(".", $ids),
+                "USER_ID" => $userId
+            ];
+            Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
+        } else {
+            return $response;
+        }
+
+        $res = [
+            "success" => true,
+            "message" => "Documents required to sign"
+        ];
+
+        return $res;
+    }
 }
 

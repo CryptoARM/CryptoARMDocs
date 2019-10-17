@@ -29,6 +29,8 @@ trustedCA.initVar = function(){
     SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
     SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
     SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
+    REQUIRE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_1');
+    REQUIRE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_2');
     SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
     SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
@@ -456,10 +458,24 @@ trustedCA.share = function (ids, email, level = 'SHARE_READ') {
 };
 
 
+trustedCA.requireToSign = function (ids, email) {
+    let onSuccess = (d) => { alert(REQUIRE_SUCCESS_1 + email + REQUIRE_SUCCESS_2); };
+    trustedCA.ajax('requireToSign', {ids, email}, onSuccess);
+};
+
+
 trustedCA.promptAndShare = function (ids, level = 'SHARE_READ') {
     let email = trustedCA.promptEmail(ACT_SHARE);
     if (email) {
         trustedCA.share(ids, email, level);
+    }
+};
+
+
+trustedCA.promptAndRequireToSign = function (ids) {
+    let email = trustedCA.promptEmail(ACT_SHARE);
+    if (email) {
+        trustedCA.requireToSign(ids, email);
     }
 };
 

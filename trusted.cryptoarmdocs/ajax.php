@@ -90,6 +90,9 @@ if (isset($command)) {
         case "removeForm":
             $res = Docs\Form::removeIBlockAndDocs($params);
             break;
+        case "requireToSign":
+            $res = Docs\AjaxCommand::requireToSign($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

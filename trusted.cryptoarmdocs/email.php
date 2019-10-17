@@ -62,9 +62,9 @@ if (!empty($docsId[0]) && $userId) {
 
 $image = "email.png";
 $imageInfo = getimagesize($image);
-$imageMimetype = $imageInfo["mime"];
+$imageMimeType = $imageInfo["mime"];
 
-header('Content-type: '.$imageMimetype);
+header('Content-type: '.$imageMimeType);
 echo file_get_contents($image);
 
 require $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php";
