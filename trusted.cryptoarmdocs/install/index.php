@@ -28,11 +28,11 @@ require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 Loc::loadMessages(__FILE__);
 
-Class trusted_cryptoarmdocscrp extends CModule
+/*fBs*/Class trusted_cryptoarmdocscrp extends CModule/*fMs*/ //tags for core name changing script
 {
     // Required by the marketplace standards
 
-    var $MODULE_ID = "trusted.cryptoarmdocscrp";
+    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocscrp";/*fMs*/ //tags for core name changing script
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -40,7 +40,7 @@ Class trusted_cryptoarmdocscrp extends CModule
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    function trusted_cryptoarmdocscrp()
+    /*fBs*/ function trusted_cryptoarmdocscrp()/*fMs*/ //tags for core name changing script
     {
         self::__construct();
     }

@@ -34,7 +34,7 @@ function getLostDocs()
 <form action="<?= $APPLICATION->GetCurPage() ?>">
 <?=bitrix_sessid_post()?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <input type="hidden" name="id" value="trusted.cryptoarmdocscrp">
+    <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocscrp"><!--fMs tags for core name changing script-->
     <input type="hidden" name="install" value="Y">
     <input type="hidden" name="step" value="4">
     <?php

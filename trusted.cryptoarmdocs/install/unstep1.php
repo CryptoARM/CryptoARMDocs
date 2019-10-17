@@ -15,7 +15,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
 <form action="<?= $APPLICATION->GetCurPage() ?>">
     <?= bitrix_sessid_post() ?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <input type="hidden" name="id" value="trusted.cryptoarmdocscrp">
+    <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocscrp"><!--fMs tags for core name changing script-->
     <input type="hidden" name="uninstall" value="Y">
     <input type="hidden" name="step" value="2">
     <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>

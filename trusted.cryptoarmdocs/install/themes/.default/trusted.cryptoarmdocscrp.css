@@ -1,11 +1,11 @@
 /* Menu icon */
 .trca-menu-icon {
-    background-image: url(icons/trusted.cryptoarmdocscrp/mnu_docs.png);
+    /*fBs*/background-image: url(icons/trusted.cryptoarmdocscrp/mnu_docs.png);/*fMs - tags for core name changing script*/
     background-position: 9px 4px;
 }
 
 #trca-menu-icon {
-    background-image:url(icons/trusted.cryptoarmdocscrp/mnu_docs.png);
+    /*fBs*/background-image:url(icons/trusted.cryptoarmdocscrp/mnu_docs.png);/*fMs - tags for core name changing script*/
 }
 
 /* Table with separators between rows */
