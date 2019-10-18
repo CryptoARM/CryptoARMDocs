@@ -25,11 +25,12 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
 ?>
 
 
-<? if ($module_id === "trusted.cryptoarmdocscrp" || "trusted.cryptoarmdocsbusiness") {
-    (CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP")));
-}  elseif ($module_id === "trusted.cryptoarmdocsstart") {
-    (CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP_DB_ONLY")));
-}?>
+<? if ($module_id === "trusted.cryptoarmdocscrp" || $module_id === "trusted.cryptoarmdocsbusiness") : ?>
+    <?= CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP")); ?>
+<? endif; ?>
+<? if ($module_id === "trusted.cryptoarmdocscrp") : ?>
+    <?= (CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP_DB_ONLY"))); ?>
+<? endif; ?>
 
 <div style="display: flex;">
     <form action="<?= $APPLICATION->GetCurPage() ?>" style="padding-right: 4px;">
@@ -41,7 +42,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
         <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_KEEP") ?>">
     </form>
 
-    <? if ($module_id === "trusted.cryptoarmdocscrp" || "trusted.cryptoarmdocsbusiness") : ?>
+    <? if ($module_id === "trusted.cryptoarmdocscrp" || $module_id === "trusted.cryptoarmdocsbusiness") : ?>
         <form action="<?= $APPLICATION->GetCurPage() ?>">
         <?=bitrix_sessid_post()?>
             <input type="hidden" name="lang" value="<?= LANG ?>">
@@ -52,7 +53,8 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
             <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_DROP") ?>">
             <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_CANCEL") ?>">
         </form>
-    <? elseif ($module_id === "trusted.cryptoarmdocsstart") : ?>
+    <? endif; ?>
+    <? if ($module_id === "trusted.cryptoarmdocstart") : ?>
         <form action="<?= $APPLICATION->GetCurPage() ?>">
         <?=bitrix_sessid_post()?>
             <input type="hidden" name="lang" value="<?= LANG ?>">
