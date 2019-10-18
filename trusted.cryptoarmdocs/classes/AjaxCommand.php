@@ -966,7 +966,10 @@ class AjaxCommand {
                 "DOCS_ID" => implode(".", $ids),
                 "USER_ID" => $userId
             ];
-            Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
+            $response = Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
+            if (!$response["success"]) {
+                return $response;
+            }
         } else {
             return $response;
         }

@@ -460,7 +460,8 @@ trustedCA.share = function (ids, email, level = 'SHARE_READ') {
 
 trustedCA.requireToSign = function (ids, email) {
     let onSuccess = (d) => { alert(REQUIRE_SUCCESS_1 + email + REQUIRE_SUCCESS_2); };
-    trustedCA.ajax('requireToSign', {ids, email}, onSuccess);
+    let onFailure = (d) => { alert(SEND_MAIL_FAILURE) };
+    trustedCA.ajax('requireToSign', {ids, email}, onSuccess, onFailure);
 };
 
 

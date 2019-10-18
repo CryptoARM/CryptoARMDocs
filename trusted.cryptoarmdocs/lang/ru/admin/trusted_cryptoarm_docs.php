@@ -50,6 +50,8 @@ $MESS["TR_CA_DOCS_COL_ORDER_STATUS"] = "Статус заказа";
 $MESS["TR_CA_DOCS_COL_BUYER"] = "Покупатель";
 $MESS["TR_CA_DOCS_COL_MAIL"] = "Статус письма";
 
+$MESS["TR_CA_DOCS_COL_REQUIRE_STATUS"] = "Запросы на подпись";
+
 $MESS["TR_CA_DOCS_COL_IBLOCK_ELEMENT_ID"] = "ID заполненной формы";
 $MESS["TR_CA_DOCS_COL_IBLOCK_NAME"] = "Форма";
 $MESS["TR_CA_DOCS_COL_DATE_CREATE"] = "Дата и время заполнения";
@@ -67,6 +69,8 @@ $MESS["TR_CA_DOCS_ACT_UNSHARE"] = "Отказаться от документа"
 
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL"] = "Отправить документы покупателю";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO"] = "Отправить документы на e-mail";
+
+$MESS["TR_CA_DOCS_ACT_SEND_REQUIRE_TO_SIGN"] = "Отправить запрос на подпись по e-mail";
 
 // Hover titles
 $MESS["TR_CA_DOCS_USER_PROFILE"] = "Профиль пользователя";

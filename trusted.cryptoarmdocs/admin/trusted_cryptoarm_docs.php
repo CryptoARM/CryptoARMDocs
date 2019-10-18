@@ -98,6 +98,10 @@ if (($arID = $lAdmin->GroupAction()) && $POST_RIGHT == "W") {
             echo 'window.parent.trustedCA.remove(' . json_encode($ids) . ', false, () => { window.parent.' . $reloadTableJs . ' })';
             echo '</script>';
             break;
+        case "requireToSign":
+            echo '<script>';
+            echo 'window.parent.trustedCA.promptAndRequireToSign(' . json_encode($ids) . ')';
+            echo '</script>';
     }
 }
 
@@ -106,42 +110,47 @@ $rsData = new CAdminResult($docs, $sTableID);
 $rsData->NavStart();
 $lAdmin->NavText($rsData->GetNavPrint(Loc::getMessage("TR_CA_DOCS_TITLE")));
 
-$lAdmin->AddHeaders(array(
-    array(
+$lAdmin->AddHeaders([
+    [
         "id" => "DOC",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_ID"),
         "sort" => "DOC",
         "default" => true
-    ),
-    array(
+    ],
+    [
         "id" => "FILE_NAME",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_FILENAME"),
         "sort" => "FILE_NAME",
         "default" => true
-    ),
-    array(
+    ],
+    [
         "id" => "PARENT_CREATED",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_PARENT_CREATED"),
         "default" => false
-    ),
-    array(
+    ],
+    [
         "id" => "CREATED",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_CREATED"),
         "default" => false
-    ),
-    array(
+    ],
+    [
         "id" => "SIGNATURES",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_SIGN"),
         "sort" => "SIGNATURES",
         "default" => true
-    ),
-    array(
+    ],
+    [
         "id" => "TYPE",
         "content" => Loc::getMessage("TR_CA_DOCS_COL_TYPE"),
         "sort" => "TYPE",
         "default" => true
-    ),
-));
+    ],
+    [
+        "id" => "REQUIRE_STATUS",
+        "content" => Loc::getMessage("TR_CA_DOCS_COL_REQUIRE_STATUS"),
+        "default" => true
+    ],
+]);
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
@@ -189,6 +198,61 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
             Docs\Utils::GetStatusString($doc);
     }
 
+    $docProperties = $doc->getProperties();
+    $docPropertiesList = $docProperties->getList();
+
+    $requireStatusViewField = "<table class='trca-doc-table'>";
+    foreach ($docPropertiesList as $prop) {
+        if ($prop->getType() == "REQUIRE") {
+            //user info
+            $userId = $prop->getValue();
+            $userFullName = Docs\Utils::getUserName($userId);
+            $userEmail = Docs\Utils::getUserEmail($userId);
+            $userLogin = Docs\Utils::getUserLogin($userId);
+
+            $requireStatusViewField .= "<tr><td>";
+            $requireStatusViewField .= $userFullName . "<br />";
+            $requireStatusViewField .= "[<a href='/bitrix/admin/user_edit.php?ID=" . $userId . "'";
+            $requireStatusViewField .= "title='" . Loc::getMessage("TR_CA_DOCS_USER_PROFILE") . "'>";
+            $requireStatusViewField .= $userLogin . "</a>]<br />";
+            $requireStatusViewField .= "<small><a href='mailto:";
+            $requireStatusViewField .= $userEmail;
+            $requireStatusViewField .= "' title='" . Loc::getMessage("TR_CA_DOCS_MAILTO_USER") . "'>";
+            $requireStatusViewField .= $userEmail . "</a></small></td>";
+
+            //email status
+            $emailStatus = $docProperties->getPropByType("EMAIL_" . $userId);
+            $docEmailIcon = "<div class='trca-email-status'>";
+            $docEmailStatus = "<div class='trca-email-status'>";
+            if (!$emailStatus) {
+                $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/' . $module_id . '/email_not_sent.png"';
+                $docEmailIcon .= ' class="trca-email-icon">';
+                $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_NOT_SENT");
+            } elseif ($emailStatus == "SENT") {
+                $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/' . $module_id . '/email_sent.png"';
+                $docEmailIcon .= ' class="trca-email-icon">';
+                $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_SENT");
+            } elseif ($emailStatus == "READ") {
+                $docEmailIcon .= '<img src="/bitrix/themes/.default/icons/' . $module_id . '/email_read.png"';
+                $docEmailIcon .= ' class="trca-email-icon">';
+                $docEmailStatus .= Loc::getMessage("TR_CA_DOCS_EMAIL_READ");
+            }
+            $docEmailIcon .= '</div>';
+            $docEmailStatus .= '</div>';
+            $requireStatusViewField .= "<td>" . $docEmailIcon . $docEmailStatus . "</td>";
+
+            //sign status
+            $signersArray = $doc->getSignersToArray();
+            if (in_array($userId, $signersArray)) {
+                $requireStatusViewField .= "<td>" . Loc::getMessage("TR_CA_DOCS_FILTER_ROLES_CLIENT") . "</td>";
+            } else {
+                $requireStatusViewField .= "<td>" . Loc::getMessage("TR_CA_DOCS_FILTER_ROLES_NONE") . "</td>";
+            }
+            $requireStatusViewField .= "</tr>";
+        }
+    }
+    $requireStatusViewField .= "</table>";
+
     $arRes = array(
         "DOC" => $doc->getId(),
         "FILE_NAME" => $docName,
@@ -206,6 +270,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("CREATED", $docCreated);
     $row->AddViewField("SIGNATURES", $signaturesString);
     $row->AddViewField("TYPE", $docTypeString);
+    $row->AddViewField("REQUIRE_STATUS", $requireStatusViewField);
 
     // context menu
     $arActions = Array();
@@ -241,6 +306,16 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $arActions[] = array("SEPARATOR" => true);
 
+
+    $arActions[] = array(
+        "ICON" => "move",
+        "DEFAULT" => false,
+        "TEXT" => Loc::getMessage("TR_CA_DOCS_ACT_SEND_REQUIRE_TO_SIGN"),
+        "ACTION" => $lAdmin->ActionDoGroup($f_ID, "requireToSign"),
+    );
+
+    $arActions[] = array("SEPARATOR" => true);
+
     $arActions[] = array(
         "ICON" => "delete",
         "DEFAULT" => false,
@@ -271,11 +346,12 @@ $lAdmin->AddFooter(array(
 )
 );
 
-$lAdmin->AddGroupActionTable(Array(
-    "sign" => Loc::getMessage("TR_CA_DOCS_ACT_SIGN"),
-    "unblock" => Loc::getMessage("TR_CA_DOCS_ACT_UNBLOCK"),
-    "remove" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
-)
+$lAdmin->AddGroupActionTable([
+        "sign" => Loc::getMessage("TR_CA_DOCS_ACT_SIGN"),
+        "unblock" => Loc::getMessage("TR_CA_DOCS_ACT_UNBLOCK"),
+        "remove" => Loc::getMessage("TR_CA_DOCS_ACT_REMOVE"),
+        "requireToSign" => Loc::getMessage("TR_CA_DOCS_ACT_SEND_REQUIRE_TO_SIGN")
+    ]
 );
 
 $contextMenu = array(
@@ -286,6 +362,7 @@ $contextMenu = array(
         "LINK" => "trusted_cryptoarm_docs_upload.php?lang=" . LANGUAGE_ID,
     )
 );
+
 $lAdmin->AddAdminContextMenu($contextMenu);
 
 // alternative output - ajax or excel
