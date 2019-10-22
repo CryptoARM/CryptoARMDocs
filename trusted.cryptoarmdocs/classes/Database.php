@@ -19,7 +19,10 @@ foreach ($coreIds as $coreId) {
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/DocumentCollection.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Document.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/PropertyCollection.php';
-Loader::includeModule("trusted.cryptoarmdocsbp");
+if (isModuleInstalled('trusted.cryptoarmdocsbp')) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocsbp/classes/WorkflowDocument.php';
+}
+// Loader::includeModule("trusted.cryptoarmdocsbp");
 
 /**
  * DB interaction class.

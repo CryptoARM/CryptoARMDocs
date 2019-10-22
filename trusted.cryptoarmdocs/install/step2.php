@@ -28,7 +28,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
 <? if ($module_id === "trusted.cryptoarmdocscrp" || $module_id === "trusted.cryptoarmdocsbusiness") : ?>
     <?= CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP")); ?>
 <? endif; ?>
-<? if ($module_id === "trusted.cryptoarmdocscrp") : ?>
+<? if ($module_id === "trusted.cryptoarmdocsstart") : ?>
     <?= (CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP_DB_ONLY"))); ?>
 <? endif; ?>
 
@@ -54,11 +54,11 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
             <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_CANCEL") ?>">
         </form>
     <? endif; ?>
-    <? if ($module_id === "trusted.cryptoarmdocstart") : ?>
+    <? if ($module_id === "trusted.cryptoarmdocsstart") : ?>
         <form action="<?= $APPLICATION->GetCurPage() ?>">
         <?=bitrix_sessid_post()?>
             <input type="hidden" name="lang" value="<?= LANG ?>">
-            <input type="hidden" name="id" value="trusted.cryptoarmdocstart">
+            <input type="hidden" name="id" value="trusted.cryptoarmdocsstart">
             <input type="hidden" name="install" value="Y">
             <input type="hidden" name="step" value="4">
             <input type="hidden" name="dropDB" value="Y">
