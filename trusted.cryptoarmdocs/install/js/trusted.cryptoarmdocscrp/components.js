@@ -45,6 +45,55 @@ Vue.component ("header-menu", {
     }
 })
 
+Vue.component ("doc-menu", {
+    props: {
+        id: String,
+        icon: String,
+    },
+    template:`
+    <div class="trca-docs-doc-menu" @click="showDocMenu">
+        <div class="trca-docs-doc-menu-icon">
+            <div class="material-icons title">
+                {{ icon }}
+            </div>
+        </div>
+        <ul :id="id">
+            <slot></slot>
+        </ul>
+    </div>`,
+    methods: {
+        showDocMenu: function() {
+            $("#" + this.id).toggle();
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest(".title").length) {
+                    $("ul[id^='trca-docs-share-menu-by-user-']").hide();
+                }
+                e.stopPropagation();
+            });
+        }
+    }
+})
+
+Vue.component("doc-menu-button", {
+    props: {
+        message: String,
+        icon: String,
+        id: Array
+    },
+    template: `
+    <div class="trca-docs-header-button" @click="buttonClick">
+        <div class="material-icons">{{ icon }}</div>
+        {{ message }}
+    </div>`,
+    methods: {
+        buttonClick: function() {
+            let idAr = new Array();
+            idAr = [this.id];
+            this.$emit('button-click', idAr);
+        }
+    }
+})
+
 Vue.component("header-menu-button", {
     props: {
         message: String,
@@ -122,7 +171,8 @@ Vue.component ("doc-button", {
     props: {
         id: Number,
         title: String,
-        icon: String
+        icon: String,
+        docname: String
     },
     template: `
     <div class="trca-docs-content-button" :title="title" @click="buttonClick">
@@ -134,7 +184,7 @@ Vue.component ("doc-button", {
         buttonClick: function() {
             let idAr = new Array();
             idAr = [this.id];
-            this.$emit('button-click', idAr);
+            this.$emit('button-click', idAr, this.docname);
         }
     }
 })
@@ -162,4 +212,14 @@ Vue.component ("docs-upload-file", {
             trustedCA.checkFileSize(file, maxSize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
         }
     }
+})
+
+Vue.component ("doc-info", {
+    props:{
+        info: Number,
+    },
+    template: `
+        <div class="trca-docs-content-info" :title="info">
+            {{ info }}
+        </div>`,
 })

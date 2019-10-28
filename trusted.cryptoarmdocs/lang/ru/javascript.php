@@ -52,3 +52,5 @@ $MESS["TR_CA_DOCS_COMP_FORM_INPUT_FILE"] = "Добавить файл";
 $MESS["TR_CA_DOCS_NO_ACCESS_FILE"] = "Не удалось загрузить файл ";
 
 $MESS['BPAA_ACT_ADD_FILE'] = "Прикрепить файл";
+
+$MESS["TR_CA_DOCS_CLOSE_INFO_WINDOW"] = "Закрыть";
