@@ -24,7 +24,10 @@ if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     return false;
 };
 
-Loader::includeModule($module_id);
+if (isModuleInstalled($module_id)) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Utils.php';
+}
 
 $currUserId = Docs\Utils::currUserId();
 

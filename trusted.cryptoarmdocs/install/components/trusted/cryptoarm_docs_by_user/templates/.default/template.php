@@ -20,6 +20,10 @@ foreach ($coreIds as $coreId) {
     }
 }
 
+if (isModuleInstalled($module_id)) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
+}
+
 $this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
 CJSCore::RegisterExt(
     "components",
@@ -113,7 +117,7 @@ $APPLICATION->IncludeComponent(
                     $docStatus = $doc["STATUS"];
                     $docAccessLevel = $doc["ACCESS_LEVEL"];
                     $docName = $doc["NAME"];
-                    $docCreated = date("d.m.o H:i",strtotime((Docs\Database::getDocumentById($docId))->getCreated()));
+                    $docCreated = date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($docId)->getCreated()));
 
                     if ($docType == DOC_TYPE_SIGNED_FILE) {
                         if ($docStatus == DOC_STATUS_BLOCKED){

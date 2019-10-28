@@ -78,7 +78,7 @@ Vue.component("doc-menu-button", {
     props: {
         message: String,
         icon: String,
-        id: Array
+        id: Number
     },
     template: `
     <div class="trca-docs-header-button" @click="buttonClick">
@@ -185,6 +185,12 @@ Vue.component ("doc-button", {
             let idAr = new Array();
             idAr = [this.id];
             this.$emit('button-click', idAr, this.docname);
+            $(document).on('click', function (e) {
+                if ($(e.target).closest(".trca-modal-overlay").length) {
+                    $('#trca-modal-info-window').hide();
+                    $('#trca-modal-overlay').hide();
+                 }
+              });
         }
     }
 })
@@ -216,7 +222,7 @@ Vue.component ("docs-upload-file", {
 
 Vue.component ("doc-info", {
     props:{
-        info: Number,
+        info: String,
     },
     template: `
         <div class="trca-docs-content-info" :title="info">
