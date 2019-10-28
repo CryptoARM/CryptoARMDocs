@@ -43,6 +43,11 @@ trustedCA.initVar = function(){
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
     NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
+    CLOSE_WINDOW = BX.message('TR_CA_DOCS_CLOSE_INFO_WINDOW');
+    SHARE_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SHARE');
+    SIGN_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SIGN');
+    DOWNLOAD_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_DOWNLOAD');
+    DOWNLOAD_PROTOCOL = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_PROTOCOL');
 };
 
 // Modal window
@@ -60,6 +65,37 @@ trustedCA.modalWindowSign = `
         <div class="trca-modal-footer" id="trca-modal-footer">
             <div class="trca-modal-close" id="trca-modal-close"></div>
         </div>
+    </div>
+`;
+trustedCA.modalDiv = document.createElement("div");
+
+trustedCA.modalWindowInfo = `
+    <div class="trca-modal-overlay" id="trca-modal-overlay"></div>
+    <div class="trca-modal-info-window" id="trca-modal-info-window">
+        <div class="trca-modal-header" id="trca-modal-header"></div>
+        <div class="trca-modal-info-content">
+            <div class="trca-modal-info-content-left">
+                <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
+            </div>
+            <div class="trca-modal-info-content-right">
+                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-share">
+                    <i class="material-icons">share</i>
+                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-share"></div>
+                </div>
+                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-download">
+                    <i class="material-icons">save_alt</i>
+                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-download"></div>
+                </div>
+                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-sign">
+                    <i class="material-icons">edit</i>
+                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-sign"></div>
+                </div>
+                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-protocol">
+                    <i class="material-icons">description</i>
+                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-protocol"></div>
+                </div>
+                <div class="trca-modal-info-close" id="trca-modal-info-close"></div>
+            </div>
     </div>
 `;
 trustedCA.modalDiv = document.createElement("div");
@@ -251,6 +287,24 @@ trustedCA.showModalWindow = function(ids) {
         $('#trca-modal-content-message').text(MODAL_MESSAGE_MANY_2 + String.fromCharCode(171) + MODAL_CANCEL + String.fromCharCode(187) + '.');
     }
     $('#trca-modal-close').text(MODAL_CANCEL);
+}
+
+trustedCA.showInfoModalWindow = function(ids, docname) {
+    trustedCA.modalDiv.className = "trca-modal";
+    trustedCA.modalDiv.innerHTML = trustedCA.modalWindowInfo;
+    document.body.appendChild(trustedCA.modalDiv);
+    $('#trca-modal-info-content-button-share').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
+    $('#trca-modal-content-info-message-share').text(SHARE_DOC);
+    $('#trca-modal-info-content-button-download').attr('onclick', "trustedCA.download([" + ids + "], true)");
+    $('#trca-modal-content-info-message-download').text(DOWNLOAD_DOC);
+    $('#trca-modal-info-content-button-sign').attr('onclick', "trustedCA.sign([" + ids + "])");
+    $('#trca-modal-content-info-message-sign').text(SIGN_DOC);
+    $('#trca-modal-info-content-button-protocol').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
+    $('#trca-modal-content-info-message-protocol').text(DOWNLOAD_PROTOCOL);
+    $('#trca-modal-info-close').attr('onclick', "{$('#trca-modal-info-window').hide(); $('#trca-modal-overlay').hide()}");
+    $('#trca-modal-header').text(docname);
+    $('#trca-modal-content-message').text(docname);
+    $('#trca-modal-info-close').text(CLOSE_WINDOW);
 }
 
 trustedCA.reloadDoc = function () {

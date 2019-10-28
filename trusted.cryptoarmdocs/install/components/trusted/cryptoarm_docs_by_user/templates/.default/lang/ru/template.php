@@ -11,13 +11,16 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Проверить все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"] = "Скачать все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"] = "Удалить все";
 
-$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"] = "Отправить документ";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"] = "Отправить документ";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"] = "Отправить на e-mail";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"] = "Подписать документ";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"] = "Проверить подпись";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"] = "Скачать документ";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"] = "Скачать протокол";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"] = "Поделиться документом";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE"] = "Удалить документ";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"] = "Отправить на подпись";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_INFO"] = "Информация о документе";
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"] = "Добавить";
 

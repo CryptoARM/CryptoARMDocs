@@ -20,6 +20,10 @@ foreach ($coreIds as $coreId) {
     }
 }
 
+if (isModuleInstalled($module_id)) {
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
+}
+
 $this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
 CJSCore::RegisterExt(
     "components",
@@ -112,6 +116,8 @@ $APPLICATION->IncludeComponent(
                     $docType = $doc["TYPE"];
                     $docStatus = $doc["STATUS"];
                     $docAccessLevel = $doc["ACCESS_LEVEL"];
+                    $docName = $doc["NAME"];
+                    $docCreated = date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($docId)->getCreated()));
 
                     if ($docType == DOC_TYPE_SIGNED_FILE) {
                         if ($docStatus == DOC_STATUS_BLOCKED){
@@ -162,11 +168,22 @@ $APPLICATION->IncludeComponent(
                         </doc-name-owner>
                     </doc-name>
                     <doc-buttons>
-                        <doc-button icon="email"
+                        <doc-info info="<?= $docCreated ?>">
+                        </doc-info>
+                        <doc-info info="<?= $docId ?>">
+                        </doc-info>
+                        <doc-info-button icon="error_outline"
                                     :id="<?= $docId ?>"
+                                    docname="<?= $docName ?>"
+                                    @button-click="showInfoWindow"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_INFO"); ?>">
+                        </doc-info-button>
+
+                        <!-- <doc-button icon="email"
+
                                     @button-click="sendEmail"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>">
-                        </doc-button>
+                        </doc-button> -->
                         <?
                         if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
                         ?>
@@ -177,34 +194,60 @@ $APPLICATION->IncludeComponent(
                         </doc-button>
                         <?
                         }
-                        if ($docType === DOC_TYPE_SIGNED_FILE) {
                         ?>
-                        <doc-button icon="info"
-                                    :id="<?= $docId ?>"
+                        <!-- <?
+                        if ($docType === DOC_TYPE_SIGNED_FILE) {
+                        ?> -->
+                        <!-- <doc-button icon="info"
+
                                     @button-click="verify"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
-                        </doc-button>
-                        <?
+                        </doc-button> -->
+                        <!-- <?
                         }
-                        ?>
+                        ?> -->
                         <doc-button icon="save_alt"
                                     :id="<?= $docId ?>"
                                     @button-click="download"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
                         </doc-button>
-                        <doc-button icon="description"
-                                    :id="<?= $docId ?>"
+                        <!-- <doc-button icon="description"
+
                                     @button-click="protocol"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
-                        </doc-button>
+                        </doc-button> -->
+
+                        <doc-menu icon="share" id="trca-docs-share-menu-by-user-<?=$docId?>" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
+                            <doc-menu-button icon="email"
+                                :id="<?= $docId ?>"
+                                @button-click="sendEmail"
+                                message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>">
+                            </doc-menu-button>
+                            <?
+                            if ($docAccessLevel == "OWNER") {
+                            ?>
+                                <doc-menu-button icon="share"
+                                    :id="<?= $docId ?>"
+                                    @button-click="share"
+                                    message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
+                                </doc-menu-button>
+                                <doc-menu-button icon="supervisor_account"
+                                    :id="<?= $docId ?>"
+                                    @button-click="requireToSign"
+                                    message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>">
+                                </doc-menu-button>
+                            <?
+                            }
+                            ?>
+                        </doc-menu>
                         <?
                         if ($docAccessLevel == "OWNER") {
                         ?>
-                            <doc-button icon="share"
+                            <!-- <doc-button icon="share"
                                         :id="<?= $docId ?>"
                                         @button-click="share"
                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
-                            </doc-button>
+                            </doc-button> -->
                             <?
                             if ($arParams["ALLOW_REMOVAL"] === 'Y') {
                             ?>
@@ -277,6 +320,12 @@ $APPLICATION->IncludeComponent(
             unshare: function(id) {
                 trustedCA.unshare(id, false, trustedCA.reloadDoc);
             },
+            requireToSign: function(id){
+                trustedCA.promptAndRequireToSign(id);
+            },
+            showInfoWindow: function(id, docname){
+                trustedCA.showInfoModalWindow(id, docname)
+            }
         }
     })
 </script>
