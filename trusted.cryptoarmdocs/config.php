@@ -23,6 +23,7 @@ define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . TR_CA_HOST . "/bitrix/componen
 // DB tables
 define("DB_TABLE_DOCUMENTS", "tr_ca_docs");
 define("DB_TABLE_PROPERTY", "tr_ca_docs_property");
+define("DB_TABLE_REQUIRE", "tr_ca_docs_require");
 
 // iBlock define
 define("TR_CA_IB_TYPE_ID", "tr_ca_docs_form");

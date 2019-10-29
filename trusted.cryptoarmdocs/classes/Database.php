@@ -135,6 +135,24 @@ class Database
         Database::saveDocumentParent($doc, $doc->getId());
     }
 
+    static function insertRequire($doc, $userId, $emailStatus = "NOT_SENT")
+    {
+        global $DB;
+
+        if (is_null($emailStatus)) {
+            $emailStatus = 'NOT_SENT';
+        }
+
+        $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
+            . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS)'
+            . 'VALUES ('
+            . $doc->getId() . ', '
+            . $userId . ', '
+            . '"' . $emailStatus . '"'
+            . ')';
+        $DB->Query($sql);
+    }
+
     /**
      * Updates document parent with child id.
      * @param object $doc Parent document
