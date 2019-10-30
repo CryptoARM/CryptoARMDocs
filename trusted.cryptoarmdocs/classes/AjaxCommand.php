@@ -915,60 +915,66 @@ class AjaxCommand {
         }
 
         $ids = $params["ids"];
-        $userEmail = $params["email"];
-        $userId = Utils::getUserIdByEmail($userEmail);
+        $usersEmail = explode(" ", $params["email"]);
 
-        if (!$userId) {
+        foreach ($usersEmail as $email) {
+            $usersId[] = Utils::getUserIdByEmail($email);
+        }
+
+        if (empty($usersId)) {
             return $res["message"] = "No user";
         }
 
         $params["sendEmail"] = false;
         $params["level"] = DOC_SHARE_SIGN;
 
-        $response = self::share($params);
+        foreach ($usersEmail as $key => $email) {
+            $params["email"] = $email;
+            $response = self::share($params);
 
-        if ($response["success"]) {
-            $res = array_merge(
-                $res,
-                Utils::checkDocuments($ids, null, true)
-            );
+            if ($response["success"]) {
+                $res = array_merge(
+                    $res,
+                    Utils::checkDocuments($ids, null, true)
+                );
 
-            if (!$res['docsOk']->count()) {
-                $res["message"] = "Documents not found";
-                return $res;
+                if (!$res['docsOk']->count()) {
+                    $res["message"] = "Documents not found";
+                    return $res;
+                }
+
+                $docsToRequireSign = array_merge(
+                    $res['docsOk']->toIdArray(),
+                    $res['docsFileNotFound']->toIdArray(),
+                    $res['docsBlocked']->toIdArray()
+                );
+
+                $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+                $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+                $res['docsOk'] = $res['docsOk']->toIdArray();
+
+                if (!$docsToRequireSign) {
+                    $res["message"] = "Nothing to require";
+                    return $res;
+                }
+
+                foreach ($docsToRequireSign as $docId) {
+                    $doc = Database::getDocumentById($docId);
+                    $fileName[] = $doc->getName();
+                    $ownerId = $doc->getOwner();
+                }
+                $requireFrom = Utils::getUserName($ownerId) ? : "";
+                $arEventFields = [
+                    "EMAIL" => $email,
+                    "FILE_NAME" => $fileName,
+                    "REQUESTING_USER" => $requireFrom,
+                    "DOCS_ID" => implode(".", $ids),
+                    "USER_ID" => $usersId[$key]
+                ];
+                Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
+            } else {
+                return $response;
             }
-
-            $docsToRequireSign = array_merge(
-                $res['docsOk']->toIdArray(),
-                $res['docsFileNotFound']->toIdArray(),
-                $res['docsBlocked']->toIdArray()
-            );
-
-            $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
-            $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
-            $res['docsOk'] = $res['docsOk']->toIdArray();
-
-            if (!$docsToRequireSign) {
-                $res["message"] = "Nothing to require";
-                return $res;
-            }
-
-            foreach ($docsToRequireSign as $docId) {
-                $doc = Database::getDocumentById($docId);
-                $fileName[] = $doc->getName();
-                $ownerId = $doc->getOwner();
-            }
-            $requireFrom = Utils::getUserName($ownerId) ? : "";
-            $arEventFields = [
-                "EMAIL" => $userEmail,
-                "FILE_NAME" => $fileName,
-                "REQUESTING_USER" => $requireFrom,
-                "DOCS_ID" => implode(".", $ids),
-                "USER_ID" => $userId
-            ];
-            Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
-        } else {
-            return $response;
         }
 
         $res = [
