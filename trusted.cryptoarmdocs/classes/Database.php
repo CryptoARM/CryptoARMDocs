@@ -18,6 +18,7 @@ foreach ($coreIds as $coreId) {
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/DocumentCollection.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Document.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/RequireSign.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/PropertyCollection.php';
 if (isModuleInstalled('trusted.cryptoarmdocsbp')) {
     require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocsbp/classes/WorkflowDocument.php';
@@ -135,23 +136,65 @@ class Database
         Database::saveDocumentParent($doc, $doc->getId());
     }
 
-    static function insertRequire($doc, $userId, $emailStatus = "NOT_SENT")
-    {
-        global $DB;
+    static function saveRequire($require) {
+        if ($require->getRequireId() == null) {
+            Database::insertRequire($require);
+        } else {
+            global $DB;
 
-        if (is_null($emailStatus)) {
-            $emailStatus = 'NOT_SENT';
+            $requireId = $require->getRequireId();
+            $emailStatus = $require->getEmailStatus();
+            $signStatus = (int)$require->getSignStatus();
+
+            if (is_null($emailStatus)) {
+                $emailStatus = "NOT_SENT";
+            }
+            if (is_null($signStatus)) {
+                $signStatus = DOC_TYPE_FILE;
+            }
+
+            $sql = 'UPDATE ' . DB_TABLE_REQUIRE . ' SET '
+                . 'EMAIL_STATUS = "' . $emailStatus . '", '
+                . 'SIGNED = "' . $signStatus . '" '
+                . 'WHERE ID = ' . $requireId;
+            $DB->Query($sql);
         }
-
-        $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
-            . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS)'
-            . 'VALUES ('
-            . $doc->getId() . ', '
-            . $userId . ', '
-            . '"' . $emailStatus . '"'
-            . ')';
-        $DB->Query($sql);
     }
+
+    static function insertRequire($require) {
+        $docId = $require->getDocId();
+        $userId = $require->getUserId();
+        $emailStatus = $require->getEmailStatus();
+        $signStatus = (int)$require->getSignStatus();
+
+        $require = self::getRequire($docId, $userId);
+
+        if ($require && $require->getSignStatus()) {
+            global $DB;
+
+            $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
+                . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS, SIGNED)'
+                . 'VALUES ('
+                . $docId . ', '
+                . $userId . ', '
+                . '"' . $emailStatus . '", '
+                . $signStatus
+                . ')';
+            $DB->Query($sql);
+        }
+    }
+
+    static function getRequire($docId, $userId) {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_REQUIRE . ' WHERE ID = ('
+            . 'SELECT MAX(ID) FROM ' . DB_TABLE_REQUIRE . ' WHERE DOCUMENT_ID = '
+            . $docId . ' AND USER_ID = ' . $userId . ')';
+        $rows = $DB->Query($sql);
+        $array = $rows->Fetch();
+        $res = RequireSign::fromArray($array);
+        return $res;
+    }
+
 
     /**
      * Updates document parent with child id.

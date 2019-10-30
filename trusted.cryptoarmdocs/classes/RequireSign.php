@@ -45,7 +45,7 @@ class RequireSign implements IEntity, ISave {
             $doc->setDocId($array["DOCUMENT_ID"]);
             $doc->setUserId($array["USER_ID"]);
             $doc->setEmailStatus($array["EMAIL_STATUS"]);
-            $doc->setSignStatus($array["SIGN_STATUS"]);
+            $doc->setSignStatus($array["SIGNED"]);
         }
 
         return $doc;
@@ -58,7 +58,7 @@ class RequireSign implements IEntity, ISave {
             "document_id" => $this->getDocId(),
             "user_id" => $this->getUserId(),
             "email_status" => $this->getEmailStatus(),
-            "sign_status" => $this->getSignStatus(),
+            "signed" => $this->getSignStatus(),
         ];
 
         return $a;
@@ -111,11 +111,11 @@ class RequireSign implements IEntity, ISave {
 
     function setSignStatus($signStatus)
     {
-        $this->signStatus = $signStatus;
+        $this->signStatus = (bool)$signStatus;
     }
 
     public function save()
     {
-
+        Database::saveRequire($this);
     }
 }
