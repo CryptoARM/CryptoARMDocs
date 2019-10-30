@@ -148,6 +148,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             return;
         }
     }
+    debugger;
     $.ajax({
         url: AJAX_CONTROLLER + '?command=sign',
         type: 'post',
@@ -162,7 +163,8 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                     filenameArr.push(elem.name);
                     idArr.push(elem.id);
                 });
-                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + (extra === null ? "null" : extra.role) +
+                extra.token = d.token;
+                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + JSON.stringify(extra) +
                     "&url=" + JSON.parse(d.docsOk)[0].url + "&filename=" + filenameArr + "&href=" +
                     window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
                 if (/CriOS/i.test(navigator.userAgent)) {
