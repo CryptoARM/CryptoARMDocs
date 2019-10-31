@@ -172,12 +172,12 @@ $APPLICATION->IncludeComponent(
                         </doc-info>
                         <doc-info info="<?= $docId ?>">
                         </doc-info>
-                        <doc-button icon="error_outline"
+                        <doc-info-button icon="error_outline"
                                     :id="<?= $docId ?>"
                                     docname="<?= $docName ?>"
                                     @button-click="showInfoWindow"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_INFO"); ?>">
-                        </doc-button>
+                        </doc-info-button>
 
                         <!-- <doc-button icon="email"
 
@@ -217,7 +217,7 @@ $APPLICATION->IncludeComponent(
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
                         </doc-button> -->
 
-                        <doc-menu id="trca-docs-share-menu-by-user-<?=$docId?>" icon="share">
+                        <doc-menu icon="share" id="trca-docs-share-menu-by-user-<?=$docId?>" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
                             <doc-menu-button icon="email"
                                 :id="<?= $docId ?>"
                                 @button-click="sendEmail"

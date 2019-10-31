@@ -33,6 +33,7 @@ Vue.component ("header-menu", {
     </div>`,
     methods: {
         showHeaderMenu: function() {
+            $("ul[id^='trca-docs-share-menu-by-user-']").hide();
             $("#" + this.id).toggle();
             $(document).on('click', function (e) {
                 if (!$(e.target).closest(".title").length) {
@@ -47,11 +48,12 @@ Vue.component ("header-menu", {
 
 Vue.component ("doc-menu", {
     props: {
+        title: String,
         id: String,
         icon: String,
     },
     template:`
-    <div class="trca-docs-doc-menu" @click="showDocMenu">
+    <div class="trca-docs-doc-menu" :title="title" @click="showDocMenu">
         <div class="trca-docs-doc-menu-icon">
             <div class="material-icons title">
                 {{ icon }}
@@ -63,9 +65,12 @@ Vue.component ("doc-menu", {
     </div>`,
     methods: {
         showDocMenu: function() {
-            $("#" + this.id).toggle();
-            $(document).on('click', function (e) {
-                if (!$(e.target).closest(".title").length) {
+            $("ul[id^='trca-docs-share-menu-by-user-']").hide();
+            $("#trca-docs-header-menu-by-user").hide();
+            $("#trca-docs-header-menu-by-order").hide();
+            $("#" + this.id).show();
+             $(document).on('click', function (e) {
+                if (!$(e.target).closest(".title").length){
                     $("ul[id^='trca-docs-share-menu-by-user-']").hide();
                 }
                 e.stopPropagation();
@@ -172,6 +177,27 @@ Vue.component ("doc-button", {
         id: Number,
         title: String,
         icon: String,
+    },
+    template: `
+    <div class="trca-docs-content-button" :title="title" @click="buttonClick">
+        <i class="material-icons">
+            {{ icon }}
+        </i>
+    </div>`,
+    methods : {
+        buttonClick: function() {
+            let idAr = new Array();
+            idAr = [this.id];
+            this.$emit('button-click', idAr);
+        }
+    }
+})
+
+Vue.component ("doc-info-button", {
+    props: {
+        id: Number,
+        title: String,
+        icon: String,
         docname: String
     },
     template: `
@@ -211,7 +237,7 @@ Vue.component ("docs-upload-file", {
         </form>
     </div>`,
     methods: {
-        buttonClick: function(event ,maxSize) {
+        buttonClick: function(event, maxSize) {
             file = event.target.files[0];
             let onFailure = () => { $('#trca-docs-footer-input').val(null) };
             let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
@@ -225,7 +251,7 @@ Vue.component ("doc-info", {
         info: String,
     },
     template: `
-        <div class="trca-docs-content-info" :title="info">
+        <div class="trca-docs-content-info">
             {{ info }}
         </div>`,
 })
