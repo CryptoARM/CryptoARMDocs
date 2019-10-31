@@ -141,7 +141,7 @@ Vue.component ("doc-button", {
 
 Vue.component ("docs-upload-file", {
     props: {
-        maxSize: Number,
+        maxsize: Number,
         title: String
     },
     template: `
@@ -155,11 +155,13 @@ Vue.component ("docs-upload-file", {
         </form>
     </div>`,
     methods: {
-        buttonClick: function(event ,maxSize) {
+        buttonClick: function(event) {
             file = event.target.files[0];
+            let maxsize = new Number;
+            maxsize = this.maxsize;
             let onFailure = () => { $('#trca-docs-footer-input').val(null) };
             let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
-            trustedCA.checkFileSize(file, maxSize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
+            trustedCA.checkFileSize(file, maxsize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
         }
     }
 })
