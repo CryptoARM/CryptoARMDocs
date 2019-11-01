@@ -110,7 +110,7 @@ Loc::loadMessages(__FILE__);
             $this->CreateDocsDir();
             $this->InstallModuleOptions();
             $this->InstallDB();
-            // $this->InstallIb();
+            $this->InstallIb();
             $this->InstallMailEvents();
 
             ModuleManager::registerModule($this->MODULE_ID);
@@ -287,9 +287,11 @@ Loc::loadMessages(__FILE__);
         $DB->Query($sql);
     }
 
-    // function InstallIb() {
-    //     Docs\IBlock::install();
-    // }
+     function InstallIb() {
+         if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+             trusted_cryptoarmdocsforms::InstallIb();
+         }
+     }
 
     function InstallMailEvents()
     {
