@@ -427,10 +427,10 @@ Loc::loadMessages(__FILE__);
                     CModule::includeModule('trusted.cryptoarmdocsorders');
                     trusted_cryptoarmdocsorders::DoUninstall();
                 }
-                if (IsModuleInstalled('trusted.id')) {
-                    CModule::includeModule('trusted.id');
-                     trusted_id::DoUninstall();
-                }
+                // if (IsModuleInstalled('trusted.id')) {
+                //     CModule::includeModule('trusted.id');
+                //      trusted_id::DoUninstall();
+                // }
             }
 
             $this->UnInstallFiles();

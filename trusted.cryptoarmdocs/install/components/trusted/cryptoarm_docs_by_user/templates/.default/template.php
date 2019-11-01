@@ -20,10 +20,6 @@ foreach ($coreIds as $coreId) {
     }
 }
 
-if (isModuleInstalled($module_id)) {
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
-}
-
 $this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
 CJSCore::RegisterExt(
     "components",
@@ -117,7 +113,7 @@ $APPLICATION->IncludeComponent(
                     $docStatus = $doc["STATUS"];
                     $docAccessLevel = $doc["ACCESS_LEVEL"];
                     $docName = $doc["NAME"];
-                    $docCreated = date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($docId)->getCreated()));
+                    $docCreated = $doc["DATE_CREATED"];
 
                     if ($docType == DOC_TYPE_SIGNED_FILE) {
                         if ($docStatus == DOC_STATUS_BLOCKED){
@@ -149,8 +145,10 @@ $APPLICATION->IncludeComponent(
                     }
                 ?>
                 <docs-items>
-                    <doc-name color="<?= $iconCss ?>" icon="<?= $icon ?>" name="<?= $doc["NAME"] ?>"
-                            description="<?
+                    <doc-name color="<?= $iconCss ?>"
+                        icon="<?= $icon ?>"
+                        name="<?= $doc["NAME"] ?>"
+                        description="<?
                             if ($docStatus === DOC_STATUS_BLOCKED) {
                                 echo $doc['STATUS_STRING'];
                             } else {
@@ -168,22 +166,19 @@ $APPLICATION->IncludeComponent(
                         </doc-name-owner>
                     </doc-name>
                     <doc-buttons>
-                        <doc-info info="<?= $docCreated ?>">
+                        <doc-info info="<?= $docCreated ?>"
+                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
                         </doc-info>
-                        <doc-info info="<?= $docId ?>">
+                        <doc-info info="<?= $docId ?>"
+                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
-                        <doc-info-button icon="error_outline"
+                        <doc-info-button icon="info_outline"
                                     :id="<?= $docId ?>"
                                     docname="<?= $docName ?>"
-                                    @button-click="showInfoWindow"
-                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_INFO"); ?>">
+                                    @button-click="verify"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
                         </doc-info-button>
 
-                        <!-- <doc-button icon="email"
-
-                                    @button-click="sendEmail"
-                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>">
-                        </doc-button> -->
                         <?
                         if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
                         ?>
@@ -195,33 +190,20 @@ $APPLICATION->IncludeComponent(
                         <?
                         }
                         ?>
-                        <!-- <?
-                        if ($docType === DOC_TYPE_SIGNED_FILE) {
-                        ?> -->
-                        <!-- <doc-button icon="info"
 
-                                    @button-click="verify"
-                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
-                        </doc-button> -->
-                        <!-- <?
-                        }
-                        ?> -->
                         <doc-button icon="save_alt"
                                     :id="<?= $docId ?>"
                                     @button-click="download"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
                         </doc-button>
-                        <!-- <doc-button icon="description"
 
-                                    @button-click="protocol"
-                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
-                        </doc-button> -->
-
-                        <doc-menu icon="share" id="trca-docs-share-menu-by-user-<?=$docId?>" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
+                        <doc-menu icon="share"
+                            id="trca-docs-share-menu-by-user-<?=$docId?>"
+                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
                             <doc-menu-button icon="email"
                                 :id="<?= $docId ?>"
                                 @button-click="sendEmail"
-                                message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS"); ?>">
+                                message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
                             </doc-menu-button>
                             <?
                             if ($docAccessLevel == "OWNER") {
@@ -243,11 +225,6 @@ $APPLICATION->IncludeComponent(
                         <?
                         if ($docAccessLevel == "OWNER") {
                         ?>
-                            <!-- <doc-button icon="share"
-                                        :id="<?= $docId ?>"
-                                        @button-click="share"
-                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
-                            </doc-button> -->
                             <?
                             if ($arParams["ALLOW_REMOVAL"] === 'Y') {
                             ?>
@@ -268,7 +245,7 @@ $APPLICATION->IncludeComponent(
                         <?
                         }
                         ?>
-                    </docs-buttons>
+                    </doc-buttons>
                 </docs-items>
                 <?
                 }

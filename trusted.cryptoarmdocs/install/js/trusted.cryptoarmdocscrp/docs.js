@@ -57,7 +57,7 @@ trustedCA.modalWindowSign = `
         <div class="trca-modal-header" id="trca-modal-header"></div>
         <div class="trca-modal-content">
             <div class="trca-modal-content-icon" id=class="trca-modal-content-icon">
-                <i class="material-icons" style="font-size: 41px;">info_outline</i>
+                <i class="material-icons" style="font-size: 41px;">error_outline</i>
             </div>
             <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
         </div>

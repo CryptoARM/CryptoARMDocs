@@ -68,7 +68,7 @@ Vue.component ("doc-menu", {
             $("ul[id^='trca-docs-share-menu-by-user-']").hide();
             $("#trca-docs-header-menu-by-user").hide();
             $("#trca-docs-header-menu-by-order").hide();
-            $("#" + this.id).show();
+            $("#" + this.id).toggle();
              $(document).on('click', function (e) {
                 if (!$(e.target).closest(".title").length){
                     $("ul[id^='trca-docs-share-menu-by-user-']").hide();
@@ -249,9 +249,10 @@ Vue.component ("docs-upload-file", {
 Vue.component ("doc-info", {
     props:{
         info: String,
+        title: String
     },
     template: `
-        <div class="trca-docs-content-info">
+        <div class="trca-docs-content-info" :title="title">
             {{ info }}
         </div>`,
 })
