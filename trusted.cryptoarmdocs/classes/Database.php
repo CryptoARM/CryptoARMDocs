@@ -137,27 +137,34 @@ class Database
     }
 
     static function saveRequire($require) {
-        if ($require->getRequireId() == null) {
+        $requireId = $require->getRequireId();
+        $docId = $require->getDocId();
+        $userId = $require->getUserId();
+        $emailStatus = $require->getEmailStatus();
+        $signStatus = (int)$require->getSignStatus();
+
+        $requireResponse = self::getRequire($docId, $userId);
+
+        if (!$requireResponse || ($requireResponse && $requireResponse->getSignStatus() && !(bool)$signStatus)) {
             Database::insertRequire($require);
         } else {
-            global $DB;
+            if ($requireId) {
+                global $DB;
 
-            $requireId = $require->getRequireId();
-            $emailStatus = $require->getEmailStatus();
-            $signStatus = (int)$require->getSignStatus();
+                if (is_null($emailStatus)) {
+                    $emailStatus = "NOT_SENT";
+                }
 
-            if (is_null($emailStatus)) {
-                $emailStatus = "NOT_SENT";
+                if (is_null($signStatus)) {
+                    $signStatus = DOC_TYPE_FILE;
+                }
+
+                $sql = 'UPDATE ' . DB_TABLE_REQUIRE . ' SET '
+                    . 'EMAIL_STATUS = "' . $emailStatus . '", '
+                    . 'SIGNED = "' . $signStatus . '" '
+                    . 'WHERE ID = ' . $requireId;
+                $DB->Query($sql);
             }
-            if (is_null($signStatus)) {
-                $signStatus = DOC_TYPE_FILE;
-            }
-
-            $sql = 'UPDATE ' . DB_TABLE_REQUIRE . ' SET '
-                . 'EMAIL_STATUS = "' . $emailStatus . '", '
-                . 'SIGNED = "' . $signStatus . '" '
-                . 'WHERE ID = ' . $requireId;
-            $DB->Query($sql);
         }
     }
 
@@ -167,21 +174,17 @@ class Database
         $emailStatus = $require->getEmailStatus();
         $signStatus = (int)$require->getSignStatus();
 
-        $require = self::getRequire($docId, $userId);
+        global $DB;
 
-        if ($require && $require->getSignStatus()) {
-            global $DB;
-
-            $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
-                . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS, SIGNED)'
-                . 'VALUES ('
-                . $docId . ', '
-                . $userId . ', '
-                . '"' . $emailStatus . '", '
-                . $signStatus
-                . ')';
-            $DB->Query($sql);
-        }
+        $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
+            . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS, SIGNED)'
+            . 'VALUES ('
+            . $docId . ', '
+            . $userId . ', '
+            . '"' . $emailStatus . '", '
+            . $signStatus
+            . ')';
+        $DB->Query($sql);
     }
 
     static function getRequire($docId, $userId) {
@@ -450,6 +453,17 @@ class Database
     static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY)
     {
         return Database::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
+    }
+
+    static function getRequiresByDocumentId($documentId){
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_REQUIRE . ' WHERE DOCUMENT_ID = ' . $documentId;
+        $rows = $DB->Query($sql);
+        $res = new RequireCollection();
+        while ($array = $rows->Fetch()) {
+            $res->add(RequireSign::fromArray($array));
+        }
+        return $res;
     }
 
     /**

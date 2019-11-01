@@ -712,19 +712,42 @@ class Document implements IEntity, ISave
         $this->properties = $properties;
     }
 
+    function getRequires() {
+        $requires = &$this->requires;
+        if (!$requires) {
+            if ($this->getId()) {
+                $requires = Database::getRequiresByDocumentId($this->getId());
+            } else {
+                $requires = new RequireCollection();
+            }
+        }
+        return $requires;
+    }
+
+    function setRequires($requires) {
+        $this->requires = $requires;
+    }
+
     /**
      * Saves changed document in DB or creates new record if id is null.
      * @return void
      */
-    public function save()
-    {
+    public function save() {
         Database::saveDocument($this);
-        $list = $this->getProperties()->getList();
-        foreach ($list as &$prop) {
+        $props = $this->getProperties()->getList();
+        foreach ($props as &$prop) {
             if (!$prop->getDocumentId()) {
                 $prop->setDocumentId($this->id);
             }
             $prop->save();
+        }
+
+        $requires = $this->getRequires()->getList();
+        foreach ($requires as &$require) {
+            if (!$require->getDocId()) {
+                $require->setDocId($this->id);
+            }
+            $require->save();
         }
     }
 
@@ -732,19 +755,31 @@ class Document implements IEntity, ISave
      * Creates a copy of the document object with id = null.
      * @return Document
      */
-    public function copy()
-    {
+    public function copy() {
         $new = new Document();
         $new->setName($this->getName());
         $new->setPath($this->getPath());
         $new->setType($this->getType());
         $new->setSignatures($this->getSignatures());
         $new->setSigners($this->getSigners());
-        $list = $this->getProperties()->getList();
-        foreach ($list as &$prop) {
+
+        $props = $this->getProperties()->getList();
+        foreach ($props as &$prop) {
             $newProp = new Property($prop->getType(), $prop->getValue());
             $new->getProperties()->add($newProp);
         }
+
+        $requires = $this->getRequires()->getList();
+        foreach ($requires as &$require) {
+            if ($require) {
+                $newRequire = new RequireSign();
+                $newRequire->setUserId($require->getUserId());
+                $newRequire->setEmailStatus($require->getEmailStatus());
+                $newRequire->setSignStatus($require->getSignStatus());
+                $new->getRequires()->add($newRequire);
+            }
+        }
+
         return $new;
     }
 

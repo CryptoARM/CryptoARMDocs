@@ -28,8 +28,12 @@ class RequireSign implements IEntity, ISave {
     protected $emailStatus = null;
     protected $signStatus = null;
 
-    function __construct() {
-        $this->docId = null;
+    function __construct($requireId = null, $docId = null, $userId = null, $emailStatus = null, $signStatus = null) {
+        $this->requireId = $requireId;
+        $this->docId = $docId;
+        $this->userId = $userId;
+        $this->emailStatus = $emailStatus;
+        $this->signStatus = $signStatus;
     }
 
     function __destruct() {
