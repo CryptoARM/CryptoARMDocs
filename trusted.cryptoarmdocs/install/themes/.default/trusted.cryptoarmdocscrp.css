@@ -181,7 +181,7 @@
 .trca-modal-content-message {
     font-size: 16px;
     padding: 24px;
-    color:rgba(0, 0, 0, 0.52)
+    color:rgba(0, 0, 0, 0.52);
 }
 
 .trca-modal-close {
@@ -237,7 +237,6 @@
     animation: trca-modal-spinner_loading 2s linear infinite;
   }
 
-
   @keyframes trca-modal-spinner_loading {
       from {left: -200px; width: 30%;}
       50% {width: 30%;}
@@ -253,7 +252,7 @@
     width: 100%;
 }
 
-  /*Modal info window*/
+/*Modal info window*/
 
 .trca-modal-info-window {
     position: fixed;
@@ -268,8 +267,10 @@
     border-radius: 3px;
     -webkit-box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
     box-shadow: 0 16px 28px 0 rgba(0,0,0,.22),0 25px 55px 0 rgba(0,0,0,.21);
-    font-family: 'ArialMT', 'Arial';
+    font-family: 'Roboto';
     font-weight: 300;
+    font-size: 20px;
+
 }
 
 .trca-modal-info-content {
@@ -286,7 +287,7 @@
     display: flex;
     flex-direction: column;
     width: 19%;
-    border-left: 1px solid grey;
+    border-left: 2px solid rgba(141, 141, 141, 0.055);
 }
 
 .trca-modal-info-content-button .material-icons {
@@ -301,41 +302,51 @@
     font-size: 36px;
 }
 
-  .trca-modal-content-info-message {
+.trca-modal-content-info-message {
     margin-left: 5px;
     margin-right: auto;
     font-size: 18px;
+    color: rgba(0, 0, 0, 0.52);
+    border-bottom: 1px solid rgba(141, 141, 141, 0.055);
+    font-family: 'ArialMT', 'Arial';
 }
 
-  .trca-modal-info-content-button {
+.trca-modal-info-message:hover {
+    background-color: rgba(141, 141, 141, 0.055);
+}
+
+.trca-modal-info-content-button {
     display: flex;
     cursor: pointer;
     height: 64px;
     width: 100%;
-    border-radius: 50%;
     line-height: 38px;
     text-align: center;
     justify-content: center;
     align-items: center;
-    margin-left: 0;
-    margin-right: 0;
+    border-bottom: 1px solid rgba(141, 141, 141, 0.055);
 }
 
-  .trca-modal-info-close {
+.trca-modal-info-content-button:hover {
+    background-color: rgba(141, 141, 141, 0.055);
+}
+
+.trca-modal-info-close {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 316px auto 5px auto;
+    margin: 316px 16px 16px 16px;
     cursor: pointer;
     background-color: rgb(33, 150, 243);
     color: white;
-    width: 185px;
+    width: 164px;
     height: 36px;
     border-radius: 2px;
     text-transform: uppercase;
     -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 18px;
 }
 
 /* Popup message */
@@ -402,8 +413,8 @@
     width: 100%;
     height: auto;
     background-color: #fff;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-    border-radius: 2px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    border-radius: 1x;
     font-family: 'ArialMT', 'Arial';
 }
 
@@ -439,6 +450,7 @@
     width: 40px;
     border-radius: 50%;
     line-height: 40px;
+    user-select: none;
 }
 
 .trca-docs .trca-docs-header-menu ul {
@@ -488,6 +500,7 @@
     line-height: 40px;
     vertical-align: middle;
     color: rgb(33, 150, 243);
+    user-select: none;
 }
 
 .trca-docs .trca-docs-doc-menu-button {
@@ -505,7 +518,7 @@
     margin: -15px -150px;
     padding: 8px 0;
     font-size: 16px;
-    color: rgba(0,0,0,0.54);
+    color: rgba(0, 0, 0, 0.54);
     background-color: white;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
     cursor: pointer;
@@ -539,10 +552,11 @@
     font-size: 36px;
     max-width: 36px;
     box-sizing: content-box;
+    user-select: none;
 }
 
 .trca-docs .trca-docs-content-doc {
-    width: 85%;
+    width: 75%;
 }
 
 @media(max-width: 1024px){
@@ -591,29 +605,28 @@
     font-size: 24px;
     vertical-align: middle;
     text-align: center;
+    user-select: none;
 }
 
 @media only screen and (min-width: 1390px) {
-    .trca-docs .trca-docs-content-info  {
+    .trca-docs .trca-docs-content-info {
         height: 40px;
         width: 116px;
         border-radius: 50%;
         line-height: 38px;
         text-align: center;
         white-space: nowrap;
-        color: rgba(0,0,0,0.52);
+        color: rgba(0, 0, 0, 0.52);
         font-size: 15px;
+        user-select: none;
     }
 }
 
 @media only screen and (max-width: 1390px) {
-    .trca-docs .trca-docs-content-info  {
+    .trca-docs .trca-docs-content-info {
         display: none;
     }
 }
-/* .trca-docs .trca-docs-content-button:hover {
-    background-color: rgba(33, 150, 243, 0.12);
-} */
 
 /* trca-docs-footer */
 
@@ -738,18 +751,3 @@
 [tooltip]:hover::after,[tooltip]:hover::before {
     opacity:1
 }
-
-/* @media only screen and (max-width: 851px) {
-    .trca-docs .trca-docs-content-button {
-        display: none;
-    }
-
-    .trca-docs .trca-docs-doc-menu-button {
-        cursor: pointer;
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
-        line-height: 38px;
-        text-align: center;
-    }
-} */

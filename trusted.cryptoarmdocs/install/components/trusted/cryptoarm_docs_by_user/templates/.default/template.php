@@ -146,15 +146,14 @@ $APPLICATION->IncludeComponent(
                 ?>
                 <docs-items>
                     <doc-name color="<?= $iconCss ?>"
-                        icon="<?= $icon ?>"
-                        name="<?= $doc["NAME"] ?>"
-                        description="<?
-                            if ($docStatus === DOC_STATUS_BLOCKED) {
-                                echo $doc['STATUS_STRING'];
-                            } else {
-                                echo $doc['TYPE_STRING'];
-                            }
-                        ?>">
+                              icon="<?= $icon ?>"
+                              name="<?= $doc["NAME"] ?>"
+                              description="<?
+                              if ($docStatus === DOC_STATUS_BLOCKED) {
+                                  echo $doc['STATUS_STRING'];
+                              } else {
+                                  echo $doc['TYPE_STRING'];
+                              } ?>">
                         <doc-name-owner owner="<?
                             echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER");
                             if ($docAccessLevel == "OWNER") {
@@ -167,16 +166,16 @@ $APPLICATION->IncludeComponent(
                     </doc-name>
                     <doc-buttons>
                         <doc-info info="<?= $docCreated ?>"
-                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
+                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
                         </doc-info>
                         <doc-info info="<?= $docId ?>"
-                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
+                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
                         <doc-info-button icon="info_outline"
-                                    :id="<?= $docId ?>"
-                                    docname="<?= $docName ?>"
-                                    @button-click="verify"
-                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
+                                         :id="<?= $docId ?>"
+                                         docname="<?= $docName ?>"
+                                         @button-click="verify"
+                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
                         </doc-info-button>
 
                         <?
@@ -201,22 +200,22 @@ $APPLICATION->IncludeComponent(
                             id="trca-docs-share-menu-by-user-<?=$docId?>"
                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
                             <doc-menu-button icon="email"
-                                :id="<?= $docId ?>"
-                                @button-click="sendEmail"
-                                message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
+                                             :id="<?= $docId ?>"
+                                             @button-click="sendEmail"
+                                             message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
                             </doc-menu-button>
                             <?
                             if ($docAccessLevel == "OWNER") {
                             ?>
                                 <doc-menu-button icon="share"
-                                    :id="<?= $docId ?>"
-                                    @button-click="share"
-                                    message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
+                                                 :id="<?= $docId ?>"
+                                                 @button-click="share"
+                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
                                 </doc-menu-button>
                                 <doc-menu-button icon="supervisor_account"
-                                    :id="<?= $docId ?>"
-                                    @button-click="requireToSign"
-                                    message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>">
+                                                 :id="<?= $docId ?>"
+                                                 @button-click="requireToSign"
+                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>">
                                 </doc-menu-button>
                             <?
                             }

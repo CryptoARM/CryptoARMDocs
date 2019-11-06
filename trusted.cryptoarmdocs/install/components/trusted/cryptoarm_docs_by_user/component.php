@@ -22,7 +22,7 @@ foreach ($coreIds as $coreId) {
 if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
     echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
     return false;
-};
+}
 
 if (isModuleInstalled($module_id)) {
     require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
@@ -56,7 +56,7 @@ foreach ($docs->getList() as $doc) {
             "STATUS_STRING" => Docs\Utils::getStatusString($doc),
             "ACCESS_LEVEL" => $accessLevel,
             "OWNER_USERNAME" => Docs\Utils::getUserName($doc->getOwner()),
-            "DATE_CREATED"=> date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($doc->getId())->getCreated())),
+            "DATE_CREATED" => date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($doc->getId())->getCreated())),
         );
         $allIds[] = $doc->getId();
     }

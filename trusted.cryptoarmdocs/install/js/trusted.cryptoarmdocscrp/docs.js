@@ -289,7 +289,7 @@ trustedCA.showModalWindow = function(ids) {
     $('#trca-modal-close').text(MODAL_CANCEL);
 }
 
-trustedCA.showInfoModalWindow = function(ids, docname) {
+trustedCA.showInfoModalWindow = function (ids, docname) {
     trustedCA.modalDiv.className = "trca-modal";
     trustedCA.modalDiv.innerHTML = trustedCA.modalWindowInfo;
     document.body.appendChild(trustedCA.modalDiv);
