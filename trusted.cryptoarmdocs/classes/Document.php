@@ -637,6 +637,9 @@ class Document implements IEntity, ISave
                 case 'algorithm':
                     $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_ALGORITHM') . '</th>';
                     break;
+                case 'serial':
+                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_SERIAL_NUMBER') . '</th>';
+                    break;
             }
         }
         $signaturesString .= '</tr>';
@@ -666,6 +669,10 @@ class Document implements IEntity, ISave
 
                     case 'algorithm':
                         $signaturesString .= '<td>' . $signature['digestAlgorithm'] . '</td>';
+                        break;
+
+                    case 'serial':
+                        $signaturesString .= '<td>' . $signature['serialNumber'] . '</td>';
                         break;
                 }
             }
