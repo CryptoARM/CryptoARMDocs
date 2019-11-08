@@ -60,30 +60,32 @@ class Utils
             'docsOk' => new DocumentCollection(),
         );
 
-        foreach ($ids as $id) {
-            $doc = Database::getDocumentById($id);
-            if (!$doc) {
-                // No doc with that id is found
-                $res['docsNotFound'][] = $id;
-                continue;
-            }
-            $doc = $doc->getLastDocument();
-            $id = $doc->getId();
-            if (!$doc->accessCheck(Utils::currUserId(), $level)) {
-                // Current user has no access to the doc
-                $res['docsNoAccess'][] = $id;
-            } elseif (!$allowBlocked && $doc->getStatus() === DOC_STATUS_BLOCKED) {
-                // Doc is blocked by previous operation
-                $res['docsBlocked']->add($doc);
-            } elseif (!$doc->checkFile()) {
-                // Associated file was not found on the disk
-                $res['docsFileNotFound']->add($doc);
-            } elseif (!$allowSigned && $doc->getType() === DOC_TYPE_FILE) {
-                // Document is not signed
-                $res['docsUnsigned']->add($doc);
-            } else {
-                // Document is ready to be processed
-                $res['docsOk']->add($doc);
+        if (is_array($ids)){
+            foreach ($ids as $id) {
+                $doc = Database::getDocumentById($id);
+                if (!$doc) {
+                    // No doc with that id is found
+                    $res['docsNotFound'][] = $id;
+                    continue;
+                }
+                $doc = $doc->getLastDocument();
+                $id = $doc->getId();
+                if (!$doc->accessCheck(Utils::currUserId(), $level)) {
+                    // Current user has no access to the doc
+                    $res['docsNoAccess'][] = $id;
+                } elseif (!$allowBlocked && $doc->getStatus() === DOC_STATUS_BLOCKED) {
+                    // Doc is blocked by previous operation
+                    $res['docsBlocked']->add($doc);
+                } elseif (!$doc->checkFile()) {
+                    // Associated file was not found on the disk
+                    $res['docsFileNotFound']->add($doc);
+                } elseif (!$allowSigned && $doc->getType() === DOC_TYPE_FILE) {
+                    // Document is not signed
+                    $res['docsUnsigned']->add($doc);
+                } else {
+                    // Document is ready to be processed
+                    $res['docsOk']->add($doc);
+                }
             }
         }
 
