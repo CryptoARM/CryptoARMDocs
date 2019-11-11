@@ -184,7 +184,6 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             return;
         }
     }
-    debugger;
     $.ajax({
         url: AJAX_CONTROLLER + '?command=sign',
         type: 'post',
@@ -338,7 +337,7 @@ trustedCA.verify = function (ids) {
         success: function (d) {
             // mobile CryptoArm support START
             if (iOS || android) {
-                let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docs)[0].url + "&command=verify";
+                let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docsOk)[0].url + "&command=verify";
                 if (/CriOS/i.test(navigator.userAgent || '')) {
                     window.location = url + "&browser=chrome";
                 } else {
