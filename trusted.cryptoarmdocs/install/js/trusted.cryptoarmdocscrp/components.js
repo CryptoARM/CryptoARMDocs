@@ -21,27 +21,25 @@ Vue.component ("header-menu", {
         id: String
     },
     template:`
-    <div class="trca-docs-header-menu" @click="showHeaderMenu">
+    <div class="trca-docs-header-menu">
         <div class="trca-docs-header-menu-icon">
-            <div class="material-icons title">
+            <div class="material-icons" @click="showHeaderMenu">
                 more_vert
+                <ul class="trca-docs-header-menu ul" :id="id" style = "display: none;">
+                    <slot></slot>
+                </ul>
             </div>
         </div>
-        <ul :id="id">
-            <slot></slot>
-        </ul>
     </div>`,
     methods: {
-        showHeaderMenu: function() {
-            $("ul[id^='trca-docs-share-menu-by-user-']").hide();
-            $("#" + this.id).toggle();
-            $(document).on('click', function (e) {
-                if (!$(e.target).closest(".title").length) {
-                    $("#trca-docs-header-menu-by-user").hide();
-                    $("#trca-docs-header-menu-by-order").hide();
-                }
-                e.stopPropagation();
-            });
+        showHeaderMenu: function(e) {
+            e.stopPropagation()
+            const el = e.target.children[0]
+            const disp = el.style.display
+            hideAll()
+            if (el.className === "trca-docs-header-menu ul") {
+                el.style.display = disp === "none" ? "block" : "none"
+            }
         }
     }
 })
@@ -53,7 +51,7 @@ Vue.component("header-menu-button", {
         id: Array
     },
     template: `
-    <div class="trca-docs-header-button" @click="buttonClick">
+    <div class="trca-docs-header-button" :title="message" @click="buttonClick">
         <div class="material-icons">{{ icon }}</div>
         {{ message }}
     </div>`,
@@ -170,7 +168,7 @@ Vue.component("doc-info-button", {
 
 Vue.component ("docs-upload-file", {
     props: {
-        maxsize: Number,
+        maxsize: String,
         title: String
     },
     template: `
@@ -186,11 +184,9 @@ Vue.component ("docs-upload-file", {
     methods: {
         buttonClick: function(event) {
             file = event.target.files[0];
-            let maxsize = new Number;
-            maxsize = this.maxsize;
             let onFailure = () => { $('#trca-docs-footer-input').val(null) };
             let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
-            trustedCA.checkFileSize(file, maxsize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
+            trustedCA.checkFileSize(file, this.maxsize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
         }
     }
 })
@@ -202,32 +198,25 @@ Vue.component ("doc-menu", {
         icon: String,
     },
     template:`
-    <div class="trca-docs-doc-menu" :title="title" @click="showDocMenu">
-        <div class="trca-docs-doc-menu-icon">
-            <div class="material-icons title">
+    <div class="trca-docs-doc-menu">
+        <div class="trca-docs-doc-menu-icon title">
+            <div class="material-icons" :title="title" @click="showDocMenu">
                 {{ icon }}
+                <ul class="trca-docs-doc-menu ul" :id="id" style = "display: none;">
+                    <slot></slot>
+                </ul>
             </div>
         </div>
-        <ul :id="id">
-            <slot></slot>
-        </ul>
     </div>`,
     methods: {
-        showDocMenu: function() {
-            // tr = document.getElementsByClassName('trca-docs-doc-menu');
-            // id = tr[0].childNodes[2].attributes[0];
-            $("ul[id^='trca-docs-share-menu-by-user-']").hide();
-            $("#trca-docs-header-menu-by-user").hide();
-            $("#trca-docs-header-menu-by-order").hide();
-            $("#" + this.id).toggle();
-             $(document).on('click', function (e) {
-                if (!$(e.target).closest(".title").length){
-                    $("ul[id^='trca-docs-share-menu-by-user-']").hide();
-                    $("#trca-docs-header-menu-by-user").hide();
-                    $("#trca-docs-header-menu-by-order").hide();
-                }
-                e.stopPropagation();
-            });
+        showDocMenu: function (e)  {
+            e.stopPropagation()
+            const el = e.target.children[0]
+            const disp = el.style.display
+            hideAll()
+            if (el.className === "trca-docs-doc-menu ul") {
+                el.style.display = disp === "none" ? "block" : "none"
+            }
         }
     }
 })
@@ -239,7 +228,7 @@ Vue.component("doc-menu-button", {
         id: Number,
     },
     template: `
-    <div class="trca-docs-header-button" :title="message" @click="buttonClick">
+    <div class="trca-docs-menu-button" :title="message" @click="buttonClick">
         <div class="material-icons">{{ icon }}</div>
         {{ message }}
     </div>`,
@@ -262,3 +251,10 @@ Vue.component ("doc-info", {
             {{ info }}
         </div>`,
 })
+
+const hideAll = () =>
+document.querySelectorAll(".trca-docs-header-menu ul, .trca-docs-doc-menu ul").forEach(
+    el => el.style.display ="none"
+)
+document.addEventListener("click", hideAll);
+
