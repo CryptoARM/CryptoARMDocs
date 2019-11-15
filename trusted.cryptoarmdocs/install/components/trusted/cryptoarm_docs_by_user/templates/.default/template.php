@@ -171,12 +171,6 @@ $APPLICATION->IncludeComponent(
                         <doc-info info="<?= $docId ?>"
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
-                        <doc-info-button icon="info_outline"
-                                         :id="<?= $docId ?>"
-                                         docname="<?= $docName ?>"
-                                         @button-click="verify"
-                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
-                        </doc-info-button>
 
                         <?
                         if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
@@ -190,10 +184,23 @@ $APPLICATION->IncludeComponent(
                         }
                         ?>
 
+                        <doc-info-button icon="info_outline"
+                                         :id="<?= $docId ?>"
+                                         docname="<?= $docName ?>"
+                                         @button-click="verify"
+                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
+                        </doc-info-button>
+
                         <doc-button icon="save_alt"
                                     :id="<?= $docId ?>"
                                     @button-click="download"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
+                        </doc-button>
+
+                        <doc-button icon="description"
+                                    :id="<?= $docId ?>"
+                                    @button-click="protocol"
+                                    title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
                         </doc-button>
 
                         <doc-menu icon="share"
