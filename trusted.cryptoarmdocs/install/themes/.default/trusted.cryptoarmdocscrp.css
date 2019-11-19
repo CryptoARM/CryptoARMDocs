@@ -429,8 +429,9 @@
     background: rgb(33, 150, 243);
     color: white;
     font-family: 'Roboto';
-    height: 24px;
+    height: 56px;
     padding-right: 8px;
+    box-sizing: border-box;
 }
 
 .trca-docs .trca-docs-header-menu-icon {
