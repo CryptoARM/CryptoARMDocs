@@ -46,7 +46,7 @@ $site = CFileMan::__CheckSite($site);
 $DOC_ROOT = CSite::GetSiteDocRoot($site);
 
 $ret = "/bitrix/admin/trusted_cryptoarm_docs_by_user.php?lang=" . LANGUAGE_ID;
-$sub = $_SERVER[REQUEST_URI];
+$sub = $_SERVER["REQUEST_URI"];
 
 $bCan = false;
 
