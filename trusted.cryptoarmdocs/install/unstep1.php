@@ -21,7 +21,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
     <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>
     <?
     //check on active workflows, based on installed Cryptoarm templates. Sends warning, if founds some
-    if (IsModuleInstalled("bizproc")) {
+    if (IsModuleInstalled("trusted.cryptoarmdocsbp")) {
         $templateIds = preg_split('/ /', Option::get(TR_CA_DOCS_BP_MODULE_ID, TR_CA_DOCS_TEMPLATE_ID), null, PREG_SPLIT_NO_EMPTY);
         global $DB;
         $found = false;
