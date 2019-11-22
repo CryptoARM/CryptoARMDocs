@@ -11,7 +11,9 @@ Vue.component ("header-title", {
     },
     template: `
     <div class="trca-docs-header">
-        {{ title }}
+        <div class="trca-docs-header-title">
+            {{ title }}
+        </div>
         <slot></slot>
     </div>`
 })
@@ -86,8 +88,13 @@ Vue.component ("doc-name", {
     },
     template: `
     <div class="trca-docs-content-item-left">
-        <div class="material-icons" :style="color">
-            {{ icon }}
+        <div class="doc-list-icon">
+            <div class="material-icons" :style="color">
+                insert_drive_file
+            </div>
+            <div class="material-icons addition" :style="color">
+                {{ icon }}
+            </div>
         </div>
         <div class="trca-docs-content-doc">
             <div class="trca-docs-content-doc-name" :title="name">
@@ -224,11 +231,12 @@ Vue.component ("doc-menu", {
 Vue.component("doc-menu-button", {
     props: {
         message: String,
+        title: String,
         icon: String,
         id: Number,
     },
     template: `
-    <div class="trca-docs-menu-button" :title="message" @click="buttonClick">
+    <div class="trca-docs-menu-button" :title="title" @click="buttonClick">
         <div class="material-icons">{{ icon }}</div>
         {{ message }}
     </div>`,

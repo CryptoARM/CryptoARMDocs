@@ -107,6 +107,7 @@ $APPLICATION->IncludeComponent(
         <docs-content>
             <?
             if (is_array($docs)) {
+                $docsBlocked = [];
                 foreach ($docs as $doc) {
                     $docId = $doc["ID"];
                     $docType = $doc["TYPE"];
@@ -119,19 +120,21 @@ $APPLICATION->IncludeComponent(
                         if ($docStatus == DOC_STATUS_BLOCKED){
                             $icon = "lock";
                             $iconCss = "color: red";
+                            $docsBlocked[] = $docId;
                         } else {
-                            $icon = "check_circles";
-                            $iconCss = "color: rgb(33, 150, 243)";
+                            $icon = "create";
+                            $iconCss = "color: green";
                         }
                     } else {
                         switch ($docStatus) {
                             case DOC_STATUS_NONE:
-                                $icon = "insert_drive_file";
-                                $iconCss = "color: green";
+                                $icon = "";
+                                $iconCss = "color: rgb(33, 150, 243)";
                                 break;
                             case DOC_STATUS_BLOCKED:
                                 $icon = "lock";
                                 $iconCss = "color: red";
+                                $docsBlocked[] = $docId;
                                 break;
                             case DOC_STATUS_CANCELED:
                                 $icon = "insert_drive_file";
@@ -164,13 +167,25 @@ $APPLICATION->IncludeComponent(
                         ?>">
                         </doc-name-owner>
                     </doc-name>
-                    <doc-buttons>
-                        <doc-info info="<?= $docCreated ?>"
+
+                    <doc-info info="<?= $docCreated ?>"
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
                         </doc-info>
                         <doc-info info="<?= $docId ?>"
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
+
+                    <doc-buttons>
+                        <? if($doc["TYPE"] == "1") {?>
+                        <doc-info-button icon="help"
+                                         :id="<?= $docId ?>"
+                                         docname="<?= $docName ?>"
+                                         @button-click="verify"
+                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
+                        </doc-info-button>
+                        <?
+                        }
+                        ?>
 
                         <?
                         if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
@@ -184,20 +199,13 @@ $APPLICATION->IncludeComponent(
                         }
                         ?>
 
-                        <doc-info-button icon="info_outline"
-                                         :id="<?= $docId ?>"
-                                         docname="<?= $docName ?>"
-                                         @button-click="verify"
-                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
-                        </doc-info-button>
-
-                        <doc-button icon="save_alt"
+                        <doc-button icon="file_download"
                                     :id="<?= $docId ?>"
                                     @button-click="download"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
                         </doc-button>
 
-                        <doc-button icon="description"
+                        <doc-button icon="info"
                                     :id="<?= $docId ?>"
                                     @button-click="protocol"
                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
@@ -209,20 +217,23 @@ $APPLICATION->IncludeComponent(
                             <doc-menu-button icon="email"
                                              :id="<?= $docId ?>"
                                              @button-click="sendEmail"
-                                             message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
+                                             message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>"
+                                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
                             </doc-menu-button>
                             <?
                             if ($docAccessLevel == "OWNER") {
                             ?>
-                                <doc-menu-button icon="share"
-                                                 :id="<?= $docId ?>"
-                                                 @button-click="share"
-                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>">
-                                </doc-menu-button>
                                 <doc-menu-button icon="supervisor_account"
                                                  :id="<?= $docId ?>"
+                                                 @button-click="share"
+                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>"
+                                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE_TITLE"); ?>">
+                                </doc-menu-button>
+                                <doc-menu-button icon="reply_all"
+                                                 :id="<?= $docId ?>"
                                                  @button-click="requireToSign"
-                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>">
+                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>"
+                                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST_TITLE"); ?>">
                                 </doc-menu-button>
                             <?
                             }
@@ -272,6 +283,14 @@ $APPLICATION->IncludeComponent(
         ?>
     </trca-docs>
 </div>
+
+<?
+if (!empty($docsBlocked)) {
+?>
+<script>
+	trustedCA.showModalWindow(<?= json_encode($docsBlocked) ?>);
+</script>
+<? } ?>
 
 <script>
    new Vue({
