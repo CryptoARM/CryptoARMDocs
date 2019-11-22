@@ -37,6 +37,7 @@ $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_EMPTY"] = "Поле с лицензией
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ALREADY_ACTIVATED"] = "Данная лицензия уже активирована.";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_FORMAT_ERROR"] = "Неверный формат лицензии.";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_ERROR"] = "Неизвестная ошибка.";
+$MESS["TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_CURL_DISABLED"] = "Для получения номера счёта необходимо включить поддержку curl. Обратитесь к администратору. ";
 
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_EMPTY"] = "Ваша история пуста.";
 

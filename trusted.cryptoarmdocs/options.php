@@ -50,6 +50,8 @@ $aTabs[] = array(
     "TITLE" => Loc::getMessage("TR_CA_DOCS_LOGS_TAB_TITLE")
 );
 
+$curlEnabled = extension_loaded('curl');
+
 $tabControl = new CAdminTabControl("trustedTabControl", $aTabs, true, true);
 
 $moduleOptions = array(
@@ -311,7 +313,7 @@ $tabControl->Begin();
                     <input type="button"
                            id="CREATE_NEW_ACCOUNT_NUMBER"
                            class="adm-workarea adm-btn"
-                           onclick="createAccountNumber();"
+                           onclick="createAccountNumber(<?= $curlEnabled ?>);"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
                 </div>
                 <div id="DIV_INPUT_ACCOUNT_NUMBER" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "" : "hidden" ?>>
@@ -776,16 +778,20 @@ $tabControl->Begin();
 ?>
 
     <script>
-        function createAccountNumber () {
-            document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
-            document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
-            document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").removeAttribute("hidden");
-            createNewAccountNumber((data) =>  {
-                document.getElementById("LICENSE_ACCOUNT_NUMBER").value = data;
-                alert('<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT") ?>' + data + '<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT2") ?>');
-                document.getElementById("INPUT_SUBMIT_UPDATE").click();
-                document.getElementById("LICENSE_ACCOUNT_NUMBER").setAttribute('readonly', true);
-            });
+        function createAccountNumber (curlEnabled) {
+            if (curlEnabled === 0) {
+                alert('<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_CURL_DISABLED") ?>')
+            } else {
+                document.getElementById("LICENSE_ACCOUNT_NUMBER").value = "";
+                document.getElementById("DIV_BTN_CREATE_NEW_ACCOUNT").setAttribute('hidden', null);
+                document.getElementById("DIV_INPUT_ACCOUNT_NUMBER").removeAttribute("hidden");
+                createNewAccountNumber((data) =>  {
+                    document.getElementById("LICENSE_ACCOUNT_NUMBER").value = data;
+                    alert('<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT") ?>' + data + '<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER_ALERT2") ?>');
+                    document.getElementById("INPUT_SUBMIT_UPDATE").click();
+                    document.getElementById("LICENSE_ACCOUNT_NUMBER").setAttribute('readonly', true);
+                });
+            }
         }
 
         function editAccountNumber() {
