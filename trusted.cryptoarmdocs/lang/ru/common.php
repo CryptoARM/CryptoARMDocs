@@ -24,6 +24,7 @@ $MESS['TR_CA_DOC_SIGNERS'] = 'Пользователи, подписавшие �
 // $MESS['TR_CA_DOC_BLOCK_TOKEN'] = '';
 // $MESS['TR_CA_DOC_BLOCK_TIME'] = '';
 $MESS['TR_CA_DOC_OWNER'] = 'Владелец документа';
+$MESS['TR_CA_DOC_SIGNERS'] = 'Документ подписали';
 $MESS['TR_CA_DOC_ID'] = 'Идентификатор документа';
 $MESS['TR_CA_DOC_FIRST_UPLOAD_TIME'] = 'Дата загрузки документа';
 $MESS['TR_CA_DOC_LAST_UPLOAD_TIME'] = 'Дата последней подписи';

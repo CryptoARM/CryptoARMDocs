@@ -586,7 +586,7 @@ class Document implements IEntity, ISave
             return array();
         }
         foreach ($signatures as $index => $signature) {
-            $subjectName = explode('/', $signature['subjectName']);
+            $subjectName = explode(',', $signature['subjectName']);
             $newSubjectName = array();
             foreach ($subjectName as $value) {
                 $value = explode('=', $value);
@@ -596,7 +596,7 @@ class Document implements IEntity, ISave
             }
             $signatures[$index]['subjectName'] = $newSubjectName;
 
-            $issuerName = explode('/', $signature['issuerName']);
+            $issuerName = explode(',', $signature['issuerName']);
             $newIssuerName = array();
             foreach ($issuerName as $value) {
                 $value = explode('=', $value);
@@ -620,25 +620,43 @@ class Document implements IEntity, ISave
             return '';
         }
 
-        $signaturesString = "<table class='trca-adm-list-table-cell-certificate'>";
+        if ($this->id === 426) {
+            Utils::dump($signatures);
+        }
+
+        $signaturesString = "<table class='trca-adm-list-table-cell-certificate' cellspacing=\"10\">";
 
         $signaturesString .= '<tr>';
+
+        $i = 1;
+        $signaturesString .= '<th style="color: #00000052; width: 20px">' .
+            "№" . '</th>';
+
         foreach ($fields as $field) {
             switch ($field) {
                 case 'time':
-                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
+                    $signaturesString .= '<th style="color: #00000052;">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
                     break;
                 case 'name':
-                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_NAME') . '</th>';
+                    $signaturesString .= '<th style="color: #00000052; width: 170px">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER') . '</th>';
+                    break;
+                case 'issuer':
+                    $signaturesString .= '<th style="color: #00000052; width: 170px">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_ISSUED_BY') . '</th>';
                     break;
                 case 'org':
-                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_ORG') . '</th>';
+                    $signaturesString .= '<th style="color: #00000052">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_ORG') . '</th>';
                     break;
                 case 'algorithm':
-                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_ALGORITHM') . '</th>';
+                    $signaturesString .= '<th style="color: #00000052">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_ALGORITHM') . '</th>';
                     break;
                 case 'serial':
-                    $signaturesString .= '<th>' . Loc::getMessage('TR_CA_DOCS_SIGN_SERIAL_NUMBER') . '</th>';
+                    $signaturesString .= '<th style="color: #00000052">' .
+                        Loc::getMessage('TR_CA_DOCS_SIGN_SERIAL_NUMBER') . '</th>';
                     break;
             }
         }
@@ -647,6 +665,8 @@ class Document implements IEntity, ISave
         foreach ($signatures as $signature) {
 
             $signaturesString .= '<tr>';
+            $signaturesString .= '<td>' . $i . '</td>';
+            $i++;
             foreach ($fields as $field) {
                 switch ($field) {
                     case 'time':
@@ -655,7 +675,37 @@ class Document implements IEntity, ISave
                         break;
 
                     case 'name':
-                        $signaturesString .= '<td>' . $signature['subjectFriendlyName'] . '</td>';
+                        $signaturesString .= '<td>';
+                        $signaturesString .= $signature['subjectFriendlyName'];
+                        $signaturesString .= '<div style="font-size:8px;">';
+                        if ($signature['subjectName']['T']) {
+                            $signaturesString .= $signature['subjectName']['T'] . '<br>';
+                        }
+                        if ($signature['subjectName']['SURNAME']) {
+                            $signaturesString .= $signature['subjectName']['SURNAME'] . ' ' . $signature['subjectName']['GIVENNAME'];
+                        }
+                        $signaturesString .= '</div>';
+                        $signaturesString .= '</td>';
+                        break;
+
+                    case 'issuer':
+                        $signaturesString .= '<td>';
+                        $signaturesString .= $signature['issuerFriendlyName'];
+                        $signaturesString .= '<div style="font-size:8px;">';
+                        $signaturesString .= Loc::getMessage('TR_CA_DOCS_SIGN_ISSUED_TIME');
+                        $signaturesString .= date("d-m-o H:i", round($signature['notBefore'] / 1000));
+                        $signaturesString .= '<br />' . Loc::getMessage('TR_CA_DOCS_SIGN_VALID_TIME');
+                        $signaturesString .= date("d-m-o H:i", round($signature['notAfter'] / 1000));
+                        $signaturesString .= '</div>';
+                        // if ($signature['issuerName']['1.2.643.100.1']) {
+                        //     $signaturesString .= '' . '<div style="font-size:8px;">' .
+                        //         'ОГРН=' . $signature['issuerName']['1.2.643.100.1'] . '</div>';
+                        // }
+                        // if ($signature['issuerName']['1.2.643.100.3']) {
+                        //     $signaturesString .= '' . '<div style="font-size:8px;">' .
+                        //         'ИНН=' . $signature['issuerName']['1.2.643.100.3'] . '</div>';
+                        // }
+                        $signaturesString .= '</td>';
                         break;
 
                     case 'org':

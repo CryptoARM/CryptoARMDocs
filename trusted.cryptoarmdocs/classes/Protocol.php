@@ -8,11 +8,12 @@ class Protocol
 {
 
     const MAIN_TEXT = <<<HTML
-<div height="100px"></div>
-<h1 style="text-align:center;">{MODULE_NAME}</h1>
+<div height="80px"></div>
+<h2 style="text-align:center;">{MODULE_NAME}</h1>
+<div height="200px"></div>
 <table width="600px">
     <tr>
-        <td><b>{DOC_NAME}:</b></td>
+        <td width="220px"><b>{DOC_NAME}:</b></td>
         <td>{DOC_NAME_VALUE}</td>
     </tr>
     {DOC_OWNER_ROW}
@@ -42,7 +43,7 @@ HTML;
 
     const SIGNATURES = <<<HTML
 <div height="200px"></div>
-<div style="text-align:center;"><b>{DOC_SIGNATURES}</b></div><br>
+<div style="font-size: 14px"><b>{DOC_SIGNATURES}</b></div><br>
 {DOC_SIGNATURES_VALUE}
 HTML;
 
@@ -75,7 +76,7 @@ HTML;
 
         $author = Loc::getMessage('TR_CA_DOC_MODULE_NAME');
         $title = Loc::getMessage('TR_CA_DOC_PROTOCOL_TITLE') . $docName;
-        $headerText = Loc::getMessage('TR_CA_DOC_MODULE_DESC') . "\n" . Loc::getMessage('TR_CA_DOC_PARTNER_URI');
+        $headerText = Loc::getMessage('TR_CA_DOC_MODULE_DESC') . "\n" . 'https://Trusted.ru';
 
         $pdf->setCreator($author);
         $pdf->setAuthor($author);
@@ -83,9 +84,14 @@ HTML;
         $pdf->setSubject($title);
         $pdf->setKeywords('CryptoARM, document, digital signature');
 
-        $pdf->setHeaderFont(array('dejavuserif', 'B', 11));
-        $pdf->setHeaderData('logo_docs.png', 14, $author, $headerText);
+        $pdf->setHeaderFont(array('dejavusans', '', 8));
+        $pdf->setHeaderData('logo_docs.png', 11, $author, $headerText, array(0, 0, 0), array(255, 255, 255));
 
+        $pdf->setCellHeightRatio(1.5);
+
+        $pdf->setFooterFont(array('dejavusans', '', 8));
+
+        $pdf->SetTextColor(80, 80, 80);
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -105,7 +111,7 @@ HTML;
         //     $pdf->setLanguageArray($l);
         // }
 
-        $pdf->SetFont('dejavuserif', '', 11);
+        $pdf->SetFont('dejavusans', '', 8);
 
         $pdf->AddPage();
 
@@ -159,8 +165,8 @@ HTML;
             $signaturesText = self::replace(
                 self::SIGNATURES,
                 array(
-                    '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNATURES'),
-                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('time', 'name', 'org', 'algorithm', 'serial')),
+                    '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNERS'),
+                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('name', 'issuer', 'serial', 'time')),
                 )
             );
 
