@@ -107,7 +107,6 @@ $APPLICATION->IncludeComponent(
         <docs-content>
             <?
             if (is_array($docs)) {
-                $docsBlocked = [];
                 foreach ($docs as $doc) {
                     $docId = $doc["ID"];
                     $docType = $doc["TYPE"];
@@ -120,7 +119,6 @@ $APPLICATION->IncludeComponent(
                         if ($docStatus == DOC_STATUS_BLOCKED){
                             $icon = "lock";
                             $iconCss = "color: red";
-                            $docsBlocked[] = $docId;
                         } else {
                             $icon = "create";
                             $iconCss = "color: green";
@@ -134,7 +132,7 @@ $APPLICATION->IncludeComponent(
                             case DOC_STATUS_BLOCKED:
                                 $icon = "lock";
                                 $iconCss = "color: red";
-                                $docsBlocked[] = $docId;
+
                                 break;
                             case DOC_STATUS_CANCELED:
                                 $icon = "insert_drive_file";
@@ -283,14 +281,6 @@ $APPLICATION->IncludeComponent(
         ?>
     </trca-docs>
 </div>
-
-<?
-if (!empty($docsBlocked)) {
-?>
-<script>
-	trustedCA.showModalWindow(<?= json_encode($docsBlocked) ?>);
-</script>
-<? } ?>
 
 <script>
    new Vue({
