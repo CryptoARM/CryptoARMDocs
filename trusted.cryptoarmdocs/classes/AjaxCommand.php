@@ -711,6 +711,14 @@ class AjaxCommand {
         $arEventFields = $params['arEventFields'];
         $messageId = $params['messageId'];
 
+        if ($event == "MAIL_EVENT_ID_TO" || $event == "MAIL_EVENT_ID_SHARE" || $event == "MAIL_EVENT_ID_REQUIRED_SIGN") {
+			$doc = Database::getDocumentById($ids[0]);
+			$userIdOwner = (int)$doc->getOwner();
+			$userOwnerName = Utils::getUserName($userIdOwner);
+			$arEventFields["FIO_FROM"] = $userOwnerName;
+			$arEventFields["FIO_TO"] = Utils::getUserName(Utils::getUserIdByEmail($arEventFields["EMAIL"]));
+		}
+
         $res = array_merge(
             $res,
             Utils::checkDocuments($ids, DOC_SHARE_READ, true)
@@ -799,6 +807,7 @@ class AjaxCommand {
                     "EMAIL" => $email,
                     "FILE_NAME" => $fileName,
                     "SHARE_FROM" => $shareFrom,
+                    "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
                 ];
 
                 Email::sendEmail([$docId], "MAIL_EVENT_ID_SHARE", $arEventFields, "MAIL_TEMPLATE_ID_SHARE");
@@ -969,7 +978,8 @@ class AjaxCommand {
                     "FILE_NAME" => $fileName,
                     "REQUESTING_USER" => $requireFrom,
                     "DOCS_ID" => implode(".", $ids),
-                    "USER_ID" => $usersId[$key]
+                    "USER_ID" => $usersId[$key],
+					"FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
                 ];
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
             } else {

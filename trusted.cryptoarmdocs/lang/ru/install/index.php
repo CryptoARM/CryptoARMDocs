@@ -26,9 +26,59 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_TO_NAME"] = "КриптоАРМ Документы 
 $MESS["TR_CA_DOCS_MAIL_EVENT_TO_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAMES# - список названий документов
+#FIO_FROM# - от кого сообщение
+#FIO_TO# - кому сообщение
 ";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "#SITE_NAME#: Документы";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = "Документы: #FILE_NAMES#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_SUBJECT"] = "Вам отправлен документ (#FILE_NAMES#)";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_TO_BODY"] = '
+<table cellspacing="0" style="padding: 16px; border:1px solid #c8c8c8; border-radius:4px">
+    <tbody>
+    <tr>
+        <td>
+            <table class="body" data-made-with-foundation="">
+                <tbody>
+                    <tr>
+                        <td rowspan="2" style="padding-right: 8px">
+                            <img src="<?= TR_CA_DOCS_PATH_TO_POST_ICONS . "favicon.ico" ?>" class="img" style="border-width: 0px; width: 40px; height: 40px; ">
+                        </td>
+                        <td>
+                            <p style="margin: 0%; font-size: 20px;">
+                                <span style="color:rgba(51, 51, 51, 0.866666666666667);">Вам отправлен документ (</span> <span style="color:rgba(217, 0, 27, 0.866666666666667);">#FILE_NAMES#</span> <span style="color:rgba(51, 51, 51, 0.866666666666667);">)</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p style="margin: 0%; color: rgba(0, 0, 0, 0.6); line-height: 20px;">
+                                КриптоАРМ Документы
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="body" data-made-with-foundation="">
+                <tbody>
+                    <tr style="height: 36px">
+                        <td>
+                            <p style="margin: 0%;">
+                                Здравствуйте, <span style="color:#D9001B;">#FIO_TO#</span> !
+                            </p>
+                        </td>
+                    </tr>
+                    <tr style="height: 36px">
+                        <td>
+                            <p style="margin: 0%;">
+                                <span style="color:#D9001B;">#FIO_FROM#</span> отправил вам документ " <span style="color:#D9001B;">#FILE_NAMES#</span> ".
+                            </p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br>';
 
 // email about share documents
 $MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_NAME"] = "КриптоАРМ Документы - уведомление о получении доступа к документу";
@@ -36,21 +86,175 @@ $MESS["TR_CA_DOCS_MAIL_EVENT_SHARE_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - название документа
 #SHARE_FROM# - автор документа
+#FIO_TO# - кому сообщение
 ";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "#SITE_NAME#: получен доступ к #FILE_NAME#";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = "#SITE_NAME#: #SHARE_FROM# поделился документом #FILE_NAME#";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_SUBJECT"] = "Вам открыт доступ к документу (#FILE_NAME#)";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_SHARE_BODY"] = '
+<table cellspacing=0 style="padding: 16px; border:1px solid #c8c8c8; border-radius:4px">
+    <tbody>
+    <tr>
+        <td>
+        <table class="body" data-made-with-foundation>
+            <tbody>
+            <tr>
+            <td rowspan="2">
+                <img class="img" src="<?= TR_CA_DOCS_PATH_TO_POST_ICONS . "favicon.ico" ?>" style="border-width: 0px;
+                width: 40px;
+                height: 40px;
+                padding-right: 8px;">
+            </td>
+            <td>
+                <p style="margin: 0%; font-size: 20px;">
+                    <span style="color:rgba(51, 51, 51, 0.866666666666667);">Вам открыт доступ к документу (</span>
+                    <span style="color:rgba(217, 0, 27, 0.866666666666667);">#FILE_NAMES#</span>
+                    <span style="color:rgba(51, 51, 51, 0.866666666666667);">)</span>
+                </p>
+            </td>
+            </tr>
+            <tr>
+                <td>
+                <p style="margin: 0%; color: rgba(0, 0, 0, 0.6); line-height: 20px;">
+                    <span>КриптоАРМ Документы</span>
+                </p>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+        <table class="body" data-made-with-foundation>
+        <tbody>
+            <tr style="height: 36px">
+            <td>
+                <p style="margin: 0%;">
+                    <span>Здравствуйте,</span>
+                    <span style="color:#D9001B;">#FIO_TO#</span>!
+                </p>
+            </td>
+            </tr>
+
+            <tr style="height: 36px">
+            <td>
+                <p style="margin: 0%;">
+                    <span style="color:#D9001B;">#SHARE_FROM#</span>
+                    <span>предоставил вам доступ к документу "</span>
+                    <span style="color:#D9001B;">#FILE_NAMES#</span>
+                    <span>".</span>
+                </p>
+            </td>
+            </tr>
+
+            <tr style="height: 36px">
+            <td>
+                        <p style="margin: 0%;">
+                            <span>Ознакомиться с ним вы можете, пройдя по ссылке в свой личный кабинет портала </span>
+                            <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
+                            style="text-decoration: none; color:#D9001B; cursor: pointer;"> <?= "https://" . TR_CA_HOST . "."?></a></span>
+                        </p>
+            </td>
+            </tr>
+
+            <tr style="height: 72px">
+            <td>
+                <p>
+                <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
+                            style="text-decoration: none; color:#D9001B; cursor: pointer;">ОТКРЫТЬ</a></span>
+                </p>
+            </td>
+            </tr>
+        </tbody>
+        </table>
+        </td>
+        </tr>
+    </tbody>
+</table>
+<br>';
 
 // email require sign
 $MESS["TR_CA_DOCS_MAIL_EVENT_REQUIRED_SIGN_NAME"] = "КриптоАРМ Документы - уведомление о запросе подписи";
 $MESS["TR_CA_DOCS_MAIL_EVENT_REQUIRED_SIGN_DESCRIPTION"] = "
 #EMAIL# - EMail получателя сообщения
 #FILE_NAME# - названия документов
-#REQUESTING_USER# - пользователь, запросивший подпись 
+#REQUESTING_USER# - пользователь, запросивший подпись
+#FIO_TO# - кому сообщение
 ";
 $MESS["TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_SUBJECT"] = "#SITE_NAME#: Вам пришел запрос на подпись документа";
-$MESS["TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_BODY"] = "#SITE_NAME#: Данные документы нужно подписать на нашем сайте: #FILE_NAME#.
-<img src=\"#SITE_URL#/bitrix/components/trusted/docs/email.php?docs_id=#DOCS_ID#&user_id=#USER_ID#&rand=#RAND_UID#\" alt=\"\">
-";
+$MESS["TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_BODY"] = '
+<table cellspacing=0 style="padding: 16px; border:1px solid #c8c8c8; border-radius:4px">
+    <tbody>
+    <tr>
+        <td>
+        <table class="body" data-made-with-foundation>
+            <tbody>
+            <tr>
+                <td rowspan="2">
+                    <img class="img" src="<?= TR_CA_DOCS_PATH_TO_POST_ICONS . "favicon.ico" ?>" style="border-width: 0px;
+                    width: 40px;
+                    height: 40px;
+                    padding-right: 8px;">
+                </td>
+                <td>
+                    <p style="margin: 0%; font-size: 20px;">
+                    <span style="color:rgba(51, 51, 51, 0.866666666666667);">Вам документ на подпись (</span>
+                    <span style="color:rgba(217, 0, 27, 0.866666666666667);">#FILE_NAMES#</span>
+                    <span style="color:rgba(51, 51, 51, 0.866666666666667);">)</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p style="margin: 0%; color: rgba(0, 0, 0, 0.6); line-height: 20px;">
+                        <span>КриптоАРМ Документы</span>
+                    </p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="body" data-made-with-foundation>
+            <tbody>
+                <tr style="height: 36px">
+                    <td>
+                        <p style="margin: 0%;">
+                            <span>Здравствуйте,</span>
+                            <span style="color:#D9001B;">#FIO_TO#</span>!
+                        </p>
+                    </td>
+                </tr>
+
+                <tr style="height: 36px">
+                    <td>
+                        <p style="margin: 0%;">
+                            <span style="color:#D9001B;">#REQUESTING_USER#</span>
+                            <span>отправил вам на подпись документ "</span>
+                            <span style="color:#D9001B;">#FILE_NAMES#</span>
+                            <span>".</span>
+                        </p>
+                    </td>
+                </tr>
+
+                <tr style="height: 36px">
+                    <td>
+                        <p style="margin: 0%;">
+                            <span>Подписать документ вы можете, пройдя по ссылке в свой личный кабинет портала </span>
+                            <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
+                            style="text-decoration: none; color:#D9001B; cursor: pointer;"> <?= "https://" . TR_CA_HOST . "."?></a></span>
+                        </p>
+                    </td>
+                </tr>
+
+                <tr style="height: 72px">
+                    <td>
+                        <p>
+                        <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
+                                    style="text-decoration: none; color:#D9001B; cursor: pointer;">ОТКРЫТЬ</a></span>
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </td>
+        </tr>
+    </tbody>
+</table>
+<br>';
 
 $MESS["TR_CA_DOCS_CANCEL_INSTALL"] = "Отменить установку";
 

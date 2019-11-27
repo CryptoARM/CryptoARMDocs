@@ -59,3 +59,5 @@ define('TR_CA_DB_TIME_FORMAT', 'YYYY-MM-DD HH:MI:SS');
 
 define("TR_CA_DOCS_MODULES_OUT_OF_DATE", "tr_ca_docs_modules_out_of_date");
 define("TR_CA_DOCS_MODULES_WERE_NOT_INSTALLED", "tr_ca_docs_modules_were_not_installed");
+
+define("TR_CA_DOCS_PATH_TO_POST_ICONS", "https://" . TR_CA_HOST . "/bitrix/themes/.default/icons/" . TR_CA_DOCS_MODULE_ID . "/");
