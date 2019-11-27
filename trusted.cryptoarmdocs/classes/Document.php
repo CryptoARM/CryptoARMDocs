@@ -711,8 +711,8 @@ class Document implements IEntity, ISave
                     case 'org':
                         $subjectOrganization = '';
                         // Check for organization name code
-                        if ($signature['issuerName']['2.5.4.10']) {
-                            $subjectOrganization = $signature['issuerName']['2.5.4.10'];
+                        if ($signature['organizationName']) {
+                            $subjectOrganization = $signature['organizationName'];
                         }
                         $signaturesString .= '<td>' . $subjectOrganization . '</td>';
                         break;
