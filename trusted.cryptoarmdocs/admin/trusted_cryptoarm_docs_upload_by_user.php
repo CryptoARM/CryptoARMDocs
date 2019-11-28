@@ -93,13 +93,17 @@ if ($REQUEST_METHOD == "POST") {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_FILE_EXISTS1") . " \"" . $pathto . "\" " . Loc::getMessage("TR_CA_DOCS_UPLOAD_FILE_EXISTS2") . ".\n";
                 elseif (!$USER->IsAdmin() && (HasScriptExtension($pathto) || substr(CFileman::GetFileName($pathto), 0, 1) == "."))
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_PHPERROR") . " \"" . $pathto . "\".\n";
-                elseif (!Docs\Utils::propertyNumericalIdValidation($arUserId))
+                elseif (!Docs\Utils::propertyNumericalIdValidation($arUserId) && !$invalidIdWarningShown) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_USER_ID") . "\n";
-                elseif (!CUser::GetByID((int)$arUserId)->Fetch())
+                    $invalidIdWarningShown = true;
+                }
+                elseif (!CUser::GetByID((int)$arUserId)->Fetch() && !$idWarningShown) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_USER_ID_DOESNT_EXIST");
-                elseif (preg_match("/^\/bitrix\/.*/", $pathto) && !$warningShown) {
+                    $idWarningShown = true;
+                }
+                elseif (preg_match("/^\/bitrix\/.*/", $pathto) && !$dirWarningShown) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_DIR");
-                    $warningShown = true;
+                    $dirWarningShown = true;
                 }
                 else {
                     $bQuota = true;
