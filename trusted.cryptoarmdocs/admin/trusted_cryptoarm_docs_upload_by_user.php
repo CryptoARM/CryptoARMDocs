@@ -97,8 +97,10 @@ if ($REQUEST_METHOD == "POST") {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_USER_ID") . "\n";
                 elseif (!CUser::GetByID((int)$arUserId)->Fetch())
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_USER_ID_DOESNT_EXIST");
-                elseif (preg_match("/^\/bitrix\/.*/", $pathto))
+                elseif (preg_match("/^\/bitrix\/.*/", $pathto) && !$warningShown) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_DIR");
+                    $warningShown = true;
+                }
                 else {
                     $bQuota = true;
                     if (COption::GetOptionInt("main", "disk_space") > 0) {
