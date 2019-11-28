@@ -620,10 +620,6 @@ class Document implements IEntity, ISave
             return '';
         }
 
-        if ($this->id === 426) {
-            Utils::dump($signatures);
-        }
-
         if ($protocol) {
             $signaturesString = "<table class='trca-adm-list-table-cell-certificate' cellspacing=\"10\">";
         } else {
@@ -633,7 +629,7 @@ class Document implements IEntity, ISave
         $signaturesString .= '<tr>';
 
         $i = 1;
-        $signaturesString .= '<th style="color: #00000052; width: 20px">' .
+        $signaturesString .= '<th style="color: #00000052; width: 20px; font-size: 13px; padding-bottom: 14px;">' .
             "№" . '</th>';
 
         foreach ($fields as $field) {
@@ -643,7 +639,7 @@ class Document implements IEntity, ISave
                         $signaturesString .= '<th style="color: #00000052;">' .
                             Loc::getMessage('TR_CA_DOCS_SIGN_TIME_PROTOCOL') . '</th>';
                     } else {
-                        $signaturesString .= '<th style="color: #00000052; width: 135px">' .
+                        $signaturesString .= '<th style="color: #00000052; width: 135px; font-size: 13px; padding-bottom: 14px;">' .
                             Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
                     }
                     break;
@@ -652,7 +648,7 @@ class Document implements IEntity, ISave
                         $signaturesString .= '<th style="color: #00000052; width: 170px">' .
                             Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER_PROTOCOL') . '</th>';
                     } else {
-                        $signaturesString .= '<th style="color: #00000052; width: 200px">' .
+                        $signaturesString .= '<th style="color: #00000052; width: 200px; font-size: 13px; padding-bottom: 14px;">' .
                             Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER') . '</th>';
                     }
                     break;
@@ -661,7 +657,7 @@ class Document implements IEntity, ISave
                         Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_ISSUED_BY') . '</th>';
                     break;
                 case 'org':
-                    $signaturesString .= '<th style="color: #00000052; width: 200px">' .
+                    $signaturesString .= '<th style="color: #00000052; width: 200px; font-size: 13px; padding-bottom: 14px;">' .
                         Loc::getMessage('TR_CA_DOCS_SIGN_ORG') . '</th>';
                     break;
                 case 'algorithm':
