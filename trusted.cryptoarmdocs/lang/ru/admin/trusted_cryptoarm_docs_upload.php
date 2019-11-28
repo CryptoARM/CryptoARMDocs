@@ -18,15 +18,15 @@ $MESS["TR_CA_DOCS_UPLOAD_INVALID_USER_PROPERTIES"] = "Недопустимый �
 $MESS["TR_CA_DOCS_UPLOAD_INVALID_USER_ID"] = "Недопустимый ID пользователя.";
 $MESS["TR_CA_DOCS_UPLOAD_USER_ID_DOESNT_EXIST"] = "Несуществующий ID пользователя.";
 
-$MESS["TR_CA_DOCS_UPLOAD_INVALID_ORDER_ID"] = "Недопустимый номер заказа.";
-$MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_DOESNT_EXIST"] = "Несуществующий номер заказа.";
+$MESS["TR_CA_DOCS_UPLOAD_INVALID_ORDER_ID"] = "Недопустимый номер заказа.  <br />";
+$MESS["TR_CA_DOCS_UPLOAD_ORDER_ID_DOESNT_EXIST"] = "Несуществующий номер заказа.  <br />";
 
 $MESS["TR_CA_DOCS_UPLOAD_ACCESS_DENIED"] = "Недостаточно прав для создания файла";
 $MESS["TR_CA_DOCS_UPLOAD_SIZE_ERROR"] = "Превышен максимально допустимый размер для загружаемого файла: \"#FILE_NAME#\"";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS1"] = "Файл с именем";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_EXISTS2"] = "уже существует";
 $MESS["TR_CA_DOCS_UPLOAD_PHPERROR"] = "Недостаточно прав для загрузки PHP файла";
-$MESS["TR_CA_DOCS_UPLOAD_INVALID_DIR"] = "Нельзя сохранять файлы в системной директории Bitrix.";
+$MESS["TR_CA_DOCS_UPLOAD_INVALID_DIR"] = "Нельзя сохранять файлы в системной директории Bitrix. <br />";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_CREATE_ERROR"] = "Ошибка при создании файла";
 $MESS["TR_CA_DOCS_UPLOAD_FILE_CREATE_ERROR_NO_ACCESS"] = "Нет доступа к директории.";
 

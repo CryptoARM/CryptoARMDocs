@@ -96,8 +96,10 @@ if ($REQUEST_METHOD == "POST") {
                     !Docs\Utils::propertyValueValidation($arValue)
                 )
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_USER_PROPERTIES") . "\n";
-                elseif (preg_match("/^\/bitrix\/.*/", $pathto))
+                elseif (preg_match("/^\/bitrix\/.*/", $pathto) && !$dirWarningShown) {
                     $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_INVALID_DIR");
+                    $dirWarningShown = true;
+                }
                 else {
                     $bQuota = true;
                     if (COption::GetOptionInt("main", "disk_space") > 0) {
