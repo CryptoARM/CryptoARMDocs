@@ -613,7 +613,7 @@ class Document implements IEntity, ISave
      * Returns document sign info as html table
      * @return string
      */
-    function getSignaturesToTable($fields = array('time', 'name', 'org'))
+    function getSignaturesToTable($fields = array('time', 'name', 'org'), $protocol)
     {
         $signatures = $this->getSignaturesToArray();
         if (!$signatures || !$fields) {
@@ -624,7 +624,11 @@ class Document implements IEntity, ISave
             Utils::dump($signatures);
         }
 
-        $signaturesString = "<table class='trca-adm-list-table-cell-certificate' cellspacing=\"10\">";
+        if ($protocol) {
+            $signaturesString = "<table class='trca-adm-list-table-cell-certificate' cellspacing=\"10\">";
+        } else {
+            $signaturesString = "<table class='trca-adm-list-table-cell-certificate'>";
+        }
 
         $signaturesString .= '<tr>';
 
@@ -635,19 +639,29 @@ class Document implements IEntity, ISave
         foreach ($fields as $field) {
             switch ($field) {
                 case 'time':
-                    $signaturesString .= '<th style="color: #00000052;">' .
-                        Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
+                    if ($protocol) {
+                        $signaturesString .= '<th style="color: #00000052;">' .
+                            Loc::getMessage('TR_CA_DOCS_SIGN_TIME_PROTOCOL') . '</th>';
+                    } else {
+                        $signaturesString .= '<th style="color: #00000052; width: 135px">' .
+                            Loc::getMessage('TR_CA_DOCS_SIGN_TIME') . '</th>';
+                    }
                     break;
                 case 'name':
-                    $signaturesString .= '<th style="color: #00000052; width: 170px">' .
-                        Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER') . '</th>';
+                    if ($protocol) {
+                        $signaturesString .= '<th style="color: #00000052; width: 170px">' .
+                            Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER_PROTOCOL') . '</th>';
+                    } else {
+                        $signaturesString .= '<th style="color: #00000052; width: 200px">' .
+                            Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_OWNER') . '</th>';
+                    }
                     break;
                 case 'issuer':
                     $signaturesString .= '<th style="color: #00000052; width: 170px">' .
                         Loc::getMessage('TR_CA_DOCS_SIGN_SERTIFICATE_ISSUED_BY') . '</th>';
                     break;
                 case 'org':
-                    $signaturesString .= '<th style="color: #00000052">' .
+                    $signaturesString .= '<th style="color: #00000052; width: 200px">' .
                         Loc::getMessage('TR_CA_DOCS_SIGN_ORG') . '</th>';
                     break;
                 case 'algorithm':

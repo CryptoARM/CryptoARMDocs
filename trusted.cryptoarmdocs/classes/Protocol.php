@@ -166,7 +166,7 @@ HTML;
                 self::SIGNATURES,
                 array(
                     '{DOC_SIGNATURES}' => Loc::getMessage('TR_CA_DOC_SIGNERS'),
-                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('name', 'issuer', 'serial', 'time')),
+                    '{DOC_SIGNATURES_VALUE}' => $doc->getSignaturesToTable(array('name', 'issuer', 'serial', 'time'), true),
                 )
             );
 

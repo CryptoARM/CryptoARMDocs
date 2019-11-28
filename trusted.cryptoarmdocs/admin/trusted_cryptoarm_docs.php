@@ -167,7 +167,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         $signatures = $doc->getSignaturesToArray();
     }
 
-    $signaturesString = $doc->getSignaturesToTable();
+    $signaturesString = $doc->getSignaturesToTable(array('time', 'name', 'org'),false);
 
     $arId = array();
     $arId[] = $doc->getId();
