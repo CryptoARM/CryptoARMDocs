@@ -239,6 +239,14 @@ class AjaxCommand {
         if (array_key_exists("role", $extra)) {
             DocumentsByOrder::upload($newDoc, $extra);
         }
+
+        $requires = $newDoc->getRequires()->getList();
+        foreach ($requires as &$require) {
+            if ($require->getUserId() == $doc->getBlockBy()) {
+                $require->setSignStatus(true);
+            }
+        }
+
         if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
             $newDoc->setName($newDoc->getName() . '.sig');
             $newDoc->setPath($newDoc->getPath() . '.sig');
