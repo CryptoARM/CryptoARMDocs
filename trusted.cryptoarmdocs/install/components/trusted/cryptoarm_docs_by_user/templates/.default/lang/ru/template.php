@@ -11,6 +11,8 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Проверить все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"] = "Скачать все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"] = "Удалить все";
 
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MUST_TO_SIGN"] = "Требуется подпись";
+
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"] = "Отправить документ";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"] = "Отправить на e-mail";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"] = "Подписать документ";

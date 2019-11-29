@@ -5,7 +5,7 @@ if (!trustedCA) {
 // ===============================
 // === Get js library messages ===
 // ===============================
-trustedCA.initVar = function(){
+trustedCA.initVar = function () {
     AJAX_CONTROLLER = window.location.protocol + '//' + window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
     NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
     HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
@@ -104,20 +104,32 @@ trustedCA.modalDiv = document.createElement("div");
 if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
     trustedCA.initVar();
 } else {
-    setTimeout(function() {trustedCA.initVar()}, 100);
+    setTimeout(function () {
+        trustedCA.initVar()
+    }, 100);
 }
 
 // ====================================================
 // === Establish socket connection, assign handlers ===
 // ====================================================
-trustedCA.socketInit = function(){
+trustedCA.socketInit = function () {
     if (location.protocol === 'https:') {
         socket = io('https://localhost:4040');
-        socket.on('connect', () => { console.log('Event: connect'); });
-        socket.on('disconnect', data => { console.log('Event: disconnect, reason: ', data); });
-        socket.on('verified', data => { console.log('Event: verified', data); });
-        socket.on('signed', data => { console.log('Event: signed, data: ', data); });
-        socket.on('uploaded', data => { console.log('Event: uploaded, data: ', data); });
+        socket.on('connect', () => {
+            console.log('Event: connect');
+        });
+        socket.on('disconnect', data => {
+            console.log('Event: disconnect, reason: ', data);
+        });
+        socket.on('verified', data => {
+            console.log('Event: verified', data);
+        });
+        socket.on('signed', data => {
+            console.log('Event: signed, data: ', data);
+        });
+        socket.on('uploaded', data => {
+            console.log('Event: uploaded, data: ', data);
+        });
         socket.on('cancelled', data => {
             console.log('Event: cancelled', data);
             trustedCA.unblock([data.id]);
@@ -146,7 +158,7 @@ trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
                 } else {
                     console.log(d.message);
                 }
-            // Command execution fails
+                // Command execution fails
             } else {
                 if (typeof onFailure === 'function') {
                     onFailure(d);
@@ -264,23 +276,24 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
 trustedCA.blockCheck = function (token, interval, onSuccess) {
     let onFailure = (e) => {
         clearInterval(interval);
-        interval=0;
+        interval = 0;
         document.body.removeChild(trustedCA.modalDiv)
         trustedCA.reloadDoc();
         if (typeof onSuccess === 'function') {
             onSuccess();
         }
     }
-    trustedCA.ajax('blockCheck', {blockToken: token}, () => {}, onFailure);
+    trustedCA.ajax('blockCheck', {blockToken: token}, () => {
+    }, onFailure);
 };
 
-trustedCA.showModalWindow = function(ids) {
+trustedCA.showModalWindow = function (ids) {
     trustedCA.modalDiv.className = "trca-modal";
     trustedCA.modalDiv.innerHTML = trustedCA.modalWindowSign;
     document.body.appendChild(trustedCA.modalDiv);
     trustedCA.reloadDoc();
     $('#trca-modal-close').attr('onclick', "trustedCA.unblock([" + ids + "], () => {$('#trca-modal-window').hide(); $('#trca-modal-overlay').hide()})");
-    if (ids.length === 1){
+    if (ids.length === 1) {
         $('#trca-modal-header').text(MODAL_MESSAGE_1);
         $('#trca-modal-content-message').text(MODAL_MESSAGE_2 + String.fromCharCode(171) + MODAL_CANCEL + String.fromCharCode(187) + '.');
     } else {
@@ -310,8 +323,8 @@ trustedCA.showInfoModalWindow = function (ids, docname) {
 
 trustedCA.reloadDoc = function () {
     let allElements = document.querySelectorAll('#trca-reload-doc');
-    allElements.forEach( (element) => {
-        if (typeof element.onclick === 'function'){
+    allElements.forEach((element) => {
+        if (typeof element.onclick === 'function') {
             element.onclick();
         }
     });
@@ -343,7 +356,7 @@ trustedCA.verify = function (ids) {
                 } else {
                     window.location = url + "&browser=default";
                 }
-            // mobile CryptoArm support END
+                // mobile CryptoArm support END
             } else {
                 if (d.success) {
                     docs = JSON.parse(d.docsOk);
@@ -391,7 +404,7 @@ trustedCA.show_messages = function (response) {
     if (response.noUser) {
         alert(SHARE_NO_USER_1 + response.noUser + SHARE_NO_USER_2);
     }
-    if (response.noSendMail){
+    if (response.noSendMail) {
         alert(SEND_MAIL_FAILURE);
     }
     if (response.docsFileNotFound && response.docsFileNotFound.length) {
@@ -471,7 +484,9 @@ trustedCA.download = function (ids, filename) {
 
 
 trustedCA.sendEmail = function (ids, event, arEventFields, messageId) {
-    let onSuccess = (d) => { alert(SEND_MAIL_SUCCESS); };
+    let onSuccess = (d) => {
+        alert(SEND_MAIL_SUCCESS);
+    };
     trustedCA.ajax('sendEmail', {ids, event, arEventFields, messageId}, onSuccess);
 };
 
@@ -480,7 +495,9 @@ trustedCA.protocol = function (id) {
     trustedCA.ajax(
         'check',
         {ids: [id], level: 'SHARE_READ', allowBlocked: true},
-        () => { window.location.replace(AJAX_CONTROLLER + '?command=protocol&id=' + id) }
+        () => {
+            window.location.replace(AJAX_CONTROLLER + '?command=protocol&id=' + id)
+        }
     );
 }
 
@@ -490,6 +507,7 @@ trustedCA.promptEmail = function (message) {
         let re = /\S+@\S+\.\S+/;
         return re.test(email);
     }
+
     do {
         var emailAddress = prompt(message, '');
         var validatedEmail = validateEmail(emailAddress);
@@ -508,13 +526,18 @@ trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) 
 
 
 trustedCA.share = function (ids, email, level = 'SHARE_READ') {
-    let onSuccess = (d) => { alert(SHARE_SUCCESS_1 + email + SHARE_SUCCESS_2); };
+    let onSuccess = (d) => {
+        alert(SHARE_SUCCESS_1 + email + SHARE_SUCCESS_2);
+    };
     trustedCA.ajax('share', {ids, email, level}, onSuccess);
 };
 
 
 trustedCA.requireToSign = function (ids, email) {
-    let onSuccess = (d) => { alert(REQUIRE_SUCCESS_1 + email + REQUIRE_SUCCESS_2); };
+    let onSuccess = (d) => {
+        alert(REQUIRE_SUCCESS_1 + email + REQUIRE_SUCCESS_2);
+        trustedCA.reloadDoc();
+    };
     trustedCA.ajax('requireToSign', {ids, email}, onSuccess);
 };
 
@@ -536,17 +559,17 @@ trustedCA.promptAndRequireToSign = function (ids) {
 
 
 trustedCA.reloadGrid = function (gridId) {
-    var reloadParams = { apply_filter: 'Y', clear_nav: 'Y' };
+    var reloadParams = {apply_filter: 'Y', clear_nav: 'Y'};
     var gridObject = BX.Main.gridManager.getById(gridId);
 
-    if (gridObject.hasOwnProperty('instance')){
+    if (gridObject.hasOwnProperty('instance')) {
         gridObject.instance.reloadTable('POST', reloadParams);
     }
 };
 
 
 trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null) {
-    if (file.size/1024/1024  >= maxSize){
+    if (file.size / 1024 / 1024 >= maxSize) {
         trustedCA.showPopupMessage(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2, 'highlight_off', 'negative');
         if (typeof onFailure === 'function') {
             onFailure();
@@ -596,7 +619,7 @@ trustedCA.removeForm = function (ids, onSuccess = null, onFailure = null) {
 
 trustedCA.showPopupMessage = function (message, icon = 'info_outline', style = '', interval = 5000) {
     let oldPopupMessageDiv = document.querySelectorAll('.trca-popup-window');
-    oldPopupMessageDiv.forEach( (element) => {
+    oldPopupMessageDiv.forEach((element) => {
         document.body.removeChild(element)
         clearInterval(intervalPopup);
     });
@@ -621,5 +644,7 @@ trustedCA.showPopupMessage = function (message, icon = 'info_outline', style = '
     `;
     trustedCA.popupMessageDiv.innerHTML = popupMessage;
     document.body.appendChild(trustedCA.popupMessageDiv);
-    intervalPopup =  setTimeout ( () => {document.body.removeChild(trustedCA.popupMessageDiv)}, interval );
+    intervalPopup = setTimeout(() => {
+        document.body.removeChild(trustedCA.popupMessageDiv)
+    }, interval);
 };
