@@ -38,6 +38,7 @@ $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " не найден";
 
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_1"] = "Размер загружаемых файлов не должен превышать ";
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_2"] = " Mb.";
+$MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE"] = "Загружаемый файл не должен быть пустым.";
 
 $MESS["TR_CA_DOCS_UNSHARE_CONFIRM"] = " Документ будет удалён из вашего списка, но останется у пользователя, который вам его предоставил. Продолжить?";
 

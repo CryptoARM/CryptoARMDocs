@@ -21,6 +21,8 @@ class Utils
     public static function createDocument($file, $properties = null)
     {
         $name = Utils::mb_basename($file);
+        $name = preg_replace('/[\s]+/u', '_', $name);
+        $name = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $name);
         $doc = new Document();
         $doc->setPath(str_replace($name, rawurlencode($name), $file));
         $doc->setName($name);
