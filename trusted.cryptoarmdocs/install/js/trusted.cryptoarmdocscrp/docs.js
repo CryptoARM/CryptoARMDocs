@@ -35,6 +35,7 @@ trustedCA.initVar = function () {
     SHARE_NO_USER_2 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_2');
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
+    DOWNLOAD_FILE_ZERO_SIZE = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE");
     MODAL_MESSAGE_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_1');
     MODAL_MESSAGE_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_2');
     MODAL_MESSAGE_MANY_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_1');
@@ -569,7 +570,12 @@ trustedCA.reloadGrid = function (gridId) {
 
 
 trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null) {
-    if (file.size / 1024 / 1024 >= maxSize) {
+    if (!file.size){
+        trustedCA.showPopupMessage(DOWNLOAD_FILE_ZERO_SIZE, 'highlight_off', 'negative');
+        if (typeof onFailure === 'function') {
+            onFailure();
+        }
+    } else if (file.size/1024/1024  >= maxSize){
         trustedCA.showPopupMessage(DOWNLOAD_FILE_1 + maxSize + DOWNLOAD_FILE_2, 'highlight_off', 'negative');
         if (typeof onFailure === 'function') {
             onFailure();
