@@ -656,6 +656,20 @@
     padding-right: 8px;
 }
 
+.trca-docs .trca-docs-content-item-order-right {
+    display: flex;
+    min-width: 200px;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.trca-docs .trca-docs-content-item-form-right {
+    display: flex;
+    min-width: 120px;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
 .trca-docs .trca-docs-content-button {
     cursor: pointer;
     height: auto;
