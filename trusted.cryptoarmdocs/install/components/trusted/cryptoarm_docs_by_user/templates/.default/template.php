@@ -188,7 +188,7 @@ $APPLICATION->IncludeComponent(
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
 
-                        <doc-buttons>
+                        <doc-buttons component="by_user">
                             <? if ($doc["TYPE"] == "1") { ?>
                                 <doc-info-button icon="help"
                                                  :id="<?= $docId ?>"
@@ -311,8 +311,8 @@ $APPLICATION->IncludeComponent(
             verify: function (id) {
                 trustedCA.verify(id);
             },
-            download: function (id) {
-                trustedCA.download(id, true);
+            download: function (id, zipname) {
+                trustedCA.download(id, zipname);
             },
             protocol: function (idAr) {
                 id = idAr[0];

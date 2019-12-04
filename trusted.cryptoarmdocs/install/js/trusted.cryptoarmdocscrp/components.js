@@ -50,7 +50,8 @@ Vue.component("header-menu-button", {
     props: {
         message: String,
         icon: String,
-        id: Array
+        id: Array,
+        zipname: String
     },
     template: `
     <div class="trca-docs-header-button" :title="message" @click="buttonClick">
@@ -59,7 +60,7 @@ Vue.component("header-menu-button", {
     </div>`,
     methods: {
         buttonClick: function() {
-            this.$emit("button-click", this.id);
+            this.$emit("button-click", this.id, this.zipname);
         }
     }
 })
@@ -118,8 +119,17 @@ Vue.component ("doc-name-owner", {
 })
 
 Vue.component ("doc-buttons", {
+    props: {
+        component: String
+    },
     template: `
-    <div class="trca-docs-content-item-right">
+    <div v-if="component === 'by_user'" class="trca-docs-content-item-right">
+        <slot></slot>
+    </div>
+    <div v-else-if="component === 'by_order'" class="trca-docs-content-item-order-right">
+        <slot></slot>
+    </div>
+    <div v-else-if="component === 'form'" class="trca-docs-content-item-form-right">
         <slot></slot>
     </div>`
 })
@@ -141,6 +151,23 @@ Vue.component ("doc-button", {
             let idAr = new Array();
             idAr = [this.id];
             this.$emit('button-click', idAr);
+
+Vue.component ("doc-button-arr", {
+    props: {
+        id: Array,
+        title: String,
+        icon: String,
+        zipname: String,
+    },
+    template: `
+    <div class="trca-docs-content-button" :title="title" @click="buttonClick">
+        <i class="material-icons">
+            {{ icon }}
+        </i>
+    </div>`,
+    methods : {
+        buttonClick: function() {
+            this.$emit('button-click', this.id, this.zipname);
         }
     }
 })
