@@ -1,8 +1,11 @@
 <?php
 
 namespace Trusted\CryptoARM\Docs;
+
 use Bitrix\Main\Loader;
 use DateTime;
+use Bitrix\Main\Localization\Loc;
+use Bitrix\Main\ModuleManager;
 
 /**
  * Controllers for AJAX requests.
@@ -19,10 +22,10 @@ class AjaxCommand {
      *              [allowBlocked]: can operation be performed on blocked docs?
      */
     static function check($params) {
-        $res = array(
+        $res = [
             'success' => false,
             'message' => 'Unknown error in Ajax.check',
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
@@ -31,8 +34,8 @@ class AjaxCommand {
         }
 
         $ids = $params['ids'];
-        $level = $params['level'] ?: DOC_SHARE_READ;
-        $allowBlocked = $params['allowBlocked'] ?: true;
+        $level = $params['level'] ? : DOC_SHARE_READ;
+        $allowBlocked = $params['allowBlocked'] ? : true;
 
         if (!$ids) {
             $res["message"] = "No ids were given";
@@ -75,10 +78,10 @@ class AjaxCommand {
      *               [docsRoleSigned]: documents that were already signed by provided ROLE
      */
     static function sign($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.sign",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
@@ -109,7 +112,7 @@ class AjaxCommand {
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
         $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
-        if ($res['docsOk']->count()){
+        if ($res['docsOk']->count()) {
             $res['docsOk'] = $res['docsOk']->toJSON();
         } else {
             $res['docsOk'] = null;
@@ -145,10 +148,10 @@ class AjaxCommand {
      *               [docs]: document info in JSON format
      */
     static function verify($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in AjaxCommand.verify",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -172,7 +175,7 @@ class AjaxCommand {
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
         $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
         $res['docsUnsigned'] = $res['docsUnsigned']->toIdAndFilenameArray();
-        if ($res['docsOk']->count()){
+        if ($res['docsOk']->count()) {
             $res['docsOk'] = $res['docsOk']->toJSON();
         } else {
             $res['docsOk'] = null;
@@ -200,10 +203,10 @@ class AjaxCommand {
      *               [message]: operation result message
      */
     static function upload($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in AjaxCommand.upload",
-        );
+        ];
 
         $doc = Database::getDocumentById($params['id']);
         if ($doc) {
@@ -271,11 +274,11 @@ class AjaxCommand {
             }
         }
 
-        Utils::log(array(
+        Utils::log([
             "action" => "signed",
             "docs" => $doc,
             "extra" => $params["extra"],
-        ));
+        ]);
         return $res;
     }
 
@@ -287,10 +290,10 @@ class AjaxCommand {
      *               [message]: operation result message
      */
     static function unblock($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in AjaxCommand.unblock",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -325,10 +328,10 @@ class AjaxCommand {
      *               [message]: operation result message
      */
     static function remove($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in AjaxCommand.remove",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -369,10 +372,10 @@ class AjaxCommand {
         foreach ($docsToRemove as $id) {
             $doc = Database::getDocumentById($id);
             $doc->remove();
-            Utils::log(array(
+            Utils::log([
                 "action" => "removed",
                 "docs" => $doc,
-            ));
+            ]);
         }
 
         return $res;
@@ -387,10 +390,10 @@ class AjaxCommand {
      */
     static function download($params) {
         // TODO: rename or merge with content
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.download",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -405,9 +408,9 @@ class AjaxCommand {
         }
 
         $docsFound = new DocumentCollection();
-        $docsNotFound = array();
+        $docsNotFound = [];
         $docsFileNotFound = new DocumentCollection();
-        $docsNoAccess = array();
+        $docsNoAccess = [];
 
         foreach ($ids as $id) {
             $doc = Database::getDocumentById($id);
@@ -468,8 +471,8 @@ class AjaxCommand {
             }
             $archiveObject->Pack($docsFoundPaths);
 
-            foreach($docsFoundPaths as $file){
-                if(is_file($file)) unlink($file);
+            foreach ($docsFoundPaths as $file) {
+                if (is_file($file)) unlink($file);
             }
 
             rmdir($sDirTmpPath);
@@ -480,12 +483,12 @@ class AjaxCommand {
         }
 
         if ($docsFileNotFound->count()) {
-            $res["docsFileNotFound"] = array();
+            $res["docsFileNotFound"] = [];
             foreach ($docsFileNotFound->getList() as $doc) {
-                $res["docsFileNotFound"][] = array(
+                $res["docsFileNotFound"][] = [
                     "filename" => $doc->getName(),
                     "id" => $doc->getId(),
-                );
+                ];
             }
         }
 
@@ -516,10 +519,10 @@ class AjaxCommand {
      * @return void
      */
     static function content($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.content",
-        );
+        ];
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
@@ -551,10 +554,10 @@ class AjaxCommand {
 
 
     static function protocol($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.protocol",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -571,7 +574,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments(array($id), DOC_SHARE_READ, true)
+            Utils::checkDocuments([$id], DOC_SHARE_READ, true)
         );
 
         $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
@@ -596,19 +599,19 @@ class AjaxCommand {
      *               [data]: string ascii, account number
      */
     static function registerAccountNumber() {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.registerAccountNumber",
-        );
+        ];
 
         $accountNumberData = License::registerAccountNumber();
 
         if ($accountNumberData['success']) {
-            $res = array(
+            $res = [
                 "success" => true,
                 "data" => $accountNumberData['data'],
                 "message" => "OK",
-            );
+            ];
         }
 
         return $res;
@@ -623,20 +626,20 @@ class AjaxCommand {
      *               [data]: int, number of operations on the account
      */
     static function checkAccountBalance($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.checkAccountBalance",
-        );
+        ];
 
         $accountNumber = $params['accountNumber'];
         $balanceData = License::checkAccountBalance($accountNumber);
 
         if ($balanceData['success']) {
-            $res = array(
+            $res = [
                 "success" => true,
                 "data" => $balanceData['data'],
                 "message" => "OK",
-            );
+            ];
         }
 
         return $res;
@@ -652,21 +655,21 @@ class AjaxCommand {
      *               [data][amount]: number of added operations
      */
     static function activateJwtToken($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.activateJwtToken",
-        );
+        ];
 
         $accountNumber = $params['accountNumber'];
         $jwt = $params['jwt'];
         $balanceData = License::activateJwtToken($accountNumber, $jwt);
 
         if ($balanceData['success']) {
-            $res = array(
+            $res = [
                 "success" => true,
                 "data" => $balanceData['data'],
                 "message" => "OK",
-            );
+            ];
         }
 
         return $res;
@@ -703,10 +706,10 @@ class AjaxCommand {
 
 
     static function sendEmail($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.sendEmail",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No autorization';
@@ -720,12 +723,12 @@ class AjaxCommand {
         $messageId = $params['messageId'];
 
         if ($event == "MAIL_EVENT_ID_TO" || $event == "MAIL_EVENT_ID_SHARE" || $event == "MAIL_EVENT_ID_REQUIRED_SIGN") {
-			$doc = Database::getDocumentById($ids[0]);
-			$userIdOwner = (int)$doc->getOwner();
-			$userOwnerName = Utils::getUserName($userIdOwner);
-			$arEventFields["FIO_FROM"] = $userOwnerName;
-			$arEventFields["FIO_TO"] = Utils::getUserName(Utils::getUserIdByEmail($arEventFields["EMAIL"]));
-		}
+            $doc = Database::getDocumentById($ids[0]);
+            $userIdOwner = (int)$doc->getOwner();
+            $userOwnerName = Utils::getUserName($userIdOwner);
+            $arEventFields["FIO_FROM"] = $userOwnerName;
+            $arEventFields["FIO_TO"] = Utils::getUserName(Utils::getUserIdByEmail($arEventFields["EMAIL"]));
+        }
 
         $res = array_merge(
             $res,
@@ -742,10 +745,10 @@ class AjaxCommand {
         $sendStatus = Email::sendEmail($ids, $event, $arEventFields, $messageId);
 
         if ($sendStatus['success']) {
-            $res = array(
+            $res = [
                 "success" => true,
                 "message" => "Email sent successfully",
-            );
+            ];
         } else {
             $res["message"] = $sendStatus["message"];
             $res["noSendMail"] = true;
@@ -755,10 +758,10 @@ class AjaxCommand {
     }
 
     static function share($params) {
-        $res = array(
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.share",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No autorization";
@@ -829,11 +832,11 @@ class AjaxCommand {
         return $res;
     }
 
-    static function unshare($params){
-        $res = array(
+    static function unshare($params) {
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.unshare",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
@@ -888,11 +891,11 @@ class AjaxCommand {
      *
      * @return boolean
      */
-    public function blockCheck($params){
-        $res = array(
+    public function blockCheck($params) {
+        $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.blockCheck",
-        );
+        ];
 
         if (!Utils::checkAuthorization()) {
             $res["message"] = "No authorization";
@@ -908,7 +911,7 @@ class AjaxCommand {
         }
 
         $docs = Database::getDocumentsByBlockToken($token);
-        if ($docs->count()){
+        if ($docs->count()) {
             $res["message"] = "Documents blocked with this token are found";
             $res["success"] = true;
         } else {
@@ -935,10 +938,34 @@ class AjaxCommand {
         $usersEmail = explode(" ", $params["email"]);
 
         foreach ($usersEmail as $email) {
-            $usersId[] = Utils::getUserIdByEmail($email);
+            $userId = Utils::getUserIdByEmail($email);
+
+            if ($userId === null) {
+                if (!\ModuleManager::isModuleInstalled("trusted.id")) {
+                    return [
+                        "success" => false,
+                        "message" => "Not installed trusted.id",
+                    ];
+                }
+
+                Utils::registerUser($email);
+
+                $userId = Utils::getUserIdByEmail($email);
+                $newUser = true;
+            } else {
+                $newUser = false;
+            }
+
+            $userInfo = [
+                "email" => $email,
+                "userId" => $userId,
+                "newUser" => $newUser,
+            ];
+
+            $usersInfo[] = $userInfo;
         }
 
-        if (empty($usersId)) {
+        if (empty($usersInfo)) {
             return $res["message"] = "No user";
         }
 
@@ -980,15 +1007,19 @@ class AjaxCommand {
                     $fileName[] = $doc->getName();
                     $ownerId = $doc->getOwner();
                 }
+
                 $requireFrom = Utils::getUserName($ownerId) ? : "";
+
                 $arEventFields = [
                     "EMAIL" => $email,
                     "FILE_NAME" => $fileName,
                     "REQUESTING_USER" => $requireFrom,
                     "DOCS_ID" => implode(".", $ids),
-                    "USER_ID" => $usersId[$key],
-					"FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
+                    "USER_ID" => $usersInfo[$key]["userId"],
+                    "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
+                    "INFO_FOR_NEW_USER" => $usersInfo[$key]["newUser"] ? Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_ADD_FOR_NEW_USER") : ""
                 ];
+
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
             } else {
                 return $response;

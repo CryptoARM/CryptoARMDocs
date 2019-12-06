@@ -233,7 +233,7 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_BODY"] = '
                 <tr style="height: 36px">
                     <td>
                         <p style="margin: 0%;">
-                            <span>Подписать документ вы можете, пройдя по ссылке в свой личный кабинет портала </span>
+                            <span>Подписать документ вы можете, пройдя по ссылке в свой личный кабинет портала#INFO_FOR_NEW_USER# </span>
                             <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
                             style="text-decoration: none; color:#D9001B; cursor: pointer;"> <?= "https://" . TR_CA_HOST . "."?></a></span>
                         </p>
