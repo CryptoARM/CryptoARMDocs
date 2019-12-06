@@ -538,7 +538,10 @@ trustedCA.requireToSign = function (ids, email) {
         alert(REQUIRE_SUCCESS_1 + email + REQUIRE_SUCCESS_2);
         trustedCA.reloadDoc();
     };
-    trustedCA.ajax('requireToSign', {ids, email}, onSuccess);
+    let onFailure = (d) => {
+        alert(SEND_MAIL_FAILURE);
+    };
+    trustedCA.ajax('requireToSign', {ids, email}, onSuccess, onFailure);
 };
 
 

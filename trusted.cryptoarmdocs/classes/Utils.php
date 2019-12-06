@@ -560,5 +560,20 @@ class Utils
         return $moduleId;
     }
 
+    public static function registerUser($email) {
+        global $DB;
+
+        $login = $email;
+        $pass = substr(md5(mt_rand()), 0, 12);
+        $check = substr(md5(mt_rand()), 0, 12);
+        $name = $email;
+        $sql = "
+        INSERT INTO b_user
+            (LOGIN, PASSWORD, CHECKWORD, ACTIVE, EMAIL, NAME)
+        VALUES
+            ('" . $login . "', '" . $pass . "', '" . $check . "', 'Y', '" . $email . "', '" . $name . "');";
+        $DB->Query($sql);
+    }
+
 }
 
