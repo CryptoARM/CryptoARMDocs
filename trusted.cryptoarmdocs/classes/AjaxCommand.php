@@ -843,8 +843,11 @@ class AjaxCommand {
             return $res;
         }
 
-        $userId = Utils::currUserId();
-        $docIds = $params["ids"];
+        $docIds = $params["docIds"];
+        $userId = $params["userId"];
+        if (!$userId) {
+            $userId = Utils::currUserId();
+        }
 
         if (!$docIds) {
             $res["noIds"] = true;

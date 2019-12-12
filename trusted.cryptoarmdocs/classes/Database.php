@@ -966,5 +966,26 @@ class Database
         return $orderId;
     }
 
+    /**
+     * Returns IDs of users with access to the document
+     * @param integer $id Document ID
+     * @return array
+     */
+
+    static function getUserIdsByDocument($id)
+    {
+        global $DB;
+        $sql = 'SELECT VALUE FROM ' . DB_TABLE_PROPERTY . ' '
+        . 'WHERE '
+        . 'DOCUMENT_ID = "' . $id . '" AND '
+        . 'TYPE = "SHARE_READ"';
+        $rows = $DB->Query($sql);
+        $userIds=array();
+        while ($row = $rows->Fetch()) {
+            $userIds[] = (int)$row["VALUE"];
+        }
+        return $userIds;
+    }
+
 }
 

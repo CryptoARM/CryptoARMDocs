@@ -69,24 +69,27 @@ $APPLICATION->IncludeComponent(
             if (!empty($allIds)) {
                 ?>
                 <header-menu id="trca-docs-header-menu-by-user">
-                    <header-menu-button icon="email"
-                                        :id="<?= $allIdsJs ?>"
-                                        @button-click="sendEmail"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>">
-                    </header-menu-button>
-                    <header-menu-button icon="create"
-                                        :id="<?= $allIdsJs ?>"
-                                        @button-click="sign"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>">
-                    </header-menu-button>
-                    <header-menu-button icon="info"
+                    <header-menu-button icon="help"
                                         :id="<?= $allIdsJs ?>"
                                         @button-click="verify"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>">
                     </header-menu-button>
-                    <header-menu-button icon="save_alt"
-                                        onclick="<?= "trustedCA.download($allIdsJs, '$zipName')" ?>"
+                    <header-menu-button icon="create"
+                                        :id="<?= $allIdsJs ?>"
+                                        role="CLIENT"
+                                        @button-click="sign"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="file_download"
+                                        zipname="<?= $zipName ?>"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="download"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>">
+                    </header-menu-button>
+                    <header-menu-button icon="email"
+                                        :id="<?= $allIdsJs ?>"
+                                        @button-click="sendEmail"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>">
                     </header-menu-button>
                     <?
                     if ($arParams["ALLOW_REMOVAL"] === 'Y') {
@@ -114,13 +117,8 @@ $APPLICATION->IncludeComponent(
                     $docAccessLevel = $doc["ACCESS_LEVEL"];
                     $docName = $doc["NAME"];
                     $docCreated = $doc["DATE_CREATED"];
-                    $docObject = Docs\Database::getDocumentById($docId);
-                    $docRequire = $docObject->getRequires();
-                    if (in_array($USER->GetID(), $docRequire->getUserList())) {
-                        $mustToSign = !$docRequire->getSignStatusByUser($USER->GetID());
-                    } else {
-                        $mustToSign = false;
-                    }
+                    $mustToSign = $doc["MUST_TO_SIGN"];
+                    $sharedStatus = $doc["SHARED_STATUS_JS"];
 
                     if ($docType == DOC_TYPE_SIGNED_FILE) {
                         if ($docStatus == DOC_STATUS_BLOCKED) {
@@ -156,7 +154,12 @@ $APPLICATION->IncludeComponent(
                         }
                     }
                     ?>
-                    <docs-items>
+                    <docs-items :id="<?= $docId ?>"
+                                docname="<?= $docName ?>"
+                                currentUserAccess='<?= $docAccessLevel ?>'
+                                :sharedstatus='<?= $sharedStatus ?>'
+                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_INFO"); ?>"
+                                @button-click= "showInfoWindow">
                         <doc-name color="<?= $iconCss ?>"
                                   icon="<?= $icon ?>"
                                   name="<?= $doc["NAME"] ?>"
@@ -205,7 +208,8 @@ $APPLICATION->IncludeComponent(
                                 ?>
                                 <doc-button icon="create"
                                             :id="<?= $docId ?>"
-                                            onclick="trustedCA.sign([<?= $docId ?>], {role: 'CLIENT'<?= $mustToSign ? ", require: true" : "" ?>})"
+                                            role="CLIENT"
+                                            @button-click="sign"
                                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>">
                                 </doc-button>
                                 <?
@@ -305,6 +309,9 @@ $APPLICATION->IncludeComponent(
                 let object = new Object();
                 trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
             },
+            sign: function (id, role) {
+                trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
+            },
             verify: function (id) {
                 trustedCA.verify(id);
             },
@@ -313,7 +320,7 @@ $APPLICATION->IncludeComponent(
             },
             protocol: function (idAr) {
                 id = idAr[0];
-                trustedCA.protocol(id)
+                trustedCA.protocol(id);
             },
             share: function (id) {
                 trustedCA.promptAndShare(id, 'SHARE_SIGN');
@@ -322,13 +329,13 @@ $APPLICATION->IncludeComponent(
                 trustedCA.remove(id, false, trustedCA.reloadDoc);
             },
             unshare: function (id) {
-                trustedCA.unshare(id, false, trustedCA.reloadDoc);
+                trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
             },
             requireToSign: function (id) {
                 trustedCA.promptAndRequireToSign(id);
             },
-            showInfoWindow: function (id, docname) {
-                trustedCA.showInfoModalWindow(id, docname)
+            showInfoWindow: function (id, docname, sharedstatus, currentuseraccess) {
+                trustedCA.showInfoModalWindow(id, docname, sharedstatus, currentuseraccess);
             }
         }
     })

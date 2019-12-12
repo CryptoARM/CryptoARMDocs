@@ -43,12 +43,21 @@ trustedCA.initVar = function () {
     MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
+    UNSHARE_FROM_MODAL_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM');
     NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
     CLOSE_WINDOW = BX.message('TR_CA_DOCS_CLOSE_INFO_WINDOW');
+    VERIFY_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_VERIFY');
     SHARE_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SHARE');
     SIGN_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SIGN');
     DOWNLOAD_DOC = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_DOWNLOAD');
     DOWNLOAD_PROTOCOL = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_PROTOCOL');
+    MODAL_INFO_NOT_SHARED = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_NOT_SHARED');
+    MODAL_INFO_STATUS_READ = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_READ');
+    MODAL_INFO_STATUS_MUST_TO_SIGN = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_MUST_TO_SIGN');
+    MODAL_INFO_STATUS_SIGNED = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_SIGNED');
+    MODAL_INFO_STATUS_UNSIGNED = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_UNSIGNED');
+    MODAL_INFO_STATUS_UNSHARE = BX.message('TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_UNSHARE');
+
 };
 
 // Modal window
@@ -73,33 +82,37 @@ trustedCA.modalDiv = document.createElement("div");
 trustedCA.modalWindowInfo = `
     <div class="trca-modal-overlay" id="trca-modal-overlay"></div>
     <div class="trca-modal-info-window" id="trca-modal-info-window">
-        <div class="trca-modal-header" id="trca-modal-header"></div>
-        <div class="trca-modal-info-content">
-            <div class="trca-modal-info-content-left">
-                <div class="trca-modal-content-message" id="trca-modal-content-message"></div>
+        <div class="trca-modal-header" id="trca-modal-info-header"></div>
+        <div class="trca-modal-info-content" id="trca-modal-info-content">
+        <div class="trca-modal-info-content-left" id = "trca-modal-info-content-left">
+            <div class="trca-modal-info-close" id="trca-modal-info-close-left"></div>
+        </div>
+        <div class="trca-modal-info-content-right">
+            <div class="trca-modal-info-button" id="trca-modal-info-button-verify">
+                <i class="material-icons">help</i>
+                <div class="trca-modal-info-button-message" id="trca-modal-info-button-message-verify"></div>
             </div>
-            <div class="trca-modal-info-content-right">
-                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-share">
-                    <i class="material-icons">share</i>
-                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-share"></div>
-                </div>
-                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-download">
-                    <i class="material-icons">save_alt</i>
-                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-download"></div>
-                </div>
-                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-sign">
-                    <i class="material-icons">edit</i>
-                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-sign"></div>
-                </div>
-                <div class="trca-modal-info-content-button" id="trca-modal-info-content-button-protocol">
-                    <i class="material-icons">description</i>
-                    <div class="trca-modal-content-info-message" id="trca-modal-content-info-message-protocol"></div>
-                </div>
-                <div class="trca-modal-info-close" id="trca-modal-info-close"></div>
+            <div class="trca-modal-info-button" id="trca-modal-info-button-sign">
+                <i class="material-icons">edit</i>
+                <div class="trca-modal-info-button-message" id="trca-modal-info-button-message-sign"></div>
             </div>
+            <div class="trca-modal-info-button" id="trca-modal-info-button-download">
+                <i class="material-icons">file_download</i>
+                <div class="trca-modal-info-button-message" id="trca-modal-info-button-message-download"></div>
+            </div>
+            <div class="trca-modal-info-button" id="trca-modal-info-button-protocol">
+                <i class="material-icons">info</i>
+                <div class="trca-modal-info-button-message" id="trca-modal-info-button-message-protocol"></div>
+            </div>
+            <div class="trca-modal-info-button" id="trca-modal-info-button-share">
+                <i class="material-icons">supervisor_account</i>
+                <div class="trca-modal-info-button-message" id="trca-modal-info-button-message-share"></div>
+            </div>
+            <div class="trca-modal-info-close" id="trca-modal-info-close"></div>
+        </div>
     </div>
 `;
-trustedCA.modalDiv = document.createElement("div");
+trustedCA.modalInfoDiv = document.createElement("div");
 
 // Fixes errors after authorization
 if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
@@ -304,22 +317,92 @@ trustedCA.showModalWindow = function (ids) {
     $('#trca-modal-close').text(MODAL_CANCEL);
 }
 
-trustedCA.showInfoModalWindow = function (ids, docname) {
-    trustedCA.modalDiv.className = "trca-modal";
-    trustedCA.modalDiv.innerHTML = trustedCA.modalWindowInfo;
-    document.body.appendChild(trustedCA.modalDiv);
-    $('#trca-modal-info-content-button-share').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
-    $('#trca-modal-content-info-message-share').text(SHARE_DOC);
-    $('#trca-modal-info-content-button-download').attr('onclick', "trustedCA.download([" + ids + "], true)");
-    $('#trca-modal-content-info-message-download').text(DOWNLOAD_DOC);
-    $('#trca-modal-info-content-button-sign').attr('onclick', "trustedCA.sign([" + ids + "])");
-    $('#trca-modal-content-info-message-sign').text(SIGN_DOC);
-    $('#trca-modal-info-content-button-protocol').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
-    $('#trca-modal-content-info-message-protocol').text(DOWNLOAD_PROTOCOL);
-    $('#trca-modal-info-close').attr('onclick', "{$('#trca-modal-info-window').hide(); $('#trca-modal-overlay').hide()}");
-    $('#trca-modal-header').text(docname);
-    $('#trca-modal-content-message').text(docname);
+trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuseraccess) {
+    id = ids[0];
+    trustedCA.modalInfoDiv.className = "trca-modal";
+    trustedCA.modalInfoDiv.innerHTML = trustedCA.modalWindowInfo;
+    document.body.appendChild(trustedCA.modalInfoDiv);
+    if (sharedstatus.length === 0) {
+        trustedCA.modalInfoRowDiv = document.createElement("div");
+        trustedCA.modalInfoRowDiv.innerHTML =`
+        <div class="trca-modal-info-name" id="trca-modal-info-name" style="width: 100%"></div>
+        ` ;
+        trustedCA.modalInfoRowDiv.className = "trca-modal-info-row";
+        var div = document.getElementById("trca-modal-info-content-left");
+        div.insertBefore(trustedCA.modalInfoRowDiv, div.childNodes[0]);
+        $("#trca-modal-info-name").text(MODAL_INFO_NOT_SHARED);
+    } else {
+        $.each(sharedstatus,function(index, value) {
+            if (value.access_level === 'READ') {
+                var textStatus = MODAL_INFO_STATUS_READ;
+                var icon = "insert_drive_file";
+                var style = "color: rgb(33, 150, 243)";
+            } else if (value.mustToSign === true) {
+                var textStatus = MODAL_INFO_STATUS_MUST_TO_SIGN;
+                var icon = "reply_all";
+                var style = "color: rgb(33, 150, 243)";
+            } else if (value.mustToSign === false && value.signed === 1) {
+                var textStatus = MODAL_INFO_STATUS_SIGNED;
+                var icon = "done_all";
+                var style = "color: green";
+            } else if (value.mustToSign === false && value.signed === 0) {
+                var textStatus = MODAL_INFO_STATUS_UNSIGNED;
+                var icon = "insert_drive_file";
+                var style = "color: rgb(33, 150, 243)";
+            }
+
+            trustedCA.modalInfoRow = `
+                <i class="material-icons" style="${style}">${icon}</i>
+                <div class="trca-modal-info-name" id="trca-modal-info-name-${index}"></div>
+                <div class="trca-modal-info-status" id="trca-modal-info-status-${index}"></div>
+                <div class="trca-modal-info-button-unshare" id="trca-modal-info-button-unshare-${index}"  title = "${MODAL_INFO_STATUS_UNSHARE}" style="display: none">
+                    <div class="material-icons">close</div>
+                </div>
+            `
+            ;
+
+            trustedCA.modalInfoRowDiv = document.createElement("div");
+            trustedCA.modalInfoRowDiv.innerHTML = trustedCA.modalInfoRow;
+            trustedCA.modalInfoRowDiv.className = "trca-modal-info-row";
+            trustedCA.modalInfoRowDiv.id = "trca-modal-info-row-" + index + "";
+            var div = document.getElementById("trca-modal-info-content-left");
+            div.insertBefore(trustedCA.modalInfoRowDiv, div.childNodes[0]);
+            $("#trca-modal-info-name-" + index + "").text(value.name);
+            $("#trca-modal-info-status-" + index + "").text(textStatus);
+            if (currentuseraccess === 'OWNER') {
+                document.getElementById("trca-modal-info-button-unshare-" + index + "").style.display = "flex";
+                $("#trca-modal-info-button-unshare-" + index + "").attr('onclick', "trustedCA.unshare([" + ids + "], (" + value.id + "), false, () => trustedCA.removeModalRow(" + index + "))");
+            }
+        })
+    }
+
+    var width = window.matchMedia("(max-width: 750px)");
+    function replaceCloseButton(width) {
+        style = width.matches ? "margin-top: 65%;" : "display: none;";
+        document.getElementById("trca-modal-info-close-left").style = style;
+    }
+    replaceCloseButton(width);
+    width.addListener(replaceCloseButton);
+
+    $('#trca-modal-info-button-verify').attr('onclick', "trustedCA.verify([" + ids + "])");
+    $('#trca-modal-info-button-message-verify').text(VERIFY_DOC);
+    $('#trca-modal-info-button-share').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
+    $('#trca-modal-info-button-message-share').text(SHARE_DOC);
+    $('#trca-modal-info-button-download').attr('onclick', "trustedCA.download([" + ids + "], true)");
+    $('#trca-modal-info-button-message-download').text(DOWNLOAD_DOC);
+    $('#trca-modal-info-button-sign').attr('onclick', "trustedCA.sign([" + ids + "])");
+    $('#trca-modal-info-button-message-sign').text(SIGN_DOC);
+    $('#trca-modal-info-button-protocol').attr('onclick', "trustedCA.protocol(" + id + ")");
+    $('#trca-modal-info-button-message-protocol').text(DOWNLOAD_PROTOCOL);
+    $('.trca-modal-info-close').attr('onclick', "{$('#trca-modal-info-window').hide(); $('#trca-modal-overlay').hide()}");
+    $('#trca-modal-info-header').text(docname);
     $('#trca-modal-info-close').text(CLOSE_WINDOW);
+    $('#trca-modal-info-close-left').text(CLOSE_WINDOW);
+}
+
+trustedCA.removeModalRow = function (index) {
+    document.getElementById("trca-modal-info-row-" + index + "").remove();
+    trustedCA.reloadDoc();
 }
 
 trustedCA.reloadDoc = function () {
@@ -529,6 +612,7 @@ trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) 
 trustedCA.share = function (ids, email, level = 'SHARE_READ') {
     let onSuccess = (d) => {
         alert(SHARE_SUCCESS_1 + email + SHARE_SUCCESS_2);
+        trustedCA.reloadDoc();
     };
     trustedCA.ajax('share', {ids, email, level}, onSuccess);
 };
@@ -605,10 +689,10 @@ trustedCA.checkAccessFile = function (file, onSuccess, onFailure) {
     fr.readAsDataURL(file);
 };
 
-trustedCA.unshare = function (ids, force = false, onSuccess, onFailure) {
-    message = UNSHARE_CONFIRM;
+trustedCA.unshare = function (docIds, userId, force = false, onSuccess, onFailure) {
+    message =  userId ? UNSHARE_FROM_MODAL_CONFIRM : UNSHARE_CONFIRM;
     if (force ? true : confirm(message)) {
-        trustedCA.ajax('unshare', {ids}, onSuccess, onFailure);
+        trustedCA.ajax('unshare', {docIds, userId}, onSuccess, onFailure);
     }
 };
 
