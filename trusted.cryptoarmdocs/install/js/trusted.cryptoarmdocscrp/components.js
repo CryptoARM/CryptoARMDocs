@@ -151,6 +151,9 @@ Vue.component ("doc-button", {
             let idAr = new Array();
             idAr = [this.id];
             this.$emit('button-click', idAr);
+        }
+    }
+})
 
 Vue.component ("doc-button-arr", {
     props: {
