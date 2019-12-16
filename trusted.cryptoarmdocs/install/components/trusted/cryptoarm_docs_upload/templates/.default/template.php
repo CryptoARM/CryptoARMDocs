@@ -9,6 +9,7 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Application;
 use Trusted\CryptoARM\Docs;
+use Bitrix\Main\Localization\Loc;
 
 $app = Application::getInstance();
 $context = $app->getContext();
@@ -45,6 +46,8 @@ foreach ($arParams['FILES'] as $fileHandle) {
     mkdir($newDocDir);
 
     $newDocFilename = Docs\Utils::mb_basename($_FILES[$fileHandle]['name']);
+    $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
+    $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
     $absolutePath = $newDocDir . $newDocFilename;
     $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
 

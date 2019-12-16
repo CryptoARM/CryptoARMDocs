@@ -71,6 +71,8 @@ if ($REQUEST_METHOD == "POST") {
                 $arFile["name"] = CFileman::GetFileName($arFile["name"]);
                 $filename = ${"filename_" . $i};
                 if (strlen($filename) <= 0) $filename = $arFile["name"];
+                $filename = preg_replace('/[\s]+/u', '_', $filename);
+                $filename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $filename);
 
                 // Add subfolder with unique id
                 $uniqid = strval(uniqid());
