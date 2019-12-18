@@ -941,7 +941,7 @@ class AjaxCommand {
             $userId = Utils::getUserIdByEmail($email);
 
             if ($userId === null) {
-                if (!\ModuleManager::isModuleInstalled("trusted.id")) {
+                if (!ModuleManager::isModuleInstalled("trusted.id")) {
                     return [
                         "success" => false,
                         "message" => "Not installed trusted.id",
