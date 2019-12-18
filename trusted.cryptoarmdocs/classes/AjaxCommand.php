@@ -4,7 +4,6 @@ namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
 use DateTime;
-use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 
 /**
@@ -1017,7 +1016,6 @@ class AjaxCommand {
                     "DOCS_ID" => implode(".", $ids),
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
-                    "INFO_FOR_NEW_USER" => $usersInfo[$key]["newUser"] ? Loc::getMessage("TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_ADD_FOR_NEW_USER") : ""
                 ];
 
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
