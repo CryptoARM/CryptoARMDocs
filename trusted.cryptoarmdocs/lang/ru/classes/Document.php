@@ -1,6 +1,7 @@
 <?php
 
 // Signature info
+$MESS["TR_CA_DOCS_SIGN_NUMBER"] = "<b>№ </b> ";
 $MESS["TR_CA_DOCS_SIGN_TIME"] = "<b>Время подписи: </b> ";
 $MESS["TR_CA_DOCS_SIGN_TIME_PROTOCOL"] = "<b>Дата и время подписи: </b> ";
 $MESS["TR_CA_DOCS_SIGN_NAME"] = "<b>Имя: </b> ";

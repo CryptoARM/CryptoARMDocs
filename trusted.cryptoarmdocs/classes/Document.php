@@ -630,7 +630,7 @@ class Document implements IEntity, ISave
 
         $i = 1;
         $signaturesString .= '<th style="color: #00000052; width: 20px; font-size: 13px; padding-bottom: 14px;">' .
-            "№" . '</th>';
+        Loc::getMessage('TR_CA_DOCS_SIGN_NUMBER') . '</th>';
 
         foreach ($fields as $field) {
             switch ($field) {
