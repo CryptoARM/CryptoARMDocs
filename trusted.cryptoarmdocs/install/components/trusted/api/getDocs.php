@@ -67,7 +67,7 @@ foreach ($docsId as $docId) {
 
     $ownerUserId = $doc->getOwner();
 
-    if ($ownerUserId != $userId) {
+    if ($ownerUserId == $userId) {
         $accessLevel = 930;
     } elseif ($doc->accessCheck($userId, DOC_SHARE_SIGN)) {
         $accessLevel = 931;

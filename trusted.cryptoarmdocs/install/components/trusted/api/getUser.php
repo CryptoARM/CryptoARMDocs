@@ -54,9 +54,8 @@ function getUserIdByToken($token) {
     }
 
     $userInfo = Id\TDataBaseUser::getUserById($responseByToken["entityId"]);
-    $userId = (int)$userInfo->getUserId();
 
-    if (!$userId) {
+    if (is_null($userInfo) && $userInfo->getUserId()) {
         $answer = [
             "code" => 803,
             "message" => "user is not find",
@@ -64,6 +63,8 @@ function getUserIdByToken($token) {
         ];
         return $answer;
     }
+
+    $userId = (int)$userInfo->getUserId();
 
     return $userId;
 }

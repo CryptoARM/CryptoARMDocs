@@ -460,6 +460,7 @@ Loc::loadMessages(__FILE__);
         // }
         // DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_form/");
         DeleteDirFilesEx("/bitrix/components/trusted/cryptoarm_docs_upload/");
+        DeleteDirFilesEx("/bitrix/components/trusted/api/");
         DeleteDirFilesEx("/bitrix/components/trusted/docs/");
         DeleteDirFiles(
             $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $this->MODULE_ID . "/install/admin/",
