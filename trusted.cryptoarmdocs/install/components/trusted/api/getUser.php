@@ -24,7 +24,7 @@ function getUserIdByToken($token) {
         return $answer;
     }
 
-    if (!$_REQUEST["token"]) {
+    if (!$token) {
         $answer = [
             "code" => 801,
             "message" => "token is not find",
@@ -34,7 +34,7 @@ function getUserIdByToken($token) {
     }
 
     try {
-        $responseByToken = Id\TAuthCommand::getUserProfileByToken($_REQUEST["token"]);
+        $responseByToken = Id\TAuthCommand::getUserProfileByToken($token);
     } catch (Exception $exception) {
         $answer = [
             "code" => 804,
@@ -55,7 +55,7 @@ function getUserIdByToken($token) {
 
     $userInfo = Id\TDataBaseUser::getUserById($responseByToken["entityId"]);
 
-    if (is_null($userInfo) && $userInfo->getUserId()) {
+    if (is_null($userInfo) || is_null($userInfo->getUserId())) {
         $answer = [
             "code" => 803,
             "message" => "user is not find",
