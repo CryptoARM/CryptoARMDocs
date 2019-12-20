@@ -52,14 +52,14 @@ if ($userId["code"]) {
     echoAndDie($userId);
 }
 
+global $USER;
+$USER->Authorize($userId);
+
 $response = Docs\Utils::checkDocuments($docsId, null, true);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"];
 $docsOk = $response["docsOk"];
-
-global $USER;
-$USER->Authorize($userId);
 
 $data = [];
 $response = Docs\AjaxCommand::unblock($docsBlocked);

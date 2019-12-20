@@ -55,14 +55,19 @@ if ($userId["code"]) {
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, null, true);
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, true);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"];
 $docsOk = $response["docsOk"];
 
 $data = [];
-$response = Docs\AjaxCommand::unshare(array_merge($docsOk, $docsBlocked));
+$params = [
+    "email" => $emailAddress,
+    "ids" => array_merge($docsOk, $docsBlocked),
+];
+
+$response = Docs\AjaxCommand::requireToSign($params);
 
 $USER->Logout();
 
@@ -81,6 +86,7 @@ if ($docsNotFound) {
             "id" => $docId,
             "code" => 902,
             "message" => "document does not exist",
+            "url" => ""
         ];
     }
 }
@@ -91,16 +97,31 @@ if ($docsNoAccess) {
             "id" => $docId,
             "code" => 901,
             "message" => "have not permission",
+            "url" => ""
+        ];
+    }
+}
+
+if ($docsBlocked) {
+    foreach ($docsBlocked as $docId) {
+        $data[$docId] = [
+            "id" => $docId,
+            "code" => 200,
+            "message" => "document is blocked",
+            "url" => ""
         ];
     }
 }
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
+        $doc = Docs\Database::getDocumentById($docsId);
+        $url = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
         $data[$docId] = [
             "id" => $docId,
             "code" => 200,
             "message" => "ok",
+            "url" => $url,
         ];
     }
 }
