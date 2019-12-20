@@ -37,12 +37,31 @@ function echoAndDie($answer) {
 }
 
 $userId = getUserIdByToken($_REQUEST["token"]);
-$docsId["ids"] = json_decode($_REQUEST["ids"]);
+$docsId = json_decode($_REQUEST["ids"]);
+$emailAddress = $_REQUEST["email"];
 
-if (!$docsId["ids"]) {
+if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
+        "data" => []
+    ];
+    return $answer;
+}
+
+if (!$emailAddress) {
+    $answer = [
+        "code" => 907,
+        "message" => "email is not find",
+        "data" => []
+    ];
+    return $answer;
+}
+
+if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
+    $answer = [
+        "code" => 906,
+        "message" => "user is not find",
         "data" => []
     ];
     return $answer;
@@ -52,18 +71,34 @@ if ($userId["code"]) {
     echoAndDie($userId);
 }
 
-global $USER;
-$USER->Authorize($userId);
-
-$data = [];
-$response = Docs\AjaxCommand::remove($docsId);
-
-$USER->Logout();
-
+$response = Docs\Utils::checkDocuments($docsId, null, true);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"];
 $docsOk = $response["docsOk"];
+
+global $USER;
+$USER->Authorize($userId);
+
+$data = [];
+$params = [
+    "level" => "DOC_SHARE_SIGN",
+    "email" => $emailAddress,
+    "ids" => array_merge($docsOk, $docsBlocked),
+];
+
+$response = Docs\AjaxCommand::share($params);
+
+$USER->Logout();
+
+if (!$response["success"]) {
+    $answer = [
+        "code" => 909,
+        "message" => "something wrong",
+        "date" => []
+    ];
+    echoAndDie($answer);
+}
 
 if ($docsNotFound) {
     foreach ($docsNotFound as $docId) {
@@ -85,21 +120,11 @@ if ($docsNoAccess) {
     }
 }
 
-if ($docsBlocked) {
-    foreach ($docsBlocked as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 911,
-            "message" => "document is blocked",
-        ];
-    }
-}
-
 if ($docsOk) {
     foreach ($docsOk as $docId) {
         $data[$docId] = [
             "id" => $docId,
-            "code" => 900,
+            "code" => 200,
             "message" => "ok",
         ];
     }
@@ -108,7 +133,7 @@ if ($docsOk) {
 $answer = [
     "code" => 200,
     "message" => "ok",
-    "date" => $data
+    "data" => $data
 ];
 
 echoAndDie($answer);
