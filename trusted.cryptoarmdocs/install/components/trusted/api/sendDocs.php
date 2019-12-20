@@ -37,12 +37,31 @@ function echoAndDie($answer) {
 }
 
 $userId = getUserIdByToken($_REQUEST["token"]);
-$docsId["ids"] = json_decode($_REQUEST["ids"]);
+$docsId = json_decode($_REQUEST["ids"]);
+$emailAddress = $_REQUEST["email"];
 
-if (!$docsId["ids"]) {
+if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
+        "data" => []
+    ];
+    return $answer;
+}
+
+if (!$emailAddress) {
+    $answer = [
+        "code" => 907,
+        "message" => "email is not find",
+        "data" => []
+    ];
+    return $answer;
+}
+
+if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
+    $answer = [
+        "code" => 906,
+        "message" => "user is not find",
         "data" => []
     ];
     return $answer;
@@ -52,61 +71,46 @@ if ($userId["code"]) {
     echoAndDie($userId);
 }
 
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, true);
+$docsCannotSend = array_merge($response["docsNotFound"], $response["docsFileNotFound"], $response["docsNoAccess"]);
+$docsOk = $response["docsOk"];
+
 global $USER;
 $USER->Authorize($userId);
 
 $data = [];
-$response = Docs\AjaxCommand::remove($docsId);
+$params = [
+    "event" => "MAIL_EVENT_ID_TO",
+    "messageId" => "MAIL_TEMPLATE_ID_TO",
+    "email" => $emailAddress,
+    "ids" => $docsOk,
+];
+
+$response = Docs\AjaxCommand::sendEmail($params);
 
 $USER->Logout();
 
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
-$docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"];
-$docsOk = $response["docsOk"];
-
-if ($docsNotFound) {
-    foreach ($docsNotFound as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 902,
-            "message" => "document does not exist",
-        ];
-    }
+if (!$response["success"]) {
+    $answer = [
+        "code" => 905,
+        "message" => "documents not send",
+        "date" => $docsId
+    ];
+    echoAndDie($answer);
 }
 
-if ($docsNoAccess) {
-    foreach ($docsNoAccess as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 901,
-            "message" => "have not permission",
-        ];
-    }
-}
-if ($docsBlocked) {
-    foreach ($docsBlocked as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 911,
-            "message" => "document is blocked",
-        ];
-    }
-}
-if ($docsOk) {
-    foreach ($docsOk as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 900,
-            "message" => "ok",
-        ];
-    }
+if (count($docsOk) != count($docsId)) {
+    $answer = [
+        "code" => 904,
+        "message" => "some documents not sent",
+        "date" => $docsCannotSend
+    ];
+    echoAndDie($answer);
 }
 
 $answer = [
     "code" => 200,
     "message" => "ok",
-    "date" => $data
 ];
 
 echoAndDie($answer);
