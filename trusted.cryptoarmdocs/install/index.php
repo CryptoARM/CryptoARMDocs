@@ -99,7 +99,9 @@ Loc::loadMessages(__FILE__);
                 $this->UnInstallDB();
             } elseif ($request["dropDBandIB"] == "Y") {
                 $this->UnInstallDB();
-                trusted_cryptoarmdocsforms::UnInstallIb();
+                if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+                    trusted_cryptoarmdocsforms::UnInstallIb();
+                }
             } elseif ($request["dropLostDocs"]) {
                 $lostDocs = unserialize($request["dropLostDocs"]);
                 foreach ($lostDocs as $id) {
