@@ -37,13 +37,22 @@ function echoAndDie($answer) {
 }
 
 $userId = getUserIdByToken($_REQUEST["token"]);
+$docsId = json_decode($_REQUEST["ids"]);
 
 if ($userId["code"]) {
     echoAndDie($userId);
 }
 
+if (!$docsId) {
+    $answer = [
+        "code" => 908,
+        "message" => "ids is not find",
+        "data" => []
+    ];
+    echoAndDie($answer);
+}
+
 $data = [];
-$docsId = json_decode($_REQUEST["ids"]);
 
 foreach ($docsId as $docId) {
     $doc = Docs\Database::getDocumentById($docId);

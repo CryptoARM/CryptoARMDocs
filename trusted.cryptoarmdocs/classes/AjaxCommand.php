@@ -854,7 +854,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($docIds, SHARE_READ, true)
+            Utils::checkDocuments($docIds, DOC_SHARE_READ, true)
         );
 
         $docsToUnshare = array_merge(

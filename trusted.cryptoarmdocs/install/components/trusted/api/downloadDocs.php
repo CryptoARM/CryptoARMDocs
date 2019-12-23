@@ -39,46 +39,31 @@ function echoAndDie($answer) {
 $userId = getUserIdByToken($_REQUEST["token"]);
 $docsId = json_decode($_REQUEST["ids"]);
 
+if ($userId["code"]) {
+    echoAndDie($userId);
+}
+
 if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
         "data" => []
     ];
-    return $answer;
-}
-
-if ($userId["code"]) {
-    echoAndDie($userId);
+    echoAndDie($answer);
 }
 
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, true);
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
+$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"];
-$docsOk = $response["docsOk"];
+$docsBlocked = $response["docsBlocked"]->toArray();
+$docsOk = $response["docsOk"]->toArray();
 
 $data = [];
-$params = [
-    "email" => $emailAddress,
-    "ids" => array_merge($docsOk, $docsBlocked),
-];
-
-$response = Docs\AjaxCommand::requireToSign($params);
 
 $USER->Logout();
-
-if (!$response["success"]) {
-    $answer = [
-        "code" => 909,
-        "message" => "something wrong",
-        "date" => []
-    ];
-    echoAndDie($answer);
-}
 
 if ($docsNotFound) {
     foreach ($docsNotFound as $docId) {
@@ -104,9 +89,9 @@ if ($docsNoAccess) {
 
 if ($docsBlocked) {
     foreach ($docsBlocked as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 200,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
+            "code" => 900,
             "message" => "document is blocked",
             "url" => ""
         ];
@@ -115,11 +100,11 @@ if ($docsBlocked) {
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
-        $doc = Docs\Database::getDocumentById($docsId);
+        $doc = Docs\Database::getDocumentById($docId["id"]);
         $url = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 200,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
+            "code" => 900,
             "message" => "ok",
             "url" => $url,
         ];

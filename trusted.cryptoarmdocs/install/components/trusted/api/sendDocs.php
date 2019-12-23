@@ -40,13 +40,17 @@ $userId = getUserIdByToken($_REQUEST["token"]);
 $docsId = json_decode($_REQUEST["ids"]);
 $emailAddress = $_REQUEST["email"];
 
+if ($userId["code"]) {
+    echoAndDie($userId);
+}
+
 if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
 }
 
 if (!$emailAddress) {
@@ -55,38 +59,45 @@ if (!$emailAddress) {
         "message" => "email is not find",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
 }
 
-if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
+if (!Docs\Utils::validateEmailAddress($emailAddress)) {
     $answer = [
-        "code" => 906,
-        "message" => "user is not find",
+        "code" => 950,
+        "message" => "email is not valid",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
 }
-
-if ($userId["code"]) {
-    echoAndDie($userId);
-}
-
-$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, true);
-$docsCannotSend = array_merge($response["docsNotFound"], $response["docsFileNotFound"], $response["docsNoAccess"]);
-$docsOk = $response["docsOk"];
 
 global $USER;
 $USER->Authorize($userId);
+
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
+$response["docsFileNotFound"] = $response["docsFileNotFound"]->toArray();
+$docsCannotSend = array_merge($response["docsNotFound"], $response["docsFileNotFound"], $response["docsNoAccess"]);
+$docsOk = $response["docsOk"]->toArray();
+
+$ids = [];
+
+foreach ($response["docsOk"]->toArray() as $doc) {
+    $ids[] = $doc["id"];
+}
 
 $data = [];
 $params = [
     "event" => "MAIL_EVENT_ID_TO",
     "messageId" => "MAIL_TEMPLATE_ID_TO",
-    "email" => $emailAddress,
-    "ids" => $docsOk,
+    "arEventFields" => [
+        "EMAIL" => $emailAddress,
+    ],
+    "ids" => $ids,
 ];
 
-$response = Docs\AjaxCommand::sendEmail($params);
+if ($ids) {
+    $response = Docs\AjaxCommand::sendEmail($params);
+}
 
 $USER->Logout();
 

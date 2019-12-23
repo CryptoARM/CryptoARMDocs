@@ -40,13 +40,17 @@ $userId = getUserIdByToken($_REQUEST["token"]);
 $docsId = json_decode($_REQUEST["ids"]);
 $emailAddress = $_REQUEST["email"];
 
+if ($userId["code"]) {
+    echoAndDie($userId);
+}
+
 if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
 }
 
 if (!$emailAddress) {
@@ -55,7 +59,16 @@ if (!$emailAddress) {
         "message" => "email is not find",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
+}
+
+if (!Docs\Utils::validateEmailAddress($emailAddress)) {
+    $answer = [
+        "code" => 950,
+        "message" => "email is not valid",
+        "data" => []
+    ];
+    echoAndDie($answer);
 }
 
 if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
@@ -64,33 +77,43 @@ if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
         "message" => "user is not find",
         "data" => []
     ];
-    return $answer;
-}
-
-if ($userId["code"]) {
-    echoAndDie($userId);
+    echoAndDie($answer);
 }
 
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, null, true);
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
+$response = Docs\Utils::checkDocuments($docsId, null, false);
+$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"];
-$docsOk = $response["docsOk"];
+$docsBlocked = $response["docsBlocked"]->toArray();
+$docsOk = $response["docsOk"]->toArray();
+
+$ids = [];
+
+foreach ($docsOk as $doc) {
+    $ids[] = $doc["id"];
+}
+
+foreach ($docsBlocked as $doc) {
+    $ids[] = $doc["id"];
+}
 
 $data = [];
 $params = [
     "email" => $emailAddress,
-    "ids" => array_merge($docsOk, $docsBlocked),
+    "ids" => $ids,
 ];
 
-$response = Docs\AjaxCommand::requireToSign($params);
+$response = [];
+
+if (!empty($ids)) {
+    $response = Docs\AjaxCommand::requireToSign($params);
+}
 
 $USER->Logout();
 
-if (!$response["success"]) {
+if (!empty($response) && !$response["success"]) {
     $answer = [
         "code" => 909,
         "message" => "something wrong",
@@ -121,9 +144,9 @@ if ($docsNoAccess) {
 
 if ($docsBlocked) {
     foreach ($docsBlocked as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 200,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
+            "code" => 900,
             "message" => "ok",
         ];
     }
@@ -131,9 +154,9 @@ if ($docsBlocked) {
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 200,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
+            "code" => 900,
             "message" => "ok",
         ];
     }

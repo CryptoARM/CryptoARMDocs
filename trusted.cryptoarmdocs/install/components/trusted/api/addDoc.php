@@ -41,13 +41,26 @@ function echoAndDie($answer) {
 
 $userId = getUserIdByToken($_REQUEST["token"]);
 
+if ($userId["code"]) {
+    echoAndDie($userId);
+}
+
 if (!$_FILES) {
     $answer = [
         "code" => 902,
         "message" => "document does not exist",
         "data" => []
     ];
-    return $answer;
+    echoAndDie($answer);
+}
+
+if (!$_FILES["file"]) {
+    $answer = [
+        "code" => 902,
+        "message" => "incorrect file parameter",
+        "data" => []
+    ];
+    echoAndDie($answer);
 }
 
 global $USER;
@@ -56,6 +69,8 @@ $USER->Authorize($userId);
 $data = [];
 
 $uniqid = (string)uniqid();
+
+$DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
 
 $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
 mkdir($newDocDir);

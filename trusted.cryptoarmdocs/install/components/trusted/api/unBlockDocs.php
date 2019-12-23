@@ -39,34 +39,49 @@ function echoAndDie($answer) {
 $userId = getUserIdByToken($_REQUEST["token"]);
 $docsId = json_decode($_REQUEST["ids"]);
 
+if ($userId["code"]) {
+    echoAndDie($userId);
+}
+
 if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
         "data" => []
     ];
-    return $answer;
-}
-
-if ($userId["code"]) {
-    echoAndDie($userId);
+    echoAndDie($answer);
 }
 
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, null, true);
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]);
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
+$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"];
-$docsOk = $response["docsOk"];
+$docsBlocked = $response["docsBlocked"]->toArray();
+$docsOk = $response["docsOk"]->toArray();
 
 $data = [];
-$response = Docs\AjaxCommand::unblock($docsBlocked);
+
+$ids = [];
+
+foreach ($docsBlocked as $doc) {
+    $ids[] = $doc["id"];
+}
+
+$params = [
+    "ids" => $ids
+];
+
+$response = [];
+
+if (!empty($docsBlocked)) {
+    $response = Docs\AjaxCommand::unblock($params);
+}
 
 $USER->Logout();
 
-if (!$response["success"]) {
+if (!empty($response) && !$response["success"]) {
     $answer = [
         "code" => 909,
         "message" => "something wrong",
@@ -87,9 +102,9 @@ if ($docsNotFound) {
 
 if ($docsBlocked) {
     foreach ($docsBlocked as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
-            "code" => 200,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
+            "code" => 900,
             "message" => "ublocked",
         ];
     }
@@ -107,8 +122,8 @@ if ($docsNoAccess) {
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
-        $data[$docId] = [
-            "id" => $docId,
+        $data[$docId["id"]] = [
+            "id" => $docId["id"],
             "code" => 903,
             "message" => "already unblocked",
         ];
