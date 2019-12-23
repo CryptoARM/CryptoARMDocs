@@ -23,9 +23,9 @@ if (isModuleInstalled($module_id)) {
     Loader::includeModule($module_id);
 }
 
-if ($APPLICATION->GetGroupRight(TR_CA_DOCS_MODULE_ID) >= "R") {
+if ($APPLICATION->GetGroupRight($module_id) >= "R") {
 
-    if (ModuleManager::isModuleInstalled(TR_CA_DOCS_MODULE_ID)) {
+    if (ModuleManager::isModuleInstalled($module_id)) {
         $aMenu = array(
             "parent_menu" => "global_menu_services",
             "section" => "trusted_cryptoarm_docs",
