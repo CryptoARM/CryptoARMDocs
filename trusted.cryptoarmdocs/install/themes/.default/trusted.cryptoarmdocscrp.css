@@ -168,6 +168,9 @@
     height: 56px;
     line-height: 24px;
     box-sizing: border-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .trca-modal-content {
@@ -263,9 +266,9 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 1024px;
+    width: 745px;
     max-height: 100%;
-    min-height: 434px;
+    min-height: 313px;
     z-index: 1050;
     background: white;
     transform: translate(-50%, -50%) scale(1.01);
@@ -285,45 +288,107 @@
 .trca-modal-info-content-left {
     display: flex;
     flex-direction: column;
-    width: 81%;
+    width: 80%;
+    height: 100%;
+    overflow: auto;
+    max-height: 611px;
 }
 
 .trca-modal-info-content-right {
     display: flex;
     flex-direction: column;
-    width: 19%;
+    width: 20%;
     border-left: 2px solid rgba(141, 141, 141, 0.055);
 }
 
-.trca-modal-info-content-button .material-icons {
-    height: 64px;
-    width: 64px;
+.trca-modal-info-button-unshare {
+    cursor: pointer;
+    height: auto;
+    width: auto;
     border-radius: 50%;
-    line-height: 64px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.trca-modal-info-button-unshare .material-icons {
+    border-radius: 50%;
+    vertical-align: center;
+    color: red;
+    font-size: 24px;
+    vertical-align: middle;
+    text-align: center;
+    user-select: none;
+}
+.trca-modal-info-button .material-icons {
+    border-radius: 50%;
     vertical-align: middle;
     color: rgb(33, 150, 243);
-    margin-left: 0;
-    margin-right: 0;
-    font-size: 36px;
+    margin-left: 8px;
+    margin-right: 8px;
+    font-size: 24px;
+    user-select: none;
+}
+.trca-modal-info-content-left .material-icons {
+    padding-right: 16px;
+    padding-left: 16px;
+    margin: auto 0;
+    font-size: 24px;
+    max-width: 36px;
+    box-sizing: content-box;
+    user-select: none;
+    opacity: .72;
+
 }
 
-.trca-modal-content-info-message {
-    margin-left: 5px;
-    margin-right: auto;
-    font-size: 18px;
+.trca-modal-info-row {
+    font-size: 14px;
+    padding-top: 12px;
     color: rgba(0, 0, 0, 0.52);
-    border-bottom: 1px solid rgba(141, 141, 141, 0.055);
-    font-family: 'ArialMT', 'Arial';
+    display: flex;
 }
 
-.trca-modal-info-message:hover {
+.trca-modal-info-name {
+    margin-left: 16px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.52);
+    font-family: 'Roboto';
+    width: 55%;
+    display: flex;
+    align-items: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+}
+
+.trca-modal-info-status {
+    margin-left: 16px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.52);
+    font-family: 'Roboto';
+    display: flex;
+    align-items: center;
+    width: 45%;
+    overflow: hidden;
+}
+
+.trca-modal-info-button-message {
+    margin-left: 8px;
+    margin-right: auto;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.52);
+    font-family: 'Roboto';
+    user-select: none;
+}
+
+/* .trca-modal-info-button-message:hover {
     background-color: rgba(141, 141, 141, 0.055);
-}
+} */
 
-.trca-modal-info-content-button {
+.trca-modal-info-button {
     display: flex;
     cursor: pointer;
-    height: 64px;
+    height: 48px;
     width: 100%;
     line-height: 38px;
     text-align: center;
@@ -332,7 +397,7 @@
     border-bottom: 1px solid rgba(141, 141, 141, 0.055);
 }
 
-.trca-modal-info-content-button:hover {
+.trca-modal-info-button:hover {
     background-color: rgba(141, 141, 141, 0.055);
 }
 
@@ -340,18 +405,49 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 316px 16px 16px 16px;
+    margin: 316px 8px 8px 8px;
     cursor: pointer;
     background-color: rgb(33, 150, 243);
     color: white;
-    width: 164px;
     height: 36px;
     border-radius: 2px;
     text-transform: uppercase;
     -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
     box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
     font-weight: 400;
-    font-size: 18px;
+    font-size: 14px;
+    user-select: none;
+}
+
+@media only screen and (max-width: 750px) {
+    .trca-modal-info-content-right {
+        display: none;
+    }
+    .trca-modal-info-window {
+        width: 90%;
+    }
+    .trca-modal-info-content-left {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-height: 760px) {
+    .trca-modal-info-close {
+        margin: 116px 8px 8px 8px;
+    }
+    .trca-modal-info-content-left {
+        max-height: 411px;
+    }
+}
+
+@media only screen and (max-width: 310px) {
+    .trca-modal-info-status {
+        display: none;
+    }
+    .trca-modal-info-name {
+        width: 100%;
+        margin-right: 16px;
+    }
 }
 
 /* Popup message */

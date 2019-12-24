@@ -41,6 +41,8 @@ $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_2"] = " Mb.";
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE"] = "Загружаемый файл не должен быть пустым.";
 
 $MESS["TR_CA_DOCS_UNSHARE_CONFIRM"] = " Документ будет удалён из вашего списка, но останется у пользователя, который вам его предоставил. Продолжить?";
+$MESS["TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM"] = " Документ будет удалён из списка пользователя. Продолжить?";
+
 
 $MESS["TR_CA_DOCS_MODAL_MESSAGE_1"] = "Документ передан в КриптоАрм";
 $MESS["TR_CA_DOCS_MODAL_MESSAGE_2"] = "Для завершения процесса подпишите документ, либо нажмите ";
@@ -58,4 +60,14 @@ $MESS["TR_CA_DOCS_CLOSE_INFO_WINDOW"] = "Закрыть";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SHARE"] = "Поделиться";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_DOWNLOAD"] = "Скачать";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_SIGN"] = "Подписать";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_VERIFY"] = "Проверить";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_PROTOCOL"] = "Протокол";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_UNSHARE"] = "Закрыть доступ к документу";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_NOT_SHARED"] = "Документ доступен только вам";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_READ"] = "Только чтение";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_MUST_TO_SIGN"] = "Отправлен запрос на подпись";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_SIGNED"] = "Подписан";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_STATUS_UNSIGNED"] = " Не подписан";
+
+
+

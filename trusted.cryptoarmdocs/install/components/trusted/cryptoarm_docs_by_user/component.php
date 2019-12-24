@@ -47,6 +47,41 @@ foreach ($docs->getList() as $doc) {
         } elseif ($doc->accessCheck($currUserId, DOC_SHARE_READ)) {
             $accessLevel = "READ";
         }
+
+        $docObject = Docs\Database::getDocumentById($doc->getId());
+        $docRequire = $docObject->getRequires();
+        if (in_array($USER->GetID(), $docRequire->getUserList())) {
+            $mustToSign = !$docRequire->getSignStatusByUser($USER->GetID());
+        } else {
+            $mustToSign = false;
+        }
+
+        $userIds = Docs\Database::getUserIdsByDocument($doc->getId());
+        $status = [];
+        $signersString = $doc->getSigners();
+        preg_match_all('!\d+!', $signersString, $signersArray);
+
+        foreach ($userIds as $id) {
+            if ($doc->accessCheck($id, DOC_SHARE_SIGN)) {
+                $sharedAccessLevel = "SIGN";
+            } elseif ($doc->accessCheck($id, DOC_SHARE_READ)) {
+                $sharedAccessLevel = "READ";
+            }
+            if (in_array($id, $docRequire->getUserList())) {
+                $sharedMustToSign = !$docRequire->getSignStatusByUser($id);
+            } else {
+                $sharedMustToSign = false;
+            }
+            $status[] = array(
+                'id' => $id,
+                'name' => Docs\Utils::getUserName($id),
+                'access_level' => $sharedAccessLevel,
+                'signed' => in_array($id, $signersArray[0]) ? true : false,
+                'mustToSign' => $sharedMustToSign,
+             );
+        }
+
+
         $docsInfo[] = array(
             "ID" => $doc->getId(),
             "NAME" => $doc->getName(),
@@ -57,6 +92,9 @@ foreach ($docs->getList() as $doc) {
             "ACCESS_LEVEL" => $accessLevel,
             "OWNER_USERNAME" => Docs\Utils::getUserName($doc->getOwner()),
             "DATE_CREATED" => date("d.m.o H:i", strtotime(Docs\Database::getDocumentById($doc->getId())->getCreated())),
+            "MUST_TO_SIGN" => $mustToSign,
+            "SHARED_STATUS_JS" => json_encode($status),
+
         );
         $allIds[] = $doc->getId();
     }

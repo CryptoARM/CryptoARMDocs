@@ -843,8 +843,11 @@ class AjaxCommand {
             return $res;
         }
 
-        $userId = Utils::currUserId();
-        $docIds = $params["ids"];
+        $docIds = $params["docIds"];
+        $userId = $params["userId"];
+        if (!$userId) {
+            $userId = Utils::currUserId();
+        }
 
         if (!$docIds) {
             $res["noIds"] = true;
@@ -854,7 +857,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($docIds, SHARE_READ, true)
+            Utils::checkDocuments($docIds, DOC_SHARE_READ, true)
         );
 
         $docsToUnshare = array_merge(
@@ -876,10 +879,13 @@ class AjaxCommand {
 
         foreach ($docsToUnshare as $docId) {
             $doc = Database::getDocumentById($docId);
+            $docRequire = $doc->getRequires();
             $doc->unshare($userId);
             $doc->save();
+            if (in_array($userId, $docRequire->getUserList())) {
+                Database::removeRequireToSign($docId, $userId);                
+            }
         }
-
         return $res;
     }
 
