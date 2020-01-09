@@ -52,16 +52,23 @@ if (!$docsId) {
     echoAndDie($answer);
 }
 
+if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
+    $answer = [
+        "code" => 906,
+        "message" => "user is not find",
+        "data" => []
+    ];
+    echoAndDie($answer);
+}
+
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, true);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"]->toArray();
 $docsOk = $response["docsOk"]->toArray();
-
-$data = [];
 
 $USER->Logout();
 
@@ -71,7 +78,11 @@ if ($docsNotFound) {
             "id" => $docId,
             "code" => 902,
             "message" => "document does not exist",
-            "url" => null
+            "name" => null,
+            "hash" => null,
+            "token" => null,
+            "license" => null,
+            "url" => null,
         ];
     }
 }
@@ -82,7 +93,11 @@ if ($docsNoAccess) {
             "id" => $docId,
             "code" => 901,
             "message" => "have not permission",
-            "url" => null
+            "name" => null,
+            "hash" => null,
+            "token" => null,
+            "license" => null,
+            "url" => null,
         ];
     }
 }
@@ -93,21 +108,44 @@ if ($docsBlocked) {
             "id" => $docId["id"],
             "code" => 911,
             "message" => "document is blocked",
-            "url" => null
+            "name" => null,
+            "hash" => null,
+            "token" => null,
+            "license" => null,
+            "url" => null,
         ];
     }
 }
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
-        $doc = Docs\Database::getDocumentById($docId["id"]);
+        $doc = Docs\Database::getDocumentById($docId);
+        $token = Docs\Utils::generateUUID();
+
+        if (PROVIDE_LICENSE) {
+            $license = Docs\License::getOneTimeLicense();
+            if (!$license['success']) {
+                $licenseKey = null;
+            } else {
+                $licenseKey = $license['data'];
+            }
+        }
+
         $url = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+
         $data[$docId["id"]] = [
             "id" => $doc->getId(),
             "code" => 900,
             "message" => "ok",
+            "name" => $doc->getName(),
+            "hash" => $doc->getHash(),
+            "token" => $token,
+            "license" => $licenseKey,
             "url" => $url,
         ];
+
+        $doc->block($token);
+        $doc->save();
     }
 }
 

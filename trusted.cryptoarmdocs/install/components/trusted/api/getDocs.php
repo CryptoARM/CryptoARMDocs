@@ -125,7 +125,7 @@ foreach ($docsId as $docId) {
     }
 
     $data[$docId] = [
-        "id" => $docId,
+        "id" => $doc->getId(),
         "code" => 900,
         "message" => "ok",
         "name" => $doc->getName(),
