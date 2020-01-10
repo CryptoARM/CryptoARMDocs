@@ -31,10 +31,10 @@ deploy_red:
   only:
     - web
   script:
-    - sudo rm -rf /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo cp -R trusted.cryptoarmdocs/ /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo chown -R alr:www-data /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
-    - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
+    - sudo rm -rf /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo cp -R trusted.cryptoarmdocs/ /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo chown -R alr:www-data /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo find /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
+    - sudo find /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
     
   when: manual
