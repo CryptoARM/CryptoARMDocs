@@ -8,7 +8,7 @@ deploy_green:
   script:
     - sudo rm -rf /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo cp -R trusted.cryptoarmdocs/ /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo chown -R vv:www-data /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo chown -R alr:www-data /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo find /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
     - sudo find /var/www/green/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
   when: manual
@@ -20,9 +20,21 @@ deploy_yellow:
   script:
     - sudo rm -rf /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo cp -R trusted.cryptoarmdocs/ /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo chown -R vv:www-data /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo chown -R alr:www-data /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
     - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
     
   when: manual
 
+deploy_red:
+  stage: deploy
+  only:
+    - web
+  script:
+    - sudo rm -rf /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo cp -R trusted.cryptoarmdocs/ /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo chown -R alr:www-data /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
+    - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
+    - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
+    
+  when: manual
