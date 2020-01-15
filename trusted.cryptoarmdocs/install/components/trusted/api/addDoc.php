@@ -47,7 +47,7 @@ if ($userId["code"]) {
 
 if (!$_FILES) {
     $answer = [
-        "code" => 902,
+        "code" => 953,
         "message" => "document does not exist",
         "data" => []
     ];
@@ -56,7 +56,7 @@ if (!$_FILES) {
 
 if (!$_FILES["file"]) {
     $answer = [
-        "code" => 902,
+        "code" => 953,
         "message" => "incorrect file parameter",
         "data" => []
     ];
