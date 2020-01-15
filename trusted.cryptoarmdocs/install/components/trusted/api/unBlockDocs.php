@@ -125,7 +125,7 @@ if ($docsOk) {
         $data[$docId["id"]] = [
             "id" => $docId["id"],
             "code" => 903,
-            "message" => "already unblocked",
+            "message" => "document already unblocked",
         ];
     }
 }
