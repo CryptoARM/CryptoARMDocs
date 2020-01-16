@@ -1,5 +1,20 @@
 <?php
 
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
+require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $module_id . "/config.php";
+
 $MESS["TR_CA_DOCS_MODULE_NAME"] = "КриптоАРМ Документы";
 $MESS["TR_CA_DOCS_MODULE_DESCRIPTION"] = "Модуль работы с документами";
 $MESS["TR_CA_DOCS_PARTNER_NAME"] = 'ООО "Цифровые технологии"';

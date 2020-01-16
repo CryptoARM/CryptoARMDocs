@@ -55,7 +55,7 @@ if (!$docsId) {
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, true);
+$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"]->toArray();
