@@ -52,15 +52,6 @@ if (!$docsId) {
     echoAndDie($answer);
 }
 
-if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
-    $answer = [
-        "code" => 906,
-        "message" => "user is not find",
-        "data" => []
-    ];
-    echoAndDie($answer);
-}
-
 global $USER;
 $USER->Authorize($userId);
 
@@ -69,8 +60,6 @@ $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFou
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"]->toArray();
 $docsOk = $response["docsOk"]->toArray();
-
-$USER->Logout();
 
 if ($docsNotFound) {
     foreach ($docsNotFound as $docId) {
@@ -119,7 +108,7 @@ if ($docsBlocked) {
 
 if ($docsOk) {
     foreach ($docsOk as $docId) {
-        $doc = Docs\Database::getDocumentById($docId);
+        $doc = Docs\Database::getDocumentById($docId["id"]);
         $token = Docs\Utils::generateUUID();
 
         if (PROVIDE_LICENSE) {
@@ -148,6 +137,8 @@ if ($docsOk) {
         $doc->save();
     }
 }
+
+$USER->Logout();
 
 $answer = [
     "code" => 200,
