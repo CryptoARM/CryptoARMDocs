@@ -25,7 +25,7 @@ Vue.component ("header-menu", {
     template:`
     <div class="trca-docs-header-menu">
         <div class="trca-docs-header-menu-icon">
-            <div class="material-icons" @click="showHeaderMenu">
+            <div class="material-icons" @click="showHeaderMenu" data-id="data-menu">
                 more_vert
                 <ul class="trca-docs-header-menu ul" :id="id" style = "display: none;">
                     <slot></slot>
@@ -81,7 +81,7 @@ Vue.component ("docs-items", {
         currentuseraccess: String
     },
     template: `
-    <div class="trca-docs-content-items" :title="title" @dblclick="buttonClick">
+    <div class="trca-docs-content-items" :title="title" @dblclick="buttonClick" data-id="data-item">
         <slot></slot>
     </div>`,
     methods: {
@@ -205,6 +205,7 @@ Vue.component ("docs-upload-file", {
         <form enctype="multipart/form-data" method="POST" id="trca-docs-footer-upload">
             <div class="trca-docs-footer-upload-button">
                 <input id="trca-docs-footer-upload-input" class="trca-docs-footer-upload-input"
+                       data-id="data-upload"
                        name="tr_ca_upload_comp_by_user" type="file" @change="buttonClick">
                 {{ title }}
             </div>
@@ -229,7 +230,7 @@ Vue.component ("doc-menu", {
     template:`
     <div class="trca-docs-doc-menu">
         <div class="trca-docs-doc-menu-icon title">
-            <div class="material-icons" :title="title" @click="showDocMenu">
+            <div class="material-icons" :title="title" @click="showDocMenu" data-id="data-menu">
                 {{ icon }}
                 <ul class="trca-docs-doc-menu ul" :id="id" style = "display: none;">
                     <slot></slot>

@@ -72,23 +72,27 @@ $APPLICATION->IncludeComponent(
                     <header-menu-button icon="help"
                                         :id="<?= $allIdsJs ?>"
                                         @button-click="verify"
+                                        data-id="data-verify-all"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="create"
                                         :id="<?= $allIdsJs ?>"
                                         role="CLIENT"
                                         @button-click="sign"
+                                        data-id="data-sign-all"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="file_download"
                                         zipname="<?= $zipName ?>"
                                         :id="<?= $allIdsJs ?>"
                                         @button-click="download"
+                                        data-id="data-download-all"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="email"
                                         :id="<?= $allIdsJs ?>"
                                         @button-click="sendEmail"
+                                        data-id="data-send-all"
                                         message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>">
                     </header-menu-button>
                     <?
@@ -97,6 +101,7 @@ $APPLICATION->IncludeComponent(
                         <header-menu-button icon="delete"
                                             :id="<?= $allIdsJs ?>"
                                             @button-click="remove"
+                                            data-id="data-remove-all"
                                             message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>">
                         </header-menu-button>
                         <?
@@ -197,6 +202,7 @@ $APPLICATION->IncludeComponent(
                                                  :id="<?= $docId ?>"
                                                  docname="<?= $docName ?>"
                                                  @button-click="verify"
+                                                 data-id="data-verify"
                                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
                                 </doc-button>
                                 <?
@@ -210,6 +216,7 @@ $APPLICATION->IncludeComponent(
                                             :id="<?= $docId ?>"
                                             role="CLIENT"
                                             @button-click="sign"
+                                            data-id="data-sign"
                                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>">
                                 </doc-button>
                                 <?
@@ -219,12 +226,14 @@ $APPLICATION->IncludeComponent(
                             <doc-button icon="file_download"
                                         :id="<?= $docId ?>"
                                         @button-click="download"
+                                        data-id="data-download"
                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
                             </doc-button>
 
                             <doc-button icon="info"
                                         :id="<?= $docId ?>"
                                         @button-click="protocol"
+                                        data-id="data-protocol"
                                         title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
                             </doc-button>
 
@@ -234,6 +243,7 @@ $APPLICATION->IncludeComponent(
                                 <doc-menu-button icon="email"
                                                  :id="<?= $docId ?>"
                                                  @button-click="sendEmail"
+                                                 data-id="data-email"
                                                  message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>"
                                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
                                 </doc-menu-button>
@@ -243,12 +253,14 @@ $APPLICATION->IncludeComponent(
                                     <doc-menu-button icon="supervisor_account"
                                                      :id="<?= $docId ?>"
                                                      @button-click="share"
+                                                     data-id="data-share"
                                                      message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>"
                                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE_TITLE"); ?>">
                                     </doc-menu-button>
                                     <doc-menu-button icon="reply_all"
                                                      :id="<?= $docId ?>"
                                                      @button-click="requireToSign"
+                                                     data-id="data-requireToSign"
                                                      message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>"
                                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST_TITLE"); ?>">
                                     </doc-menu-button>
@@ -265,6 +277,7 @@ $APPLICATION->IncludeComponent(
                                     <doc-button icon="delete"
                                                 :id="<?= $docId ?>"
                                                 @button-click="remove"
+                                                data-id="data-remove"
                                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_REMOVE"); ?>">
                                     </doc-button>
                                     <?
@@ -274,6 +287,7 @@ $APPLICATION->IncludeComponent(
                                 <doc-button icon="close"
                                             :id="<?= $docId ?>"
                                             @button-click="unshare"
+                                            data-id="data-unshare"
                                             title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"); ?>">
                                 </doc-button>
                                 <?
