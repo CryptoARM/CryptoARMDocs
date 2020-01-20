@@ -2,7 +2,7 @@ Vue.component ("trca-docs", {
     template: `
     <main class="trca-docs">
         <slot></slot>
-    </main>`
+    </main>`,
 })
 
 Vue.component ("header-title", {
@@ -15,7 +15,7 @@ Vue.component ("header-title", {
             {{ title }}
         </div>
         <slot></slot>
-    </div>`
+    </div>`,
 })
 
 Vue.component ("header-menu", {
@@ -69,15 +69,34 @@ Vue.component ("docs-content", {
     template: `
     <div class="trca-docs-content">
         <slot></slot>
-    </div>`
+    </div>`,
 })
 
 Vue.component ("docs-items", {
+    props: {
+        id: Number,
+        title: String,
+        docname: String,
+        sharedstatus: Array,
+        currentuseraccess: String
+    },
     template: `
-    <div class="trca-docs-content-items">
+    <div class="trca-docs-content-items" :title="title" @dblclick="buttonClick">
         <slot></slot>
-    </div>
-    `
+    </div>`,
+    methods: {
+        buttonClick: function () {
+            let idAr = new Array();
+            idAr = [this.id];
+            this.$emit('button-click', idAr, this.docname, this.sharedstatus, this.currentuseraccess);
+            $(document).on('click', function (e) {
+                if ($(e.target).closest(".trca-modal-overlay").length) {
+                    $('#trca-modal-info-window').hide();
+                    $('#trca-modal-overlay').hide();
+                }
+            });
+        }
+    }
 })
 
 Vue.component ("doc-name", {
@@ -138,7 +157,8 @@ Vue.component ("doc-button", {
     props: {
         id: Number,
         title: String,
-        icon: String
+        icon: String,
+        role: String,
     },
     template: `
     <div class="trca-docs-content-button" :title="title" @click="buttonClick">
@@ -150,7 +170,7 @@ Vue.component ("doc-button", {
         buttonClick: function() {
             let idAr = new Array();
             idAr = [this.id];
-            this.$emit('button-click', idAr);
+            this.$emit('button-click', idAr, this.role);
         }
     }
 })
@@ -171,34 +191,6 @@ Vue.component ("doc-button-arr", {
     methods : {
         buttonClick: function() {
             this.$emit('button-click', this.id, this.zipname);
-        }
-    }
-})
-
-Vue.component("doc-info-button", {
-    props: {
-        id: Number,
-        title: String,
-        icon: String,
-        docname: String
-    },
-    template: `
-    <div class="trca-docs-content-button" :title="title" @click="buttonClick">
-        <i class="material-icons">
-            {{ icon }}
-        </i>
-    </div>`,
-    methods: {
-        buttonClick: function () {
-            let idAr = new Array();
-            idAr = [this.id];
-            this.$emit('button-click', idAr, this.docname);
-            $(document).on('click', function (e) {
-                if ($(e.target).closest(".trca-modal-overlay").length) {
-                    $('#trca-modal-info-window').hide();
-                    $('#trca-modal-overlay').hide();
-                }
-            });
         }
     }
 })

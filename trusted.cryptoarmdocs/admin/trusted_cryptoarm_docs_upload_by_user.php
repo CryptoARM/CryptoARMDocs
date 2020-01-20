@@ -116,7 +116,6 @@ if ($REQUEST_METHOD == "POST") {
                         $quota = new CDiskQuota();
                         if ($quota->checkDiskQuota(array("FILE_SIZE" => $size))) $bQuota = true;
                     }
-
                     if ($bQuota) {
                         if (!$io->Copy($arFile["tmp_name"], $DOC_ROOT . $pathto)) {
                             $strWarning .= Loc::getMessage("TR_CA_DOCS_UPLOAD_FILE_CREATE_ERROR") . " \"" . $pathto . "\". ";

@@ -5,9 +5,9 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER"] = "Документы пол
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER"] = "Владелец: ";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER2"] = "я";
 
-$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"] = "Отправить все документы";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"] = "Отправить все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"] = "Подписать все";
-$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Проверить все";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"] = "Проверить все документы";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"] = "Скачать все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"] = "Удалить все";
 
@@ -26,6 +26,8 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST_TITLE"] = "Отправить �
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_INFO"] = "Информация о документе";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"] = "Дата добавления";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_ID"] = "Номер документа";
+$MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_INFO"] = "Двойной щелчок — информация о документе";
+
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"] = "Добавить";
 
