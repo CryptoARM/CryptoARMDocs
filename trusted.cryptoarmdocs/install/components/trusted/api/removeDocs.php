@@ -37,13 +37,13 @@ function echoAndDie($answer) {
 }
 
 $userId = getUserIdByToken($_REQUEST["token"]);
-$docsId["ids"] = json_decode($_REQUEST["ids"]);
+$docsId = json_decode($_REQUEST["ids"]);
 
 if ($userId["code"]) {
     echoAndDie($userId);
 }
 
-if (!$docsId["ids"]) {
+if (!$docsId) {
     $answer = [
         "code" => 908,
         "message" => "ids is not find",
@@ -55,15 +55,33 @@ if (!$docsId["ids"]) {
 global $USER;
 $USER->Authorize($userId);
 
-$data = [];
-$response = Docs\AjaxCommand::remove($docsId);
-
-$USER->Logout();
-
+$response = Docs\Utils::checkDocuments($docsId, null, false);
 $docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
 $docsNoAccess = $response["docsNoAccess"];
 $docsBlocked = $response["docsBlocked"]->toArray();
 $docsOk = $response["docsOk"]->toArray();
+
+$ids = [];
+$data = [];
+
+foreach ($docsOk as $doc) {
+    $ids["ids"][] = $doc["id"];
+}
+
+if (!empty($ids)) {
+    $response = Docs\AjaxCommand::remove($ids);
+}
+
+$USER->Logout();
+
+if (!empty($response) && !$response["success"]) {
+    $answer = [
+        "code" => 909,
+        "message" => "something wrong",
+        "date" => []
+    ];
+    echoAndDie($answer);
+}
 
 if ($docsNotFound) {
     foreach ($docsNotFound as $docId) {

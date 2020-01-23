@@ -284,5 +284,6 @@ $MESS["TR_CA_DOCS_BP_ORDER"] = "Приказ выбранным сотрудни
 $MESS["TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION"] = "бизнес";
 $MESS["TR_CA_DOCS_CORP_REDACTION"] = "Корпоративный";
 $MESS["TR_CA_DOCS_ENTERPRISE_REDACTION"] = "Энтерпрайз";
+$MESS["TR_CA_DOCS_CORP_REDACTION_CRM"] = "Интернет-магазин + CRM";
 
 
