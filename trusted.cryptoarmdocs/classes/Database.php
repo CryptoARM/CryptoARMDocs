@@ -20,6 +20,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/cla
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Document.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/RequireSign.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/PropertyCollection.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/config.php';
 if (isModuleInstalled('trusted.cryptoarmdocsbp')) {
     require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/trusted.cryptoarmdocsbp/classes/WorkflowDocument.php';
 }

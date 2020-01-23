@@ -73,9 +73,8 @@ foreach ($docsBlocked as $doc) {
 }
 
 $params = [
-    "ids" => $ids
+    "docIds" => $ids
 ];
-
 $response = [];
 
 if (!empty($ids)) {

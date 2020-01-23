@@ -33,6 +33,15 @@ function getUserIdByToken($token) {
         return $answer;
     }
 
+    if (!(TR_ID_OPT_CLIENT_ID && TR_ID_OPT_CLIENT_SECRET)) {
+        $answer = [
+            "code" => 805,
+            "message" => "client id and/or client secret is not find",
+            "data" => []
+        ];
+        return $answer;
+    }
+
     try {
         $responseByToken = Id\TAuthCommand::getUserProfileByToken($token);
     } catch (Exception $exception) {

@@ -132,6 +132,7 @@ Loc::loadMessages(__FILE__);
                     break;
                 case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
                 case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
+                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
                     $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness, $modulesForCorportal);
                     break;
             }
