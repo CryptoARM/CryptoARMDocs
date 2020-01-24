@@ -214,7 +214,7 @@ Vue.component ("docs-upload-file", {
     methods: {
         buttonClick: function(event) {
             file = event.target.files[0];
-            let onFailure = () => { $('#trca-docs-footer-input').val(null) };
+            let onFailure = () => { $('#trca-docs-footer-upload-input').val(null) };
             let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
             trustedCA.checkFileSize(file, this.maxsize, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) }, onFailure );
         }
