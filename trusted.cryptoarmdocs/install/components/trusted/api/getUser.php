@@ -77,3 +77,47 @@ function getUserIdByToken($token) {
 
     return $userId;
 }
+
+function getUserIdByLoginAndPass($login = null, $password = null) {
+    if (!$login) {
+        $answer = [
+            "code" => 810,
+            "message" => "login is not find",
+            "data" => []
+        ];
+        return $answer;
+    }
+
+    if (!$password) {
+        $answer = [
+            "code" => 811,
+            "message" => "password is not find",
+            "data" => []
+        ];
+        return $answer;
+    }
+
+    $rsUser = CUser::GetByLogin($login);
+    if ($arUser = $rsUser->Fetch()) {
+        if (strlen($arUser["PASSWORD"]) > 32) {
+            $salt = substr($arUser["PASSWORD"], 0, strlen($arUser["PASSWORD"]) - 32);
+            $db_password = substr($arUser["PASSWORD"], -32);
+        } else {
+            $salt = "";
+            $db_password = $arUser["PASSWORD"];
+        }
+
+        $user_password = md5($salt . $password);
+
+        if ($user_password == $db_password) {
+            return (int)$arUser["ID"];
+        }
+    }
+
+    $answer = [
+        "code" => 812,
+        "message" => "user is not find",
+        "data" => []
+    ];
+    return $answer;
+}

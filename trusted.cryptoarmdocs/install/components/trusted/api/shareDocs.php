@@ -36,7 +36,22 @@ function echoAndDie($answer) {
     die();
 }
 
-$userId = getUserIdByToken($_REQUEST["token"]);
+switch ($_REQUEST["grandType"]) {
+    case "token":
+        $userId = getUserIdByToken($_REQUEST["token"]);
+        break;
+    case "password":
+        $userId = getUserIdByLoginAndPass($_REQUEST["login"], $_REQUEST["password"]);
+        break;
+    default:
+        $answer = [
+            "code" => 820,
+            "message" => "grandType is not correct",
+            "data" => []
+        ];
+        echoAndDie($answer);
+}
+
 $docsId = json_decode($_REQUEST["ids"]);
 $emailAddress = $_REQUEST["email"];
 
@@ -83,13 +98,15 @@ if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, null, false);
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
-$docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"]->toArray();
-$docsOk = $response["docsOk"]->toArray();
+$checkDocs = Docs\Utils::checkDocuments($docsId, null, false);
+$docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
+$docsNoAccess = $checkDocs["docsNoAccess"];
+$docsBlocked = $checkDocs["docsBlocked"]->toArray();
+$docsOk = $checkDocs["docsOk"]->toArray();
 
 $ids = [];
+$data = [];
+$response = [];
 
 foreach ($docsOk as $doc) {
     $ids[] = $doc["id"];
@@ -99,14 +116,11 @@ foreach ($docsBlocked as $doc) {
     $ids[] = $doc["id"];
 }
 
-$data = [];
 $params = [
     "level" => DOC_SHARE_SIGN,
     "email" => $emailAddress,
     "ids" => $ids,
 ];
-
-$response = [];
 
 if (!empty($ids)) {
     $response = Docs\AjaxCommand::share($params);
@@ -118,7 +132,7 @@ if (!empty($response) && !$response["success"]) {
     $answer = [
         "code" => 909,
         "message" => "something wrong",
-        "date" => []
+        "data" => []
     ];
     echoAndDie($answer);
 }

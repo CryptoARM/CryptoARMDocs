@@ -36,7 +36,22 @@ function echoAndDie($answer) {
     die();
 }
 
-$userId = getUserIdByToken($_REQUEST["token"]);
+switch ($_REQUEST["grandType"]) {
+    case "token":
+        $userId = getUserIdByToken($_REQUEST["token"]);
+        break;
+    case "password":
+        $userId = getUserIdByLoginAndPass($_REQUEST["login"], $_REQUEST["password"]);
+        break;
+    default:
+        $answer = [
+            "code" => 820,
+            "message" => "grandType is not correct",
+            "data" => []
+        ];
+        echoAndDie($answer);
+}
+
 $docsId = json_decode($_REQUEST["ids"]);
 
 if ($userId["code"]) {
@@ -142,7 +157,7 @@ foreach ($docsId as $docId) {
 $answer = [
     "code" => 200,
     "message" => "ok",
-    "date" => $data
+    "data" => $data
 ];
 
 echoAndDie($answer);

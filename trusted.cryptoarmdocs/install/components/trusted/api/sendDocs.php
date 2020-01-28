@@ -36,7 +36,22 @@ function echoAndDie($answer) {
     die();
 }
 
-$userId = getUserIdByToken($_REQUEST["token"]);
+switch ($_REQUEST["grandType"]) {
+    case "token":
+        $userId = getUserIdByToken($_REQUEST["token"]);
+        break;
+    case "password":
+        $userId = getUserIdByLoginAndPass($_REQUEST["login"], $_REQUEST["password"]);
+        break;
+    default:
+        $answer = [
+            "code" => 820,
+            "message" => "grandType is not correct",
+            "data" => []
+        ];
+        echoAndDie($answer);
+}
+
 $docsId = json_decode($_REQUEST["ids"]);
 $emailAddress = $_REQUEST["email"];
 
@@ -74,18 +89,19 @@ if (!Docs\Utils::validateEmailAddress($emailAddress)) {
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
-$response["docsFileNotFound"] = $response["docsFileNotFound"]->toArray();
-$docsCannotSend = array_merge($response["docsNotFound"], $response["docsFileNotFound"], $response["docsNoAccess"]);
-$docsOk = $response["docsOk"]->toArray();
+$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_READ, false);
+$checkDocs["docsFileNotFound"] = $checkDocs["docsFileNotFound"]->toArray();
+$docsCannotSend = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"], $checkDocs["docsNoAccess"]);
+$docsOk = $checkDocs["docsOk"]->toArray();
 
 $ids = [];
+$data = [];
+$response = [];
 
-foreach ($response["docsOk"]->toArray() as $doc) {
+foreach ($docsOk as $doc) {
     $ids[] = $doc["id"];
 }
 
-$data = [];
 $params = [
     "event" => "MAIL_EVENT_ID_TO",
     "messageId" => "MAIL_TEMPLATE_ID_TO",
@@ -105,7 +121,7 @@ if (!$response["success"]) {
     $answer = [
         "code" => 905,
         "message" => "documents not send",
-        "date" => $docsId
+        "data" => $docsId
     ];
     echoAndDie($answer);
 }
@@ -114,7 +130,7 @@ if (count($docsOk) != count($docsId)) {
     $answer = [
         "code" => 904,
         "message" => "some documents not sent",
-        "date" => $docsCannotSend
+        "data" => $docsCannotSend
     ];
     echoAndDie($answer);
 }

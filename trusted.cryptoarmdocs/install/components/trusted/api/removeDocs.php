@@ -36,7 +36,22 @@ function echoAndDie($answer) {
     die();
 }
 
-$userId = getUserIdByToken($_REQUEST["token"]);
+switch ($_REQUEST["grandType"]) {
+    case "token":
+        $userId = getUserIdByToken($_REQUEST["token"]);
+        break;
+    case "password":
+        $userId = getUserIdByLoginAndPass($_REQUEST["login"], $_REQUEST["password"]);
+        break;
+    default:
+        $answer = [
+            "code" => 820,
+            "message" => "grandType is not correct",
+            "data" => []
+        ];
+        echoAndDie($answer);
+}
+
 $docsId = json_decode($_REQUEST["ids"]);
 
 if ($userId["code"]) {
@@ -55,14 +70,15 @@ if (!$docsId) {
 global $USER;
 $USER->Authorize($userId);
 
-$response = Docs\Utils::checkDocuments($docsId, null, false);
-$docsNotFound = array_merge($response["docsNotFound"], $response["docsFileNotFound"]->toArray());
-$docsNoAccess = $response["docsNoAccess"];
-$docsBlocked = $response["docsBlocked"]->toArray();
-$docsOk = $response["docsOk"]->toArray();
+$checkDocs = Docs\Utils::checkDocuments($docsId, null, false);
+$docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
+$docsNoAccess = $checkDocs["docsNoAccess"];
+$docsBlocked = $checkDocs["docsBlocked"]->toArray();
+$docsOk = $checkDocs["docsOk"]->toArray();
 
 $ids = [];
 $data = [];
+$response = [];
 
 foreach ($docsOk as $doc) {
     $ids["ids"][] = $doc["id"];
@@ -78,7 +94,7 @@ if (!empty($response) && !$response["success"]) {
     $answer = [
         "code" => 909,
         "message" => "something wrong",
-        "date" => []
+        "data" => []
     ];
     echoAndDie($answer);
 }
@@ -126,7 +142,7 @@ if ($docsOk) {
 $answer = [
     "code" => 200,
     "message" => "ok",
-    "date" => $data
+    "data" => $data
 ];
 
 echoAndDie($answer);
