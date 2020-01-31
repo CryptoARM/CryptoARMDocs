@@ -23,7 +23,7 @@ deploy_yellow:
     - sudo chown -R alr:www-data /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
     - sudo find /var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
-    
+
   when: manual
 
 deploy_red:
@@ -36,5 +36,4 @@ deploy_red:
     - sudo chown -R alr:www-data /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo find /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
     - sudo find /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
-    
   when: manual
