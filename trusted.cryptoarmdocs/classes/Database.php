@@ -226,6 +226,20 @@ class Database
         $DB->Query($sql);
     }
 
+    static function saveOriginalId($doc) {
+        global $DB;
+        $docId = $doc->getId();
+        $originalId = $doc->getOriginalId();
+        if (!$originalId) {
+            $originalDoc = $doc->getFirstParent();
+            $originalId = $originalDoc->getId();
+            $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
+                . 'ORIGINAL_ID = "' . $originalId . '" '
+                . 'WHERE ID = ' . $docId . ';';
+            $DB->Query($sql);
+        }
+    }
+
     /**
      * Removes document from DB.
      * @global object $DB Bitrix global CDatabase object
