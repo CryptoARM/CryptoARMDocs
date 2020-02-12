@@ -87,6 +87,7 @@ foreach ($docs->getList() as $doc) {
             "NAME" => $doc->getName(),
             "TYPE" => $doc->getType(),
             "TYPE_STRING" => Docs\Utils::getTypeString($doc),
+            "ORIGINAL_ID" => $doc->getOriginalId(),
             "STATUS" => $doc->getStatus(),
             "STATUS_STRING" => Docs\Utils::getStatusString($doc),
             "ACCESS_LEVEL" => $accessLevel,

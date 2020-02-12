@@ -192,7 +192,7 @@ $APPLICATION->IncludeComponent(
                         <doc-info info="<?= $docCreated ?>"
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
                         </doc-info>
-                        <doc-info info="<?= $docId ?>"
+                        <doc-info info="<?= $doc["ORIGINAL_ID"] ?>"
                                   title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
                         </doc-info>
 
