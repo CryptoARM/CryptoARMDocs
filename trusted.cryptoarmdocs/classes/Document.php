@@ -1,18 +1,20 @@
 <?php
+
 namespace Trusted\CryptoARM\Docs;
+
 use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
 
 //checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
+$coreIds = [
     'trusted.cryptoarmdocscrp',
     'trusted.cryptoarmdocsbusiness',
     'trusted.cryptoarmdocsstart',
-);
+];
 foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+    if (file_exists($corePathDir)) {
         $module_id = $coreId;
         break;
     }
@@ -31,8 +33,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/cla
  * @see IEntity
  * @see ISave
  */
-class Document implements IEntity, ISave
-{
+class Document implements IEntity, ISave {
 
     /**
      * Document id. ID field in DB.
@@ -60,6 +61,12 @@ class Document implements IEntity, ISave
     protected $type = DOC_TYPE_FILE;
 
     /**
+     * Sign type in Document. SIGN_TYPE field in DB.
+     * @var int
+     */
+    protected $signType = DOC_SIGN_TYPE_COMBINED;
+
+    /**
      * Document status. STATUS field in DB.
      * @see config.php
      * @var integer
@@ -77,6 +84,12 @@ class Document implements IEntity, ISave
      * @var integer
      */
     protected $childId = null;
+
+    /**
+     * ID of the original document. ORIGINAL_ID FIELD in DB
+     * @var integer
+     */
+    protected $originalId = null;
 
     /**
      * Document file hash. HASH field in DB.
@@ -120,13 +133,11 @@ class Document implements IEntity, ISave
      */
     protected $created = "";
 
-    function __construct()
-    {
+    function __construct() {
         $this->id = null;
     }
 
-    function __destruct()
-    {
+    function __destruct() {
 
     }
 
@@ -135,8 +146,7 @@ class Document implements IEntity, ISave
      * @param array $array
      * @return Document
      */
-    static function fromArray($array)
-    {
+    static function fromArray($array) {
         $doc = null;
         if ($array) {
             $doc = new Document();
@@ -144,9 +154,11 @@ class Document implements IEntity, ISave
             $doc->setName($array["NAME"]);
             $doc->setPath($array["PATH"]);
             $doc->setType($array["TYPE"]);
+            $doc->setSignType($array["SIGN_TYPE"]);
             $doc->setStatus($array["STATUS"]);
             $doc->setParentId($array["PARENT_ID"]);
             $doc->setChildId($array["CHILD_ID"]);
+            $doc->setOriginalId($array["ORIGINAL_ID"]);
             $doc->setHash($array["HASH"]);
             $doc->setSignatures($array["SIGNATURES"]);
             $doc->setSigners($array["SIGNERS"]);
@@ -162,19 +174,18 @@ class Document implements IEntity, ISave
      * Converts document object to associative array.
      * @return array
      */
-    public function toArray()
-    {
-        $a = array(
-            "id"       => $this->getId(),
-            "name"     => $this->getName(),
-            "path"     => $this->getPath(),
-            "type"     => $this->getType(),
-            "status"   => $this->getStatus(),
-            "signatures"  => $this->getSignatures(),
+    public function toArray() {
+        $a = [
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "path" => $this->getPath(),
+            "type" => $this->getType(),
+            "status" => $this->getStatus(),
+            "signatures" => $this->getSignatures(),
             "parentId" => $this->getParentId(),
-            "childId"  => $this->getChildId(),
-            "hash"  => $this->getHash(),
-        );
+            "childId" => $this->getChildId(),
+            "hash" => $this->getHash(),
+        ];
         return $a;
     }
 
@@ -182,8 +193,7 @@ class Document implements IEntity, ISave
      * Returns document id.
      * @return integer|null
      */
-    function getId()
-    {
+    function getId() {
         return (int)$this->id;
     }
 
@@ -192,8 +202,7 @@ class Document implements IEntity, ISave
      * @param integer|null $id
      * @return void
      */
-    function setId($id)
-    {
+    function setId($id) {
         $this->id = (int)$id;
     }
 
@@ -201,8 +210,7 @@ class Document implements IEntity, ISave
      * Returns document name.
      * @return string
      */
-    function getName()
-    {
+    function getName() {
         return $this->name;
     }
 
@@ -211,8 +219,7 @@ class Document implements IEntity, ISave
      * @param string $name
      * @return void
      */
-    function setName($name)
-    {
+    function setName($name) {
         $this->name = $name;
     }
 
@@ -220,8 +227,7 @@ class Document implements IEntity, ISave
      * Returns path to the document.
      * @return string
      */
-    function getPath()
-    {
+    function getPath() {
         return $this->path;
     }
 
@@ -230,8 +236,7 @@ class Document implements IEntity, ISave
      * @param string $path
      * @return void
      */
-    function setPath($path)
-    {
+    function setPath($path) {
         $this->path = $path;
     }
 
@@ -239,8 +244,7 @@ class Document implements IEntity, ISave
      * Returns document type.
      * @return integer
      */
-    function getType()
-    {
+    function getType() {
         return (int)$this->type;
     }
 
@@ -249,17 +253,32 @@ class Document implements IEntity, ISave
      * @param integer $type
      * @return void
      */
-    function setType($type)
-    {
+    function setType($type) {
         $this->type = (int)$type;
+    }
+
+    /**
+     * Return sign type
+     * @return int
+     */
+    function getSignType() {
+        return (int)$this->signType;
+    }
+
+    /**
+     * Sets sign type
+     * @param int $signType
+     * @return void
+     */
+    function setSignType($signType) {
+        $this->signType = (int)$signType;
     }
 
     /**
      * Returns document status.
      * @return integer
      */
-    function getStatus()
-    {
+    function getStatus() {
         return (int)$this->status;
     }
 
@@ -268,8 +287,7 @@ class Document implements IEntity, ISave
      * @param integer $status
      * @return void
      */
-    function setStatus($status)
-    {
+    function setStatus($status) {
         $this->status = (int)$status;
     }
 
@@ -277,8 +295,7 @@ class Document implements IEntity, ISave
      * Returns parent document id.
      * @return integer|null
      */
-    function getParentId()
-    {
+    function getParentId() {
         if (is_null($this->parentId)) {
             return null;
         } else {
@@ -291,8 +308,7 @@ class Document implements IEntity, ISave
      * @param integer|null $parentId
      * @return void
      */
-    function setParentId($parentId)
-    {
+    function setParentId($parentId) {
         if (is_null($parentId)) {
             $this->parentId = null;
         } else {
@@ -304,8 +320,7 @@ class Document implements IEntity, ISave
      * Returns id of the child of the document.
      * @return integer|null
      */
-    function getChildId()
-    {
+    function getChildId() {
         if (is_null($this->childId)) {
             return null;
         } else {
@@ -318,8 +333,7 @@ class Document implements IEntity, ISave
      * @param integer|null $childId
      * @return void
      */
-    function setChildId($childId)
-    {
+    function setChildId($childId) {
         if (is_null($childId)) {
             $this->childId = null;
         } else {
@@ -328,11 +342,34 @@ class Document implements IEntity, ISave
     }
 
     /**
+     * Returns id of the original document
+     * @return integer|null
+     */
+    function getOriginalId() {
+        if (is_null($this->originalId)) {
+            $originalId = Database::saveOriginalId($this);
+            $this->originalId = $originalId;
+        }
+        return $this->originalId;
+    }
+
+    /**
+     * Sets id of the original document
+     * @param integer|null $originalId
+     * @return void
+     */
+    function setOriginalId($originalId = null) {
+        if (!$originalId) {
+            $originalId = Database::saveOriginalId($this);
+        }
+        $this->originalId = (int)$originalId;
+    }
+
+    /**
      * Returns document file hash.
      * @return string
      */
-    function getHash()
-    {
+    function getHash() {
         // Older versions of module didn't have hash field
         // so we have to calculate and save it on first access
         if (is_null($this->hash)) {
@@ -348,8 +385,7 @@ class Document implements IEntity, ISave
      * @param string $hash
      * @return void
      */
-    function setHash($hash)
-    {
+    function setHash($hash) {
         if (is_null($this->hash)) {
             $this->hash = $hash;
         }
@@ -359,8 +395,7 @@ class Document implements IEntity, ISave
      * Returns signatures of the document.
      * @return string JSON
      */
-    function getSignatures()
-    {
+    function getSignatures() {
         return $this->signatures;
     }
 
@@ -369,8 +404,7 @@ class Document implements IEntity, ISave
      * @param string $signatures JSON
      * @return void
      */
-    function setSignatures($signatures)
-    {
+    function setSignatures($signatures) {
         $this->signatures = $signatures;
     }
 
@@ -378,8 +412,7 @@ class Document implements IEntity, ISave
      * Returns signers of the document.
      * @return void
      */
-    function getSigners()
-    {
+    function getSigners() {
         return $this->signers;
     }
 
@@ -388,8 +421,7 @@ class Document implements IEntity, ISave
      * @param string $signers
      * @return void
      */
-    function setSigners($signers)
-    {
+    function setSigners($signers) {
         $this->signers = $signers;
     }
 
@@ -397,8 +429,7 @@ class Document implements IEntity, ISave
      * Returns id of the user that blocked the doc.
      * @return integer
      */
-    function getBlockBy()
-    {
+    function getBlockBy() {
         if (is_null($this->blockBy)) {
             return null;
         } else {
@@ -411,8 +442,7 @@ class Document implements IEntity, ISave
      * @param integer $blockBy
      * @return void
      */
-    function setBlockBy($blockBy)
-    {
+    function setBlockBy($blockBy) {
         if (is_null($blockBy)) {
             $this->blockBy = null;
         } else {
@@ -424,8 +454,7 @@ class Document implements IEntity, ISave
      * Returns token of the blocked doc.
      * @return string
      */
-    function getBlockToken()
-    {
+    function getBlockToken() {
         return $this->blockToken;
     }
 
@@ -434,8 +463,7 @@ class Document implements IEntity, ISave
      * @param string $blockToken
      * @return void
      */
-    function setBlockToken($blockToken)
-    {
+    function setBlockToken($blockToken) {
         $this->blockToken = $blockToken;
     }
 
@@ -443,8 +471,7 @@ class Document implements IEntity, ISave
      * Returns time when the doc was blocked.
      * @return string
      */
-    function getBlockTime()
-    {
+    function getBlockTime() {
         return $this->blockTime;
     }
 
@@ -453,8 +480,7 @@ class Document implements IEntity, ISave
      * @param string $blockTime
      * @return void
      */
-    function setBlockTime($blockTime)
-    {
+    function setBlockTime($blockTime) {
         $this->blockTime = $blockTime;
     }
 
@@ -462,8 +488,7 @@ class Document implements IEntity, ISave
      * Returns document creation time.
      * @return string "YYYY-MM-DD hh:mm:ss"
      */
-    function getCreated()
-    {
+    function getCreated() {
         return $this->created;
     }
 
@@ -472,8 +497,7 @@ class Document implements IEntity, ISave
      * @param string $time "YYYY-MM-DD hh:mm:ss"
      * @return void
      */
-    function setCreated($time)
-    {
+    function setCreated($time) {
         $this->created = $time;
     }
 
@@ -481,8 +505,7 @@ class Document implements IEntity, ISave
      * Returns last document in the chain of signed documents.
      * @return Document
      */
-    function getLastDocument()
-    {
+    function getLastDocument() {
         if ($this->hasChild()) {
             $child = $this->getChild();
             return $child->getLastDocument();
@@ -495,8 +518,7 @@ class Document implements IEntity, ISave
      * Checks if the document has child.
      * @return boolean
      */
-    function hasChild()
-    {
+    function hasChild() {
         if ($this->getChildId()) {
             return true;
         } else {
@@ -508,8 +530,7 @@ class Document implements IEntity, ISave
      * Returns child document if it exists.
      * @return Document|null
      */
-    function getChild()
-    {
+    function getChild() {
         if ($this->childId) {
             return Database::getDocumentById($this->childId);
         } else {
@@ -522,8 +543,7 @@ class Document implements IEntity, ISave
      * @param Document $doc
      * @return void
      */
-    function setChild($doc)
-    {
+    function setChild($doc) {
         $this->childId = $doc->id;
     }
 
@@ -531,8 +551,7 @@ class Document implements IEntity, ISave
      * Checks if the document has parent.
      * @return boolean
      */
-    function hasParent()
-    {
+    function hasParent() {
         if ($this->getParentId()) {
             return true;
         } else {
@@ -544,8 +563,7 @@ class Document implements IEntity, ISave
      * Returns parent document if it exists.
      * @return Document|null
      */
-    function getParent()
-    {
+    function getParent() {
         if ($this->parentId) {
             return Database::getDocumentById($this->parentId);
         } else {
@@ -570,8 +588,7 @@ class Document implements IEntity, ISave
      * @param Document $parent
      * @return void
      */
-    function setParent($parent)
-    {
+    function setParent($parent) {
         $this->parentId = $parent->id;
     }
 
@@ -579,15 +596,14 @@ class Document implements IEntity, ISave
      * Returns document sign info as array.
      * @return array
      */
-    function getSignaturesToArray()
-    {
+    function getSignaturesToArray() {
         $signatures = json_decode($this->signatures, true);
         if (!is_array($signatures)) {
-            return array();
+            return [];
         }
         foreach ($signatures as $index => $signature) {
             $subjectName = explode(',', $signature['subjectName']);
-            $newSubjectName = array();
+            $newSubjectName = [];
             foreach ($subjectName as $value) {
                 $value = explode('=', $value);
                 if ($value[0] !== '') {
@@ -597,7 +613,7 @@ class Document implements IEntity, ISave
             $signatures[$index]['subjectName'] = $newSubjectName;
 
             $issuerName = explode(',', $signature['issuerName']);
-            $newIssuerName = array();
+            $newIssuerName = [];
             foreach ($issuerName as $value) {
                 $value = explode('=', $value);
                 if ($value[0] !== '') {
@@ -613,8 +629,7 @@ class Document implements IEntity, ISave
      * Returns document sign info as html table
      * @return string
      */
-    function getSignaturesToTable($fields = array('time', 'name', 'org'), $protocol)
-    {
+    function getSignaturesToTable($fields = ['time', 'name', 'org'], $protocol) {
         $signatures = $this->getSignaturesToArray();
         if (!$signatures || !$fields) {
             return '';
@@ -630,7 +645,7 @@ class Document implements IEntity, ISave
 
         $i = 1;
         $signaturesString .= '<th style="color: #00000052; width: 20px; font-size: 13px; padding-bottom: 14px;">' .
-        Loc::getMessage('TR_CA_DOCS_SIGN_NUMBER') . '</th>';
+            Loc::getMessage('TR_CA_DOCS_SIGN_NUMBER') . '</th>';
 
         foreach ($fields as $field) {
             switch ($field) {
@@ -747,8 +762,7 @@ class Document implements IEntity, ISave
      * Returns document signers as array
      * @return array
      */
-    function getSignersToArray()
-    {
+    function getSignersToArray() {
         return preg_split("/,/", $this->getSigners(), null, PREG_SPLIT_NO_EMPTY);
     }
 
@@ -756,8 +770,7 @@ class Document implements IEntity, ISave
      * Return collection of properties of document.
      * @return PropertyCollection
      */
-    function getProperties()
-    {
+    function getProperties() {
         $props = &$this->properties;
         if (!$props) {
             if ($this->getId()) {
@@ -774,8 +787,7 @@ class Document implements IEntity, ISave
      * @param PropertyCollection $properties
      * @return void
      */
-    function setProperties($properties)
-    {
+    function setProperties($properties) {
         $this->properties = $properties;
     }
 
@@ -829,6 +841,8 @@ class Document implements IEntity, ISave
         $new->setType($this->getType());
         $new->setSignatures($this->getSignatures());
         $new->setSigners($this->getSigners());
+        $new->setSignType($this->getSignType());
+        $new->setOriginalId($this->getOriginalId());
 
         $props = $this->getProperties()->getList();
         foreach ($props as &$prop) {
@@ -856,8 +870,8 @@ class Document implements IEntity, ISave
      * Used to send document to signing app.
      * @return string
      */
-    public function toJSON()
-    {
+    public
+    function toJSON() {
         return json_encode($this->jsonSerialize());
     }
 
@@ -865,23 +879,23 @@ class Document implements IEntity, ISave
      * Prepares document info for converting to JSON.
      * @return array
      */
-    public function jsonSerialize()
-    {
-        $a = array(
+    public
+    function jsonSerialize() {
+        $a = [
             "name" => $this->getName(),
             "url" => $this->getUrl(),
             "id" => $this->getId(),
-        );
+        ];
         return $a;
     }
 
-    public function getFullPath()
-    {
+    public
+    function getFullPath() {
         return $_SERVER['DOCUMENT_ROOT'] . urldecode($this->getPath());
     }
 
-    public function getHtmlPath()
-    {
+    public
+    function getHtmlPath() {
         // TODO: remove getHtmlPath?
         return str_replace($_SERVER['DOCUMENT_ROOT'], "", $this->path);
     }
@@ -890,8 +904,8 @@ class Document implements IEntity, ISave
      * Returns url for downloading document file through controller.
      * @return string
      */
-    public function getUrl()
-    {
+    public
+    function getUrl() {
         return TR_CA_DOCS_AJAX_CONTROLLER . "?command=content&id=" . $this->getId();
     }
 
@@ -900,8 +914,10 @@ class Document implements IEntity, ISave
      * @param integer $id
      * @return void
      */
-    public function addSigner($id)
-    {
+    public
+    function addSigner(
+        $id
+    ) {
         $signers = $this->getSignersToArray();
         $signers[] = (int)$id;
         $this->setSigners(implode(",", $signers));
@@ -912,8 +928,10 @@ class Document implements IEntity, ISave
      * @param string $token
      * @return void
      */
-    public function block($token)
-    {
+    public
+    function block(
+        $token
+    ) {
         $userId = Utils::currUserId();
         if ($userId && $token) {
             $this->setStatus(DOC_STATUS_BLOCKED);
@@ -927,20 +945,20 @@ class Document implements IEntity, ISave
      * Unblocks the document.
      * @return void
      */
-    public function unblock()
-    {
-            $this->setStatus(DOC_STATUS_NONE);
-            $this->setBlockBy(null);
-            $this->setBlockToken(null);
-            $this->setBlockTime(null);
+    public
+    function unblock() {
+        $this->setStatus(DOC_STATUS_NONE);
+        $this->setBlockBy(null);
+        $this->setBlockToken(null);
+        $this->setBlockTime(null);
     }
 
     /**
      * Removes document and all its parents.
      * @return void
      */
-    public function remove()
-    {
+    public
+    function remove() {
         // Remove record in database
         Database::removeDocumentRecursively($this);
         // Remove document file
@@ -960,7 +978,7 @@ class Document implements IEntity, ISave
         $dir = dirname($file);
         if (is_readable($dir)) {
             if (preg_match("/^([\dabcdef]){13}$/", basename($dir))) {
-                if (count(array_diff(scandir($dir), array(".", ".."))) == 0) {
+                if (count(array_diff(scandir($dir), [".", ".."])) == 0) {
                     Directory::deleteDirectory($dir);
                 }
             }
@@ -969,8 +987,8 @@ class Document implements IEntity, ISave
 
     /**
      * Shares document this the specified user at the specified level
-     * @param int $userId Bitrix user id
-     * @param string $level See "Document access level" in config
+     * @param int    $userId Bitrix user id
+     * @param string $level  See "Document access level" in config
      * @return void
      */
     public function share($userId, $level) {
@@ -1030,7 +1048,7 @@ class Document implements IEntity, ISave
     /**
      * Checks if user has access to the document at the specified level.
      * When called without level - checks for admin rights and ownership.
-     * @param int $userId
+     * @param int    $userId
      * @param string $level See Document access levels in config
      * @return bool
      */
@@ -1063,8 +1081,7 @@ class Document implements IEntity, ISave
      * Returns true if associated file exists on disk.
      * @return boolean
      */
-    function checkFile()
-    {
+    function checkFile() {
         $file = $_SERVER["DOCUMENT_ROOT"] . urldecode($this->getPath());
         return file_exists($file);
     }

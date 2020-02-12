@@ -1,16 +1,18 @@
 <?php
+
 namespace Trusted\CryptoARM\Docs;
+
 use Bitrix\Main\Loader;
 
 //checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
+$coreIds = [
     'trusted.cryptoarmdocscrp',
     'trusted.cryptoarmdocsbusiness',
     'trusted.cryptoarmdocsstart',
-);
+];
 foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+    if (file_exists($corePathDir)) {
         $module_id = $coreId;
         break;
     }
@@ -29,16 +31,14 @@ if (isModuleInstalled('trusted.cryptoarmdocsbp')) {
 /**
  * DB interaction class.
  */
-class Database
-{
+class Database {
     /**
      * Return collection of all last documents.
      * Last documents in the chain have empty CHILD_ID field.
-     * @global object $DB Bitrix global CDatabase object
      * @return DocumentCollection
+     * @global object $DB Bitrix global CDatabase object
      */
-    static function getDocuments()
-    {
+    static function getDocuments() {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE CHILD_ID is null';
         $rows = $DB->Query($sql);
@@ -52,12 +52,11 @@ class Database
     /**
      * Saves document in DB.
      * If the document doesn't have an id creates new record for it.
-     * @global object $DB Bitrix global CDatabase object
      * @param Document $doc Document to be saved
      * @return void
+     * @global object  $DB  Bitrix global CDatabase object
      */
-    static function saveDocument($doc)
-    {
+    static function saveDocument($doc) {
         if ($doc->getId() == null) {
             Database::insertDocument($doc);
         } else {
@@ -67,6 +66,7 @@ class Database
             $blockBy = $doc->getBlockBy();
             $blockToken = $doc->getBlockToken();
             $blockTime = $doc->getBlockTime();
+            $originalId = $doc->getOriginalId();
             if (is_null($parentId)) {
                 $parentId = 'NULL';
             }
@@ -99,35 +99,40 @@ class Database
                 . "BLOCK_TIME = '" . $blockTime . "' "
                 . 'WHERE ID = ' . $doc->getId();
             $DB->Query($sql);
+            Database::saveOriginalId($doc, $originalId);
             Database::saveDocumentParent($doc, $doc->getId());
         }
     }
 
     /**
      * Adds new document in DB.
-     * @global object $DB Bitrix global CDatabase object
      * @param Document $doc Document to be added
      * @return void
+     * @global object  $DB  Bitrix global CDatabase object
      */
-    static function insertDocument($doc)
-    {
+    static function insertDocument($doc) {
         global $DB;
         $parentId = $doc->getParentId();
         $childId = $doc->getChildId();
+        $originalId = $doc->getOriginalId();
         if (is_null($parentId)) {
             $parentId = 'NULL';
         }
         if (is_null($childId)) {
             $childId = 'NULL';
         }
+        if (is_null($originalId)) {
+            $originalId = 'NULL';
+        }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(NAME, PATH, TYPE, PARENT_ID, CHILD_ID, HASH, SIGNATURES, SIGNERS)'
+            . '(NAME, PATH, TYPE, PARENT_ID, CHILD_ID, ORIGINAL_ID, HASH, SIGNATURES, SIGNERS)'
             . 'VALUES ('
             . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
             . $doc->getType() . ', '
             . $parentId . ', '
             . $childId . ', '
+            . $originalId . ', '
             . '"' . $DB->ForSql($doc->getHash()) . '", '
             . "'" . $DB->ForSql($doc->getSignatures()) . "', "
             . '"' . $DB->ForSql($doc->getSigners()) . '"'
@@ -135,6 +140,9 @@ class Database
         $DB->Query($sql);
         $doc->setId($DB->LastID());
         Database::saveDocumentParent($doc, $doc->getId());
+        if (is_null($originalId)) {
+            Database::saveOriginalId($doc, $doc->getId());
+        }
     }
 
     static function saveRequire($require) {
@@ -202,12 +210,11 @@ class Database
 
     /**
      * Updates document parent with child id.
-     * @param object $doc Parent document
-     * @param integer $id Document id. Default NULL
+     * @param object  $doc Parent document
+     * @param integer $id  Document id. Default NULL
      * @return void
      */
-    protected static function saveDocumentParent($doc, $id = null)
-    {
+    protected static function saveDocumentParent($doc, $id = null) {
         if ($doc->getParent()) {
             $parent = $doc->getParent();
             $parent->setChildId($id);
@@ -215,8 +222,7 @@ class Database
         }
     }
 
-    static function saveDocumentHash($doc)
-    {
+    static function saveDocumentHash($doc) {
         global $DB;
         $docId = $doc->getId();
         $hash = $doc->getHash();
@@ -226,28 +232,27 @@ class Database
         $DB->Query($sql);
     }
 
-    static function saveOriginalId($doc) {
+    static function saveOriginalId($doc, $originalId = null) {
         global $DB;
         $docId = $doc->getId();
-        $originalId = $doc->getOriginalId();
-        if (!$originalId) {
+        if (is_null($originalId)) {
             $originalDoc = $doc->getFirstParent();
             $originalId = $originalDoc->getId();
-            $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
-                . 'ORIGINAL_ID = "' . $originalId . '" '
-                . 'WHERE ID = ' . $docId . ';';
-            $DB->Query($sql);
         }
+        $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
+            . 'ORIGINAL_ID = "' . $originalId . '" '
+            . 'WHERE ID = ' . $docId . ';';
+        $DB->Query($sql);
+        return $originalId;
     }
 
     /**
      * Removes document from DB.
-     * @global object $DB Bitrix global CDatabase object
      * @param Document $doc Document to be removed
      * @return void
+     * @global object  $DB  Bitrix global CDatabase object
      */
-    static function removeDocument(&$doc)
-    {
+    static function removeDocument(&$doc) {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_DOCUMENTS . '  '
             . 'WHERE ID = ' . $doc->getId();
@@ -262,12 +267,11 @@ class Database
     /**
      * Removes document and all of its parents from DB.
      * Also cleans up any workflows, associated with the document.
-     * @global object $DB Bitrix global CDatabase object
      * @param Document $doc Document to be removed
      * @return void
+     * @global object  $DB  Bitrix global CDatabase object
      */
-    static function removeDocumentRecursively(&$doc)
-    {
+    static function removeDocumentRecursively(&$doc) {
         global $DB;
         $parent = null;
         if ($doc->getParent()) {
@@ -277,7 +281,7 @@ class Database
             if (isModuleInstalled("trusted.cryptoarmdocsbp")) {
                 \CBPDocument::OnDocumentDelete(
                     WorkflowDocument::getComplexDocumentId($doc->getId()),
-                    $errors = array()
+                    $errors = []
                 );
             }
         }
@@ -289,12 +293,11 @@ class Database
 
     /**
      * Get document from DB by ID.
-     * @global object $DB Bitrix global CDatabase object
      * @param integer $id Document ID
      * @return Document
+     * @global object $DB Bitrix global CDatabase object
      */
-    static function getDocumentById($id)
-    {
+    static function getDocumentById($id) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE ID = ' . $id;
         $rows = $DB->Query($sql);
@@ -306,12 +309,11 @@ class Database
     /**
      * Returns collection of last documents by name.
      * Multiple documents can have the same name.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $name Name of the document.
+     * @param string  $name Name of the document.
      * @return DocumentCollection
+     * @global object $DB   Bitrix global CDatabase object
      */
-    static function getDocumentsByName($name)
-    {
+    static function getDocumentsByName($name) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS
             . ' WHERE NAME LIKE CONCAT("%", TRIM("' . $DB->ForSql($name) . '"), "%")'
@@ -327,12 +329,11 @@ class Database
 
     /**
      * Get documents from DB by BLOCK_TOKEN.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $blockToken string BLOCK_TOKEN
+     * @param string  $blockToken string BLOCK_TOKEN
      * @return DocumentCollection
+     * @global object $DB         Bitrix global CDatabase object
      */
-    static function getDocumentsByBlockToken($token)
-    {
+    static function getDocumentsByBlockToken($token) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_DOCUMENTS . ' WHERE BLOCK_TOKEN = ' . '"' . $DB->ForSql($token) . '"';
         $rows = $DB->Query($sql);
@@ -347,13 +348,12 @@ class Database
     /**
      * Saves property in DB.
      * If property ID is null creates new record.
-     * @global object $DB Bitrix global CDatabase object
-     * @param Property $property Property to be saved
-     * @param string $tableName DB table name
+     * @param Property $property  Property to be saved
+     * @param string   $tableName DB table name
      * @return void
+     * @global object  $DB        Bitrix global CDatabase object
      */
-    static function saveProperty($property, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function saveProperty($property, $tableName = DB_TABLE_PROPERTY) {
         if ($property->getId() == null) {
             Database::insertProperty($property, $tableName);
         } else {
@@ -369,20 +369,19 @@ class Database
 
     /**
      * Adds new property to DB.
-     * @global object $DB Bitrix global CDatabase object
-     * @param Property $property Property to be added
-     * @param string $tableName DB table name
+     * @param Property $property  Property to be added
+     * @param string   $tableName DB table name
      * @return void
+     * @global object  $DB        Bitrix global CDatabase object
      */
-    static function insertProperty($property, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function insertProperty($property, $tableName = DB_TABLE_PROPERTY) {
         global $DB;
         $sql = 'INSERT INTO ' . $tableName .
-              ' (DOCUMENT_ID, TYPE, VALUE)
+            ' (DOCUMENT_ID, TYPE, VALUE)
                 VALUES (' .
-                    $property->getDocumentId() . ', "' .
-                    $DB->ForSql($property->getType()) . '", "' .
-                    $DB->ForSql($property->getValue()) . '")';
+            $property->getDocumentId() . ', "' .
+            $DB->ForSql($property->getType()) . '", "' .
+            $DB->ForSql($property->getValue()) . '")';
         $DB->Query($sql);
         $property->setId($DB->LastID());
     }
@@ -391,8 +390,7 @@ class Database
      * Removes document property from the DB
      * @param Property $property Property to be removed
      */
-    static function removeProperty($property)
-    {
+    static function removeProperty($property) {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_PROPERTY . '  '
             . 'WHERE ID = ' . $property->getId();
@@ -401,14 +399,13 @@ class Database
 
     /**
      * Gets property collection from DB by specified type and value fields.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $type TYPE field
-     * @param string $value VALUE field
-     * @param string $tableName DB table name
+     * @param string  $type      TYPE field
+     * @param string  $value     VALUE field
+     * @param string  $tableName DB table name
      * @return PropertyCollection
+     * @global object $DB        Bitrix global CDatabase object
      */
-    static function getPropertiesByTypeAndValue($type, $value, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function getPropertiesByTypeAndValue($type, $value, $tableName = DB_TABLE_PROPERTY) {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName .
             ' WHERE TYPE = "' . $DB->ForSql($type) .
@@ -423,14 +420,13 @@ class Database
 
     /**
      * Get single property from DB by specified field.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $fldName Field in DB table
-     * @param string $value VALUE field
-     * @param string $tableName DB table name
+     * @param string  $fldName   Field in DB table
+     * @param string  $value     VALUE field
+     * @param string  $tableName DB table name
      * @return Property
+     * @global object $DB        Bitrix global CDatabase object
      */
-    static function getPropertyBy($fldName, $value, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function getPropertyBy($fldName, $value, $tableName = DB_TABLE_PROPERTY) {
         $props = Database::getPropertiesBy($fldName, $value, $tableName);
         $res = null;
         if ($props->count()) {
@@ -441,14 +437,13 @@ class Database
 
     /**
      * Gets property collection from DB by specified field.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $fldName Field in DB
-     * @param string $value VALUE field
-     * @param string $tableName DB table name
+     * @param string  $fldName   Field in DB
+     * @param string  $value     VALUE field
+     * @param string  $tableName DB table name
      * @return PropertyCollection
+     * @global object $DB        Bitrix global CDatabase object
      */
-    static function getPropertiesBy($fldName, $value, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function getPropertiesBy($fldName, $value, $tableName = DB_TABLE_PROPERTY) {
         global $DB;
         $sql = 'SELECT * FROM ' . $tableName . ' WHERE  ' . $fldName . ' = "' . $DB->ForSql($value) . '"';
         $rows = $DB->Query($sql);
@@ -462,15 +457,14 @@ class Database
     /**
      * Gets property collection from DB by document ID.
      * @param integer $documentId Document ID
-     * @param string $tableName DB table name
+     * @param string  $tableName  DB table name
      * @return PropertyCollection
      */
-    static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY)
-    {
+    static function getPropertiesByDocumentId($documentId, $tableName = DB_TABLE_PROPERTY) {
         return Database::getPropertiesBy('DOCUMENT_ID', $documentId, $tableName);
     }
 
-    static function getRequiresByDocumentId($documentId){
+    static function getRequiresByDocumentId($documentId) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_REQUIRE . ' WHERE DOCUMENT_ID = ' . $documentId;
         $rows = $DB->Query($sql);
@@ -484,12 +478,12 @@ class Database
     /**
      * Gets property values of specified type of the specified document
      * @param integer $documentId
-     * @param string $type Property type
+     * @param string  $type Property type
      * @return array
      */
     static function getPropertyValuesByDocumentIdAndType($documentId, $type) {
         $props = Database::getPropertiesByDocumentId($documentId);
-        $res = array();
+        $res = [];
         foreach ($props->getList() as $prop) {
             if ($prop->getType() == $type) {
                 $res[] = $prop->getValue();
@@ -503,8 +497,7 @@ class Database
      * @param string $type Property type
      * @return DocumentCollection
      */
-    static function getDocumentsByPropertyType($type)
-    {
+    static function getDocumentsByPropertyType($type) {
         global $DB;
         $sql = "
             SELECT
@@ -519,7 +512,7 @@ class Database
         ";
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
-        while($row = $rows->Fetch()) {
+        while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
         return $docs;
@@ -531,8 +524,7 @@ class Database
      * @param string $type Property type
      * @return DocumentCollection
      */
-    static function getDocumentsByPropertyTypeAndValue($type, $value)
-    {
+    static function getDocumentsByPropertyTypeAndValue($type, $value) {
         global $DB;
         $sql = "
             SELECT
@@ -548,7 +540,7 @@ class Database
         ";
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
-        while($row = $rows->Fetch()) {
+        while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
         return $docs;
@@ -556,31 +548,30 @@ class Database
 
     /**
      * Returns object with document ids, filtered by specified filter.
-     * @global object $DB Bitrix global CDatabase object
-     * @param array $arOrder Sort direction
-     * @param array $filter Array with filter keys and values
+     * @param array   $arOrder Sort direction
+     * @param array   $filter  Array with filter keys and values
      * @return CDBResult
+     * @global object $DB      Bitrix global CDatabase object
      */
-    static function getDocumentIdsByFilter($arOrder = array(), $filter)
-    {
+    static function getDocumentIdsByFilter($arOrder = [], $filter) {
         // TODO: change $arOrder to separate $by and $order
-        $arFields = array(
-            'DOC' => array(
+        $arFields = [
+            'DOC' => [
                 'FIELD_NAME' => 'TD.ID',
-            ),
-            'FILE_NAME' => array(
+            ],
+            'FILE_NAME' => [
                 'FIELD_NAME' => 'TD.NAME',
-            ),
-            'SIGNATURES' => array(
+            ],
+            'SIGNATURES' => [
                 'FIELD_NAME' => 'TD.SIGNATURES',
-            ),
-            'TYPE' => array(
+            ],
+            'TYPE' => [
                 'FIELD_NAME' => 'TD.TYPE',
-            ),
-            'STATUS' => array(
+            ],
+            'STATUS' => [
                 'FIELD_NAME' => 'TD.STATUS',
-            ),
-        );
+            ],
+        ];
 
         $find_docId = (string)$filter['DOC'];
         $find_fileName = (string)$filter['FILE_NAME'];
@@ -596,9 +587,9 @@ class Database
                 TD.ID
             FROM
                 " . DB_TABLE_DOCUMENTS . " as TD ";
-        if ($find_shareUser !== "" ||  $find_owner !== "")
+        if ($find_shareUser !== "" || $find_owner !== "")
             $sql .= "RIGHT JOIN tr_ca_docs_property as TDP ON TDP.DOCUMENT_ID = TD.ID ";
-        if ($find_shareUser !== "" &&  $find_owner !== "")
+        if ($find_shareUser !== "" && $find_owner !== "")
             $sql .= "RIGHT JOIN (SELECT TDP.DOCUMENT_ID
                      FROM
                         tr_ca_docs_property as TDP
@@ -619,7 +610,7 @@ class Database
             $sql .= " AND TD.TYPE = " . $find_type;
         if ($find_status !== "")
             $sql .= " AND TD.STATUS = " . $find_status;
-        if ($find_shareUser !== "" &&  $find_owner !== ""){
+        if ($find_shareUser !== "" && $find_owner !== "") {
             $sql .= " AND TDP.DOCUMENT_ID = TD.ID
                       AND TDP.TYPE = 'USER'
                       AND TDP.VALUE = '" . $find_owner . "'";
@@ -660,14 +651,13 @@ class Database
     /**
      * Returns object with info about users with attached documents,
      * filtered by specified filter.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $by Sort column
-     * @param string $order Sort order
-     * @param array $filter Array with filter keys and values
+     * @param string  $by     Sort column
+     * @param string  $order  Sort order
+     * @param array   $filter Array with filter keys and values
      * @return CDBResult
+     * @global object $DB     Bitrix global CDatabase object
      */
-    static function getUsersWithDocsByFilter($by, $order, $filter)
-    {
+    static function getUsersWithDocsByFilter($by, $order, $filter) {
         $find_user_id = (string)$filter["USER_ID"];
         $find_user_name = (string)$filter["USER_NAME"];
         $find_user_email = (string)$filter["USER_EMAIL"];
@@ -675,7 +665,7 @@ class Database
         $find_doc_type = (string)$filter["DOC_TYPE"];
         $find_doc_status = (string)$filter["DOC_STATUS"];
 
-        $sqlWhere = array();
+        $sqlWhere = [];
         if ($find_user_id !== "") {
             $sqlWhere[] = "BU.ID = '" . $find_user_id . "'";
         }
@@ -718,10 +708,10 @@ class Database
         $sql .= " GROUP BY BU.ID";
 
         // Ordering
-        $fields = array(
+        $fields = [
             "USER_ID" => "BU.ID",
             "USER_NAME" => "NAME",
-        );
+        ];
         $by = strtoupper($by);
         $order = strtoupper($order);
         if (array_key_exists($by, $fields)) {
@@ -738,11 +728,10 @@ class Database
     /**
      * Returns all documents attached or shared with the user.
      * @param integer $userId
-     * @param true $shared Include shared documents
+     * @param true    $shared Include shared documents
      * @return DocumentCollection
      */
-    static function getDocumentsByUser($userId, $shared = false)
-    {
+    static function getDocumentsByUser($userId, $shared = false) {
         global $DB;
         $userId = (int)$userId;
 
@@ -778,10 +767,9 @@ class Database
      * @param integer $userId
      * @return array
      */
-    static function getDocumentIdsByUser($userId)
-    {
+    static function getDocumentIdsByUser($userId) {
         $docs = Database::getDocumentsByUser($userId);
-        $res = array();
+        $res = [];
         foreach ($docs->getList() as $doc) {
             $res[] = $doc->getId();
         }
@@ -791,18 +779,17 @@ class Database
     /**
      * Returns array of order IDs with documents attached to them.
      * Requires 'sale' module.
-     * @global object $DB Bitrix global CDatabase object
      * @return array
+     * @global object $DB Bitrix global CDatabase object
      */
-    static function getOrders()
-    {
+    static function getOrders() {
         global $DB;
         $sql = "    SELECT VALUE
             FROM " . DB_TABLE_PROPERTY . " TDP, b_sale_order BO
             WHERE TDP.TYPE = 'ORDER' AND TDP.VALUE = BO.ID
             GROUP BY TYPE, VALUE";
         $rows = $DB->Query($sql);
-        $res = array();
+        $res = [];
         while ($row = $rows->Fetch()) {
             $res[] = $row["VALUE"];
         }
@@ -812,34 +799,33 @@ class Database
     /**
      * Returns order IDs with filter applied.
      * Requires 'sale' module.
-     * @global object $DB Bitrix global CDatabase object
-     * @param array $arOrder Sort direction
-     * @param array $filter Filter array with keys and values
+     * @param array   $arOrder Sort direction
+     * @param array   $filter  Filter array with keys and values
      * @return CDBResult
+     * @global object $DB      Bitrix global CDatabase object
      */
-    static function getOrdersByFilter($arOrder = array(), $filter)
-    {
+    static function getOrdersByFilter($arOrder = [], $filter) {
         // TODO: change $arOrder to separate $by and $order
-        $arFields = array(
-            'ORDER' => array(
+        $arFields = [
+            'ORDER' => [
                 'FIELD_NAME' => 'OrderList.VALUE',
-            ),
-            'ORDER_STATUS' => array(
+            ],
+            'ORDER_STATUS' => [
                 'FIELD_NAME' => 'BO.STATUS_ID',
-            ),
-            'CLIENT_NAME' => array(
+            ],
+            'CLIENT_NAME' => [
                 'FIELD_NAME' => 'BU.NAME',
-            ),
-            'DOCS' => array(
+            ],
+            'DOCS' => [
                 'FIELD_NAME' => 'OrderList.VALUE',
-            ),
-            'ORDER_EMAIL_STATUS' => array(
+            ],
+            'ORDER_EMAIL_STATUS' => [
                 'FIELD_NAME' => 'OrderList.EMAIL',
-            ),
-            'DOC_STATE' => array(
+            ],
+            'DOC_STATE' => [
                 'FIELD_NAME' => 'TDP.VALUE',
-            ),
-        );
+            ],
+        ];
 
         $find_order = (string)$filter['ORDER'];
         $find_order_status = (string)$filter['ORDER_STATUS'];
@@ -930,11 +916,10 @@ class Database
      * @param string $order Order ID
      * @return array
      */
-    static function getIdsByOrder($order)
-    {
+    static function getIdsByOrder($order) {
         $docs = Database::getDocumentsByOrder($order);
         $list = $docs->getList();
-        $ids = array();
+        $ids = [];
         foreach ($list as &$doc) {
             $ids[] = $doc->getId();
         }
@@ -943,12 +928,11 @@ class Database
 
     /**
      * Returns DocumentCollection by order ID.
-     * @global object $DB Bitrix global CDatabase object
-     * @param string $order Order ID
+     * @param string  $order Order ID
      * @return DocumentCollection
+     * @global object $DB    Bitrix global CDatabase object
      */
-    static function getDocumentsByOrder($order)
-    {
+    static function getDocumentsByOrder($order) {
         global $DB;
         $sql = 'SELECT ' . DB_TABLE_DOCUMENTS . '.* FROM ' . DB_TABLE_DOCUMENTS . ', ' . DB_TABLE_PROPERTY . ' '
             . 'WHERE isnull(CHILD_ID) AND '
@@ -969,8 +953,7 @@ class Database
      * @return array
      */
 
-    static function getOrderByDocumentId($id)
-    {
+    static function getOrderByDocumentId($id) {
         global $DB;
         $sql = 'SELECT VALUE FROM ' . DB_TABLE_PROPERTY . ' '
             . 'WHERE '
@@ -987,28 +970,26 @@ class Database
      * @return array
      */
 
-    static function getUserIdsByDocument($id)
-    {
+    static function getUserIdsByDocument($id) {
         global $DB;
         $sql = 'SELECT VALUE FROM ' . DB_TABLE_PROPERTY . ' '
-        . 'WHERE '
-        . 'DOCUMENT_ID = "' . $id . '" AND '
-        . 'TYPE = "SHARE_READ"';
+            . 'WHERE '
+            . 'DOCUMENT_ID = "' . $id . '" AND '
+            . 'TYPE = "SHARE_READ"';
         $rows = $DB->Query($sql);
-        $userIds=array();
+        $userIds = [];
         while ($row = $rows->Fetch()) {
             $userIds[] = (int)$row["VALUE"];
         }
         return $userIds;
     }
 
-    static function removeRequireToSign ($docId, $userId)
-    {
+    static function removeRequireToSign($docId, $userId) {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_REQUIRE . ' '
-        . 'WHERE '
-        . 'DOCUMENT_ID = ' . $docId . ' AND '
-        . 'USER_ID = ' . $userId;
+            . 'WHERE '
+            . 'DOCUMENT_ID = ' . $docId . ' AND '
+            . 'USER_ID = ' . $userId;
         $DB->Query($sql);
     }
 
