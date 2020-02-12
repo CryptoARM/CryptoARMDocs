@@ -32,6 +32,10 @@ define("TR_CA_IB_TYPE_ID", "tr_ca_docs_form");
 define("DOC_TYPE_FILE", 0);
 define("DOC_TYPE_SIGNED_FILE", 1);
 
+// Sign type
+define("DOC_SIGN_TYPE_COMBINED", 0);
+define("DOC_SIGN_TYPE_DETACHED", 1);
+
 // Document statuses
 define("DOC_STATUS_NONE", 0);
 define("DOC_STATUS_BLOCKED", 1);
