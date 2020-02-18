@@ -116,12 +116,20 @@ if ($docsBlocked) {
 if ($docsOk) {
     foreach ($docsOk as $docId) {
         $doc = Docs\Database::getDocumentById($docId["id"]);
-        $url = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+        if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+            $originalDoc = Docs\Database::getDocumentById($doc->getOriginalId());
+            $originalDocUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $originalDoc->getHtmlPath();
+            $signUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+        } else {
+            $originalDocUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+            $signUrl = null;
+        }
         $data[$docId["id"]] = [
             "id" => $doc->getId(),
             "code" => 900,
             "message" => "ok",
-            "url" => $url,
+            "url" => $originalDocUrl,
+            "signUrl" => $signUrl,
         ];
     }
 }

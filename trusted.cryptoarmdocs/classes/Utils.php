@@ -50,7 +50,7 @@ class Utils
      *               [docsUnsigned]: documents not signed
      *               [docsOk]: documents that passed all checks
      */
-    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true) {
+    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true, $signType = null) {
         $res = array(
             'docsNotFound' => array(),
             'docsNoAccess' => array(),
@@ -58,6 +58,7 @@ class Utils
             'docsBlocked' => new DocumentCollection(),
             'docsUnsigned' => new DocumentCollection(),
             'docsOk' => new DocumentCollection(),
+            'docsWrongSignType' => array(),
         );
 
         if (is_array($ids)){
@@ -84,7 +85,11 @@ class Utils
                     $res['docsUnsigned']->add($doc);
                 } else {
                     // Document is ready to be processed
-                    $res['docsOk']->add($doc);
+                    if (is_null($signType) || $doc->getSignType() == $signType || !$doc->hasParent()) {
+                        $res['docsOk']->add($doc);
+                    } else {
+                        $res['docsWrongSignType'][] = $id;
+                    }
                 }
             }
         }
@@ -139,6 +144,9 @@ class Utils
     public static function download($filepath, $filename)
     {
         if (file_exists($filepath)) {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
             header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -156,6 +164,9 @@ class Utils
     public static function view($filepath, $filename)
     {
         if (file_exists($filepath)) {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
             header('Content-type: application/pdf');
             header('Content-Disposition: inline; filename="' . $filename . '"');
             header('Content-Transfer-Encoding: binary');

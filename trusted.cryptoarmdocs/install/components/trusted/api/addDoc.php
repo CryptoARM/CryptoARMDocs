@@ -68,7 +68,7 @@ if (!$_FILES) {
     echoAndDie($answer);
 }
 
-if (!$_FILES["file"]) {
+if (!$_FILES["file"] || $_FILES["file"]["size"] == 0 || in_array($_FILES["file"]["error"], [1,2,3,4,5,6,7,8])) {
     $answer = [
         "code" => 953,
         "message" => "incorrect file parameter",

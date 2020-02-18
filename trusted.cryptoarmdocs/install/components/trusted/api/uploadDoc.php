@@ -58,6 +58,7 @@ switch ($_REQUEST["grandType"]) {
 $docId = json_decode($_REQUEST["id"]);
 $signToken = $_REQUEST["signToken"];
 $signers = $_REQUEST["signers"];
+$signType = $_REQUEST["signType"];
 
 if ($userId["code"]) {
     echoAndDie($userId);
@@ -72,7 +73,7 @@ if (!$_FILES) {
     echoAndDie($answer);
 }
 
-if (!$_FILES["file"]) {
+if (!$_FILES["file"] || $_FILES["file"]["size"] == 0 || in_array($_FILES["file"]["error"], [1,2,3,4,5,6,7,8])) {
     $answer = [
         "code" => 953,
         "message" => "incorrect file parameter",
@@ -103,6 +104,15 @@ if (!$signToken) {
     $answer = [
         "code" => 952,
         "message" => "incorrect sign token parameter",
+        "data" => []
+    ];
+    echoAndDie($answer);
+}
+
+if (is_null($signType) || !in_array($signType, [0,1])) {
+    $answer = [
+        "code" => 970,
+        "message" => "signType is not correct",
         "data" => []
     ];
     echoAndDie($answer);
@@ -150,7 +160,6 @@ if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
 }
 
 if ($doc->getBlockToken() !== $signToken) {
-    $res["message"] = "Wrong token";
     $answer = [
         "id" => $docId,
         "code" => 955,
@@ -159,6 +168,20 @@ if ($doc->getBlockToken() !== $signToken) {
     echoAndDie($answer);
 }
 
+// cause it string
+$signType = (int)$signType;
+
+if ($doc->getId() !== $doc->getOriginalId() && $doc->getSignType() !== $signType) {
+    $answer = [
+        "id" => $docId,
+        "code" => 970,
+        "message" => "signType is not correct",
+    ];
+    echoAndDie($answer);
+}
+
+$doc->setSignType($signType);
+$doc->save();
 $newDoc = $doc->copy();
 $signatures = urldecode($signers);
 $newDoc->setSignatures($signatures);
@@ -182,6 +205,7 @@ if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
     $newDoc->setPath($newDoc->getPath() . '.sig');
 }
 
+$newDoc->setSignType($signType);
 $newDoc->save();
 
 move_uploaded_file(

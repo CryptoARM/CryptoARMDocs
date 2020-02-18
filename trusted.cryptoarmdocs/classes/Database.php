@@ -67,6 +67,7 @@ class Database {
             $blockToken = $doc->getBlockToken();
             $blockTime = $doc->getBlockTime();
             $originalId = $doc->getOriginalId();
+            $typeSign = $doc->getSignType();
             if (is_null($parentId)) {
                 $parentId = 'NULL';
             }
@@ -84,11 +85,15 @@ class Database {
             if (is_null($blockTime)) {
                 $blockTime = '1000-01-01 00:00:00';
             }
+            if (is_null($typeSign)) {
+                $typeSign = DOC_SIGN_TYPE_COMBINED;
+            }
             $sql = 'UPDATE ' . DB_TABLE_DOCUMENTS . ' SET '
                 . 'NAME = "' . $DB->ForSql($doc->getName()) . '", '
                 . 'PATH = "' . $doc->getPath() . '", '
                 . 'TYPE = ' . $doc->getType() . ', '
                 . 'STATUS = ' . $doc->getStatus() . ', '
+                . 'SIGN_TYPE = ' . $typeSign . ', '
                 . 'PARENT_ID = ' . $parentId . ', '
                 . 'CHILD_ID = ' . $childId . ', '
                 . 'HASH = "' . $doc->getHash() . '", '
@@ -115,6 +120,7 @@ class Database {
         $parentId = $doc->getParentId();
         $childId = $doc->getChildId();
         $originalId = $doc->getOriginalId();
+        $typeSign = $doc->getSignType();
         if (is_null($parentId)) {
             $parentId = 'NULL';
         }
@@ -124,12 +130,16 @@ class Database {
         if (is_null($originalId)) {
             $originalId = 'NULL';
         }
+        if (is_null($typeSign)) {
+            $typeSign = DOC_SIGN_TYPE_COMBINED;
+        }
         $sql = 'INSERT INTO ' . DB_TABLE_DOCUMENTS . '  '
-            . '(NAME, PATH, TYPE, PARENT_ID, CHILD_ID, ORIGINAL_ID, HASH, SIGNATURES, SIGNERS)'
+            . '(NAME, PATH, TYPE, SIGN_TYPE, PARENT_ID, CHILD_ID, ORIGINAL_ID, HASH, SIGNATURES, SIGNERS)'
             . 'VALUES ('
             . '"' . $DB->ForSql($doc->getName()) . '", '
             . '"' . $doc->getPath() . '", '
             . $doc->getType() . ', '
+            . $typeSign . ', '
             . $parentId . ', '
             . $childId . ', '
             . $originalId . ', '

@@ -24,6 +24,7 @@ trustedCA.initVar = function () {
     ERROR_DOC_ROLE_SIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_ROLE_SIGNED');
     ERROR_DOC_UNSIGNED = BX.message('TR_CA_DOCS_ERROR_DOC_UNSIGNED');
     ERROR_DOC_NO_ACCESS = BX.message('TR_CA_DOCS_ERROR_DOC_NO_ACCESS');
+    ERROR_DOC_WRONG_SIGN_TYPE = BX.message('TR_CA_DOCS_ERROR_DOC_WRONG_SIGN_TYPE');
     SEND_MAIL_SUCCESS = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS');
     SEND_MAIL_FAILURE = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_FAILURE');
     SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
@@ -202,6 +203,12 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
         alert(HTTP_WARNING);
         return;
     }
+    if (extra === null) {
+        extra = {};
+    }
+    if (typeof extra['signType'] !== "undefined") {
+        extra.signType = 0;
+    }
     let iOS = /iphone/i.test(navigator.userAgent);
     let android = /android/i.test(navigator.userAgent);
     if (!iOS && !android) {
@@ -242,10 +249,8 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                 // mobile CryptoArm support END
             } else {
                 if (d.success) {
-                    if (extra === null) {
-                        extra = {};
-                    }
                     extra.token = d.token;
+                    extra.signType = d.signType;
                     docs = JSON.parse(d.docsOk);
                     req = {};
                     req.jsonrpc = '2.0';
@@ -532,6 +537,13 @@ trustedCA.show_messages = function (response) {
     if (response.docsNoAccess && response.docsNoAccess.length) {
         message = ERROR_DOC_NO_ACCESS;
         response.docsNoAccess.forEach(function (elem) {
+            message += '\n' + elem;
+        });
+        alert(message);
+    }
+    if (response.docsWrongSignType && response.docsWrongSignType.length) {
+        message = ERROR_DOC_WRONG_SIGN_TYPE;
+        response.docsWrongSignType.forEach(function (elem) {
             message += '\n' + elem;
         });
         alert(message);

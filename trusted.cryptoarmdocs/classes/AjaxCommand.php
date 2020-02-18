@@ -89,7 +89,7 @@ class AjaxCommand {
         }
 
         $ids = $params["id"];
-
+        $signType = $params["signType"] ? : DOC_SIGN_TYPE_COMBINED;
         if (!$ids) {
             $res["message"] = "No ids were given";
             $res["noIds"] = true;
@@ -98,13 +98,15 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false)
+            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true, $signType)
         );
 
         $token = Utils::generateUUID();
         $res["token"] = $token;
+        $res["signType"] = $signType;
 
         foreach ($res['docsOk']->getList() as $okDoc) {
+            $okDoc->setSignType($signType);
             $okDoc->block($token);
             $okDoc->save();
         }
@@ -228,6 +230,13 @@ class AjaxCommand {
             return $res;
         }
 
+        if ($doc->getId() !== $doc->getOriginalId() && $doc->getSignType() !== $extra["signType"]) {
+            $res["message"] = "Wrong sign type";
+            return $res;
+        }
+
+        $doc->setSignType($extra["signType"]);
+        $doc->save();
         $newDoc = $doc->copy();
         $signatures = urldecode($params["signers"]);
         $newDoc->setSignatures($signatures);
@@ -253,6 +262,7 @@ class AjaxCommand {
             $newDoc->setName($newDoc->getName() . '.sig');
             $newDoc->setPath($newDoc->getPath() . '.sig');
         }
+        $newDoc->setSignType($extra["signType"]);
         $newDoc->save();
         move_uploaded_file(
             $file['tmp_name'],
@@ -310,6 +320,9 @@ class AjaxCommand {
         foreach ($docIds as &$id) {
             $doc = Database::getDocumentById($id);
             if ($doc && $doc->accessCheck(Utils::currUserId(), DOC_SHARE_SIGN)) {
+                if (!$doc->hasParent()) {
+                    $doc->setSignType(0);
+                }
                 $res["success"] = true;
                 $res["message"] = "Some documents were unblocked";
                 $doc->unblock();
@@ -445,6 +458,9 @@ class AjaxCommand {
             $docsFoundPaths = [];
 
             foreach ($docsFound->getList() as $doc) {
+                if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                    $doc = Database::getDocumentById($doc->getOriginalId());
+                }
                 $docPath = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
                 $docName = $doc->getName();
                 if (!file_exists($sDirTmpPath . $docName)) {
@@ -530,11 +546,24 @@ class AjaxCommand {
                 } else {
                     $doc = $doc->getLastDocument();
                     $file = $doc->getFullPath();
+                    if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                        $originalDoc = Database::getDocumentById($doc->getOriginalId());
+                        $originalFile = $originalDoc->getFullPath();
+                    }
                 }
                 if ($params["view"]) {
-                    Utils::view($file, $doc->getName());
+                    if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                        Utils::view($originalFile, $originalDoc->getName());
+                    } else {
+                        Utils::view($file, $doc->getName());
+                    }
                 } else {
-                    Utils::download($file, $doc->getName());
+                    // TODO: change output docs to cryptoarm gost
+                    if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                        Utils::download($originalFile, $originalDoc->getName());
+                    } else {
+                        Utils::download($file, $doc->getName());
+                    }
                 }
             } else {
                 header("HTTP/1.1 500 Internal Server Error");
@@ -883,7 +912,7 @@ class AjaxCommand {
             $doc->unshare($userId);
             $doc->save();
             if (in_array($userId, $docRequire->getUserList())) {
-                Database::removeRequireToSign($docId, $userId);                
+                Database::removeRequireToSign($docId, $userId);
             }
         }
         return $res;

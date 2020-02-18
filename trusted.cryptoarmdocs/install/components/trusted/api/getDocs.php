@@ -84,7 +84,9 @@ foreach ($docsId as $docId) {
             "access" => null,
             "date" => null,
             "require" => null,
-            "owner" => null
+            "owner" => null,
+            "signType" => null,
+            "originalId" => null,
         ];
         continue;
     }
@@ -109,7 +111,9 @@ foreach ($docsId as $docId) {
             "access" => null,
             "date" => null,
             "require" => null,
-            "owner" => null
+            "owner" => null,
+            "signType" => null,
+            "originalId" => null,
         ];
         continue;
     }
@@ -129,7 +133,6 @@ foreach ($docsId as $docId) {
             break;
     }
 
-
     $docRequire = $doc->getRequires();
     if (in_array($userId, $docRequire->getUserList())) {
         if (!$docRequire->getSignStatusByUser($userId)) {
@@ -137,6 +140,12 @@ foreach ($docsId as $docId) {
         }
     } else {
         $require = 940;
+    }
+
+    if ($doc->getType()) {
+        $signType = $doc->getSignType() === DOC_SIGN_TYPE_DETACHED ? 962 : 961;
+    } else {
+        $signType = 960;
     }
 
     $data[$docId] = [
@@ -150,7 +159,9 @@ foreach ($docsId as $docId) {
         "access" => $accessLevel,
         "date" => $doc->getCreated(),
         "require" => $require,
-        "owner" => Docs\Utils::getUserName($ownerUserId)
+        "owner" => Docs\Utils::getUserName($ownerUserId),
+        "signType" => $signType,
+        "originalId" => $doc->getOriginalId(),
     ];
 }
 

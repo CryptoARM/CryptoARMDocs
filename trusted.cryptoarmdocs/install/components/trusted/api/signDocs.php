@@ -53,6 +53,7 @@ switch ($_REQUEST["grandType"]) {
 }
 
 $docsId = json_decode($_REQUEST["ids"]);
+$signType = $_REQUEST["signType"];
 
 if ($userId["code"]) {
     echoAndDie($userId);
@@ -70,11 +71,21 @@ if (!$docsId) {
 global $USER;
 $USER->Authorize($userId);
 
-$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false);
+if (is_null($signType) || !in_array($signType, [0,1])) {
+    $answer = [
+        "code" => 970,
+        "message" => "signType is not correct",
+        "data" => []
+    ];
+    echoAndDie($answer);
+}
+
+$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false, true, $signType);
 $docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
 $docsNoAccess = $checkDocs["docsNoAccess"];
 $docsBlocked = $checkDocs["docsBlocked"]->toArray();
 $docsOk = $checkDocs["docsOk"]->toArray();
+$docsWrongSignType = $checkDocs["docsWrongSignType"];
 
 if ($docsNotFound) {
     foreach ($docsNotFound as $docId) {
@@ -87,6 +98,23 @@ if ($docsNotFound) {
             "token" => null,
             "license" => null,
             "url" => null,
+            "signUrl" => null,
+        ];
+    }
+}
+
+if ($docsWrongSignType) {
+    foreach ($docsWrongSignType as $docId) {
+        $data[$docId] = [
+            "id" => $docId,
+            "code" => 970,
+            "message" => "signType is not correct",
+            "name" => null,
+            "hash" => null,
+            "token" => null,
+            "license" => null,
+            "url" => null,
+            "signUrl" => null,
         ];
     }
 }
@@ -102,6 +130,7 @@ if ($docsNoAccess) {
             "token" => null,
             "license" => null,
             "url" => null,
+            "signUrl" => null,
         ];
     }
 }
@@ -117,6 +146,7 @@ if ($docsBlocked) {
             "token" => null,
             "license" => null,
             "url" => null,
+            "signUrl" => null,
         ];
     }
 }
@@ -135,7 +165,14 @@ if ($docsOk) {
             }
         }
 
-        $url = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+        if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+            $originalDoc = Docs\Database::getDocumentById($doc->getOriginalId());
+            $originalDocUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $originalDoc->getHtmlPath();
+            $signUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+        } else {
+            $originalDocUrl = $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["SERVER_NAME"] . $doc->getHtmlPath();
+            $signUrl = null;
+        }
 
         $data[$docId["id"]] = [
             "id" => $doc->getId(),
@@ -145,7 +182,8 @@ if ($docsOk) {
             "hash" => $doc->getHash(),
             "token" => $token,
             "license" => $licenseKey,
-            "url" => $url,
+            "url" => $originalDocUrl,
+            "signUrl" => $signUrl,
         ];
 
         $doc->block($token);

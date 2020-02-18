@@ -37,7 +37,18 @@ class Email {
 
         foreach ($docsList as $docId) {
             $doc = Database::getDocumentById($docId);
-            $docLinks[] = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
+
+            if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                $originalDoc = Database::getDocumentById($doc->getOriginalId());
+                $originalDocUrl = $_SERVER['DOCUMENT_ROOT'] . $originalDoc->getHtmlPath();
+                $signUrl = $_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath();
+                $docLinks[] = urldecode($signUrl);
+
+            } else {
+                $originalDocUrl = $_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath();
+                $signUrl = null;
+            }
+            $docLinks[] = urldecode($originalDocUrl);
             $docs[] = $doc;
             $docNames[] = $doc->getName();
         }
