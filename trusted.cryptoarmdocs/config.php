@@ -36,6 +36,9 @@ define("DOC_TYPE_SIGNED_FILE", 1);
 define("DOC_SIGN_TYPE_COMBINED", 0);
 define("DOC_SIGN_TYPE_DETACHED", 1);
 
+// Sign type in settings
+define("TR_CA_DOCS_TYPE_SIGN", Option::get(TR_CA_DOCS_MODULE_ID, 'TR_CA_DOCS_TYPE_SIGN', 0));
+
 // Document statuses
 define("DOC_STATUS_NONE", 0);
 define("DOC_STATUS_BLOCKED", 1);

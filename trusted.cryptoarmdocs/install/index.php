@@ -236,6 +236,7 @@ Loc::loadMessages(__FILE__);
             'MAIL_EVENT_ID_TO' => 'TR_CA_DOCS_MAIL_TO',
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
             'MAIL_EVENT_ID_REQUIRED_SIGN' => 'TR_CA_DOCS_MAIL_REQUIRED_SIGN',
+            'TR_CA_DOCS_TYPE_SIGN' => 0,
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
