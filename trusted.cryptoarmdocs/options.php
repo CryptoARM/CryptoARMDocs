@@ -1,4 +1,5 @@
 <?php
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\IO\File;
@@ -63,7 +64,7 @@ $moduleOptions = array(
     "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID", "MAIL_EVENT_ID_REQUIRED_SIGN", "MAIL_TEMPLATE_ID_REQUIRED_SIGN",
     "MAIL_EVENT_ID_FORM", "MAIL_TEMPLATE_ID_FORM",
     "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN",
-    "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY"
+    "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY", "TR_CA_DOCS_TYPE_SIGN"
 );
 
 function UpdateOption($option, $value = false) {
@@ -110,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("MAIL_TEMPLATE_ID_FORM_TO_ADMIN");
         UpdateOption("RECAPTCHA_KEY_SITE");
         UpdateOption("RECAPTCHA_SECRET_KEY");
+        UpdateOption("TR_CA_DOCS_TYPE_SIGN");
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -142,6 +144,17 @@ $daysInSelector = array(
     ),
 );
 
+$signType = [
+    "REFERENCE" => [
+        GetMessage("TR_CA_DOCS_TYPE_SIGN_COMBINED"),
+        GetMessage("TR_CA_DOCS_TYPE_SIGN_DETACHED"),
+    ],
+    "REFERENCE_ID" => [
+        DOC_SIGN_TYPE_COMBINED,
+        DOC_SIGN_TYPE_DETACHED,
+    ],
+];
+
 $tabControl->Begin();
 
 ?>
@@ -169,6 +182,27 @@ $tabControl->Begin();
                        type="button"
                        value="<?= Loc::getMessage("TR_CA_DOCS_DOCS_DIR_SELECT") ?>"
                        onclick="dirSelector()">
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_TYPE_SIGN_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_TYPE_SIGN_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= GetMessage("TR_CA_DOCS_TYPE_SIGN") ?>
+            </td>
+            <td>
+                <? echo SelectBoxFromArray("TR_CA_DOCS_TYPE_SIGN", $signType, TR_CA_DOCS_TYPE_SIGN, "", "", false, "trustedcryptoarmdocs_settings"); ?>
             </td>
         </tr>
 

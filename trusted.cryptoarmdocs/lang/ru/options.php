@@ -58,6 +58,13 @@ $MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_30_DAYS"] = "30 дней";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_INF_DAYS"] = "За все время";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_BTN"] = "Получить";
 
+$MESS["TR_CA_DOCS_TYPE_SIGN_COMBINED"] = "Совмещенная";
+$MESS["TR_CA_DOCS_TYPE_SIGN_DETACHED"] = "Открепленная";
+
+$MESS["TR_CA_DOCS_TYPE_SIGN_HEADING"] = "Настройка типа подписи";
+$MESS["TR_CA_DOCS_TYPE_SIGN_DESCRIPTION"] = "Тип подписи влияет на работу всего модуля. Выбрав тип подписи в данном разделе, подпись будет соотвествующей на всем сайте.<br /><br /><span class=\"required\">Внимание! При подписывании файла одним типом подписи, в будущем его нельзя подписывать другим.</span>";
+$MESS["TR_CA_DOCS_TYPE_SIGN"] = "Тип подписи";
+
 $MESS["TR_CA_DOCS_EVENTS_HEADING"] = "Настройки автоматического изменения статуса заказа";
 $MESS["TR_CA_DOCS_EVENTS_DESCRIPTION"] = "Заказ с прикрепленными документами можно автоматически переводить в другой статус при совершении некоторых действий.";
 $MESS["TR_CA_DOCS_EVENTS_SIGNED_BY_CLIENT"] = "Документ подписан клиентом";
