@@ -53,7 +53,7 @@ switch ($_REQUEST["grandType"]) {
 }
 
 $docsId = json_decode($_REQUEST["ids"]);
-$signType = $_REQUEST["signType"];
+//$signType = $_REQUEST["signType"];
 
 if ($userId["code"]) {
     echoAndDie($userId);
@@ -71,16 +71,16 @@ if (!$docsId) {
 global $USER;
 $USER->Authorize($userId);
 
-if (is_null($signType) || !in_array($signType, [0,1])) {
+/*if (is_null($signType) || !in_array($signType, [0,1])) {
     $answer = [
         "code" => 970,
         "message" => "signType is not correct",
         "data" => []
     ];
     echoAndDie($answer);
-}
+}*/
 
-$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false, true, $signType);
+$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false, true);
 $docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
 $docsNoAccess = $checkDocs["docsNoAccess"];
 $docsBlocked = $checkDocs["docsBlocked"]->toArray();

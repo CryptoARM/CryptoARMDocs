@@ -58,7 +58,7 @@ switch ($_REQUEST["grandType"]) {
 $docId = json_decode($_REQUEST["id"]);
 $signToken = $_REQUEST["signToken"];
 $signers = $_REQUEST["signers"];
-$signType = $_REQUEST["signType"];
+//$signType = $_REQUEST["signType"];
 
 if ($userId["code"]) {
     echoAndDie($userId);
@@ -109,14 +109,14 @@ if (!$signToken) {
     echoAndDie($answer);
 }
 
-if (is_null($signType) || !in_array($signType, [0,1])) {
+/*if (is_null($signType) || !in_array($signType, [0,1])) {
     $answer = [
         "code" => 970,
         "message" => "signType is not correct",
         "data" => []
     ];
     echoAndDie($answer);
-}
+}*/
 
 global $USER;
 $USER->Authorize($userId);
@@ -169,9 +169,9 @@ if ($doc->getBlockToken() !== $signToken) {
 }
 
 // cause it string
-$signType = (int)$signType;
+$signType = (int)TR_CA_DOCS_TYPE_SIGN;
 
-if ($doc->getId() !== $doc->getOriginalId() && $doc->getSignType() !== $signType) {
+if ($doc->getSignType() == $signType || !$doc->hasParent()) {
     $answer = [
         "id" => $docId,
         "code" => 970,

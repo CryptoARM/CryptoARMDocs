@@ -61,6 +61,9 @@ class Utils
             'docsWrongSignType' => array(),
         );
 
+        // stub. maybe this method is remake
+        $signType = null;
+
         if (is_array($ids)){
             foreach ($ids as $id) {
                 $doc = Database::getDocumentById($id);
@@ -85,7 +88,10 @@ class Utils
                     $res['docsUnsigned']->add($doc);
                 } else {
                     // Document is ready to be processed
-                    if (is_null($signType) || $doc->getSignType() == $signType || !$doc->hasParent()) {
+                    if (is_null($signType)) {
+                        $signType = TR_CA_DOCS_TYPE_SIGN;
+                    }
+                    if ($doc->getSignType() == $signType || !$doc->hasParent()) {
                         $res['docsOk']->add($doc);
                     } else {
                         $res['docsWrongSignType'][] = $id;
