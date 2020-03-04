@@ -885,6 +885,7 @@ class Document implements IEntity, ISave {
             "name" => $this->getName(),
             "url" => $this->getUrl(),
             "id" => $this->getId(),
+            "urlOrigDoc" => $this->getSignType() === DOC_SIGN_TYPE_DETACHED ? TR_CA_DOCS_AJAX_CONTROLLER . "?command=content&id=" . $this->originalId . "&force=true" : null,
         ];
         return $a;
     }

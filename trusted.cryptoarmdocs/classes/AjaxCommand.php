@@ -89,7 +89,6 @@ class AjaxCommand {
         }
 
         $ids = $params["id"];
-        $signType = $params["signType"] ? : DOC_SIGN_TYPE_COMBINED;
         if (!$ids) {
             $res["message"] = "No ids were given";
             $res["noIds"] = true;
@@ -98,15 +97,15 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true, $signType)
+            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true)
         );
 
         $token = Utils::generateUUID();
         $res["token"] = $token;
-        $res["signType"] = $signType;
+        $res["signType"] = TR_CA_DOCS_TYPE_SIGN;
 
         foreach ($res['docsOk']->getList() as $okDoc) {
-            $okDoc->setSignType($signType);
+            $okDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
             $okDoc->block($token);
             $okDoc->save();
         }
