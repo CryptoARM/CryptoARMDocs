@@ -1,4 +1,5 @@
 <?php
+
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Application;
@@ -305,11 +306,11 @@ Loc::loadMessages(__FILE__);
         $DB->Query($sql);
     }
 
-     function InstallIb() {
-         if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-             trusted_cryptoarmdocsforms::InstallIb();
-         }
-     }
+    function InstallIb() {
+        if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+            trusted_cryptoarmdocsforms::InstallIb();
+        }
+    }
 
     function InstallMailEvents()
     {

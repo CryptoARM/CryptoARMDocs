@@ -110,6 +110,70 @@ class Database {
     }
 
     /**
+     * Adds new sign transaction
+     * @param array   $docsId Array of documents
+     * @param int     $userId User id
+     * @return void
+     * @global object $DB     Bitrix global CDatabase object
+     */
+    static function insertSignTransaction($docsId = null, $userId = null) {
+        if (is_null($docsId)) {
+            return false;
+        }
+        if (is_null($userId)) {
+            global $USER;
+            $userId = $USER->GetID();
+        }
+
+        $UUID = Utils::generateUUID();
+        $insertDocsId = serialize($docsId);
+        $userId = (int)$userId;
+
+        global $DB;
+        $sql = 'INSERT INTO ' . DB_TABLE_TRANSACTION . ' '
+            . '(UUID, DOCUMENTS_ID, USER_ID)'
+            . 'VALUES ('
+            . '"' . $UUID . '", '
+            . '"' . $insertDocsId . '", '
+            . $userId
+            . ')';
+        $DB->Query($sql);
+    }
+
+    /**
+     * Get sign transaction by UUID from DB
+     * @param string  $UUID transaction UUID
+     * @return array
+     * @global object $DB   Bitrix global CDatabase object
+     */
+    static function getSignTransaction($UUID) {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_TRANSACTION
+            . ' WHERE UUID = "' . $UUID . '"';
+        $rows = $DB->Query($sql);
+        $array = $rows->Fetch();
+        $array["ID"] = (int)$array["ID"];
+        $array["DOCUMENTS_ID"] = unserialize($array["DOCUMENTS_ID"]);
+        $array["USER_ID"] = (int)$array["USER_ID"];
+        $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
+        return $array;
+    }
+
+    /**
+     * Complete sign transaction by UUID in DB
+     * @param string $UUID transaction UUID
+     * @return void
+     * @global object $DB Bitrix global CDatabase object
+     */
+    static function stopTransaction($UUID) {
+        global $DB;
+        $sql = 'UPDATE ' . DB_TABLE_TRANSACTION . ' SET '
+            . 'TRANSACTION_STATUS = ' . DOC_TRANSACTION_COMPLETED . ' '
+            . 'WHERE UUID = "' . $UUID . '"';
+        $DB->Query($sql);
+    }
+
+    /**
      * Adds new document in DB.
      * @param Document $doc Document to be added
      * @return void
