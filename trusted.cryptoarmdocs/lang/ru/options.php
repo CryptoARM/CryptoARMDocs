@@ -49,6 +49,16 @@ $MESS["TR_CA_DOCS_LICENSE_EDIT"] = "Изменить";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы уверены, что хотите изменить текущий счет? В случае утери номера счета восстановление будет невозможно.";
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_ACTIVATE_JWT_TOKEN"] = "Вы уверены, что хотите активировать токен?";
 
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_5_MIN"] = "5 минут";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_10_MIN"] = "10 минут";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_15_MIN"] = "15 минут";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_30_MIN"] = "30 минут";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_60_MIN"] = "60 минут";
+
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_HEADING"] = "Автоматическая разблокировка документа";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK_DESCRIPTION"] = "Благодаря этой настройке, документ будет автоматически разблокирован спустя данное время.<br /><br /><span class=\"required\">Внимание! Если не успеть уложится в данный промежуток, то процесс подписи будет прерван.</span>";
+$MESS["TR_CA_DOCS_AUTO_UNBLOCK"] = "Разблокировать через";
+
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_TEXT"] = "Выписка счета за ";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_1_DAY"] = "1 день";
 $MESS["TR_CA_DOCS_LICENSE_HISTORY_SELECTOR_3_DAYS"] = "3 дня";

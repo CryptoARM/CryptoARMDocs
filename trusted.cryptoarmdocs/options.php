@@ -64,7 +64,8 @@ $moduleOptions = array(
     "MAIL_EVENT_ID", "MAIL_TEMPLATE_ID", "MAIL_EVENT_ID_REQUIRED_SIGN", "MAIL_TEMPLATE_ID_REQUIRED_SIGN",
     "MAIL_EVENT_ID_FORM", "MAIL_TEMPLATE_ID_FORM",
     "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN",
-    "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY", "TR_CA_DOCS_TYPE_SIGN"
+    "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY", "TR_CA_DOCS_TYPE_SIGN",
+    "TR_CA_DOCS_AUTO_UNBLOCK_TIME"
 );
 
 function UpdateOption($option, $value = false) {
@@ -112,6 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("RECAPTCHA_KEY_SITE");
         UpdateOption("RECAPTCHA_SECRET_KEY");
         UpdateOption("TR_CA_DOCS_TYPE_SIGN");
+        UpdateOption("TR_CA_DOCS_AUTO_UNBLOCK_TIME");
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -124,6 +126,23 @@ if (isset($_SESSION['OPTION_PAGE_DOC_DIR_ERROR'])) {
 foreach ($moduleOptions as $option) {
     $$option = Option::get(TR_CA_DOCS_MODULE_ID, $option, "");
 }
+
+$minutesInSelector = [
+    "REFERENCE" => [
+        GetMessage("TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_5_MIN"),
+        GetMessage("TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_10_MIN"),
+        GetMessage("TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_15_MIN"),
+        GetMessage("TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_30_MIN"),
+        GetMessage("TR_CA_DOCS_AUTO_UNBLOCK_SELECTOR_60_MIN"),
+    ],
+    "REFERENCE_ID" => [
+        5,
+        10,
+        15,
+        30,
+        60,
+    ],
+];
 
 $daysInSelector = array(
     "REFERENCE" => array(
@@ -203,6 +222,27 @@ $tabControl->Begin();
             </td>
             <td>
                 <? echo SelectBoxFromArray("TR_CA_DOCS_TYPE_SIGN", $signType, TR_CA_DOCS_TYPE_SIGN, "", "", false, "trustedcryptoarmdocs_settings"); ?>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_AUTO_UNBLOCK_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_AUTO_UNBLOCK_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= GetMessage("TR_CA_DOCS_AUTO_UNBLOCK") ?>
+            </td>
+            <td>
+                <? echo SelectBoxFromArray("TR_CA_DOCS_AUTO_UNBLOCK_TIME", $minutesInSelector, TR_CA_DOCS_AUTO_UNBLOCK_TIME, "", "", false, "trustedcryptoarmdocs_settings"); ?>
             </td>
         </tr>
 

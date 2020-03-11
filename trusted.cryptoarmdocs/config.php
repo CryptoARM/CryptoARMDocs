@@ -44,6 +44,9 @@ define("DOC_SIGN_TYPE_DETACHED", 1);
 // Sign type in settings
 define("TR_CA_DOCS_TYPE_SIGN", Option::get(TR_CA_DOCS_MODULE_ID, 'TR_CA_DOCS_TYPE_SIGN', 0));
 
+// Time to auto unblock document in settings
+define("TR_CA_DOCS_AUTO_UNBLOCK_TIME", Option::get(TR_CA_DOCS_MODULE_ID, 'TR_CA_DOCS_AUTO_UNBLOCK_TIME', 10));
+
 // Document statuses
 define("DOC_STATUS_NONE", 0);
 define("DOC_STATUS_BLOCKED", 1);

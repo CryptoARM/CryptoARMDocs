@@ -238,6 +238,7 @@ Loc::loadMessages(__FILE__);
             'MAIL_EVENT_ID_SHARE' => 'TR_CA_DOCS_MAIL_SHARE',
             'MAIL_EVENT_ID_REQUIRED_SIGN' => 'TR_CA_DOCS_MAIL_REQUIRED_SIGN',
             'TR_CA_DOCS_TYPE_SIGN' => 0,
+            'TR_CA_DOCS_AUTO_UNBLOCK_TIME' => 10,
         );
         foreach ($options as $name => $value) {
             if (!Option::get($this->MODULE_ID, $name, '')) {
@@ -507,6 +508,8 @@ Loc::loadMessages(__FILE__);
             'MAIL_TEMPLATE_ID_SHARE',
             'MAIL_EVENT_ID_REQUIRED_SIGN',
             'MAIL_TEMPLATE_ID_REQUIRED_SIGN',
+            'TR_CA_DOCS_TYPE_SIGN',
+            'TR_CA_DOCS_AUTO_UNBLOCK_TIME',
         );
         foreach ($options as $option) {
             Option::delete(
