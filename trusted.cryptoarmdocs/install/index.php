@@ -291,6 +291,18 @@ Loc::loadMessages(__FILE__);
                 KEY `fk_tr_ca_docs_require_tr_ca_docs_idx` (`DOCUMENT_ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $DB->Query($sql);
+
+        $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_transaction` (
+                    `ID` int(11) NOT NULL AUTO_INCREMENT,
+                    `UUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
+                    `DOCUMENTS_ID` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `USER_ID` int(11) DEFAULT NULL,
+                    `TIMESTAMP_X`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    `TRANSACTION_STATUS` tinyint(1) DEFAULT '0',
+                PRIMARY KEY (`ID`),
+                KEY `fk_tr_ca_docs_transaction_tr_ca_docs_idx` (`UUID`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+        $DB->Query($sql);
     }
 
      function InstallIb() {
@@ -517,6 +529,8 @@ Loc::loadMessages(__FILE__);
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs_property`";
         $DB->Query($sql);
         $sql = "DROP TABLE IF EXISTS `tr_ca_docs_require`";
+        $DB->Query($sql);
+        $sql = "DROP TABLE IF EXISTS `tr_ca_docs_transaction`";
         $DB->Query($sql);
     }
 

@@ -24,6 +24,11 @@ define("TR_CA_DOCS_AJAX_CONTROLLER", "https://" . TR_CA_HOST . "/bitrix/componen
 define("DB_TABLE_DOCUMENTS", "tr_ca_docs");
 define("DB_TABLE_PROPERTY", "tr_ca_docs_property");
 define("DB_TABLE_REQUIRE", "tr_ca_docs_require");
+define("DB_TABLE_TRANSACTION", "tr_ca_docs_transaction");
+
+// TRANSACTION STATUS
+define("DOC_TRANSACTION_NOT_COMPLETED", 0);
+define("DOC_TRANSACTION_COMPLETED", 1);
 
 // iBlock define
 define("TR_CA_IB_TYPE_ID", "tr_ca_docs_form");
