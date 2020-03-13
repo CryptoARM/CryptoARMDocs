@@ -1080,15 +1080,10 @@ class Document implements IEntity, ISave {
     }
 
     public function blockTimeCheck() {
-        $blockTime = $this->getBlockTime();
-        $blockTimeInUnix = strtotime($blockTime);
+        $blockTimeInUnix = strtotime($this->getBlockTime());
         $currTimeInUnix = time();
-        Utils::dump("blockTimeInUnix", $blockTimeInUnix);
-        Utils::dump("currTimeInUnix", $currTimeInUnix);
-        Utils::dump("TR_CA_DOCS_AUTO_UNBLOCK_TIME", TR_CA_DOCS_AUTO_UNBLOCK_TIME);
         $blockTimeEndInUnix = $blockTimeInUnix + TR_CA_DOCS_AUTO_UNBLOCK_TIME * 60;
-        Utils::dump("blockTimeEndInUnix", $blockTimeEndInUnix);
-        if ($blockTimeEndInUnix >= $currTimeInUnix) {
+        if ($blockTimeEndInUnix <= $currTimeInUnix) {
             $this->unblock();
             $this->save();
         }
