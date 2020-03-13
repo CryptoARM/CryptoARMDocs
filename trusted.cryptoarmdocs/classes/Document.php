@@ -166,6 +166,7 @@ class Document implements IEntity, ISave {
             $doc->setBlockToken($array["BLOCK_TOKEN"]);
             $doc->setBlockTime($array["BLOCK_TIME"]);
             $doc->setCreated($array["TIMESTAMP_X"]);
+            $doc->blockTimeCheck();
         }
         return $doc;
     }
@@ -1076,6 +1077,16 @@ class Document implements IEntity, ISave {
         $props = $this->getProperties();
         $userProp = $props->getPropByType('USER');
         return $userProp ? $userProp->getValue() : false;
+    }
+
+    public function blockTimeCheck() {
+        $blockTimeInUnix = strtotime($this->getBlockTime());
+        $currTimeInUnix = time();
+        $blockTimeEndInUnix = $blockTimeInUnix + TR_CA_DOCS_AUTO_UNBLOCK_TIME * 60;
+        if ($blockTimeEndInUnix <= $currTimeInUnix) {
+            $this->unblock();
+            $this->save();
+        }
     }
 
     /**
