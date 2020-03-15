@@ -1065,5 +1065,50 @@ class AjaxCommand {
 
         return $res;
     }
+
+    public function generateJson($UUID) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.generateJson",
+        ];
+
+        $deauthorize = false;
+
+        $transactionInfo = Database::getTransaction($UUID);
+
+        if (!$transactionInfo) {
+            $res["message"] = "UUID is does not exist";
+            return $res;
+        }
+
+        $userId = $transactionInfo["USER_ID"];
+        $docsId = $transactionInfo["DOCUMENTS_ID"];
+        $transactionStatus = $transactionInfo["TRANSACTION_STATUS"];
+        $method = $transactionInfo["METHOD"];
+
+        if ($transactionStatus) {
+            $res["message"] = "accessToken is already used";
+            return $res;
+        }
+
+//        Database::stopTransaction($UUID);
+
+        if (!Utils::checkAuthorization()) {
+            global $USER;
+            $USER->Authorize($userId);
+            $deauthorize = true;
+        }
+
+        switch ($method)
+
+        $signInfo = self::sign(["id"=>$docsId]);
+
+        if ($deauthorize) {
+            $USER->Logout();
+        }
+
+        Utils::dump($signInfo);
+
+    }
 }
 

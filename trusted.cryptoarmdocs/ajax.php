@@ -93,6 +93,9 @@ if (isset($command)) {
         case "requireToSign":
             $res = Docs\AjaxCommand::requireToSign($params);
             break;
+        case "JSON":
+            $res = Docs\AjaxCommand::generateJson($_REQUEST["accessToken"]);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

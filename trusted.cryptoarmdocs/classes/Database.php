@@ -152,11 +152,14 @@ class Database {
             . ' WHERE UUID = "' . $UUID . '"';
         $rows = $DB->Query($sql);
         $array = $rows->Fetch();
-        $array["ID"] = (int)$array["ID"];
-        $array["DOCUMENTS_ID"] = unserialize($array["DOCUMENTS_ID"]);
-        $array["USER_ID"] = (int)$array["USER_ID"];
-        $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
-        return $array;
+        if ($array) {
+            $array["ID"] = (int)$array["ID"];
+            $array["DOCUMENTS_ID"] = unserialize($array["DOCUMENTS_ID"]);
+            $array["USER_ID"] = (int)$array["USER_ID"];
+            $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
+            return $array;
+        }
+        return null;
     }
 
     /**
