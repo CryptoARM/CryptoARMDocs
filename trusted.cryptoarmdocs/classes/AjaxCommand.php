@@ -1066,6 +1066,57 @@ class AjaxCommand {
         return $res;
     }
 
+    /**
+     * Create transaction in DB
+     * @param $params ["id"] ids of documents
+     *                ["method"] type of method
+     * @return array info about created transaction
+     */
+    public function createTransaction($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.createTransaction",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No autorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        global $USER;
+
+        $userId = $USER->GetID();
+        $ids = $params["id"];
+
+        if (!$ids) {
+            $res["message"] = "No ids were given";
+            $res["noIds"] = true;
+            return $res;
+        }
+
+        switch ($params["method"]) {
+            case "sign":
+                $method = DOC_TRANSACTION_TYPE_SIGN;
+                break;
+            case "verify":
+                $method = DOC_TRANSACTION_TYPE_VERIFY;
+                break;
+            default:
+                $res["message"] = "Unknown method";
+                return $res;
+        }
+
+        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
+            $res["success"] = true;
+            $res["message"] = "ok";
+            $res["data"] = $transactionInfo;
+            return $res;
+        }
+
+        return $res;
+    }
+
     public function generateJson($UUID) {
         $res = [
             "success" => false,
