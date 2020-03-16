@@ -1084,14 +1084,14 @@ class AjaxCommand {
         $userId = $transactionInfo["USER_ID"];
         $docsId = $transactionInfo["DOCUMENTS_ID"];
         $transactionStatus = $transactionInfo["TRANSACTION_STATUS"];
-        $method = $transactionInfo["METHOD"];
+        $transactionType = $transactionInfo["TRANSACTION_TYPE"];
 
         if ($transactionStatus) {
             $res["message"] = "accessToken is already used";
             return $res;
         }
 
-//        Database::stopTransaction($UUID);
+        Database::stopTransaction($UUID);
 
         if (!Utils::checkAuthorization()) {
             global $USER;
@@ -1099,16 +1099,42 @@ class AjaxCommand {
             $deauthorize = true;
         }
 
-        switch ($method)
+        switch ($transactionType) {
+            case DOC_TRANSACTION_TYPE_SIGN:
+                $response = self::sign(["id" => $docsId]);
+                $JSON->method = "sign";
+                $extra->token = $response["token"];
+                $extra->signType = TR_CA_DOCS_TYPE_SIGN;
+                $params->extra = $extra;
+                break;
+            case DOC_TRANSACTION_TYPE_VERIFY:
+                $response = self::verify(["id" => $docsId]);
+                $JSON->method = "verify";
+                break;
+            default:
+                $res["message"] = "Unknown transaction type";
+                return $res;
+        }
 
-        $signInfo = self::sign(["id"=>$docsId]);
+        if (empty($response["docsOk"])) {
+            $res["message"] = "Documents not found";
+            return $res;
+        }
+
+        $JSON->jsonrpc = "2.0";
+        $params->files = json_decode($response["docsOk"]);
+        $params->license = $response["license"];
+        $params->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
+        $JSON->params = $params;
 
         if ($deauthorize) {
             $USER->Logout();
         }
 
-        Utils::dump($signInfo);
-
+        header("Content-type: text/plain");
+        header("Content-Disposition: attachment; filename=someFile.json");
+        echo json_encode($JSON);
+        die;
     }
 }
 

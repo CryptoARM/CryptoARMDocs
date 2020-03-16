@@ -30,6 +30,10 @@ define("DB_TABLE_TRANSACTION", "tr_ca_docs_transaction");
 define("DOC_TRANSACTION_NOT_COMPLETED", 0);
 define("DOC_TRANSACTION_COMPLETED", 1);
 
+// Transaction type
+define("DOC_TRANSACTION_TYPE_SIGN", 0);
+define("DOC_TRANSACTION_TYPE_VERIFY", 1);
+
 // iBlock define
 define("TR_CA_IB_TYPE_ID", "tr_ca_docs_form");
 
