@@ -116,13 +116,16 @@ class Database {
      * @return void
      * @global object $DB     Bitrix global CDatabase object
      */
-    static function insertSignTransaction($docsId = null, $userId = null) {
+    static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null) {
         if (is_null($docsId)) {
             return false;
         }
         if (is_null($userId)) {
             global $USER;
             $userId = $USER->GetID();
+        }
+        if (is_null($typeTransaction)) {
+            return false;
         }
 
         $UUID = Utils::generateUUID();
@@ -131,11 +134,12 @@ class Database {
 
         global $DB;
         $sql = 'INSERT INTO ' . DB_TABLE_TRANSACTION . ' '
-            . '(UUID, DOCUMENTS_ID, USER_ID)'
+            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE)'
             . 'VALUES ('
             . '"' . $UUID . '", '
             . '"' . $insertDocsId . '", '
-            . $userId
+            . $userId . ', '
+            . $typeTransaction
             . ')';
         $DB->Query($sql);
     }
@@ -146,17 +150,21 @@ class Database {
      * @return array
      * @global object $DB   Bitrix global CDatabase object
      */
-    static function getSignTransaction($UUID) {
+    static function getTransaction($UUID) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_TRANSACTION
             . ' WHERE UUID = "' . $UUID . '"';
         $rows = $DB->Query($sql);
         $array = $rows->Fetch();
-        $array["ID"] = (int)$array["ID"];
-        $array["DOCUMENTS_ID"] = unserialize($array["DOCUMENTS_ID"]);
-        $array["USER_ID"] = (int)$array["USER_ID"];
-        $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
-        return $array;
+        if ($array) {
+            $array["ID"] = (int)$array["ID"];
+            $array["DOCUMENTS_ID"] = unserialize($array["DOCUMENTS_ID"]);
+            $array["USER_ID"] = (int)$array["USER_ID"];
+            $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
+            $array["TRANSACTION_TYPE"] = (int)$array["TRANSACTION_TYPE"];
+            return $array;
+        }
+        return null;
     }
 
     /**

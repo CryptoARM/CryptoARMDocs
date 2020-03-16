@@ -301,6 +301,7 @@ Loc::loadMessages(__FILE__);
                     `USER_ID` int(11) DEFAULT NULL,
                     `TIMESTAMP_X`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     `TRANSACTION_STATUS` tinyint(1) DEFAULT '0',
+                    `TRANSACTION_TYPE` tinyint(1) DEFAULT '0',
                 PRIMARY KEY (`ID`),
                 KEY `fk_tr_ca_docs_transaction_tr_ca_docs_idx` (`UUID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
