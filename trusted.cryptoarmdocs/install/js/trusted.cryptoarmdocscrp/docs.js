@@ -201,6 +201,10 @@ trustedCA.ajax = function (command, data, onSuccess = null, onFailure = null) {
 
 
 trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null) {
+    if (location.protocol === 'http:') {
+        alert(HTTP_WARNING);
+        return;
+    }
     if (extra === null) {
         extra = {};
     }
@@ -213,7 +217,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
         data: {id: ids, method: "sign"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data;
+                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.uuid;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);
@@ -364,13 +368,17 @@ trustedCA.reloadDoc = function () {
 }
 
 trustedCA.verify = function (ids) {
+    if (location.protocol === 'http:') {
+        alert(HTTP_WARNING);
+        return;
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
         data: {id: ids, method: "verify"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data;
+                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data.token;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);

@@ -1098,19 +1098,38 @@ class AjaxCommand {
         switch ($params["method"]) {
             case "sign":
                 $method = DOC_TRANSACTION_TYPE_SIGN;
+                $res = Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true);
                 break;
             case "verify":
                 $method = DOC_TRANSACTION_TYPE_VERIFY;
+                $res = Utils::checkDocuments($ids, DOC_SHARE_READ, true, false);
+                $res['docsUnsigned'] = $res['docsUnsigned']->toIdAndFilenameArray();
                 break;
             default:
                 $res["message"] = "Unknown method";
                 return $res;
         }
 
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+
+        if ($res['docsOk']->count()) {
+            $res['docsOk'] = $res['docsOk']->toJSON();
+        } else {
+            $res['docsOk'] = null;
+        }
+
+        if ($res['docsOk']) {
+            $res["success"] = true;
+            $res["message"] = "Some documents were sent for " . $params["method"];
+        } else {
+            $res["message"] = "Nothing to " . $params["method"];
+            return $res;
+        }
+
         if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
             $res["success"] = true;
-            $res["message"] = "ok";
-            $res["data"] = $transactionInfo;
+            $res["uuid"] = $transactionInfo;
             return $res;
         }
 
