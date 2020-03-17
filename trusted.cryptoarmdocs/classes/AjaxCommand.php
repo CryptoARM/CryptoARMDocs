@@ -209,6 +209,12 @@ class AjaxCommand {
         ];
 
         $doc = Database::getDocumentById($params['id']);
+
+        if (isset($params["success"]) && !$params["success"]) {
+            $doc->unblock();
+            $doc->save();
+        }
+
         if ($doc) {
             $lastDoc = $doc->getLastDocument();
         } else {
