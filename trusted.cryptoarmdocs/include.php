@@ -27,13 +27,6 @@ foreach (glob(TR_CA_DOCS_MODULE_DIR_CLASSES . "/*.php") as $filename) {
 }
 
 CJSCore::RegisterExt(
-    "socketio",
-    array(
-        "js" => "/bitrix/js/" . TR_CA_DOCS_MODULE_ID . "/socket.io.js",
-    )
-);
-
-CJSCore::RegisterExt(
     "trusted_cryptoarm_docs",
     array(
         "js" => "/bitrix/js/" . TR_CA_DOCS_MODULE_ID . "/docs.js",
@@ -41,7 +34,6 @@ CJSCore::RegisterExt(
     )
 );
 
-CUtil::InitJSCore(array('socketio'));
 CUtil::InitJSCore(array('trusted_cryptoarm_docs'));
 CUtil::InitJSCore(array("jquery"));
 
