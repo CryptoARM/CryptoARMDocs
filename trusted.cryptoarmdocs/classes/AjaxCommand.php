@@ -100,8 +100,7 @@ class AjaxCommand {
             Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true)
         );
 
-        $token = Utils::generateUUID();
-        $res["token"] = $token;
+        $res["token"] = $params["UUID"];
         $res["signType"] = TR_CA_DOCS_TYPE_SIGN;
 
         foreach ($res['docsOk']->getList() as $okDoc) {
@@ -1177,7 +1176,7 @@ class AjaxCommand {
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:
-                $response = self::sign(["id" => $docsId]);
+                $response = self::sign(["id" => $docsId, "UUID" => $UUID]);
                 $JSON->method = "sign";
                 $extra->token = $response["token"];
                 $extra->signType = TR_CA_DOCS_TYPE_SIGN;
