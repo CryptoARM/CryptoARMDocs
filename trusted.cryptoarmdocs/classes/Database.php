@@ -113,7 +113,7 @@ class Database {
      * Adds new sign transaction
      * @param array   $docsId Array of documents
      * @param int     $userId User id
-     * @return void
+     * @return string transaction UUID
      * @global object $DB     Bitrix global CDatabase object
      */
     static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null) {
@@ -134,14 +134,16 @@ class Database {
 
         global $DB;
         $sql = 'INSERT INTO ' . DB_TABLE_TRANSACTION . ' '
-            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE)'
+            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE) '
             . 'VALUES ('
             . '"' . $UUID . '", '
-            . '"' . $insertDocsId . '", '
+            . '"' . $DB->ForSql($insertDocsId) . '", '
             . $userId . ', '
             . $typeTransaction
             . ')';
         $DB->Query($sql);
+
+        return $UUID;
     }
 
     /**

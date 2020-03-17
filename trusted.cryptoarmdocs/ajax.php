@@ -96,6 +96,9 @@ if (isset($command)) {
         case "JSON":
             $res = Docs\AjaxCommand::generateJson($_REQUEST["accessToken"]);
             break;
+        case "createTransaction":
+            $res = Docs\AjaxCommand::createTransaction($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

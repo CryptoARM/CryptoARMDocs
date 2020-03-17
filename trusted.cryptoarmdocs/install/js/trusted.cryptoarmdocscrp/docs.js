@@ -7,6 +7,7 @@ if (!trustedCA) {
 // ===============================
 trustedCA.initVar = function () {
     AJAX_CONTROLLER = window.location.protocol + '//' + window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
+    AJAX_CONTROLLER_WITHOUT_PROTOCOL = window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
     NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
     HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
     REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
@@ -44,6 +45,7 @@ trustedCA.initVar = function () {
     MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
+    SIGN_TYPE = BX.message('TR_CA_DOCS_SIGN_TYPE');
     UNSHARE_FROM_MODAL_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM');
     NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
     CLOSE_WINDOW = BX.message('TR_CA_DOCS_CLOSE_INFO_WINDOW');
@@ -209,70 +211,15 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     if (typeof extra['signType'] !== "undefined") {
         extra.signType = 0;
     }
-    let iOS = /iphone/i.test(navigator.userAgent);
-    let android = /android/i.test(navigator.userAgent);
-    if (!iOS && !android) {
-        if (!socket.connected) {
-            alert(NO_CLIENT);
-            return;
-        }
-    }
     $.ajax({
-        url: AJAX_CONTROLLER + '?command=sign',
+        url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
-        data: {id: ids, extra: extra},
+        data: {id: ids, method: "sign"},
         success: function (d) {
-            // mobile CryptoArm support START
-            if (iOS || android) {
-                let filenameArr = [];
-                let idArr = [];
-                docs = JSON.parse(d.docsOk);
-                docs.forEach(function (elem) {
-                    filenameArr.push(elem.name);
-                    idArr.push(elem.id);
-                });
-                extra.token = d.token;
-                let url = "cryptoarmgost://sign/?ids=" + idArr + "&extra=" + JSON.stringify(extra) +
-                    "&url=" + JSON.parse(d.docsOk)[0].url + "&filename=" + filenameArr + "&href=" +
-                    window.location.href + "&uploadurl=" + AJAX_CONTROLLER + "&command=upload&license=" + d.license + "&browser=";
-                if (/CriOS/i.test(navigator.userAgent)) {
-                    window.location = url + "chrome";
-                } else {
-                    window.location = url + "default";
-                }
-                ids = [];
-                docs.forEach(function (elem) {
-                    ids.push(elem.id);
-                });
-                trustedCA.block(ids);
-                setTimeout(() => location.reload(), 1000);
-                // mobile CryptoArm support END
+            if (d.success) {
+                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.uuid;
+                window.location = url;
             } else {
-                if (d.success) {
-                    extra.token = d.token;
-                    extra.signType = d.signType;
-                    docs = JSON.parse(d.docsOk);
-                    req = {};
-                    req.jsonrpc = '2.0';
-                    req.method = 'sign';
-                    req.params = {};
-                    req.params.license = d.license;
-                    req.params.token = '';
-                    req.params.files = docs;
-                    req.params.extra = extra;
-                    req.params.uploader = AJAX_CONTROLLER + '?command=upload';
-                    socket.emit('sign', req);
-                    ids = [];
-                    docs.forEach(function (elem) {
-                        ids.push(elem.id);
-                    });
-                    trustedCA.showModalWindow(ids);
-                    var interval = setInterval(() => trustedCA.blockCheck(d.token, interval, onSuccess), 2000);
-                } else {
-                    if (typeof onFailure === 'function') {
-                        onFailure(d);
-                    }
-                }
                 trustedCA.show_messages(d);
             }
         },
@@ -288,8 +235,6 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             }
         }
     });
-    // Fixes random socket disconnects
-    trustedCA.socketInit();
 };
 
 trustedCA.blockCheck = function (token, interval, onSuccess) {
@@ -427,45 +372,15 @@ trustedCA.verify = function (ids) {
         alert(HTTP_WARNING);
         return;
     }
-    let iOS = /iphone/i.test(navigator.userAgent);
-    let android = /android/i.test(navigator.userAgent);
-    if (!iOS && !android) {
-        if (!socket.connected) {
-            alert(NO_CLIENT);
-            return;
-        }
-    }
     $.ajax({
-        url: AJAX_CONTROLLER + '?command=verify',
+        url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
-        data: {id: ids},
+        data: {id: ids, method: "verify"},
         success: function (d) {
-            // mobile CryptoArm support START
-            if (iOS || android) {
-                let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docsOk)[0].url + "&command=verify";
-                if (/CriOS/i.test(navigator.userAgent || '')) {
-                    window.location = url + "&browser=chrome";
-                } else {
-                    window.location = url + "&browser=default";
-                }
-                // mobile CryptoArm support END
+            if (d.success) {
+                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data.token;
+                window.location = url;
             } else {
-                if (d.success) {
-                    docs = JSON.parse(d.docsOk);
-                    req = {};
-                    req.jsonrpc = '2.0';
-                    req.method = 'verify';
-                    req.params = {};
-                    req.params.token = '';
-                    req.params.files = docs;
-                    if (socket.connected) {
-                        socket.emit('verify', req);
-                    } else {
-                        alert(NO_CLIENT);
-                    }
-                } else {
-                    console.log(d);
-                }
                 trustedCA.show_messages(d);
             }
         },
@@ -481,8 +396,6 @@ trustedCA.verify = function (ids) {
             }
         }
     });
-    // Fixes random socket disconnects
-    trustedCA.socketInit();
 };
 
 

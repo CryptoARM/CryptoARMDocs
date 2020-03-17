@@ -1066,6 +1066,76 @@ class AjaxCommand {
         return $res;
     }
 
+    /**
+     * Create transaction in DB
+     * @param $params ["id"] ids of documents
+     *                ["method"] type of method
+     * @return array info about created transaction
+     */
+    public function createTransaction($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.createTransaction",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No autorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        global $USER;
+
+        $userId = $USER->GetID();
+        $ids = $params["id"];
+
+        if (!$ids) {
+            $res["message"] = "No ids were given";
+            $res["noIds"] = true;
+            return $res;
+        }
+
+        switch ($params["method"]) {
+            case "sign":
+                $method = DOC_TRANSACTION_TYPE_SIGN;
+                $res = Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true);
+                break;
+            case "verify":
+                $method = DOC_TRANSACTION_TYPE_VERIFY;
+                $res = Utils::checkDocuments($ids, DOC_SHARE_READ, true, false);
+                $res['docsUnsigned'] = $res['docsUnsigned']->toIdAndFilenameArray();
+                break;
+            default:
+                $res["message"] = "Unknown method";
+                return $res;
+        }
+
+        $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
+        $res['docsBlocked'] = $res['docsBlocked']->toIdAndFilenameArray();
+
+        if ($res['docsOk']->count()) {
+            $res['docsOk'] = $res['docsOk']->toJSON();
+        } else {
+            $res['docsOk'] = null;
+        }
+
+        if ($res['docsOk']) {
+            $res["success"] = true;
+            $res["message"] = "Some documents were sent for " . $params["method"];
+        } else {
+            $res["message"] = "Nothing to " . $params["method"];
+            return $res;
+        }
+
+        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
+            $res["success"] = true;
+            $res["uuid"] = $transactionInfo;
+            return $res;
+        }
+
+        return $res;
+    }
+
     public function generateJson($UUID) {
         $res = [
             "success" => false,
