@@ -126,35 +126,6 @@ if (BX.message('TR_CA_DOCS_AJAX_CONTROLLER')) {
     }, 100);
 }
 
-// ====================================================
-// === Establish socket connection, assign handlers ===
-// ====================================================
-trustedCA.socketInit = function () {
-    if (location.protocol === 'https:') {
-        socket = io('https://localhost:4040');
-        socket.on('connect', () => {
-            console.log('Event: connect');
-        });
-        socket.on('disconnect', data => {
-            console.log('Event: disconnect, reason: ', data);
-        });
-        socket.on('verified', data => {
-            console.log('Event: verified', data);
-        });
-        socket.on('signed', data => {
-            console.log('Event: signed, data: ', data);
-        });
-        socket.on('uploaded', data => {
-            console.log('Event: uploaded, data: ', data);
-        });
-        socket.on('cancelled', data => {
-            console.log('Event: cancelled', data);
-            trustedCA.unblock([data.id]);
-        });
-    }
-};
-trustedCA.socketInit();
-
 // =========================
 // === Module js library ===
 // =========================
