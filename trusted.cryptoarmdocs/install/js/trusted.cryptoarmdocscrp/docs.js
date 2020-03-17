@@ -45,6 +45,7 @@ trustedCA.initVar = function () {
     MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
+    SIGN_TYPE = BX.message('TR_CA_DOCS_SIGN_TYPE');
     UNSHARE_FROM_MODAL_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM');
     NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
     CLOSE_WINDOW = BX.message('TR_CA_DOCS_CLOSE_INFO_WINDOW');
@@ -363,49 +364,15 @@ trustedCA.reloadDoc = function () {
 }
 
 trustedCA.verify = function (ids) {
-    if (location.protocol === 'http:') {
-        alert(HTTP_WARNING);
-        return;
-    }
-    let iOS = /iphone/i.test(navigator.userAgent);
-    let android = /android/i.test(navigator.userAgent);
-    if (!iOS && !android) {
-        if (!socket.connected) {
-            alert(NO_CLIENT);
-            return;
-        }
-    }
     $.ajax({
-        url: AJAX_CONTROLLER + '?command=verify',
+        url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
-        data: {id: ids},
+        data: {id: ids, method: "verify"},
         success: function (d) {
-            // mobile CryptoArm support START
-            if (iOS || android) {
-                let url = "cryptoarmgost://verify/?url=" + JSON.parse(d.docsOk)[0].url + "&command=verify";
-                if (/CriOS/i.test(navigator.userAgent || '')) {
-                    window.location = url + "&browser=chrome";
-                } else {
-                    window.location = url + "&browser=default";
-                }
-                // mobile CryptoArm support END
+            if (d.success) {
+                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data;
+                window.location = url;
             } else {
-                if (d.success) {
-                    docs = JSON.parse(d.docsOk);
-                    req = {};
-                    req.jsonrpc = '2.0';
-                    req.method = 'verify';
-                    req.params = {};
-                    req.params.token = '';
-                    req.params.files = docs;
-                    if (socket.connected) {
-                        socket.emit('verify', req);
-                    } else {
-                        alert(NO_CLIENT);
-                    }
-                } else {
-                    console.log(d);
-                }
                 trustedCA.show_messages(d);
             }
         },
@@ -421,8 +388,6 @@ trustedCA.verify = function (ids) {
             }
         }
     });
-    // Fixes random socket disconnects
-    trustedCA.socketInit();
 };
 
 
