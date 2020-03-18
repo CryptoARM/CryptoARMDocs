@@ -72,7 +72,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::download($params);
             break;
         case "content":
-            $res = Docs\AjaxCommand::content($_GET);
+            $res = Docs\AjaxCommand::content($_REQUEST);
             return $res;
             break;
         case "protocol":
