@@ -7,7 +7,6 @@ if (!trustedCA) {
 // ===============================
 trustedCA.initVar = function () {
     AJAX_CONTROLLER = window.location.protocol + '//' + window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
-    AJAX_CONTROLLER_WITHOUT_PROTOCOL = window.location.host + BX.message('TR_CA_DOCS_AJAX_CONTROLLER');
     NO_CLIENT = BX.message('TR_CA_DOCS_ALERT_NO_CLIENT');
     HTTP_WARNING = BX.message('TR_CA_DOCS_ALERT_HTTP_WARNING');
     REMOVE_ACTION_CONFIRM = BX.message('TR_CA_DOCS_ALERT_REMOVE_ACTION_CONFIRM');
@@ -188,7 +187,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
         data: {id: ids, method: "sign"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.uuid;
+                let url = "cryptoarm://sign/" + AJAX_CONTROLLER  + '?command=JSON&accessToken=' + d.uuid;
                 window.location = url;
                 ids = [];
                 try {
@@ -365,7 +364,7 @@ trustedCA.verify = function (ids) {
         data: {id: ids, method: "verify"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.data.token;
+                let url = "cryptoarm://verify/" + AJAX_CONTROLLER + '?command=JSON&accessToken=' + d.data.token;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);
