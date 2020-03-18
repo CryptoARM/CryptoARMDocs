@@ -190,6 +190,22 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
             if (d.success) {
                 let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.uuid;
                 window.location = url;
+                ids = [];
+                try {
+                    docs = JSON.parse(d.docsOk);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
+                docs.forEach(function (elem) {
+                    ids.push(elem.id);
+                });
+                ids = [];
+                docs.forEach(function (elem) {
+                    ids.push(elem.id);
+                });
+                trustedCA.showModalWindow(ids);
+                let interval = setInterval(() => trustedCA.blockCheck(d.uuid, interval, onSuccess), 5000);
             } else {
                 trustedCA.show_messages(d);
             }
