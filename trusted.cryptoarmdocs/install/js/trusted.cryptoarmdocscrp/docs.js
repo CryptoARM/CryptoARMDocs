@@ -191,7 +191,12 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                 let url = "cryptoarm://" + AJAX_CONTROLLER_WITHOUT_PROTOCOL + '?command=JSON&accessToken=' + d.uuid;
                 window.location = url;
                 ids = [];
-                docs = JSON.parse(d.docsOk);
+                try {
+                    docs = JSON.parse(d.docsOk);
+                } catch (e) {
+                    console.log(e);
+                    return;
+                }
                 docs.forEach(function (elem) {
                     ids.push(elem.id);
                 });
