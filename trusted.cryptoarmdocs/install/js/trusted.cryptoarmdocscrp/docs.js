@@ -364,7 +364,7 @@ trustedCA.verify = function (ids) {
         data: {id: ids, method: "verify"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://verify/" + AJAX_CONTROLLER + '?command=JSON&accessToken=' + d.data.token;
+                let url = "cryptoarm://verify/" + AJAX_CONTROLLER + '?command=JSON&accessToken=' + d.uuid;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);
