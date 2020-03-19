@@ -35,6 +35,27 @@ class Collection
     }
 
     /**
+     * Merge some collections entry
+     * @param Collection entry some Collections
+     * @return Collection merged collections
+     */
+    public function mergeCollections(){
+        $args = func_get_args();
+        $collection = new Collection();
+
+        foreach ($args as $key => $docsCollection) {
+            if ($docsCollection->count()) {
+                $docsList = $docsCollection->getList();
+                foreach ($docsList as $key2 => $doc) {
+                    $collection->items_[] = $doc;
+                }
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
      * Returns item from collection by index
      * @param integer $i [0..n]
      * @return object

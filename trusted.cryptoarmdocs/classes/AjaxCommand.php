@@ -971,15 +971,21 @@ class AjaxCommand {
             return $res;
         }
 
-        $token = $params['blockToken'];
+        $tokens = $params['blockToken'];
 
-        if (!$token) {
+        if (!$tokens) {
             $res["message"] = "No token were given";
             return $res;
         }
 
-        $docs = Database::getDocumentsByBlockToken($token);
-        if ($docs->count()) {
+        $collection = new Collection();
+
+        foreach ($tokens as $token) {
+            $docs = Database::getDocumentsByBlockToken($token);
+            $collection = Collection::mergeCollections($collection, $docs);
+        }
+
+        if ($collection->count()) {
             $res["message"] = "Documents blocked with this token are found";
             $res["success"] = true;
         } else {

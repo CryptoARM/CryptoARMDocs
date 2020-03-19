@@ -316,6 +316,16 @@ $APPLICATION->IncludeComponent(
 </div>
 
 <script>
+    var blockDocIds = <?= $arResult["BLOCK_DOCUMENTS"]["IDS"]?>;
+    var blockTokens = <?= $arResult["BLOCK_DOCUMENTS"]["TOKENS"]?>;
+
+    if (blockTokens) {
+        if (!$('#trca-modal-overlay').length > 0) {
+            trustedCA.showModalWindow(blockDocIds);
+            var interval = setInterval(() => trustedCA.blockCheck(blockTokens, interval, null), 2000);
+        }
+    }
+
     new Vue({
         el: '#trca-docs-by-user',
         methods: {
