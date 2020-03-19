@@ -105,7 +105,7 @@ class AjaxCommand {
 
         foreach ($res['docsOk']->getList() as $okDoc) {
             $okDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
-            $okDoc->block($token);
+            $okDoc->block($res["token"]);
             $okDoc->save();
         }
 
@@ -1177,13 +1177,20 @@ class AjaxCommand {
         return $res;
     }
 
-    public function generateJson($UUID) {
+    public function generateJson($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.generateJson",
         ];
 
         $deauthorize = false;
+
+        $UUID = $params["accessToken"];
+
+        if (!$UUID) {
+            $res["message"] = "accessToken is not find in params";
+            return $res;
+        }
 
         $transactionInfo = Database::getTransaction($UUID);
 
@@ -1209,6 +1216,9 @@ class AjaxCommand {
             $USER->Authorize($userId);
             $deauthorize = true;
         }
+
+        $JSON = new class{};
+        $extra = new class{};
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:

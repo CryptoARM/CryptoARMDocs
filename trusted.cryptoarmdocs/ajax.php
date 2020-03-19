@@ -94,7 +94,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::requireToSign($params);
             break;
         case "JSON":
-            $res = Docs\AjaxCommand::generateJson($_REQUEST["accessToken"]);
+            $res = Docs\AjaxCommand::generateJson($_REQUEST);
             break;
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);
