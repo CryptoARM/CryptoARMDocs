@@ -35,7 +35,7 @@ $docs = Docs\Database::getDocumentsByUser($currUserId, true);
 
 $docsInfo = array();
 $allIds = array();
-$blockTokens = [];
+$blockedDocs = [];
 
 foreach ($docs->getList() as $doc) {
     if ($arParams["CHECK_ORDER_PROPERTY"] === "N" &&  $doc->getProperties()->getPropByType("ORDER")) {
@@ -100,24 +100,24 @@ foreach ($docs->getList() as $doc) {
         );
 
         if ($doc->getBlockBy() == $currUserId) {
-            $blockTokens["TOKENS"][] = $doc->getBlockToken();
-            $blockTokens["IDS"][] = $doc->getId();
+            $blockedDocs["TOKENS"][] = $doc->getBlockToken();
+            $blockedDocs["IDS"][] = $doc->getId();
         }
 
         $allIds[] = $doc->getId();
     }
 }
 
-$blockTokens = [
-    "TOKENS" => json_encode(array_unique($blockTokens["TOKENS"])),
-    "IDS" => json_encode(array_unique($blockTokens["IDS"])),
+$blockedDocs = [
+    "TOKENS" => json_encode(array_unique($blockedDocs["TOKENS"])),
+    "IDS" => json_encode(array_unique($blockedDocs["IDS"])),
 ];
 
 $arResult = array(
     'DOCS' => $docsInfo,
     'ALL_IDS' => $allIds,
     'ALL_IDS_JS' => json_encode($allIds),
-    'BLOCK_DOCUMENTS' => $blockTokens,
+    'BLOCKED_DOCUMENTS' => $blockedDocs,
 );
 
 $this->IncludeComponentTemplate();

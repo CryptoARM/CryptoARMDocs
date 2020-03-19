@@ -316,13 +316,13 @@ $APPLICATION->IncludeComponent(
 </div>
 
 <script>
-    var blockDocIds = <?= $arResult["BLOCK_DOCUMENTS"]["IDS"]?>;
-    var blockTokens = <?= $arResult["BLOCK_DOCUMENTS"]["TOKENS"]?>;
+    var blockedDocIds = <?= $arResult["BLOCKED_DOCUMENTS"]["IDS"]?>;
+    var blockedDocTokens = <?= $arResult["BLOCKED_DOCUMENTS"]["TOKENS"]?>;
 
-    if (blockTokens) {
+    if (blockedDocTokens) {
         if (!$('#trca-modal-overlay').length > 0) {
-            trustedCA.showModalWindow(blockDocIds);
-            var interval = setInterval(() => trustedCA.blockCheck(blockTokens, interval, null), 2000);
+            trustedCA.showModalWindow(blockedDocIds);
+            var interval = setInterval(() => trustedCA.blockCheck(blockedDocTokens, interval, null), 2000);
         }
     }
 
