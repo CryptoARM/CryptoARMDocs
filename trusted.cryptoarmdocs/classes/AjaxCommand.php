@@ -554,14 +554,16 @@ class AjaxCommand {
             $transactionInfo = Database::getTransaction($token);
             if (!$transactionInfo) {
                 $res["message"] = "Transaction does not exist";
-                return $res;
+                echo json_encode($res);
+                die();
             }
             $userId = $transactionInfo["USER_ID"];
         }
 
         if (!$userId) {
             $res["message"] = "No authorization or no token";
-            return $res;
+            echo json_encode($res);
+            die();
         }
 
         if ($params["id"]) {
@@ -569,37 +571,33 @@ class AjaxCommand {
             if ($doc) {
                 if (!($doc->getOwner() == $userId || $doc->accessCheck($userId, DOC_SHARE_READ))) {
                     $res["message"] = "No access";
-                    return $res;
+                    echo json_encode($res);
+                    die();
                 }
 
                 if ($token && $doc->getBlockToken() != $token) {
                     $res["message"] = "Wrong block token";
-                    return $res;
+                    echo json_encode($res);
+                    die();
                 }
 
                 if ($params["force"]) {
                     $file = $doc->getFullPath();
-                } else {
+                } elseif ($params["detachedSign"]) {
                     $doc = $doc->getLastDocument();
                     $file = $doc->getFullPath();
+                } else {
                     if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
-                        $originalDoc = Database::getDocumentById($doc->getOriginalId());
-                        $originalFile = $originalDoc->getFullPath();
+                        $doc = Database::getDocumentById($doc->getOriginalId());
+                    } else {
+                        $doc = $doc->getLastDocument();
                     }
+                    $file = $doc->getFullPath();
                 }
                 if ($params["view"]) {
-                    if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
-                        Utils::view($originalFile, $originalDoc->getName());
-                    } else {
-                        Utils::view($file, $doc->getName());
-                    }
+                    Utils::view($file, $doc->getName());
                 } else {
-                    // TODO: change output docs to cryptoarm gost
-                    if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
-                        Utils::download($originalFile, $originalDoc->getName());
-                    } else {
-                        Utils::download($file, $doc->getName());
-                    }
+                    Utils::download($file, $doc->getName());
                 }
             } else {
                 header("HTTP/1.1 500 Internal Server Error");
