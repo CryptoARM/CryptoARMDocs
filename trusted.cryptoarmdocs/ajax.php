@@ -53,9 +53,6 @@ if (isset($command)) {
         case "getAccountHistory":
             $res = Docs\AjaxCommand::getAccountHistory($params);
             break;
-        case "sign":
-            $res = Docs\AjaxCommand::sign($params);
-            break;
         case "upload":
             $res = Docs\AjaxCommand::upload($params);
             break;
@@ -102,7 +99,15 @@ if (isset($command)) {
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }
+} else {
+    $res = ["success" => false, "message" => "Command is not found"];
+    header("HTTP/1.0 400 Bad Request");
 }
+
+if (!$res["success"]) {
+    header("HTTP/1.0 400 Bad Request");
+}
+
 echo json_encode($res);
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");

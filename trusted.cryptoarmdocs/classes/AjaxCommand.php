@@ -132,6 +132,8 @@ class AjaxCommand {
             } else {
                 $res['license'] = $license['data'];
             }
+        } else {
+            $res['license'] = null;
         }
 
         return $res;
@@ -1217,8 +1219,9 @@ class AjaxCommand {
             $deauthorize = true;
         }
 
-        $JSON = new class{};
-        $extra = new class{};
+        $JSON = new class {};
+        $extra = new class {};
+        $params = new class {};
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:
