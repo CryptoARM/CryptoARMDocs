@@ -101,13 +101,7 @@ if (isset($command)) {
     }
 } else {
     $res = ["success" => false, "message" => "Command is not found"];
-    header("HTTP/1.0 400 Bad Request");
 }
-
-if (!$res["success"]) {
-    header("HTTP/1.0 400 Bad Request");
-}
-
 echo json_encode($res);
 
 require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/epilog_after.php");

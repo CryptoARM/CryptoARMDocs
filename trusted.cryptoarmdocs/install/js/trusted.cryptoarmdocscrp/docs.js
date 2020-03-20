@@ -234,7 +234,7 @@ trustedCA.blockCheck = function (tokens, interval, onSuccess) {
             onSuccess();
         }
     }
-    trustedCA.ajax('blockCheck', {blockToken: tokens}, () => {
+    trustedCA.ajax('blockCheck', {blockTokens: tokens}, () => {
     }, onFailure);
 };
 

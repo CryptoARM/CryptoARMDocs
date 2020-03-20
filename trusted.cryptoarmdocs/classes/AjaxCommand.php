@@ -973,7 +973,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $tokens = $params['blockToken'];
+        $tokens = $params['blockTokens'];
 
         if (!$tokens) {
             $res["message"] = "No token were given";
