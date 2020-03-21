@@ -203,8 +203,9 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
                 docs.forEach(function (elem) {
                     ids.push(elem.id);
                 });
+                console.log(ids);
                 trustedCA.showModalWindow(ids);
-                let interval = setInterval(() => trustedCA.blockCheck(d.uuid, interval, onSuccess), 5000);
+                let interval = setInterval(() => trustedCA.blockCheck([d.uuid], interval, onSuccess), 5000);
             } else {
                 trustedCA.show_messages(d);
             }
@@ -223,7 +224,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     });
 };
 
-trustedCA.blockCheck = function (token, interval, onSuccess) {
+trustedCA.blockCheck = function (tokens, interval, onSuccess) {
     let onFailure = (e) => {
         clearInterval(interval);
         interval = 0;
@@ -233,7 +234,7 @@ trustedCA.blockCheck = function (token, interval, onSuccess) {
             onSuccess();
         }
     }
-    trustedCA.ajax('blockCheck', {blockToken: token}, () => {
+    trustedCA.ajax('blockCheck', {blockTokens: tokens}, () => {
     }, onFailure);
 };
 

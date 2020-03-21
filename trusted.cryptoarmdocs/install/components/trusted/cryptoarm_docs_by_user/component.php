@@ -35,6 +35,7 @@ $docs = Docs\Database::getDocumentsByUser($currUserId, true);
 
 $docsInfo = array();
 $allIds = array();
+$blockedDocs = [];
 
 foreach ($docs->getList() as $doc) {
     if ($arParams["CHECK_ORDER_PROPERTY"] === "N" &&  $doc->getProperties()->getPropByType("ORDER")) {
@@ -97,14 +98,26 @@ foreach ($docs->getList() as $doc) {
             "SHARED_STATUS_JS" => json_encode($status),
 
         );
+
+        if ($doc->getBlockBy() == $currUserId) {
+            $blockedDocs["TOKENS"][] = $doc->getBlockToken();
+            $blockedDocs["IDS"][] = $doc->getId();
+        }
+
         $allIds[] = $doc->getId();
     }
 }
+
+$blockedDocs = [
+    "TOKENS" => json_encode(array_unique($blockedDocs["TOKENS"])),
+    "IDS" => json_encode(array_unique($blockedDocs["IDS"])),
+];
 
 $arResult = array(
     'DOCS' => $docsInfo,
     'ALL_IDS' => $allIds,
     'ALL_IDS_JS' => json_encode($allIds),
+    'BLOCKED_DOCUMENTS' => $blockedDocs,
 );
 
 $this->IncludeComponentTemplate();

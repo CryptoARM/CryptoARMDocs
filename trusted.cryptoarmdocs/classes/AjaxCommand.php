@@ -105,7 +105,7 @@ class AjaxCommand {
 
         foreach ($res['docsOk']->getList() as $okDoc) {
             $okDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
-            $okDoc->block($token);
+            $okDoc->block($res["token"]);
             $okDoc->save();
         }
 
@@ -132,6 +132,8 @@ class AjaxCommand {
             } else {
                 $res['license'] = $license['data'];
             }
+        } else {
+            $res['license'] = null;
         }
 
         return $res;
@@ -971,15 +973,21 @@ class AjaxCommand {
             return $res;
         }
 
-        $token = $params['blockToken'];
+        $tokens = $params['blockTokens'];
 
-        if (!$token) {
+        if (!$tokens) {
             $res["message"] = "No token were given";
             return $res;
         }
 
-        $docs = Database::getDocumentsByBlockToken($token);
-        if ($docs->count()) {
+        $collection = new Collection();
+
+        foreach ($tokens as $token) {
+            $docs = Database::getDocumentsByBlockToken($token);
+            $collection = Collection::mergeCollections($collection, $docs);
+        }
+
+        if ($collection->count()) {
             $res["message"] = "Documents blocked with this token are found";
             $res["success"] = true;
         } else {
@@ -1171,13 +1179,20 @@ class AjaxCommand {
         return $res;
     }
 
-    public function generateJson($UUID) {
+    public function generateJson($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.generateJson",
         ];
 
         $deauthorize = false;
+
+        $UUID = $params["accessToken"];
+
+        if (!$UUID) {
+            $res["message"] = "accessToken is not find in params";
+            return $res;
+        }
 
         $transactionInfo = Database::getTransaction($UUID);
 
@@ -1203,6 +1218,10 @@ class AjaxCommand {
             $USER->Authorize($userId);
             $deauthorize = true;
         }
+
+        $JSON = new class {};
+        $extra = new class {};
+        $params = new class {};
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:

@@ -53,9 +53,6 @@ if (isset($command)) {
         case "getAccountHistory":
             $res = Docs\AjaxCommand::getAccountHistory($params);
             break;
-        case "sign":
-            $res = Docs\AjaxCommand::sign($params);
-            break;
         case "upload":
             $res = Docs\AjaxCommand::upload($params);
             break;
@@ -94,7 +91,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::requireToSign($params);
             break;
         case "JSON":
-            $res = Docs\AjaxCommand::generateJson($_REQUEST["accessToken"]);
+            $res = Docs\AjaxCommand::generateJson($_REQUEST);
             break;
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);
@@ -102,6 +99,8 @@ if (isset($command)) {
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }
+} else {
+    $res = ["success" => false, "message" => "Command is not found"];
 }
 echo json_encode($res);
 
