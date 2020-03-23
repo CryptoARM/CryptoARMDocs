@@ -545,44 +545,9 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.content",
         ];
 
-        $token = $params["accessToken"];
-        $userId = null;
-
-        if (Utils::checkAuthorization()) {
-            $userId = Utils::currUserId();
-        }
-
-        if ($token) {
-            $transactionInfo = Database::getTransaction($token);
-            if (!$transactionInfo) {
-                $res["message"] = "Transaction does not exist";
-                echo json_encode($res);
-                die();
-            }
-            $userId = $transactionInfo["USER_ID"];
-        }
-
-        if (!$userId) {
-            $res["message"] = "No authorization or no token";
-            echo json_encode($res);
-            die();
-        }
-
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
-                if (!($doc->getOwner() == $userId || $doc->accessCheck($userId, DOC_SHARE_READ))) {
-                    $res["message"] = "No access";
-                    echo json_encode($res);
-                    die();
-                }
-
-                if ($token && $doc->getBlockToken() != $token) {
-                    $res["message"] = "Wrong block token";
-                    echo json_encode($res);
-                    die();
-                }
-
                 if ($params["force"]) {
                     $file = $doc->getFullPath();
                 } elseif ($params["detachedSign"]) {
