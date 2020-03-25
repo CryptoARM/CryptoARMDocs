@@ -65,7 +65,7 @@ $moduleOptions = array(
     "MAIL_EVENT_ID_FORM", "MAIL_TEMPLATE_ID_FORM",
     "MAIL_EVENT_ID_FORM_TO_ADMIN", "MAIL_TEMPLATE_ID_FORM_TO_ADMIN",
     "RECAPTCHA_KEY_SITE", "RECAPTCHA_SECRET_KEY", "TR_CA_DOCS_TYPE_SIGN",
-    "TR_CA_DOCS_AUTO_UNBLOCK_TIME"
+    "TR_CA_DOCS_AUTO_UNBLOCK_TIME", "TR_CA_DOCS_SIGN_STANDARD"
 );
 
 function UpdateOption($option, $value = false) {
@@ -114,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && check_bitrix_sessid()) {
         UpdateOption("RECAPTCHA_SECRET_KEY");
         UpdateOption("TR_CA_DOCS_TYPE_SIGN");
         UpdateOption("TR_CA_DOCS_AUTO_UNBLOCK_TIME");
+        UpdateOption("TR_CA_DOCS_SIGN_STANDARD");
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
@@ -126,6 +127,17 @@ if (isset($_SESSION['OPTION_PAGE_DOC_DIR_ERROR'])) {
 foreach ($moduleOptions as $option) {
     $$option = Option::get(TR_CA_DOCS_MODULE_ID, $option, "");
 }
+
+$signStandard = [
+    "REFERENCE" => [
+        GetMessage("TR_CA_DOCS_SIGN_STANDARD_CMS"),
+        GetMessage("TR_CA_DOCS_SIGN_STANDARD_CADES"),
+    ],
+    "REFERENCE_ID" => [
+        DOC_SIGN_STANDARD_CMS,
+        DOC_SIGN_STANDARD_CADES,
+    ],
+];
 
 $minutesInSelector = [
     "REFERENCE" => [
@@ -222,6 +234,27 @@ $tabControl->Begin();
             </td>
             <td>
                 <? echo SelectBoxFromArray("TR_CA_DOCS_TYPE_SIGN", $signType, TR_CA_DOCS_TYPE_SIGN, "", "", false, "trustedcryptoarmdocs_settings"); ?>
+            </td>
+        </tr>
+
+        <tr class="heading">
+            <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_SIGN_STANDARD_HEADING") ?></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <?
+                echo BeginNote(), Loc::getMessage("TR_CA_DOCS_SIGN_STANDARD_DESCRIPTION"), EndNote();
+                ?>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <?= GetMessage("TR_CA_DOCS_SIGN_STANDARD") ?>
+            </td>
+            <td>
+                <? echo SelectBoxFromArray("TR_CA_DOCS_SIGN_STANDARD", $signStandard, TR_CA_DOCS_SIGN_STANDARD, "", "", false, "trustedcryptoarmdocs_settings"); ?>
             </td>
         </tr>
 

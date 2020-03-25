@@ -45,6 +45,11 @@ define("DOC_TYPE_SIGNED_FILE", 1);
 define("DOC_SIGN_TYPE_COMBINED", 0);
 define("DOC_SIGN_TYPE_DETACHED", 1);
 
+// Sign standard
+define("DOC_SIGN_STANDARD_CMS", "BES");
+define("DOC_SIGN_STANDARD_CADES", "XLT1");
+define("TR_CA_DOCS_SIGN_STANDARD", Option::get(TR_CA_DOCS_MODULE_ID, 'TR_CA_DOCS_SIGN_STANDARD', "BES"));
+
 // Sign type in settings
 define("TR_CA_DOCS_TYPE_SIGN", Option::get(TR_CA_DOCS_MODULE_ID, 'TR_CA_DOCS_TYPE_SIGN', 0));
 
