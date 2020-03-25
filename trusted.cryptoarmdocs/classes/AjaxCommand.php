@@ -1194,6 +1194,7 @@ class AjaxCommand {
                 $JSON->method = "sign";
                 $extra->token = $response["token"];
                 $extra->signType = TR_CA_DOCS_TYPE_SIGN;
+                $extra->signStandard = TR_CA_DOCS_SIGN_STANDARD;
                 $params->extra = $extra;
                 break;
             case DOC_TRANSACTION_TYPE_VERIFY:
