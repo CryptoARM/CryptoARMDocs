@@ -27,13 +27,15 @@ class RequireSign implements IEntity, ISave {
     protected $userId = null;
     protected $emailStatus = null;
     protected $signStatus = null;
+    protected $signUUID = null;
 
-    function __construct($requireId = null, $docId = null, $userId = null, $emailStatus = null, $signStatus = null) {
+    function __construct($requireId = null, $docId = null, $userId = null, $emailStatus = null, $signStatus = null, $signUUID = null) {
         $this->requireId = $requireId;
         $this->docId = $docId;
         $this->userId = $userId;
         $this->emailStatus = $emailStatus;
         $this->signStatus = $signStatus;
+        $this->signUUID = $signUUID;
     }
 
     function __destruct() {
@@ -50,6 +52,7 @@ class RequireSign implements IEntity, ISave {
             $doc->setUserId($array["USER_ID"]);
             $doc->setEmailStatus($array["EMAIL_STATUS"]);
             $doc->setSignStatus($array["SIGNED"]);
+            $doc->setSignUUID($array["SIGN_UUID"]);
         }
 
         return $doc;
@@ -116,6 +119,16 @@ class RequireSign implements IEntity, ISave {
     function setSignStatus($signStatus)
     {
         $this->signStatus = (bool)$signStatus;
+    }
+
+    function getSignUUID()
+    {
+        return $this->signUUID;
+    }
+
+    function setSignUUID($UUID)
+    {
+        $this->signUUID = $UUID;
     }
 
     public function save()

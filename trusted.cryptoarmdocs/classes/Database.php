@@ -235,6 +235,9 @@ class Database {
         $userId = $require->getUserId();
         $emailStatus = $require->getEmailStatus();
         $signStatus = (int)$require->getSignStatus();
+        $signUUID = $require->getSignUUID();
+
+        if ($signUUID)
 
         $requireResponse = self::getRequire($docId, $userId);
 
