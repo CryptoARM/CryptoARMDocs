@@ -52,7 +52,7 @@ class RequireSign implements IEntity, ISave {
             $doc->setUserId($array["USER_ID"]);
             $doc->setEmailStatus($array["EMAIL_STATUS"]);
             $doc->setSignStatus($array["SIGNED"]);
-            $doc->setSignUUID($array["SIGN_UUID"]);
+            $doc->setSignUUID($array["TRANSACTION_UUID"]);
         }
 
         return $doc;

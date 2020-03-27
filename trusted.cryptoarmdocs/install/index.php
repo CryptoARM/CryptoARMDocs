@@ -290,6 +290,7 @@ Loc::loadMessages(__FILE__);
                     `USER_ID` int(11) DEFAULT NULL,
                     `EMAIL_STATUS` varchar(8) COLLATE utf8_unicode_ci DEFAULT 'NOT_SENT',
                     `SIGNED` tinyint(1) DEFAULT '0',
+                    `TRANSACTION_UUID` varchar(36) COLLATE utf8_unicode_ci NOT NULL UNIQUE,
                 PRIMARY KEY (`ID`),
                 KEY `fk_tr_ca_docs_require_tr_ca_docs_idx` (`DOCUMENT_ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";

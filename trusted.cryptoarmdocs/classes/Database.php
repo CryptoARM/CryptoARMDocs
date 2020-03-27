@@ -237,7 +237,10 @@ class Database {
         $signStatus = (int)$require->getSignStatus();
         $signUUID = $require->getSignUUID();
 
-        if ($signUUID)
+        if (is_null($signUUID)) {
+            $signUUID = Utils::generateUUID();
+            $require->setSignUUID($signUUID);
+        }
 
         $requireResponse = self::getRequire($docId, $userId);
 
@@ -257,7 +260,8 @@ class Database {
 
                 $sql = 'UPDATE ' . DB_TABLE_REQUIRE . ' SET '
                     . 'EMAIL_STATUS = "' . $emailStatus . '", '
-                    . 'SIGNED = "' . $signStatus . '" '
+                    . 'SIGNED = "' . $signStatus . '", '
+                    . 'UUID_SIGN = "' . $signUUID . '" '
                     . 'WHERE ID = ' . $requireId;
                 $DB->Query($sql);
             }
@@ -269,16 +273,18 @@ class Database {
         $userId = $require->getUserId();
         $emailStatus = $require->getEmailStatus();
         $signStatus = (int)$require->getSignStatus();
+        $signUUID = $require->getSignUUID();
 
         global $DB;
 
         $sql = 'INSERT INTO ' . DB_TABLE_REQUIRE . '  '
-            . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS, SIGNED)'
+            . '(DOCUMENT_ID, USER_ID, EMAIL_STATUS, SIGNED, TRANSACTION_UUID)'
             . 'VALUES ('
             . $docId . ', '
             . $userId . ', '
             . '"' . $emailStatus . '", '
-            . $signStatus
+            . $signStatus . ', '
+            . '"' . $signUUID . '"'
             . ')';
         $DB->Query($sql);
     }
