@@ -1062,6 +1062,7 @@ class AjaxCommand {
 
                 $UUID = $transactionInfo["uuid"];
                 $signUrl = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . '?command=JSON&accessToken=' . $UUID;
+                $redirectUrl = TR_CA_DOCS_AJAX_CONTROLLER . '?command=getTransactionUrlByToken&accessToken=' . $UUID;
 
                 $arEventFields = [
                     "EMAIL" => $email,
@@ -1071,6 +1072,7 @@ class AjaxCommand {
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
                     "SIGN_URL" => $signUrl,
+                    "SIGN_URL_SITE" => $redirectUrl,
                     "TRANSACTION_UUID" => $UUID,
                 ];
 
@@ -1243,6 +1245,58 @@ class AjaxCommand {
         header("Content-Disposition: attachment; filename=someFile.json");
         echo json_encode($JSON);
         die;
+    }
+
+    public function getTransactionUrlByToken($params) {
+        $url = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . "?command=JSON&accessToken=" . $params["accessToken"];
+
+        header("Location: " . $url);
+        die();
+        /*$res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getTransactionUrlByToken",
+        ];
+
+        $UUID = $params["accessToken"];
+
+        if (!$UUID) {
+            $res["message"] = "accessToken is not find in params";
+            return $res;
+        }
+
+        $transactionInfo = Database::getTransaction($UUID);
+
+        if (!$transactionInfo) {
+            $res["message"] = "UUID is does not exist";
+            return $res;
+        }
+
+        $transactionStatus = $transactionInfo["TRANSACTION_STATUS"];
+        $transactionType = $transactionInfo["TRANSACTION_TYPE"];
+
+        if ($transactionStatus) {
+            $res["message"] = "accessToken is already used";
+            return $res;
+        }
+
+        $url = "cryptoarm://";
+
+        switch ($transactionType) {
+            case DOC_TRANSACTION_TYPE_SIGN:
+                $url .= "sign";
+                break;
+            case DOC_TRANSACTION_TYPE_VERIFY:
+                $url .= "verify";
+                break;
+            default:
+                $res["message"] = "Unknown method";
+                return $res;
+        }
+
+        $url .= "/" . TR_CA_DOCS_AJAX_CONTROLLER . "?command=JSON&accessToken=" . $UUID;
+
+        header("Location: " . $url);
+        exit();*/
     }
 }
 

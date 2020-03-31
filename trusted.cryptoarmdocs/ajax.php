@@ -96,6 +96,9 @@ if (isset($command)) {
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);
             break;
+        case "getTransactionUrlByToken":
+            $res = Docs\AjaxCommand::getTransactionUrlByToken($_REQUEST);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }
