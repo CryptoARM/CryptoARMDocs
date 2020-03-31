@@ -92,6 +92,12 @@ if (isset($command)) {
             break;
         case "JSON":
             $res = Docs\AjaxCommand::generateJson($_REQUEST);
+            if ($res["success"]) {
+                header("Content-type: text/plain");
+                header("Content-Disposition: attachment; filename=someFile.json");
+                echo json_encode($res["JSON"]);
+                die;
+            }
             break;
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);

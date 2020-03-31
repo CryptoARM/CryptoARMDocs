@@ -913,6 +913,8 @@ class AjaxCommand {
             $doc->unshare($userId);
             $doc->save();
             if (in_array($userId, $docRequire->getUserList())) {
+                $uuid = $docRequire->getUuidTransactionByUserId($userId);
+                Database::stopTransaction($uuid);
                 Database::removeRequireToSign($docId, $userId);
             }
         }
@@ -1051,6 +1053,16 @@ class AjaxCommand {
 
                 $requireFrom = Utils::getUserName($ownerId) ? : "";
 
+                $generatedJson = self::generateJson(["id" => $ids, "method" => "sign"]);
+
+                if (!$generatedJson["success"]) {
+                    $res["message"] = $generatedJson["message"];
+                    return $res;
+                }
+
+                $UUID = $generatedJson["UUID"];
+                $signUrl = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . '?command=JSON&accessToken=' . $UUID;
+
                 $arEventFields = [
                     "EMAIL" => $email,
                     "FILE_NAME" => $fileName,
@@ -1058,6 +1070,7 @@ class AjaxCommand {
                     "DOCS_ID" => implode(".", $ids),
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
+                    "SIGN_URL" => $signUrl,
                 ];
 
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
@@ -1221,10 +1234,12 @@ class AjaxCommand {
             $USER->Logout();
         }
 
-        header("Content-type: text/plain");
-        header("Content-Disposition: attachment; filename=someFile.json");
-        echo json_encode($JSON);
-        die;
+        return [
+            "success" => true,
+            "message" => "ok",
+            "JSON" => $JSON,
+            "UUID" => $response["token"],
+        ];
     }
 }
 

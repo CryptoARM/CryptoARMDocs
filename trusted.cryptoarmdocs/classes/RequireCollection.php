@@ -48,5 +48,15 @@ class RequireCollection extends Collection {
         $usersId = array_unique($usersId);
         return $usersId;
     }
+
+    function getUuidTransactionByUserId($userId) {
+        $list = $this->getList();
+        foreach ($list as $item) {
+            if ($item->getUserId() == $userId) {
+                return $item->getSignUUID();
+            }
+        }
+        return null;
+    }
 }
 
