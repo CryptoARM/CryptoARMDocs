@@ -1053,14 +1053,14 @@ class AjaxCommand {
 
                 $requireFrom = Utils::getUserName($ownerId) ? : "";
 
-                $generatedJson = self::generateJson(["id" => $ids, "method" => "sign"]);
+                $transactionInfo = self::createTransaction(["id" => $ids, "method" => "sign", "userId" => $usersInfo[$key]["userId"]]);
 
-                if (!$generatedJson["success"]) {
-                    $res["message"] = $generatedJson["message"];
+                if (!$transactionInfo["success"]) {
+                    $res["message"] = $transactionInfo["message"];
                     return $res;
                 }
 
-                $UUID = $generatedJson["UUID"];
+                $UUID = $transactionInfo["uuid"];
                 $signUrl = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . '?command=JSON&accessToken=' . $UUID;
 
                 $arEventFields = [
@@ -1105,9 +1105,13 @@ class AjaxCommand {
             return $res;
         }
 
-        global $USER;
+        if (is_null($params["userId"])) {
+            global $USER;
+            $userId = $USER->GetID();
+        } else {
+            $userId = $params["userId"];
+        }
 
-        $userId = $USER->GetID();
         $ids = $params["id"];
 
         if (!$ids) {
@@ -1234,12 +1238,10 @@ class AjaxCommand {
             $USER->Logout();
         }
 
-        return [
-            "success" => true,
-            "message" => "ok",
-            "JSON" => $JSON,
-            "UUID" => $response["token"],
-        ];
+        header("Content-type: text/plain");
+        header("Content-Disposition: attachment; filename=someFile.json");
+        echo json_encode($JSON);
+        die;
     }
 }
 
