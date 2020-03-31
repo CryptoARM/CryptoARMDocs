@@ -1071,6 +1071,7 @@ class AjaxCommand {
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
                     "SIGN_URL" => $signUrl,
+                    "TRANSACTION_UUID" => $UUID,
                 ];
 
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");

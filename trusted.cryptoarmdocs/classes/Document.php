@@ -858,6 +858,7 @@ class Document implements IEntity, ISave {
                 $newRequire->setUserId($require->getUserId());
                 $newRequire->setEmailStatus($require->getEmailStatus());
                 $newRequire->setSignStatus($require->getSignStatus());
+                $newRequire->setSignUUID($require->getSignUUID());
                 $new->getRequires()->add($newRequire);
             }
         }
