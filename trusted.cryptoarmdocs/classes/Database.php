@@ -261,7 +261,7 @@ class Database {
                 $sql = 'UPDATE ' . DB_TABLE_REQUIRE . ' SET '
                     . 'EMAIL_STATUS = "' . $emailStatus . '", '
                     . 'SIGNED = "' . $signStatus . '", '
-                    . 'UUID_SIGN = "' . $signUUID . '" '
+                    . 'TRANSACTION_UUID = "' . $signUUID . '" '
                     . 'WHERE ID = ' . $requireId;
                 $DB->Query($sql);
             }
