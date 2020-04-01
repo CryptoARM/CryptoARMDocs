@@ -913,6 +913,8 @@ class AjaxCommand {
             $doc->unshare($userId);
             $doc->save();
             if (in_array($userId, $docRequire->getUserList())) {
+                $uuid = $docRequire->getUuidTransactionByUserId($userId);
+                Database::stopTransaction($uuid);
                 Database::removeRequireToSign($docId, $userId);
             }
         }
@@ -1051,6 +1053,16 @@ class AjaxCommand {
 
                 $requireFrom = Utils::getUserName($ownerId) ? : "";
 
+                $transactionInfo = self::createTransaction(["id" => $ids, "method" => "sign", "userId" => $usersInfo[$key]["userId"]]);
+
+                if (!$transactionInfo["success"]) {
+                    $res["message"] = $transactionInfo["message"];
+                    return $res;
+                }
+
+                $UUID = $transactionInfo["uuid"];
+                $signUrl = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . '?command=JSON&accessToken=' . $UUID;
+
                 $arEventFields = [
                     "EMAIL" => $email,
                     "FILE_NAME" => $fileName,
@@ -1058,6 +1070,8 @@ class AjaxCommand {
                     "DOCS_ID" => implode(".", $ids),
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
+                    "SIGN_URL" => $signUrl,
+                    "TRANSACTION_UUID" => $UUID,
                 ];
 
                 Email::sendEmail($ids, "MAIL_EVENT_ID_REQUIRED_SIGN", $arEventFields, "MAIL_TEMPLATE_ID_REQUIRED_SIGN");
@@ -1092,9 +1106,13 @@ class AjaxCommand {
             return $res;
         }
 
-        global $USER;
+        if (is_null($params["userId"])) {
+            global $USER;
+            $userId = $USER->GetID();
+        } else {
+            $userId = $params["userId"];
+        }
 
-        $userId = $USER->GetID();
         $ids = $params["id"];
 
         if (!$ids) {

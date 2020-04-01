@@ -99,6 +99,7 @@ class Email {
                     $require->setUserId($arEventFields["USER_ID"]);
                     $require->setEmailStatus("SENT");
                     $require->setSignStatus(DOC_TYPE_FILE);
+                    $require->setSignUUID($arEventFields["TRANSACTION_UUID"]);
                     $require->save();
                 }
             }
