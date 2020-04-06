@@ -256,11 +256,21 @@ $MESS["TR_CA_DOCS_MAIL_TEMPLATE_REQUIRED_SIGN_BODY"] = '
                     </td>
                 </tr>
 
-                <tr style="height: 72px">
+                <tr style="height: 144px">
                     <td>
-                        <p>
-                        <span><a target="_blank" href="<?= "https://" . TR_CA_HOST ?>"
-                                    style="text-decoration: none; color:#D9001B; cursor: pointer;">ОТКРЫТЬ</a></span>
+                        <p style="margin: 0%;">
+                            <span>
+                                <a href="#SIGN_URL#" style="text-decoration: none; color:#D9001B; cursor: pointer;">
+                                    Подписать документы
+                                </a>
+                            </span>
+                            <br />
+                            <br />
+                            <span>
+                                <a href="#SIGN_URL_SITE#" style="text-decoration: none; color:#D9001B; cursor: pointer;">
+                                    Открыть через браузер
+                                </a>
+                            </span>
                         </p>
                     </td>
                 </tr>
