@@ -592,5 +592,12 @@ class Utils
         $DB->Query($sql);
     }
 
+    /**
+     * Check if curl extension is available.
+     * @return bool
+     */
+    public static function checkCurl() {
+        return in_array('curl', get_loaded_extensions());
+    }
 }
 
