@@ -66,7 +66,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::remove($params);
             break;
         case "download":
-            $res = Docs\AjaxCommand::download($params);
+            $res = Docs\AjaxCommand::download($_REQUEST);
             break;
         case "content":
             $res = Docs\AjaxCommand::content($_REQUEST);
