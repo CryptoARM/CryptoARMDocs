@@ -80,7 +80,7 @@ $USER->Authorize($userId);
     echoAndDie($answer);
 }*/
 
-$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false, true);
+$checkDocs = Docs\Utils::checkDocuments($docsId, DOC_SHARE_SIGN, false, true, null, true);
 $docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
 $docsNoAccess = $checkDocs["docsNoAccess"];
 $docsBlocked = $checkDocs["docsBlocked"]->toArray();

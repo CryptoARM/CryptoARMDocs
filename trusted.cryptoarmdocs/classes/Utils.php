@@ -50,7 +50,7 @@ class Utils
      *               [docsUnsigned]: documents not signed
      *               [docsOk]: documents that passed all checks
      */
-    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true, $signType = null) {
+    public static function checkDocuments($ids, $level = DOC_SHARE_READ, $allowBlocked = true, $allowSigned = true, $signType = null, $operationSign = false) {
         $res = array(
             'docsNotFound' => array(),
             'docsNoAccess' => array(),
@@ -91,10 +91,14 @@ class Utils
                     if (is_null($signType)) {
                         $signType = TR_CA_DOCS_TYPE_SIGN;
                     }
-                    if ($doc->getSignType() == $signType || !$doc->hasParent()) {
-                        $res['docsOk']->add($doc);
+                    if ($operationSign) {
+                        if ($doc->getSignType() == $signType || !$doc->hasParent()) {
+                            $res['docsOk']->add($doc);
+                        } else {
+                            $res['docsWrongSignType'][] = $id;
+                        }
                     } else {
-                        $res['docsWrongSignType'][] = $id;
+                        $res['docsOk']->add($doc);
                     }
                 }
             }

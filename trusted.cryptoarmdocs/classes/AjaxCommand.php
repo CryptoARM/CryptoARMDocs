@@ -97,7 +97,7 @@ class AjaxCommand {
 
         $res = array_merge(
             $res,
-            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true)
+            Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true, null, true)
         );
 
         $res["token"] = $params["UUID"];
@@ -1022,7 +1022,7 @@ class AjaxCommand {
             if ($response["success"]) {
                 $res = array_merge(
                     $res,
-                    Utils::checkDocuments($ids, null, true)
+                    Utils::checkDocuments($ids, null, true, null, true)
                 );
 
                 if (!$res['docsOk']->count()) {
@@ -1126,7 +1126,7 @@ class AjaxCommand {
         switch ($params["method"]) {
             case "sign":
                 $method = DOC_TRANSACTION_TYPE_SIGN;
-                $res = Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true);
+                $res = Utils::checkDocuments($ids, DOC_SHARE_SIGN, false, true, null, true );
                 break;
             case "verify":
                 $method = DOC_TRANSACTION_TYPE_VERIFY;

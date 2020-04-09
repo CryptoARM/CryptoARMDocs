@@ -98,7 +98,7 @@ if (!Docs\Utils::getUserIdByEmail($emailAddress)) {
 global $USER;
 $USER->Authorize($userId);
 
-$checkDocs = Docs\Utils::checkDocuments($docsId, null, false);
+$checkDocs = Docs\Utils::checkDocuments($docsId, null, false, null, true);
 $docsNotFound = array_merge($checkDocs["docsNotFound"], $checkDocs["docsFileNotFound"]->toArray());
 $docsNoAccess = $checkDocs["docsNoAccess"];
 $docsBlocked = $checkDocs["docsBlocked"]->toArray();
