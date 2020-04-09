@@ -44,6 +44,8 @@ $MESS["TR_CA_DOCS_LICENSE_HISTORY_EMPTY"] = "Ваша история пуста.
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS"] = "На ваш счет было зачислено ";
 $MESS["TR_CA_DOCS_LICENSE_ACTIVATE_JWT_SUCCESS2"] = " операций подписи.";
 
+$MESS['TR_CA_DOCS_CURL_WARNING'] = '<span class="required">Внимание!</span><br>Для работы одноразовых лицензий требуется установить на сервер php-расширение curl!';
+
 $MESS["TR_CA_DOCS_LICENSE_EDIT"] = "Изменить";
 
 $MESS["TR_CA_DOCS_LICENSE_SUBMIT_DELETE_ACCOUNT_NUMBER"] = "Вы уверены, что хотите изменить текущий счет? В случае утери номера счета восстановление будет невозможно.";

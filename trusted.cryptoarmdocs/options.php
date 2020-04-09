@@ -383,6 +383,17 @@ $tabControl->Begin();
 
         <?= $tabControl->BeginNextTab(); ?>
 
+        <?
+        $curlDoesNotExist = !Docs\Utils::checkCurl();
+        if ($curlDoesNotExist) {
+            ?>
+            <h3>
+                <? echo BeginNote(), GetMessage('TR_CA_DOCS_CURL_WARNING'), EndNote(); ?>
+            </h3>
+            <?
+        }
+        ?>
+
         <tr class="heading">
             <td colspan="2"><?= Loc::getMessage("TR_CA_DOCS_LICENSE_HEADER_SETTINGS") ?></td>
         </tr>
@@ -395,6 +406,7 @@ $tabControl->Begin();
                 <input type="checkbox"
                     <?= (($PROVIDE_LICENSE) ? "checked='checked'" : "") ?>
                        name="PROVIDE_LICENSE"
+                    <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                        value="true">
             </td>
         </tr>
@@ -409,16 +421,19 @@ $tabControl->Begin();
                        value="<?= $LICENSE_ACCOUNT_NUMBER ?>"
                        placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER_PLACEHOLDER") ?>"
                        <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "readonly='true'" : "" ?>
+                    <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                        maxlength="16"
                        type="text"/>
                 <div id="DIV_BTN_CREATE_NEW_ACCOUNT" <?= $LICENSE_ACCOUNT_NUMBER !== "" ? "hidden" : "" ?>>
                     <input type="submit"
                            id="INPUT_SUBMIT_UPDATE"
                            class="adm-workarea adm-btn"
+                        <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                            name="Update"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_INPUT_ACCOUNT_NUMBER") ?>"/>
                     <input type="button"
                            id="CREATE_NEW_ACCOUNT_NUMBER"
+                        <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                            class="adm-workarea adm-btn"
                            onclick="createAccountNumber(<?= $curlEnabled ?>);"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_CREATE_NEW_ACCOUNT_NUMBER") ?>"/>
@@ -427,6 +442,7 @@ $tabControl->Begin();
                     <input type="button"
                            id="BACK_TO_BTN_CREATE_NEW_ACCOUNT"
                            class="adm-workarea adm-btn"
+                        <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                            onclick="editAccountNumber();"
                            value="<?= GetMessage("TR_CA_DOCS_LICENSE_EDIT") ?>"/>
                 </div>
@@ -450,6 +466,7 @@ $tabControl->Begin();
             <td>
             <textarea id="JWT_TOKEN"
                       name="JWT_TOKEN"
+                      <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                       rows="4"
                       placeholder="<?= Loc::getMessage("TR_CA_DOCS_LICENSE_TEXTAREA_JWT_TOKEN") ?>"
                       style="width: 300px;"></textarea>
@@ -462,6 +479,7 @@ $tabControl->Begin();
                 <input type="button"
                        id="ACTIVATE_JWT_TOKEN"
                        class="adm-workarea adm-btn"
+                    <?= ($curlDoesNotExist) ? "disabled" : "" ?>
                        onclick="activateJwtToken();"
                        value="<?= GetMessage("TR_CA_DOCS_LICENSE_ACTIVATE_JWT_TOKEN") ?>"/>
             </td>
@@ -474,13 +492,28 @@ $tabControl->Begin();
         <tr>
             <td>
                 <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_TEXT") ?>
-                <? echo SelectBoxFromArray("", $daysInSelector, "", "", "id=\"numberOfDays\"", false, "trustedcryptoarmdocs_settings"); ?>
+                <?
+                $customParams = "id='numberOfDays'";
+                $curlDoesNotExist ? $customParams = $customParams . " disabled" : "";
+                echo SelectBoxFromArray("", $daysInSelector, "", "", $customParams, false, "trustedcryptoarmdocs_settings"); ?>
 
             </td>
             <td>
-                <a style="cursor: default;" onclick="getAccountHistory();">
-                    <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_BTN") ?>
-                </a>
+                <?
+                if ($curlDoesNotExist) {
+                    ?>
+                    <a style="cursor: default; text-decoration: none; color: gray">
+                        <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_BTN") ?>
+                    </a>
+                    <?
+                } else {
+                    ?>
+                    <a style="cursor: default;" onclick="getAccountHistory();">
+                        <?= GetMessage("TR_CA_DOCS_LICENSE_HISTORY_BTN") ?>
+                    </a>
+                    <?
+                }
+                ?>
             </td>
         </tr>
 
@@ -995,9 +1028,15 @@ $tabControl->Begin();
             );
         }
 
-        window.onload = function (){
+        <?
+        if (!$curlDoesNotExist) {
+        ?>
+        window.onload = function () {
             checkAccountBalance();
         };
+        <?
+        }
+        ?>
 
         function getAccountHistory(accountNumber = '<?= $LICENSE_ACCOUNT_NUMBER ?>') {
             let days = document.getElementById("numberOfDays").value;
