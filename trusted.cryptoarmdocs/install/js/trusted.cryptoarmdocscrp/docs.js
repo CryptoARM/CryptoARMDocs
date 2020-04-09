@@ -469,16 +469,15 @@ trustedCA.remove = function (ids, force = false, onSuccess = null, onFailure = n
 
 
 trustedCA.download = function (ids, filename) {
+    // revoke method in future
     let onSuccess = (d) => {
-        if (d.success === true) {
-            if (ids.length === 1) {
-                window.location.href = AJAX_CONTROLLER + '?command=content&id=' + ids[0];
-            } else {
-                window.location.href = AJAX_CONTROLLER + '?command=content&file=' + d.content;
-            }
-        }
+            window.location.href = AJAX_CONTROLLER + '?command=download&ids=' + JSON.stringify(ids) + '&force=true';
     };
-    trustedCA.ajax('download', {ids, filename}, onSuccess);
+    let onFailure = (d) => {
+            window.location.href = AJAX_CONTROLLER + '?command=download&ids=' + JSON.stringify(ids) + '&force=true';
+    };
+
+    trustedCA.ajax('download', {ids, filename}, onSuccess, onFailure);
 };
 
 

@@ -420,6 +420,10 @@ class AjaxCommand {
         }
 
         $ids = $params["ids"];
+
+        if (!is_array($ids)){
+            $ids = json_decode($ids);
+        }
         if (!$ids) {
             $res["message"] = "No ids were given";
             return $res;
@@ -452,7 +456,7 @@ class AjaxCommand {
             mkdir($temporaryFileStorage, 0744);
         }
 
-        if ($docsFound->count()) {
+        if ($count = $docsFound->count()) {
             $filename = $params["filename"] ? $params["filename"] . ".zip" : "TCA-Docs.zip";
             $sDirTmpName = \randString(10);                        // Temporary folder name
 
@@ -464,8 +468,14 @@ class AjaxCommand {
             $docsFoundPaths = [];
 
             foreach ($docsFound->getList() as $doc) {
+                $detachedSign = null;
                 if ($doc->getSignType() === DOC_SIGN_TYPE_DETACHED) {
+                    $detachedSign = $doc;
                     $doc = Database::getDocumentById($doc->getOriginalId());
+                } else {
+                    if ($count === 1) {
+                        return self::content(["id" => $doc->getId()]);
+                    }
                 }
                 $docPath = urldecode($_SERVER['DOCUMENT_ROOT'] . $doc->getHtmlPath());
                 $docName = $doc->getName();
@@ -489,6 +499,30 @@ class AjaxCommand {
                     $newDocPath = $sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt;
                 }
                 $docsFoundPaths[] = $newDocPath;
+                if ($detachedSign){
+                    $docPath = urldecode($_SERVER['DOCUMENT_ROOT'] . $detachedSign->getHtmlPath());
+                    $docName = $detachedSign->getName();
+                    if (!file_exists($sDirTmpPath . $docName)) {
+                        $newDocPath = $sDirTmpPath . $docName;
+                        copy($docPath, $newDocPath);
+                    } else {
+                        $filenameExploded = explode(".", $docName);
+                        $fileExt = "." . (end($filenameExploded));
+                        if ($fileExt == ".sig") {
+                            $docNameWithoutSignExt = substr($docName, 0, -4);
+                            $filenameExploded = explode(".", $docNameWithoutSignExt);
+                            $fileExt = "." . (end($filenameExploded)) . ".sig";
+                        }
+                        $docNameWithoutExt = substr($docName, 0, -strlen($fileExt));
+                        $i = 1;
+                        while (file_exists($sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt)) {
+                            $i++;
+                        }
+                        copy($docPath, $sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt);
+                        $newDocPath = $sDirTmpPath . $docNameWithoutExt . " ($i)" . $fileExt;
+                    }
+                    $docsFoundPaths[] = $newDocPath;
+                }
             }
             $archiveObject->Pack($docsFoundPaths);
 
@@ -519,6 +553,11 @@ class AjaxCommand {
 
         if (file_exists($archivePath)) {
             rename($archivePath, $_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $filename);
+        }
+
+        if ($params["force"]) {
+            Utils::download($_SERVER["DOCUMENT_ROOT"] . "/upload/tmp/TCA-DocsTmp/" . $filename, $filename);
+            die();
         }
 
         if ($docsFound->count()) {
