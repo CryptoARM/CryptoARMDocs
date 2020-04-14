@@ -1064,7 +1064,7 @@ class AjaxCommand {
                     Utils::checkDocuments($ids, null, true, null, true)
                 );
 
-                if (!$res['docsOk']->count()) {
+                if (!($res['docsOk']->count() || $res['docsUnsigned']->count())) {
                     $res["message"] = "Documents not found";
                     return $res;
                 }
@@ -1072,7 +1072,8 @@ class AjaxCommand {
                 $docsToRequireSign = array_merge(
                     $res['docsOk']->toIdArray(),
                     $res['docsFileNotFound']->toIdArray(),
-                    $res['docsBlocked']->toIdArray()
+                    $res['docsBlocked']->toIdArray(),
+                    $res['docsUnsigned']->toIdArray()
                 );
 
                 $res['docsFileNotFound'] = $res['docsFileNotFound']->toIdAndFilenameArray();
@@ -1100,8 +1101,7 @@ class AjaxCommand {
                 }
 
                 $UUID = $transactionInfo["uuid"];
-                $signUrl = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . '?command=JSON&accessToken=' . $UUID;
-                $redirectUrl = TR_CA_DOCS_AJAX_CONTROLLER . '?command=getTransactionUrlByToken&accessToken=' . $UUID;
+                $redirectUrl = "https://" . TR_CA_HOST . "/bitrix/components/trusted/docs/authForSign.php?accessToken=" . $UUID;
 
                 $arEventFields = [
                     "EMAIL" => $email,
@@ -1110,8 +1110,7 @@ class AjaxCommand {
                     "DOCS_ID" => implode(".", $ids),
                     "USER_ID" => $usersInfo[$key]["userId"],
                     "FIO_TO" => Utils::getUserName(Utils::getUserIdByEmail($email)),
-                    "SIGN_URL" => $signUrl,
-                    "SIGN_URL_SITE" => $redirectUrl,
+                    "SIGN_URL" => $redirectUrl,
                     "TRANSACTION_UUID" => $UUID,
                 ];
 
