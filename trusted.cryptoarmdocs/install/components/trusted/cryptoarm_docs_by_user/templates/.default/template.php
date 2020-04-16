@@ -322,7 +322,7 @@ $APPLICATION->IncludeComponent(
     if (blockedDocTokens) {
         if (!$('#trca-modal-overlay').length > 0) {
             trustedCA.showModalWindow(blockedDocIds);
-            var interval = setInterval(() => trustedCA.blockCheck(blockedDocTokens, interval, null), 2000);
+            var interval = setInterval(() => trustedCA.blockCheck(blockedDocTokens, interval, null), 5000);
         }
     }
 
