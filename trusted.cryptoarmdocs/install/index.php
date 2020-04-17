@@ -72,6 +72,13 @@ Loc::loadMessages(__FILE__);
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_d7.php"
             );
         }
+        var_dump(self::CheckCompatibilityBitrixAndModule());
+        if (!self::CheckCompatibilityBitrixAndModule()) {
+            $APPLICATION->IncludeAdminFile(
+                Loc::getMessage("MOD_INSTALL_TITLE"),
+                $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_compatibility.php"
+            );
+        }
 
         $continue = true;
         if ($request["choice"] == Loc::getMessage("TR_CA_DOCS_CANCEL_INSTALL")) {
@@ -118,59 +125,59 @@ Loc::loadMessages(__FILE__);
 
             ModuleManager::registerModule($this->MODULE_ID);
 
-            $modulesNeeded = array("trusted.id");
-            $modulesForSmallBusiness = array('trusted.cryptoarmdocsorders', 'trusted.cryptoarmdocsforms');
-            $modulesForCorportal = array('trusted.cryptoarmdocsbp');
+            $modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
+            $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
+            $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];
 
-            $errorMessage = "";
-            $stableVersionsOnly = COption::GetOptionString("main", "stable_versions_only", "Y");
-            $arUpdateList = CUpdateClient::GetUpdatesList($errorMessage, LANG, $stableVersionsOnly);
-            $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
-
-            switch($bitrixRedaction) {
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
-                    $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness);
+            switch ($this->MODULE_ID) {
+                case "trusted.cryptoarmdocsstart":
+                    $modulesNeeded = $modulesStart;
                     break;
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
-                case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
-                    $modulesNeeded = array_merge($modulesNeeded, $modulesForSmallBusiness, $modulesForCorportal);
+                case "cryptoarmdocsbusiness":
+                    $modulesNeeded = $modulesForSmallBusiness;
                     break;
-            }
-
-            if ($modulesNeeded) {
-                $modulesOutOfDate = array();
-                $modulesWereNotInstalled = array();
-                foreach($modulesNeeded as $moduleName){
-                    $modulesPathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$moduleName."/";
-                    $moduleDownloaded = true;
-                    if(!file_exists($modulesPathDir)) {
-                        $strError = '';
-                        $moduleDownloaded = CUpdateClientPartner::LoadModuleNoDemand($moduleName,$strError,'N',false);
-                        CModule::CreateModuleObject($moduleName);
-                        if (!$moduleDownloaded) {
-                            $modulesWereNotInstalled[] = $moduleName;
-                        }
-                    }
-
-                    if ($moduleDownloaded) {
-                        $className = str_replace(".", "_", $moduleName);
-                        if (!IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible()==="ok") {
-                            $className::DoInstall();
-                        } elseif (IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible()!=="ok") {
-                            $modulesOutOfDate[] = $moduleName;
-                        }
-                    }
-                }
-
-                if ($modulesOutOfDate || $modulesWereNotInstalled) {
-                    Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_OUT_OF_DATE, implode(", ", $modulesOutOfDate));
-                    Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_WERE_NOT_INSTALLED, implode(", ", $modulesWereNotInstalled));
+                case "trusted.cryptoarmdocscrp":
+                    $modulesNeeded = $modulesForCorportal;
+                    break;
+                default:
                     $APPLICATION->IncludeAdminFile(
                         Loc::getMessage("MOD_INSTALL_TITLE"),
-                        $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_some_modules_out_of_date.php"
+                        $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_cancel.php"
                     );
+                    return;
+            }
+
+            $modulesOutOfDate = [];
+            $modulesWereNotInstalled = [];
+            foreach ($modulesNeeded as $moduleName) {
+                $modulesPathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $moduleName . "/";
+                $moduleDownloaded = true;
+                if (!file_exists($modulesPathDir)) {
+                    $strError = '';
+                    $moduleDownloaded = CUpdateClientPartner::LoadModuleNoDemand($moduleName, $strError, 'N', false);
+                    CModule::CreateModuleObject($moduleName);
+                    if (!$moduleDownloaded) {
+                        $modulesWereNotInstalled[] = $moduleName;
+                    }
                 }
+
+                if ($moduleDownloaded) {
+                    $className = str_replace(".", "_", $moduleName);
+                    if (!IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible() === "ok") {
+                        $className::DoInstall();
+                    } elseif (IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible() !== "ok") {
+                        $modulesOutOfDate[] = $moduleName;
+                    }
+                }
+            }
+
+            if ($modulesOutOfDate || $modulesWereNotInstalled) {
+                Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_OUT_OF_DATE, implode(", ", $modulesOutOfDate));
+                Option::set(TR_CA_DOCS_MODULE_ID, TR_CA_DOCS_MODULES_WERE_NOT_INSTALLED, implode(", ", $modulesWereNotInstalled));
+                $APPLICATION->IncludeAdminFile(
+                    Loc::getMessage("MOD_INSTALL_TITLE"),
+                    $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_some_modules_out_of_date.php"
+                );
             }
         }
         if (!$continue) {
@@ -227,6 +234,34 @@ Loc::loadMessages(__FILE__);
         if (!file_exists($docsDir)) {
             mkdir($docsDir);
         }
+    }
+
+    function CheckCompatibilityBitrixAndModule() {
+        $moduleId = $this->MODULE_ID;
+        $errorMessage = "";
+        $stableVersionsOnly = COption::GetOptionString("main", "stable_versions_only", "Y");
+        $arUpdateList = CUpdateClient::GetUpdatesList($errorMessage, LANG, $stableVersionsOnly);
+        $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
+        $success = false;
+
+        switch ($bitrixRedaction) {
+            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_START')) != null):
+                if ($moduleId === "trusted.cryptoarmdocsstart")
+                    $success = true;
+                break;
+            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
+                if ($moduleId === "trusted.cryptoarmdocsbusiness")
+                    $success = true;
+                break;
+            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
+            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
+            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
+            if ($moduleId === "trusted.cryptoarmdocscrp")
+                $success = true;
+                break;
+        }
+
+        return $success;
     }
 
     function InstallModuleOptions()
