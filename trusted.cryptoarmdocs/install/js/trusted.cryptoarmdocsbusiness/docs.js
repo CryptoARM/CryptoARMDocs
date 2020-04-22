@@ -254,6 +254,36 @@ trustedCA.showModalWindow = function (ids) {
     $('#trca-modal-close').text(MODAL_CANCEL);
 }
 
+trustedCA.getInfoForModalWindow = (id) => {
+     return new Promise((resolve, reject) => {
+        $.ajax({
+            url: AJAX_CONTROLLER + '?command=getInfoForModalWindow',
+            type: 'post',
+            data: {id: id},
+            success: function (d) {
+                if (d.success) {
+                    resolve(d);
+                } else {
+                    console.log("Something wrong");
+                    reject(d);
+                }
+            },
+            error: function (e) {
+                console.error(e);
+                try {
+                    var d = JSON.parse(e.responseText);
+                    if (d.success === false) {
+                        console.log(d);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        });
+        setTimeout(() => resolve('timeout'), 2000);
+    })
+}
+
 trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuseraccess) {
     id = ids[0];
     trustedCA.modalInfoDiv.className = "trca-modal";
@@ -261,15 +291,15 @@ trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuse
     document.body.appendChild(trustedCA.modalInfoDiv);
     if (sharedstatus.length === 0) {
         trustedCA.modalInfoRowDiv = document.createElement("div");
-        trustedCA.modalInfoRowDiv.innerHTML =`
+        trustedCA.modalInfoRowDiv.innerHTML = `
         <div class="trca-modal-info-name" id="trca-modal-info-name" style="width: 100%"></div>
-        ` ;
+        `;
         trustedCA.modalInfoRowDiv.className = "trca-modal-info-row";
         var div = document.getElementById("trca-modal-info-content-left");
         div.insertBefore(trustedCA.modalInfoRowDiv, div.childNodes[0]);
         $("#trca-modal-info-name").text(MODAL_INFO_NOT_SHARED);
     } else {
-        $.each(sharedstatus,function(index, value) {
+        $.each(sharedstatus, function (index, value) {
             if (value.access_level === 'READ') {
                 var textStatus = MODAL_INFO_STATUS_READ;
                 var icon = "insert_drive_file";
@@ -314,10 +344,12 @@ trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuse
     }
 
     var width = window.matchMedia("(max-width: 750px)");
+
     function replaceCloseButton(width) {
         style = width.matches ? "margin-top: 65%;" : "display: none;";
         document.getElementById("trca-modal-info-close-left").style = style;
     }
+
     replaceCloseButton(width);
     width.addListener(replaceCloseButton);
 
@@ -331,13 +363,33 @@ trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuse
     $('#trca-modal-info-button-message-protocol').text(DOWNLOAD_PROTOCOL);
     if (currentuseraccess === 'OWNER') {
         document.getElementById("trca-modal-info-button-share").style.display = "flex";
-        $('#trca-modal-info-button-share').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN')");
+        $('#trca-modal-info-button-share').attr('onclick', "trustedCA.promptAndShare([" + ids + "], 'SHARE_SIGN', true)");
         $('#trca-modal-info-button-message-share').text(SHARE_DOC);
     }
     $('.trca-modal-info-close').attr('onclick', "{$('#trca-modal-info-window').hide(); $('#trca-modal-overlay').hide()}");
     $('#trca-modal-info-header').text(docname);
     $('#trca-modal-info-close').text(CLOSE_WINDOW);
     $('#trca-modal-info-close-left').text(CLOSE_WINDOW);
+    setTimeout(() => {
+            if ($('#trca-modal-info-window').is(":visible")) {
+                trustedCA.getInfoForModalWindow(id).then(
+                    docInfo => {
+                        if (!docInfo.success) {
+                            console.log("Something wrong");
+                            return false;
+                        }
+                        docname = docInfo.data.docname;
+                        sharedstatus = docInfo.data.sharedstatus;
+                        currentuseraccess = docInfo.data.currentuseraccess;
+                        $('#trca-modal-info-window').hide();
+                        $('#trca-modal-overlay').hide();
+                        trustedCA.showInfoModalWindow(ids, docname, sharedstatus, currentuseraccess);
+                    }
+                )
+            }
+        },
+        5000
+    );
 }
 
 trustedCA.removeModalRow = function (index) {
@@ -544,10 +596,28 @@ trustedCA.requireToSign = function (ids, email) {
 };
 
 
-trustedCA.promptAndShare = function (ids, level = 'SHARE_READ') {
+trustedCA.promptAndShare = function (ids, level = 'SHARE_READ', isModalInfo = false) {
     let email = trustedCA.promptEmail(ACT_SHARE);
     if (email) {
         trustedCA.share(ids, email, level);
+    }
+    if (isModalInfo) {
+        if ($('#trca-modal-info-name').length) {
+            trustedCA.getInfoForModalWindow(id).then(
+                docInfo => {
+                    if (!docInfo.success) {
+                        console.log("Something wrong");
+                        return false;
+                    }
+                    let docname = docInfo.data.docname;
+                    let sharedstatus = docInfo.data.sharedstatus;
+                    let currentuseraccess = docInfo.data.currentuseraccess;
+                    $('#trca-modal-info-window').hide();
+                    $('#trca-modal-overlay').hide();
+                    trustedCA.showInfoModalWindow(ids, docname, sharedstatus, currentuseraccess);
+                }
+            )
+        }
     }
 };
 

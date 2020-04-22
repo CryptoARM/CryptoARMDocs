@@ -29,11 +29,11 @@ require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 Loc::loadMessages(__FILE__);
 
-/*fBs*/Class trusted_cryptoarmdocscrp extends CModule/*fMs*/ //tags for core name changing script
+/*fBs*/Class trusted_cryptoarmdocsbusiness extends CModule/*fMs*/ //tags for core name changing script
 {
     // Required by the marketplace standards
 
-    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocscrp";/*fMs*/ //tags for core name changing script
+    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocsbusiness";/*fMs*/ //tags for core name changing script
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -41,7 +41,7 @@ Loc::loadMessages(__FILE__);
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    /*fBs*/ function trusted_cryptoarmdocscrp()/*fMs*/ //tags for core name changing script
+    /*fBs*/ function trusted_cryptoarmdocsbusiness()/*fMs*/ //tags for core name changing script
     {
         self::__construct();
     }
@@ -72,12 +72,34 @@ Loc::loadMessages(__FILE__);
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_d7.php"
             );
         }
-        var_dump(self::CheckCompatibilityBitrixAndModule());
+
         if (!self::CheckCompatibilityBitrixAndModule()) {
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_compatibility.php"
             );
+        }
+
+        $modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
+        $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
+        $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];
+
+        switch ($this->MODULE_ID) {
+            case "trusted.cryptoarmdocsstart":
+                $modulesNeeded = $modulesStart;
+                break;
+            case "trusted.cryptoarmdocsbusiness":
+                $modulesNeeded = $modulesForSmallBusiness;
+                break;
+            case "trusted.cryptoarmdocscrp":
+                $modulesNeeded = $modulesForCorportal;
+                break;
+            default:
+                $APPLICATION->IncludeAdminFile(
+                    Loc::getMessage("MOD_INSTALL_TITLE"),
+                    $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_cancel.php"
+                );
+                return;
         }
 
         $continue = true;
@@ -124,28 +146,6 @@ Loc::loadMessages(__FILE__);
             $this->InstallMailEvents();
 
             ModuleManager::registerModule($this->MODULE_ID);
-
-            $modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
-            $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
-            $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];
-
-            switch ($this->MODULE_ID) {
-                case "trusted.cryptoarmdocsstart":
-                    $modulesNeeded = $modulesStart;
-                    break;
-                case "cryptoarmdocsbusiness":
-                    $modulesNeeded = $modulesForSmallBusiness;
-                    break;
-                case "trusted.cryptoarmdocscrp":
-                    $modulesNeeded = $modulesForCorportal;
-                    break;
-                default:
-                    $APPLICATION->IncludeAdminFile(
-                        Loc::getMessage("MOD_INSTALL_TITLE"),
-                        $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_cancel.php"
-                    );
-                    return;
-            }
 
             $modulesOutOfDate = [];
             $modulesWereNotInstalled = [];

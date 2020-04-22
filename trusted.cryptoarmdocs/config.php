@@ -2,7 +2,7 @@
 
 use Bitrix\Main\Config\Option;
 
-/*fBs*/define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocscrp"); /*fMs*/ //tags for core name changing script
+/*fBs*/define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocsbusiness"); /*fMs*/ //tags for core name changing script
 
 define("TR_CA_HOST", preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
 
