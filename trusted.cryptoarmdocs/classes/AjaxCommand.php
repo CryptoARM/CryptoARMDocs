@@ -1336,5 +1336,82 @@ class AjaxCommand {
         header("Location: " . $url);
         exit();*/
     }
+
+    public function getInfoForModalWindow($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+        ];
+
+        $id = $params["id"];
+
+        if (!$id) {
+            $res["message"] = "id is not find in params";
+            return $res;
+        }
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $doc = Database::getDocumentById($id);
+
+        if ($doc) {
+            $currUserId = Utils::currUserId();
+            if ($doc->getOwner() == $currUserId) {
+                $accessLevel = "OWNER";
+            } elseif ($doc->accessCheck($currUserId, DOC_SHARE_SIGN)) {
+                $accessLevel = "SIGN";
+            } elseif ($doc->accessCheck($currUserId, DOC_SHARE_READ)) {
+                $accessLevel = "READ";
+            }
+
+            $docObject = Database::getDocumentById($doc->getId());
+            $docRequire = $docObject->getRequires();
+
+            $userIds = Database::getUserIdsByDocument($doc->getId());
+            $status = [];
+            $signersString = $doc->getSigners();
+            preg_match_all('!\d+!', $signersString, $signersArray);
+
+            foreach ($userIds as $id) {
+                if ($doc->accessCheck($id, DOC_SHARE_SIGN)) {
+                    $sharedAccessLevel = "SIGN";
+                } elseif ($doc->accessCheck($id, DOC_SHARE_READ)) {
+                    $sharedAccessLevel = "READ";
+                }
+                if (in_array($id, $docRequire->getUserList())) {
+                    $sharedMustToSign = !$docRequire->getSignStatusByUser($id);
+                } else {
+                    $sharedMustToSign = false;
+                }
+                $status[] = array(
+                    'id' => $id,
+                    'name' => Utils::getUserName($id),
+                    'access_level' => $sharedAccessLevel,
+                    'signed' => in_array($id, $signersArray[0]) ? true : false,
+                    'mustToSign' => $sharedMustToSign,
+                );
+            }
+
+            $data = [
+                "docname" => $doc->getName(),
+                "sharedstatus" => $status,
+                "currentuseraccess" => $accessLevel
+            ];
+
+            return [
+                "success" => true,
+                "message" => "ok",
+                "data" => $data,
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
+    }
 }
 

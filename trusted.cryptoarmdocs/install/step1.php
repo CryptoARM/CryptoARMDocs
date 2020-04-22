@@ -29,7 +29,7 @@ function checkDB()
 <form action="<?= $APPLICATION->GetCurPage() ?>">
 <?=bitrix_sessid_post()?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocscrp"><!--fMs tags for core name changing script-->
+    <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocsbusiness"><!--fMs tags for core name changing script-->
     <input type="hidden" name="install" value="Y">
     <?php
     $tables = array("tr_ca_docs", "tr_ca_docs_property");

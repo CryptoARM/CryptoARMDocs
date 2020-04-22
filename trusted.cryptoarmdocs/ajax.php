@@ -96,6 +96,9 @@ if (isset($command)) {
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);
             break;
+        case "getInfoForModalWindow":
+            $res = Docs\AjaxCommand::getInfoForModalWindow($_REQUEST);
+            break;
         case "getTransactionUrlByToken":
             $res = Docs\AjaxCommand::getTransactionUrlByToken($_REQUEST);
             break;

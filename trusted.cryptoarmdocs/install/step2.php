@@ -36,7 +36,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
     <form action="<?= $APPLICATION->GetCurPage() ?>" style="padding-right: 4px;">
     <?=bitrix_sessid_post()?>
         <input type="hidden" name="lang" value="<?= LANG ?>">
-        <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocscrp"><!--fMs tags for core name changing script-->
+        <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocsbusiness"><!--fMs tags for core name changing script-->
         <input type="hidden" name="install" value="Y">
         <input type="hidden" name="step" value="3">
         <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_KEEP") ?>">
@@ -46,7 +46,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
         <form action="<?= $APPLICATION->GetCurPage() ?>">
         <?=bitrix_sessid_post()?>
             <input type="hidden" name="lang" value="<?= LANG ?>">
-            <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocscrp"><!--fMs tags for core name changing script-->
+            <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocsbusiness"><!--fMs tags for core name changing script-->
             <input type="hidden" name="install" value="Y">
             <input type="hidden" name="step" value="4">
             <input type="hidden" name="dropDBandIB" value="Y">
