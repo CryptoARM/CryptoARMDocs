@@ -37,6 +37,7 @@ trustedCA.initVar = function () {
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     DOWNLOAD_FILE_ZERO_SIZE = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE");
+    DOWNLOAD_FILE_ERROR_NAME = BX.message("TR_CA_DOCS_ACT_ERROR_NAME");
     MODAL_MESSAGE_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_1');
     MODAL_MESSAGE_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_2');
     MODAL_MESSAGE_MANY_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_1');
@@ -638,7 +639,19 @@ trustedCA.reloadGrid = function (gridId) {
         gridObject.instance.reloadTable('POST', reloadParams);
     }
 };
-
+trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
+    var new_name = file.name.replace(/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/,'');
+    if (new_name !== file.name){
+        trustedCA.showPopupMessage(DOWNLOAD_FILE_ERROR_NAME, 'highlight_off', 'negative');
+        if (typeof onFailure === 'function') {
+            onFailure();
+        }
+    }else{
+            if (typeof onSuccess === 'function') {
+            onSuccess();
+        }
+    }
+};
 
 trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null) {
     if (!file.size){
