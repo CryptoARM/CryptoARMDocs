@@ -44,6 +44,7 @@ if ($USER->GetFullName()) {
 }
 
 $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
+$comp_id = Docs\Utils::generateUUID() ;
 ?>
 
 <a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
@@ -62,7 +63,7 @@ $APPLICATION->IncludeComponent(
 );
 ?>
 
-<div id="trca-docs-by-user">
+<div id="trca-docs-by-user_<?= $comp_id?>">
     <trca-docs>
         <header-title title="<?= $compTitle ?>">
             <?
@@ -327,7 +328,7 @@ $APPLICATION->IncludeComponent(
     }
 
     new Vue({
-        el: '#trca-docs-by-user',
+        el: '#trca-docs-by-user_<?= $comp_id?>',
         methods: {
             sendEmail: function (id) {
                 let object = new Object();
