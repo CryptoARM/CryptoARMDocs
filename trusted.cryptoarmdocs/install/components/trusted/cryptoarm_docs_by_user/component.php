@@ -4,7 +4,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
-
+if($USER->IsAuthorized()){
 //checks the name of currently installed core from highest possible version to lowest
 $coreIds = array(
     'trusted.cryptoarmdocscrp',
@@ -122,3 +122,4 @@ $arResult = array(
 
 $this->IncludeComponentTemplate();
 
+}

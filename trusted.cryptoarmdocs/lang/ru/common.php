@@ -14,6 +14,7 @@ $MESS['TR_CA_DOC_NAME'] = 'Название документа';
 $MESS['TR_CA_DOC_DESC'] = 'Описание документа';
 $MESS['TR_CA_DOC_PATH'] = 'Путь к файлу документа';
 $MESS['TR_CA_DOC_TYPE'] = 'Тип';
+$MESS['TR_CA_DOC_AUTHOR'] = 'Автор';
 $MESS['TR_CA_DOC_STATUS'] = 'Статус';
 // $MESS['TR_CA_DOC_PARENT_ID'] = '';
 // $MESS['TR_CA_DOC_CHILD_ID'] = '';
