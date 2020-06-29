@@ -33,6 +33,7 @@ deploy_red:
     - web
   script:
     - sudo rm -rf /var/www/red/bitrix/modules/trusted.cryptoarmdocsbusiness/
+    - sudo rm -rf /var/www/red/bitrix/modules/trusted.cryptoarmdocscrp/
     - sudo cp -R trusted.cryptoarmdocs/ /var/www/red/bitrix/modules/trusted.cryptoarmdocsbusiness/
     - sudo chown -R alr:www-data /var/www/red/bitrix/modules/trusted.cryptoarmdocsbusiness/
     - sudo find /var/www/red/bitrix/modules/trusted.cryptoarmdocsbusiness/ -type f -exec chmod 0664 {} \;
