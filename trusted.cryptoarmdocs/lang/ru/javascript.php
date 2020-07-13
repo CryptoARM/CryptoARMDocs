@@ -36,6 +36,9 @@ $MESS["TR_CA_DOCS_ACT_REQUIRE_SUCCESS_1"] = "Пользователю c e-mail "
 $MESS["TR_CA_DOCS_ACT_REQUIRE_SUCCESS_2"] = " отправлен запрос на подпись";
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_1"] = "Пользователь с e-mail ";
 $MESS["TR_CA_DOCS_ACT_SHARE_NO_USER_2"] = " не найден";
+$MESS["TR_CA_DOCS_ACT_SHARE_HAVE_ACCESS"] = "У пользователя уже есть доступ";
+$MESS["TR_CA_DOCS_ACT_SHARE_IS_OWNER"] = "Вы не можете отправить документ самому себе";
+
 
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_1"] = "Размер загружаемых файлов не должен превышать ";
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_2"] = " Mb.";

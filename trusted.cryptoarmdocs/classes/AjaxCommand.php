@@ -847,6 +847,12 @@ class AjaxCommand {
             $res["noUser"] = $email;
             return $res;
         }
+        if ($userId == Utils::currUserId())
+        {
+            $res["message"] = "User is owner";
+            $res["IsOwner"] = true;
+            return $res;
+        }
 
         $ids = $params["ids"];
 
@@ -880,6 +886,12 @@ class AjaxCommand {
             $fileName = $doc->getName();
             $ownerId = $doc->getOwner();
             $shareFrom = Utils::getUserName($ownerId) ?: "";
+            if ($doc->accessCheck($userId, DOC_SHARE_READ))
+            {
+                $res["message"] = "User already have access";
+                $res["HaveAccess"] = true;
+                return $res;                
+            }
 
             if ($sendEmail) {
                 $arEventFields = [

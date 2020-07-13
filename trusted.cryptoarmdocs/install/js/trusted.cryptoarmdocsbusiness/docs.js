@@ -30,6 +30,8 @@ trustedCA.initVar = function () {
     SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
     SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
     SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
+    HAVE_ACCESS = BX.message('TR_CA_DOCS_ACT_SHARE_HAVE_ACCESS');
+    SHARE_IS_OWNER = BX.message('TR_CA_DOCS_ACT_SHARE_IS_OWNER');
     REQUIRE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_1');
     REQUIRE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_2');
     SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
@@ -440,6 +442,12 @@ trustedCA.verify = function (ids) {
 
 
 trustedCA.show_messages = function (response) {
+    if (response.HaveAccess){
+        alert(HAVE_ACCESS);
+    }
+    if (response.IsOwner) {
+        alert(SHARE_IS_OWNER);
+    }
     if (response.noIds) {
         alert(ERROR_NO_IDS);
     }
