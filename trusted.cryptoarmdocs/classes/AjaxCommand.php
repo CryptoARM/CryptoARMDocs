@@ -584,9 +584,19 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.content",
         ];
 
+        if (!Utils::checkAuthorization()){
+            $res["message"] = 'No auth';
+            $res["noAuth"] = true;
+            return $res;
+        }
+        
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
+                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)){
+                    $res["message"] = 'No access';
+                    return $res;
+                }
                 if ($params["force"]) {
                     $file = $doc->getFullPath();
                 } elseif ($params["detachedSign"]) {
