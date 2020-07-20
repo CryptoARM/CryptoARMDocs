@@ -584,7 +584,7 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.content",
         ];
 
-        if (!Utils::checkAuthorization()){
+        if (!Utils::checkAuthorization()) {
             $res["message"] = 'No auth';
             $res["noAuth"] = true;
             return $res;
@@ -593,7 +593,7 @@ class AjaxCommand {
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
-                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)){
+                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
                     $res["message"] = 'No access';
                     return $res;
                 }
@@ -857,8 +857,7 @@ class AjaxCommand {
             $res["noUser"] = $email;
             return $res;
         }
-        if ($userId == Utils::currUserId())
-        {
+        if ($userId == Utils::currUserId()) {
             $res["message"] = "User is owner";
             $res["IsOwner"] = true;
             return $res;
@@ -896,8 +895,7 @@ class AjaxCommand {
             $fileName = $doc->getName();
             $ownerId = $doc->getOwner();
             $shareFrom = Utils::getUserName($ownerId) ?: "";
-            if ($doc->accessCheck($userId, DOC_SHARE_READ))
-            {
+            if ($doc->accessCheck($userId, DOC_SHARE_READ)) {
                 $res["message"] = "User already have access";
                 $res["HaveAccess"] = true;
                 return $res;                
