@@ -356,8 +356,13 @@ class Database {
         // Removes childId from parent document
         Database::saveDocumentParent($doc);
     }
-
-    static function WFDocsIds() {
+    
+    /**
+     * Returns ids of all documents using in Workflows
+     * @return array
+     * @global object  $DB  Bitrix global CDatabase object
+     */
+    static function getDocumentIdsInWorkflows() {
         global $DB;
         $sql = 'SELECT DISTINCT DOCUMENT_ID FROM b_bp_workflow_instance GROUP BY DOCUMENT_ID';
         $row = $DB->Query($sql);
