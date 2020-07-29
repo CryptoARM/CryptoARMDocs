@@ -187,7 +187,7 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
         data: {id: ids, method: "sign"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://sign/" + AJAX_CONTROLLER  + '?command=JSON&accessToken=' + d.uuid;
+                let url = "cryptoarm://signAndEncrypt/" + AJAX_CONTROLLER  + '?command=JSON&id=' + d.uuid;
                 window.location = url;
                 ids = [];
                 try {

@@ -1210,7 +1210,7 @@ class AjaxCommand {
 
         $deauthorize = false;
 
-        $UUID = $params["accessToken"];
+        $UUID = $params["id"];
 
         if (!$UUID) {
             $res["message"] = "accessToken is not find in params";
@@ -1243,17 +1243,18 @@ class AjaxCommand {
         }
 
         $JSON = new class {};
+        $result = new class {};
+        $props = new class {};
         $extra = new class {};
-        $params = new class {};
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:
                 $response = self::sign(["id" => $docsId, "UUID" => $UUID]);
-                $JSON->method = "sign";
+                $result->operation = "SIGN";
                 $extra->token = $response["token"];
                 $extra->signType = TR_CA_DOCS_TYPE_SIGN;
                 $extra->signStandard = TR_CA_DOCS_SIGN_STANDARD;
-                $params->extra = $extra;
+                $props->extra = $extra;
                 break;
             case DOC_TRANSACTION_TYPE_VERIFY:
                 $response = self::verify(["id" => $docsId]);
@@ -1270,10 +1271,11 @@ class AjaxCommand {
         }
 
         $JSON->jsonrpc = "2.0";
-        $params->files = json_decode($response["docsOk"]);
-        $params->license = $response["license"];
-        $params->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
-        $JSON->params = $params;
+        $props->files = json_decode($response["docsOk"]);
+        $props->license = $response["license"];
+        $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
+        $result->props = $props;
+        $JSON->result = $result;
 
         if ($deauthorize) {
             $USER->Logout();
