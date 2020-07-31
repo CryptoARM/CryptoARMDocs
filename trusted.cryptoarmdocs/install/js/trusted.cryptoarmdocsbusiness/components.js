@@ -65,21 +65,6 @@ Vue.component("header-menu-button", {
     }
 })
 
-Vue.component("header-menu-send-some-button", {
-    props: {
-        message: String,
-        icon: String,
-    },
-    template: `
-    <div class="trca-docs-header-button" :title="message" @click="buttonClick">
-        <div class="material-icons"{{ icon }}></div>
-            {{ message }}
-    </div>`,
-    methods: {
-        
-    }
-})
-
 Vue.component ("docs-content", {
     template: `
     <div class="trca-docs-content">
@@ -98,7 +83,7 @@ Vue.component ("docs-header", {
         <input type="checkbox" id="checking_all" v-on:change="checkAll">
         <div class="trca-docs-content-item-left">
             <div class="doc-list-icon-inv">
-                <div class="material-icons" style="color: transparent" >
+                <div class="material-icons" style="opacity: 0;">
                     insert_drive_file
                 </div>
             </div>
@@ -277,7 +262,6 @@ Vue.component ("docs-upload-file", {
         title: String
     },
     template: `
-
     <div class="trca-docs-footer">
         <form enctype="multipart/form-data" method="POST" id="trca-docs-footer-upload">
             <div class="trca-docs-footer-upload-button">
