@@ -575,19 +575,31 @@ trustedCA.promptEmail = function (message) {
         return re.test(email);
     }
 
+    function checkEmails(emailArr) {
+        for (var i = 0; i < emailArr.length; i++) {
+            emailArr[i] = emailArr[i].trim();
+            if (!validateEmail(emailArr[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
     do {
         var emailAddress = prompt(message, '');
-        var validatedEmail = validateEmail(emailAddress);
+        var emailArr = emailAddress.split(/,|;/);
+        var validatedEmail = checkEmails(emailArr);
     } while (emailAddress && validatedEmail !== true);
-    return emailAddress;
+    return emailArr;
 };
 
 
 trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) {
     let email = trustedCA.promptEmail(SEND_MAIL_TO_PROMPT);
-    arEventFields.EMAIL = email;
-    if (email) {
-        trustedCA.sendEmail(ids, event, arEventFields, message_id);
+    for (var i = 0; i < email.length; i++) {
+        arEventFields.EMAIL = email[i];
+        if (email[i]) {
+            trustedCA.sendEmail(ids, event, arEventFields, message_id);
+        }
     }
 };
 

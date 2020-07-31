@@ -65,6 +65,21 @@ Vue.component("header-menu-button", {
     }
 })
 
+Vue.component("header-menu-send-some-button", {
+    props: {
+        message: String,
+        icon: String,
+    },
+    template: `
+    <div class="trca-docs-header-button" :title="message" @click="buttonClick">
+        <div class="material-icons"{{ icon }}></div>
+            {{ message }}
+    </div>`,
+    methods: {
+        
+    }
+})
+
 Vue.component ("docs-content", {
     template: `
     <div class="trca-docs-content">
@@ -72,16 +87,65 @@ Vue.component ("docs-content", {
     </div>`,
 })
 
+Vue.component ("docs-header", {
+    props: {
+        title: String,
+        date: String,
+        id: String,
+    },
+    template: `
+    <div class="trca-docs-content-items trca-docs-header-line">
+        <input type="checkbox" id="checking_all" v-on:change="checkAll">
+        <div class="trca-docs-content-item-left">
+            <div class="doc-list-icon-inv">
+                <div class="material-icons" style="color: transparent" >
+                    insert_drive_file
+                </div>
+            </div>
+            <div class="trca-docs-content-doc">
+                <div class="trca-docs-content-doc-name" :title="title">
+                 {{ title }}
+                </div>
+                <slot></slot>
+            </div>
+        </div>
+        <div class="trca-docs-content-info" :title="date">
+            {{ date }}
+        </div>
+        <div class="trca-docs-content-info" :title="id">
+            {{ id }}
+        </div>
+        <div class="trca-docs-content-item-right">
+            <slot></slot>
+        </div>
+    </div>`,
+    methods: {
+        checkAll: function() {
+            if ($('input[id="checking_all"]').prop("checked")) {
+                $('input[id^="check_"]').each(function(){
+                    $(this).attr("checked","checked");
+                })
+            } else {
+                    $('input[id^="check_"]').each(function(){
+                    $(this).removeAttr("checked");
+                })
+            }
+        }
+    }
+})
+
 Vue.component ("docs-items", {
     props: {
-        id: Number,
+        id: String,
         title: String,
         docname: String,
         sharedstatus: Array,
-        currentuseraccess: String
+        currentuseraccess: String,
+        sendsome: String
     },
     template: `
-    <div class="trca-docs-content-items" :title="title" @dblclick="buttonClick" data-id="data-item">
+    <div id="docs" class="trca-docs-content-items" :title="title" @dblclick="buttonClick" data-id="data-item">
+        <input :id="id" type="checkbox" v-on:change="checking" v-if="sendsome==1">
         <slot></slot>
     </div>`,
     methods: {
@@ -95,6 +159,18 @@ Vue.component ("docs-items", {
                     $('#trca-modal-overlay').hide();
                 }
             });
+        },
+        checking: function() {
+            let checkedAll = true;
+            $('input[id^="check_"]').each(function(){
+                if (!$(this).prop("checked")) {
+                    $('input[id="checking_all"]').removeAttr("checked");
+                    checkedAll = false;
+                };
+            })
+            if (checkedAll) {
+                $('input[id="checking_all"]').attr("checked","checked");
+            }
         }
     }
 })
@@ -201,6 +277,7 @@ Vue.component ("docs-upload-file", {
         title: String
     },
     template: `
+
     <div class="trca-docs-footer">
         <form enctype="multipart/form-data" method="POST" id="trca-docs-footer-upload">
             <div class="trca-docs-footer-upload-button">
