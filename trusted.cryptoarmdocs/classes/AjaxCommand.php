@@ -209,86 +209,95 @@ class AjaxCommand {
             "message" => "Unknown error in AjaxCommand.upload",
         ];
 
-        $doc = Database::getDocumentById($params['id']);
+        if (!count($params)) {
+            $res["message"] = "No ids documents";
+            return $res;
+        }
 
-        if (isset($params["success"]) && !$params["success"]) {
+        foreach ($params["params"]["directResults"] as $arResult) {
+
+            $idDoc = $arResult["id"];
+            $doc = Database::getDocumentById($idDoc);
+            $lastDoc = $doc->getLastDocument();
+
+            if (DOC_TYPE_SIGNED_FILE === 1) {
+                if ($lastDoc) {
+                    $doc = $lastDoc;
+                    $idDoc = $doc->getId();
+                }
+            }
+            if (isset($params["success"]) && !$params["success"]) {
+                $doc->unblock();
+                $doc->save();
+            }
+
+            if (!$doc) {
+                $res["message"] = "Document is not found";
+                return $res;
+            }
+            if ($lastDoc->getId() !== $doc->getId()) {
+                $res["message"] = "Document already has child.";
+                return $res;
+            }
+            if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
+                $res["message"] = "Document not blocked";
+                return $res;
+            }
+            $id = $params["params"]["id"];
+            if ($doc->getBlockToken() !== $id) {
+                $res["message"] = "Wrong token";
+                return $res;
+            }
+
+            $doc->setSignType(TR_CA_DOCS_TYPE_SIGN);
+            $doc->save();
+            $newDoc = $doc->copy();
+            $signatures = json_encode($arResult["signers"]);
+            $newDoc->setSignatures($signatures);
+            // Append new user to the list of signers
+            $newDoc->addSigner($doc->getBlockBy());
+            $newDoc->setType(DOC_TYPE_SIGNED_FILE);
+            $newDoc->setParent($doc);
+            // Detect document by order signing
+            if ($params["role"]) {
+                $extra["role"] = $params["role"];
+                DocumentsByOrder::upload($newDoc, $extra);
+            }
+
+            $requires = $newDoc->getRequires()->getList();
+            foreach ($requires as &$require) {
+                if ($require->getUserId() == $doc->getBlockBy()) {
+                    $require->setSignStatus(true);
+                }
+            }
+
+            if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
+                $newDoc->setName($newDoc->getName() . '.sig');
+                $newDoc->setPath($newDoc->getPath() . '.sig');
+            }
+
+            $content = base64_decode($arResult["out"]);
+            file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath()), $content);
+
+            $newDoc->setHash(hash_file('md5',$_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())));
+            $newDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
+            $newDoc->save();
+
+            // Drop "blocked" status of original doc
+            $doc = Database::getDocumentById($idDoc);
             $doc->unblock();
             $doc->save();
-        }
+            $res["success"] = true;
+            $res["message"] = "File uploaded";
 
-        if ($doc) {
-            $lastDoc = $doc->getLastDocument();
-        } else {
-            $res["message"] = "Document is not found";
-            return $res;
+            // Detect document by form signing
+            // if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
+            //     if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+            //         Loader::includeModule("trusted.cryptoarmdocsforms");
+            //         Form::upload($doc, $extra);
+            //     }
+            // }
         }
-        if ($lastDoc->getId() !== $doc->getId()) {
-            $res["message"] = "Document already has child.";
-            return $res;
-        }
-        if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
-            $res["message"] = "Document not blocked";
-            return $res;
-        }
-        $extra = json_decode($params["extra"], true);
-        if ($doc->getBlockToken() !== $extra['token']) {
-            $res["message"] = "Wrong token";
-            return $res;
-        }
-
-        if ($doc->getId() !== $doc->getOriginalId() && $doc->getSignType() !== $extra["signType"]) {
-            $res["message"] = "Wrong sign type";
-            return $res;
-        }
-
-        $doc->setSignType($extra["signType"]);
-        $doc->save();
-        $newDoc = $doc->copy();
-        $signatures = urldecode($params["signers"]);
-        $newDoc->setSignatures($signatures);
-        // Append new user to the list of signers
-        $newDoc->addSigner($doc->getBlockBy());
-        $newDoc->setType(DOC_TYPE_SIGNED_FILE);
-        $newDoc->setParent($doc);
-        $file = $_FILES["file"];
-        $newDoc->setHash(hash_file('md5', $file['tmp_name']));
-        // Detect document by order signing
-        if (array_key_exists("role", $extra)) {
-            DocumentsByOrder::upload($newDoc, $extra);
-        }
-
-        $requires = $newDoc->getRequires()->getList();
-        foreach ($requires as &$require) {
-            if ($require->getUserId() == $doc->getBlockBy()) {
-                $require->setSignStatus(true);
-            }
-        }
-
-        if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
-            $newDoc->setName($newDoc->getName() . '.sig');
-            $newDoc->setPath($newDoc->getPath() . '.sig');
-        }
-        $newDoc->setSignType($extra["signType"]);
-        $newDoc->save();
-        move_uploaded_file(
-            $file['tmp_name'],
-            $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
-        );
-        // Drop "blocked" status of original doc
-        $doc = Database::getDocumentById($params['id']);
-        $doc->unblock();
-        $doc->save();
-        $res["success"] = true;
-        $res["message"] = "File uploaded";
-
-        // Detect document by form signing
-        if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
-            if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-                Loader::includeModule("trusted.cryptoarmdocsforms");
-                Form::upload($doc, $extra);
-            }
-        }
-
         Utils::log([
             "action" => "signed",
             "docs" => $doc,
@@ -1231,6 +1240,10 @@ class AjaxCommand {
             return $res;
         }
 
+        if ($params["extra"]["role"]) {
+            $res["role"] = $params["extra"]["role"];
+        }
+        Utils::dump($params);
         if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
             $res["success"] = true;
             $res["uuid"] = $transactionInfo;
@@ -1296,7 +1309,7 @@ class AjaxCommand {
                 break;
             case DOC_TRANSACTION_TYPE_VERIFY:
                 $response = self::verify(["id" => $docsId]);
-                $JSON->method = "verify";
+                $result->operation  = "VERIFYSIGN";
                 break;
             default:
                 $res["message"] = "Unknown transaction type";
@@ -1311,7 +1324,11 @@ class AjaxCommand {
         $JSON->jsonrpc = "2.0";
         $props->files = json_decode($response["docsOk"]);
         $props->license = $response["license"];
-        $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
+        if ($params["role"]) {
+            $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload&role=' . $params["role"];
+        } else {
+            $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
+        }
         $result->props = $props;
         $JSON->result = $result;
 
