@@ -15,6 +15,7 @@ trustedCA.initVar = function () {
     REMOVE_FORM_ACTION_CONFIRM_MANY = BX.message('TR_CA_DOCS_ALERT_REMOVE_FORM_ACTION_CONFIRM_MANY');
     LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
     LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
+    IN_WF = BX.message('TR_CA_DOCS_ALERT_IN_WF');
     LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
     ERROR_NO_AUTH = BX.message('TR_CA_DOCS_ERROR_NO_AUTH');
     ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
@@ -30,6 +31,8 @@ trustedCA.initVar = function () {
     SEND_MAIL_TO_PROMPT = BX.message('TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT');
     SHARE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_1');
     SHARE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_SHARE_SUCCESS_2');
+    HAVE_ACCESS = BX.message('TR_CA_DOCS_ACT_SHARE_HAVE_ACCESS');
+    SHARE_IS_OWNER = BX.message('TR_CA_DOCS_ACT_SHARE_IS_OWNER');
     REQUIRE_SUCCESS_1 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_1');
     REQUIRE_SUCCESS_2 = BX.message('TR_CA_DOCS_ACT_REQUIRE_SUCCESS_2');
     SHARE_NO_USER_1 = BX.message('TR_CA_DOCS_ACT_SHARE_NO_USER_1');
@@ -37,6 +40,7 @@ trustedCA.initVar = function () {
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     DOWNLOAD_FILE_ZERO_SIZE = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE");
+    DOWNLOAD_FILE_ERROR_NAME = BX.message("TR_CA_DOCS_ACT_ERROR_NAME");
     MODAL_MESSAGE_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_1');
     MODAL_MESSAGE_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_2');
     MODAL_MESSAGE_MANY_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_1');
@@ -439,6 +443,19 @@ trustedCA.verify = function (ids) {
 
 
 trustedCA.show_messages = function (response) {
+    if (response.WFDocs) {
+        message = IN_WF;
+        response.docsInWF.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.name;
+        });
+        alert(message);
+    }
+    if (response.HaveAccess){
+        alert(HAVE_ACCESS);
+    }
+    if (response.IsOwner) {
+        alert(SHARE_IS_OWNER);
+    }
     if (response.noIds) {
         alert(ERROR_NO_IDS);
     }
@@ -558,19 +575,31 @@ trustedCA.promptEmail = function (message) {
         return re.test(email);
     }
 
+    function checkEmails(emailArr) {
+        for (var i = 0; i < emailArr.length; i++) {
+            emailArr[i] = emailArr[i].trim();
+            if (!validateEmail(emailArr[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
     do {
         var emailAddress = prompt(message, '');
-        var validatedEmail = validateEmail(emailAddress);
+        var emailArr = emailAddress.split(/,|;/);
+        var validatedEmail = checkEmails(emailArr);
     } while (emailAddress && validatedEmail !== true);
-    return emailAddress;
+    return emailArr;
 };
 
 
 trustedCA.promptAndSendEmail = function (ids, event, arEventFields, message_id) {
     let email = trustedCA.promptEmail(SEND_MAIL_TO_PROMPT);
-    arEventFields.EMAIL = email;
-    if (email) {
-        trustedCA.sendEmail(ids, event, arEventFields, message_id);
+    for (var i = 0; i < email.length; i++) {
+        arEventFields.EMAIL = email[i];
+        if (email[i]) {
+            trustedCA.sendEmail(ids, event, arEventFields, message_id);
+        }
     }
 };
 
@@ -638,7 +667,19 @@ trustedCA.reloadGrid = function (gridId) {
         gridObject.instance.reloadTable('POST', reloadParams);
     }
 };
-
+trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
+    var new_name = file.name.replace(/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/,'');
+    if (new_name !== file.name){
+        trustedCA.showPopupMessage(DOWNLOAD_FILE_ERROR_NAME, 'highlight_off', 'negative');
+        if (typeof onFailure === 'function') {
+            onFailure();
+        }
+    }else{
+            if (typeof onSuccess === 'function') {
+            onSuccess();
+        }
+    }
+};
 
 trustedCA.checkFileSize = function (file, maxSize, onSuccess = null, onFailure = null) {
     if (!file.size){

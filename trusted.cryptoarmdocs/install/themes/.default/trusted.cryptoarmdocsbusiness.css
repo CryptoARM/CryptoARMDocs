@@ -5,7 +5,7 @@
 }
 
 #trca-menu-icon {
-    /*fBs*/background-image:url(icons/trusted.cryptoarmdocsbusiness/mnu_docs.png);/*fMs - tags for core name changing script*/
+    /*fBs*/background-image:url(icons/trusted.cryptoarmdocscbusiness/mnu_docs.png);/*fMs - tags for core name changing script*/
 }
 
 /* Table with separators between rows */
@@ -677,6 +677,7 @@
 .trca-docs .trca-docs-content-items:hover {
     background-color: rgba(141, 141, 141, 0.055);
 }
+
 .trca-docs .trca-docs-content-item-left {
     display: flex;
     width: 100%;
@@ -686,6 +687,17 @@
     align-items: center;
     padding-right: 2px;
 
+}
+
+.trca-docs .trca-docs-content-items input {
+    margin-left: 18px;
+}
+
+.trca-docs .trca-docs-header-line {
+    padding: 0;
+    height: 50px;
+    font-weight: bold;
+    font-size: 16px !important;
 }
 
 .trca-docs .trca-docs-content-item-left .material-icons {

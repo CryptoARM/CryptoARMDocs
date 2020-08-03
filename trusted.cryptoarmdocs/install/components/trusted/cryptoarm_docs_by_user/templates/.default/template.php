@@ -36,6 +36,7 @@ $request = $context->getRequest();
 $allIds = $arResult['ALL_IDS'];
 $allIdsJs = $arResult['ALL_IDS_JS'];
 $docs = $arResult['DOCS'];
+$asd = true;
 
 if ($USER->GetFullName()) {
     $compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetFullName();
@@ -44,6 +45,7 @@ if ($USER->GetFullName()) {
 }
 
 $zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
+$comp_id = Docs\Utils::generateUUID() ;
 ?>
 
 <a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
@@ -62,7 +64,7 @@ $APPLICATION->IncludeComponent(
 );
 ?>
 
-<div id="trca-docs-by-user">
+<div id="trca-docs-by-user_<?= $comp_id?>">
     <trca-docs>
         <header-title title="<?= $compTitle ?>">
             <?
@@ -71,38 +73,38 @@ $APPLICATION->IncludeComponent(
                 <header-menu id="trca-docs-header-menu-by-user">
                     <header-menu-button icon="help"
                                         :id="<?= $allIdsJs ?>"
-                                        @button-click="verify"
-                                        data-id="data-verify-all"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_ALL"); ?>">
+                                        @button-click="verifySome"
+                                        data-id="data-verify-some"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_SOME"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="create"
                                         :id="<?= $allIdsJs ?>"
                                         role="CLIENT"
-                                        @button-click="sign"
-                                        data-id="data-sign-all"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_ALL"); ?>">
+                                        @button-click="signSome"
+                                        data-id="data-sign-some"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_SOME"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="file_download"
                                         zipname="<?= $zipName ?>"
                                         :id="<?= $allIdsJs ?>"
-                                        @button-click="download"
-                                        data-id="data-download-all"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"); ?>">
+                                        @button-click="downloadSome"
+                                        data-id="data-download-some"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_SOME"); ?>">
                     </header-menu-button>
                     <header-menu-button icon="email"
                                         :id="<?= $allIdsJs ?>"
-                                        @button-click="sendEmail"
-                                        data-id="data-send-all"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_ALL"); ?>">
+                                        @button-click="sendSome"
+                                        data-id="data-send-some"
+                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_SOME"); ?>">
                     </header-menu-button>
                     <?
                     if ($arParams["ALLOW_REMOVAL"] === 'Y') {
                         ?>
                         <header-menu-button icon="delete"
                                             :id="<?= $allIdsJs ?>"
-                                            @button-click="remove"
-                                            data-id="data-remove-all"
-                                            message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"); ?>">
+                                            @button-click="removeSome"
+                                            data-id="data-remove-some"
+                                            message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_SOME"); ?>">
                         </header-menu-button>
                         <?
                     }
@@ -112,6 +114,10 @@ $APPLICATION->IncludeComponent(
             }
             ?>
         </header-title>
+        <docs-header title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOC") ?>"
+                     date="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP") ?>"
+                     id="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_IDN") ?>"
+        ></docs-header>
         <docs-content>
             <?
             if (is_array($docs)) {
@@ -159,12 +165,13 @@ $APPLICATION->IncludeComponent(
                         }
                     }
                     ?>
-                    <docs-items :id="<?= $docId ?>"
+                    <docs-items id="check_<?= $docId ?>"
                                 docname="<?= $docName ?>"
                                 currentUserAccess='<?= $docAccessLevel ?>'
                                 :sharedstatus='<?= $sharedStatus ?>'
                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_INFO"); ?>"
-                                @button-click= "showInfoWindow">
+                                @button-click= "showInfoWindow"
+                                sendSome=<?= $asd ?>>
                         <doc-name color="<?= $iconCss ?>"
                                   icon="<?= $icon ?>"
                                   name="<?= $doc["NAME"] ?>"
@@ -327,20 +334,52 @@ $APPLICATION->IncludeComponent(
     }
 
     new Vue({
-        el: '#trca-docs-by-user',
+        el: '#trca-docs-by-user_<?= $comp_id?>',
         methods: {
+            getChecked: function () {
+                let ids = new Array;
+                $('input[id^="check_"]').each(function(){
+                    if($(this).prop("checked")) {
+                        let idStr = $(this).attr("id");
+                        let id = idStr.replace("check_", "");
+                        ids.push(id);
+                    };
+                });
+                return ids;
+            },
             sendEmail: function (id) {
                 let object = new Object();
                 trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
             },
+            sendSome: function () {
+                let object = new Object();
+                let ids = new Array;
+                ids = this.getChecked();
+                trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
+            },
             sign: function (id, role) {
                 trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
+            },
+            signSome: function (role) {
+                let ids = new Array;
+                ids = this.getChecked();
+                trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
             },
             verify: function (id) {
                 trustedCA.verify(id);
             },
+            verifySome: function () {
+                let ids = new Array;
+                ids = this.getChecked();
+                trustedCA.verify(ids);
+            },
             download: function (id, zipname) {
                 trustedCA.download(id, zipname);
+            },
+            downloadSome: function (zipname) {
+                let ids = new Array;
+                ids = this.getChecked();
+                trustedCA.download(ids, zipname);
             },
             protocol: function (idAr) {
                 id = idAr[0];
@@ -351,6 +390,11 @@ $APPLICATION->IncludeComponent(
             },
             remove: function (id) {
                 trustedCA.remove(id, false, trustedCA.reloadDoc);
+            },
+            removeSome: function() {
+                let ids = new Array;
+                ids = this.getChecked();
+                trustedCA.remove(ids, false, trustedCA.reloadDoc)
             },
             unshare: function (id) {
                 trustedCA.unshare(id, null, false, trustedCA.reloadDoc);

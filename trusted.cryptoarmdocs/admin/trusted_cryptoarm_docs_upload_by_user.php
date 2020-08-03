@@ -70,6 +70,10 @@ if ($REQUEST_METHOD == "POST") {
                 // Spaces only value will be ignored
                 $arUserId = trim($arUserId);
 
+                $invalidIdWarningShown = false;
+                $idWarningShown = false;
+                $dirWarningShown = false;
+
                 if (strlen($arFile["name"]) <= 0 || $arFile["tmp_name"] == "none") continue;
 
                 $arFile["name"] = CFileman::GetFileName($arFile["name"]);
