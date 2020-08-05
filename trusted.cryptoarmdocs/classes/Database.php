@@ -356,6 +356,22 @@ class Database {
         // Removes childId from parent document
         Database::saveDocumentParent($doc);
     }
+    
+    /**
+     * Returns ids of all documents using in Workflows
+     * @return array
+     * @global object  $DB  Bitrix global CDatabase object
+     */
+    static function getDocumentIdsInWorkflows() {
+        global $DB;
+        $sql = 'SELECT DISTINCT DOCUMENT_ID FROM b_bp_workflow_instance GROUP BY DOCUMENT_ID';
+        $row = $DB->Query($sql);
+        while ($array = $row->Fetch()) {
+            $doc = $array["DOCUMENT_ID"];
+            $docIds[] =  $doc;
+        }
+        return $docIds;
+    }
 
     /**
      * Removes document and all of its parents from DB.
@@ -664,6 +680,9 @@ class Database {
             'STATUS' => [
                 'FIELD_NAME' => 'TD.STATUS',
             ],
+            'USER' => [
+                'FIELD_NAME' => 'BU.EMAIL',
+            ]
         ];
 
         $find_docId = (string)$filter['DOC'];
@@ -673,13 +692,23 @@ class Database {
         $find_status = (string)$filter['STATUS'];
         $find_shareUser = (string)$filter['SHARE_USER'];
         $find_owner = (string)$filter['OWNER'];
+        $find_user = (string)$filter['USER'];
+        foreach ($arOrder as $k => $v) {
+            if ($k == 'USER')
+                $fus = true; 
+        };
 
         global $DB;
+        
         $sql = "
             SELECT
                 TD.ID
             FROM
                 " . DB_TABLE_DOCUMENTS . " as TD ";
+        if ($find_user != "" || $fus) {
+            $sql .= "LEFT JOIN (SELECT TDPD.VALUE, TDPD.DOCUMENT_ID FROM tr_ca_docs_property as TDPD WHERE TDPD.TYPE = 'USER') as TDP ON TDP.DOCUMENT_ID = TD.ID 
+                    LEFT JOIN b_user as BU ON BU.ID = TDP.VALUE";
+        };
         if ($find_shareUser !== "" || $find_owner !== "")
             $sql .= "RIGHT JOIN tr_ca_docs_property as TDP ON TDP.DOCUMENT_ID = TD.ID ";
         if ($find_shareUser !== "" && $find_owner !== "")
@@ -693,6 +722,9 @@ class Database {
         $sql .= "
             WHERE
                 isnull(TD.CHILD_ID)";
+        if ($find_user !=="") {
+            $sql .= " AND BU.EMAIL LIKE '%" . $find_user . "%'";
+        }
         if ($find_docId !== "")
             $sql .= " AND TD.ID = '" . $find_docId . "'";
         if ($find_fileName !== "")
@@ -816,6 +848,27 @@ class Database {
 
         $rows = $DB->Query($sql);
         return $rows;
+    }
+
+    static function getUserByDoc($docId) {
+        global $DB;
+        $docId = (int)$docId;
+
+        $sql = "
+            SELECT
+                USERS.EMAIL as EMAIL
+            FROM
+                tr_ca_docs_property as DOCS
+                INNER JOIN
+                b_user as USERS
+                    ON DOCS.VALUE = USERS.ID
+            WHERE DOCS.DOCUMENT_ID = '$docId' AND
+            DOCS.TYPE = 'USER'";
+        $rows = $DB->Query($sql);
+        while ($row = $rows->Fetch()){
+            $res.=$row["EMAIL"];
+        }
+        return $res;
     }
 
     /**

@@ -51,7 +51,8 @@ $FilterArr = Array(
     "find_fileName",
     "find_signatures",
     "find_type",
-    "find_status"
+    "find_status",
+    "find_user"
 );
 
 $lAdmin->InitFilter($FilterArr);
@@ -63,7 +64,8 @@ if (CheckFilter()) {
         "FILE_NAME" => $find_fileName,
         "SIGNATURES" => $find_signatures,
         "TYPE" => $find_type,
-        "STATUS" => $find_status
+        "STATUS" => $find_status,
+        "USER" => $find_user
     );
 }
 
@@ -141,13 +143,19 @@ $lAdmin->AddHeaders(array(
         "sort" => "TYPE",
         "default" => true
     ),
+    array(
+        "id" => "USER",
+        "content" => Loc::getMessage("TR_CA_DOCS_COL_USER"),
+        "sort" => "USER",
+        "default" => true
+    ),
 ));
 
 while ($arRes = $rsData->NavNext(true, "f_")) {
 
     $doc = Docs\Database::getDocumentById($f_ID);
     $docId = $doc->getId();
-
+    
     $docName =  "<span class='trca-adm-list-table-cell-documents'>";
     $docName .= "<input type='button'";
     if ($doc->getType() === DOC_TYPE_FILE){
@@ -160,6 +168,8 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $docName .= "' ondblclick='event.stopPropagation()' onclick='trustedCA.download([";
     $docName .= $docId . "], true)' >" . $doc->getName() . "</a>";
     $docName .= "</span>";
+
+    $docUser = Docs\Database::getUserByDoc($doc->getId());
 
     if ($doc->getSignatures() == "") {
         $signatures = array();
@@ -196,6 +206,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
         "CREATED" => $docCreated,
         "SIGNATURES" => $signaturesString,
         "TYPE" => $docType,
+        "USER" => $docUser
     );
 
     $row = &$lAdmin->AddRow($f_ID, $arRes);
@@ -206,6 +217,7 @@ while ($arRes = $rsData->NavNext(true, "f_")) {
     $row->AddViewField("CREATED", $docCreated);
     $row->AddViewField("SIGNATURES", $signaturesString);
     $row->AddViewField("TYPE", $docTypeString);
+    $row->AddViewField("USER", $docUser);
 
     // context menu
     $arActions = Array();
@@ -301,7 +313,8 @@ $oFilter = new CAdminFilter($sTableID . "_filter", array(
     Loc::getMessage("TR_CA_DOCS_COL_FILENAME"),
     Loc::getMessage("TR_CA_DOCS_COL_SIGN"),
     Loc::getMessage("TR_CA_DOCS_COL_TYPE"),
-    Loc::getMessage("TR_CA_DOCS_COL_STATUS")
+    Loc::getMessage("TR_CA_DOCS_COL_STATUS"),
+    Loc::getMessage("TR_CA_DOCS_COL_USER")
 ));
 
 $reloadDocJS = $sTableID . ".GetAdminList('')";
@@ -353,7 +366,7 @@ if (!Docs\Utils::isSecure()) {
             echo SelectBoxFromArray("find_type", $arr, $find_type, Loc::getMessage("POST_ALL"), "");
             ?>
         </td>
-
+    </tr>
     <tr>
         <td> <?= Loc::getMessage("TR_CA_DOCS_COL_STATUS") . ":" ?> </td>
         <td>
@@ -376,6 +389,11 @@ if (!Docs\Utils::isSecure()) {
             ?>
         </td>
     </tr>
+    <tr>
+        <td> <?= Loc::getMessage("TR_CA_DOCS_COL_USER") . ":" ?></td>
+        <td><input type="text" name="find_user" size="47" value="<?= htmlspecialchars($find_user) ?>"></td>
+    </tr>
+    
 
     <?php
     $oFilter->Buttons(array("table_id" => $sTableID, "url" => $APPLICATION->GetCurPage(), "form" => "find_form"));
