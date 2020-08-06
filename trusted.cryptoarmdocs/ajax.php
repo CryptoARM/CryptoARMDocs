@@ -54,6 +54,11 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::getAccountHistory($params);
             break;
         case "upload":
+            $postData = file_get_contents('php://input');
+            $params = json_decode($postData, true);
+            if ($_REQUEST["role"] && $_REQUEST["role"] != '${role}') {
+                $params["role"] = $_REQUEST["role"];
+            }
             $res = Docs\AjaxCommand::upload($params);
             break;
         case "verify":

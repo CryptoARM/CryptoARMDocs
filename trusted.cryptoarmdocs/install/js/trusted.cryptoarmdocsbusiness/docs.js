@@ -185,13 +185,18 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     if (typeof extra['signType'] !== "undefined") {
         extra.signType = 0;
     }
+    console.log(extra);
     $.ajax({
         url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
-        data: {id: ids, method: "sign"},
+        data: {id: ids, method: "sign", extra: extra},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://sign/" + AJAX_CONTROLLER  + '?command=JSON&accessToken=' + d.uuid;
+                let role = "";
+                if (d.role) {
+                    role = "&role=" + d.role;
+                }
+                let url = "cryptoarm://signAndEncrypt/" + AJAX_CONTROLLER  + '?command=JSON&id=' + d.uuid + role;
                 window.location = url;
                 ids = [];
                 try {
@@ -421,7 +426,7 @@ trustedCA.verify = function (ids) {
         data: {id: ids, method: "verify"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://verify/" + AJAX_CONTROLLER + '?command=JSON&accessToken=' + d.uuid;
+                let url = "cryptoarm://signAndEncrypt/" + AJAX_CONTROLLER + '?command=JSON&id=' + d.uuid;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);
