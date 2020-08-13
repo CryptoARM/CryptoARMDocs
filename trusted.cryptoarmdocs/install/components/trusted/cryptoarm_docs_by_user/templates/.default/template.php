@@ -358,12 +358,12 @@ $APPLICATION->IncludeComponent(
                 trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
             },
             sign: function (id, role) {
-                trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
+                trustedCA.sign(id, JSON.parse(`{"role": "${role}"}`));
             },
             signSome: function (role) {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
+                trustedCA.sign(ids, JSON.parse(`{"role": "${role}"}`));
             },
             verify: function (id) {
                 trustedCA.verify(id);

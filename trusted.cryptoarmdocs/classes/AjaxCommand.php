@@ -214,6 +214,22 @@ class AjaxCommand {
             return $res;
         }
 
+        $id = $params["params"]["id"];
+        if ($id) {
+            $transaction = Database::getTransaction($params["params"]["id"]);
+            $extra = json_decode($transaction["EXTRA"], true);
+        }
+
+        if ($params["params"]["status"] == "Canceled") {
+            foreach ($transaction["DOCUMENTS_ID"] as $idDoc) {
+                $doc = Database::getDocumentById($idDoc);
+                $doc->unblock();
+                $doc->save();
+            }
+            $res["message"] = "Transaction canceled";
+            return $res;
+        }
+
         foreach ($params["params"]["directResults"] as $arResult) {
 
             $idDoc = $arResult["id"];
@@ -225,10 +241,6 @@ class AjaxCommand {
                     $doc = $lastDoc;
                     $idDoc = $doc->getId();
                 }
-            }
-            if (isset($params["success"]) && !$params["success"]) {
-                $doc->unblock();
-                $doc->save();
             }
 
             if (!$doc) {
@@ -243,7 +255,6 @@ class AjaxCommand {
                 $res["message"] = "Document not blocked";
                 return $res;
             }
-            $id = $params["params"]["id"];
             if ($doc->getBlockToken() !== $id) {
                 $res["message"] = "Wrong token";
                 return $res;
@@ -258,9 +269,8 @@ class AjaxCommand {
             $newDoc->addSigner($doc->getBlockBy());
             $newDoc->setType(DOC_TYPE_SIGNED_FILE);
             $newDoc->setParent($doc);
-            // Detect document by order signing
-            if ($params["role"]) {
-                $extra["role"] = $params["role"];
+            //Detect document by order signing
+            if ($extra["role"]) {
                 DocumentsByOrder::upload($newDoc, $extra);
             }
 
@@ -290,18 +300,18 @@ class AjaxCommand {
             $res["success"] = true;
             $res["message"] = "File uploaded";
 
-            // Detect document by form signing
-            // if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
-            //     if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-            //         Loader::includeModule("trusted.cryptoarmdocsforms");
-            //         Form::upload($doc, $extra);
-            //     }
-            // }
+            //Detect document by form signing
+            if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
+                if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+                    Loader::includeModule("trusted.cryptoarmdocsforms");
+                    Form::upload($doc, $extra);
+                }
+            }
         }
         Utils::log([
             "action" => "signed",
             "docs" => $doc,
-            "extra" => $params["extra"],
+            "extra" => $extra,
         ]);
         return $res;
     }
@@ -611,17 +621,35 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.content",
         ];
 
-        if (!Utils::checkAuthorization()) {
-            $res["message"] = 'No auth';
-            $res["noAuth"] = true;
+        $token = $params["accessToken"];
+        $userId = null;
+
+        if (Utils::checkAuthorization()) {
+            $userId = Utils::currUserId();
+        }
+
+        if ($token) {
+            $transactionInfo = Database::getTransaction($token);
+            if (!$transactionInfo) {
+                $res["message"] = "Transaction does not exist";
+                return $res;
+            }
+            $userId = $transactionInfo["USER_ID"];
+            if ($transactionInfo["TRANSACTION_TYPE"] === DOC_TRANSACTION_TYPE_VERIFY) {
+                Database::removeTransaction($token);
+            }
+        }
+
+        if (!$userId) {
+            $res["message"] = "No authorization or no token";
             return $res;
         }
-        
+
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
-                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
-                    $res["message"] = 'No access';
+                if (!($doc->getOwner() == $userId || $doc->accessCheck($userId, DOC_SHARE_READ))) {
+                    $res["message"] = "No access";
                     return $res;
                 }
                 if ($params["force"]) {
@@ -925,7 +953,6 @@ class AjaxCommand {
             if ($doc->accessCheck($userId, DOC_SHARE_READ)) {
                 $res["message"] = "User already have access";
                 $res["HaveAccess"] = true;
-                return $res;                
             }
 
             if ($sendEmail) {
@@ -1240,11 +1267,9 @@ class AjaxCommand {
             return $res;
         }
 
-        if ($params["extra"]["role"]) {
-            $res["role"] = $params["extra"]["role"];
-        }
-        Utils::dump($params);
-        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
+        $extra = json_encode($params["extra"]);
+
+        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method, $extra)) {
             $res["success"] = true;
             $res["uuid"] = $transactionInfo;
             return $res;
@@ -1301,7 +1326,7 @@ class AjaxCommand {
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:
                 $response = self::sign(["id" => $docsId, "UUID" => $UUID]);
-                $result->operation = "SIGN";
+                $result->operation = ["SIGN"];
                 $extra->token = $response["token"];
                 $extra->signType = TR_CA_DOCS_TYPE_SIGN;
                 $extra->signStandard = TR_CA_DOCS_SIGN_STANDARD;
@@ -1309,7 +1334,9 @@ class AjaxCommand {
                 break;
             case DOC_TRANSACTION_TYPE_VERIFY:
                 $response = self::verify(["id" => $docsId]);
-                $result->operation  = "VERIFYSIGN";
+                $result->operation  = ["VERIFYSIGN"];
+                $extra->token = $UUID;
+                $props->extra = $extra;
                 break;
             default:
                 $res["message"] = "Unknown transaction type";
@@ -1324,11 +1351,6 @@ class AjaxCommand {
         $JSON->jsonrpc = "2.0";
         $props->files = json_decode($response["docsOk"]);
         $props->license = $response["license"];
-        if ($params["role"]) {
-            $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload&role=' . $params["role"];
-        } else {
-            $props->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
-        }
         $result->props = $props;
         $JSON->result = $result;
 
