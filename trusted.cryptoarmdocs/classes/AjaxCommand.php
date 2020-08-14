@@ -4,7 +4,9 @@ namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
 use DateTime;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Config\Option;
 
 /**
  * Controllers for AJAX requests.
