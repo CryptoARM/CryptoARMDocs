@@ -233,17 +233,19 @@ class AjaxCommand {
             return $res;
         }
 
+        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ \.-]/u', '', $_FILES['file']['name']);
+        if ($checkname != $_FILES['file']['name']) {
+            $res['nameError'] = true;
+            $res['message'] = 'Unacceptable name';
+            return $res;
+        }
+
         $uniqid = (string)uniqid();
         $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
         mkdir($newDocDir);
         $newDocFilename = Utils::mb_basename($_FILES['file']['name']);
         $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
         $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
-        if ($newDocFilename != $_FILES['file']['name']) {
-            $res['nameError'] = true;
-            $res['message'] = 'Unacceptable name';
-            return $res;
-        }
 
         $absolutePath = $newDocDir . $newDocFilename;
         $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
