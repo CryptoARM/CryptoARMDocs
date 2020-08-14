@@ -701,7 +701,7 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null)
         }
         else if (xhr.readyState == 4 && xhr.status != 200) {
             if (typeof onFailure == 'function') {
-                onFailure;
+                onFailure();
             }
         }
     });
