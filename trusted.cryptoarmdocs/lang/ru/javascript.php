@@ -44,6 +44,11 @@ $MESS["TR_CA_DOCS_ACT_SHARE_IS_OWNER"] = "Действие невозможно.
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_1"] = "Размер загружаемых файлов не должен превышать ";
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_2"] = " Mb.";
 $MESS["TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE"] = "Загружаемый файл не должен быть пустым.";
+$MESS["TR_CA_DOCS_ONLOAD_1"] = "Загружено ";
+$MESS["TR_CA_DOCS_ONLOAD_2"] = " МБ из ";
+$MESS["TR_CA_DOCS_UPLOADED_1"] = "Файл ";
+$MESS["TR_CA_DOCS_UPLOADED_2"] = " загружен";
+$MESS["TR_CA_DOCS_ERR"] = "Ошибка";
 
 $MESS["TR_CA_DOCS_UNSHARE_CONFIRM"] = " Документ будет удалён из вашего списка, но останется у пользователя, который вам его предоставил. Продолжить?";
 $MESS["TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM"] = " Документ будет удалён из списка пользователя. Продолжить?";
