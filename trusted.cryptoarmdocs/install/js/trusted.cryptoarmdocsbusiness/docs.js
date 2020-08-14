@@ -667,6 +667,39 @@ trustedCA.reloadGrid = function (gridId) {
         gridObject.instance.reloadTable('POST', reloadParams);
     }
 };
+
+trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null) {
+    var xhr = new XMLHttpRequest();
+    let formData = new FormData;
+    let url = AJAX_CONTROLLER + '?command=uploadFile';
+    xhr.open('POST', url, true);
+    formData.append('file', file);
+    formData.append('props', JSON.stringify(props));
+    xhr.responseType = "json";
+    xhr.addEventListener('readystatechange', function() {
+        console.log(xhr.readyState);
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            trustedCA.show_messages(xhr.response);
+            console.log(xhr.response);
+            if (xhr.response.success) {
+                if (typeof onSuccess == 'function') {
+                    onSuccess();
+                };
+            } else {
+                if (typeof onFailure == 'function') {
+                    onFailure();
+                }
+            }
+        }
+        else if (xhr.readyState == 4 && xhr.status != 200) {
+            if (typeof onFailure == 'function') {
+                onFailure();
+            }
+        }
+    });
+    xhr.send(formData);
+};
+
 trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
     var new_name = file.name.replace(/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/,'');
     if (new_name !== file.name){

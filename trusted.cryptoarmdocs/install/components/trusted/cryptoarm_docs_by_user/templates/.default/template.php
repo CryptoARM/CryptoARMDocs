@@ -50,20 +50,6 @@ $comp_id = Docs\Utils::generateUUID() ;
 
 <a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
-<?
-$APPLICATION->IncludeComponent(
-    'trusted:cryptoarm_docs_upload',
-    '.default',
-    [
-        'FILES' => ['tr_ca_upload_comp_by_user'],
-        'PROPS' => [
-            'USER' => $USER->GetID(),
-        ],
-    ],
-    false
-);
-?>
-
 <div id="trca-docs-by-user_<?= $comp_id?>">
     <trca-docs>
         <header-title title="<?= $compTitle ?>">
@@ -313,7 +299,8 @@ $APPLICATION->IncludeComponent(
                 $maxSize = Docs\Utils::maxUploadFileSize();
                 ?>
                 <docs-upload-file maxSize="<?= $maxSize ?>"
-                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>">
+                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>"
+                                  value="<?= Docs\Utils::currUserId() ?>">
                 </docs-upload-file>
                 <?
             }
