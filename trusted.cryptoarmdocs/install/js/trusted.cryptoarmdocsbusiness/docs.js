@@ -41,6 +41,12 @@ trustedCA.initVar = function () {
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     DOWNLOAD_FILE_ZERO_SIZE = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE");
     DOWNLOAD_FILE_ERROR_NAME = BX.message("TR_CA_DOCS_ACT_ERROR_NAME");
+    DOWNLOAD_ERROR = BX.message("TR_CA_DOCS_DOWNLOAD_ERROR");
+    ONLOAD_1 = BX.message("TR_CA_DOCS_ONLOAD_1");
+    ONLOAD_2 = BX.message("TR_CA_DOCS_ONLOAD_2");
+    UPLOAD_1 = BX.message("TR_CA_DOCS_UPLOADED_1");
+    UPLOAD_2 = BX.message("TR_CA_DOCS_UPLOADED_2");
+    ERR = BX.message("TR_CA_DOCS_ERR");
     MODAL_MESSAGE_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_1');
     MODAL_MESSAGE_2 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_2');
     MODAL_MESSAGE_MANY_1 = BX.message('TR_CA_DOCS_MODAL_MESSAGE_MANY_1');
@@ -667,6 +673,55 @@ trustedCA.reloadGrid = function (gridId) {
         gridObject.instance.reloadTable('POST', reloadParams);
     }
 };
+
+trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onFailure = null) {
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        console.log(file);
+        let upload = () => { trustedCA.uploadFile(file, props, onSuccess, onFailure) };
+        let accessCheck = () => { trustedCA.checkAccessFile(file, upload, onFailure) };
+        let nameCheck = () => { trustedCA.checkName(file, accessCheck, onFailure) };
+        trustedCA.checkFileSize(file, maxsize, nameCheck, onFailure);
+    }
+}
+
+trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null) {
+    var xhr = new XMLHttpRequest();
+    let formData = new FormData;
+    let url = AJAX_CONTROLLER + '?command=uploadFile';
+    xhr.open('POST', url, true);
+    formData.append('file', file);
+    formData.append('props', JSON.stringify(props));
+    xhr.responseType = "json";
+    xhr.addEventListener('readystatechange', function() {
+        console.log(xhr.readyState);
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            trustedCA.show_messages(xhr.response);
+            console.log(xhr.response);
+            if (xhr.response.success) {
+                if (typeof onSuccess == 'function') {
+                    onSuccess();
+                };
+                trustedCA.showPopupMessage(UPLOAD_1 + file.name + UPLOAD_2, 'done', 'positive' );
+            } else {
+                if (typeof onFailure == 'function') {
+                    onFailure();
+                }
+                trustedCA.showPopupMessage(ERR, 'highlight_off', 'negative');
+            }
+        }
+        else if (xhr.readyState == 4 && xhr.status != 200) {
+            if (typeof onFailure == 'function') {
+                onFailure();
+            }
+        }
+    });
+    xhr.upload.onprogress = function(file) {
+        trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+    }
+    xhr.send(formData);
+};
+
 trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
     var new_name = file.name.replace(/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/,'');
     if (new_name !== file.name){

@@ -53,6 +53,9 @@ if (isset($command)) {
         case "getAccountHistory":
             $res = Docs\AjaxCommand::getAccountHistory($params);
             break;
+        case "uploadFile":
+            $res = Docs\AjaxCommand::uploadFile($params);
+            break;
         case "upload":
             $res = Docs\AjaxCommand::upload($params);
             break;

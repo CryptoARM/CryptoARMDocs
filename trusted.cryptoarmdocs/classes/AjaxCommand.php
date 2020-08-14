@@ -4,7 +4,9 @@ namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
 use DateTime;
+use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Config\Option;
 
 /**
  * Controllers for AJAX requests.
@@ -189,6 +191,82 @@ class AjaxCommand {
             $res["message"] = "Nothing to verify";
         }
 
+        return $res;
+    }
+
+    /**
+     * @param array $params [props]: array of docs properties
+     *              
+     *
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     */
+
+    static function uploadFile($params) {
+        $res = [
+            "success" => false,
+            "message" =>"Unknown error in AjaxCommand.uploadFile",
+        ];
+
+        $ar = json_decode($params["props"], true);
+        
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
+
+        if (empty($_FILES['file']['name'])) {
+            $res['message'] = 'Nothing to download';
+        }
+
+        if ($_FILES['file']['error'] != 0) {
+            $res['message'] = 'File error';
+            $res['fileError'] = true;
+            $res['errorCode'] = $_FILES['file']['error'];
+            return $res;
+        }
+
+        if ($_FILES['file']['size'] == 0) {
+            $res['emptyFile'] = true;
+            $res['message'] = 'Empty file';
+            return $res;
+        }
+
+        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ (){}[]\.-]/u', '', $_FILES['file']['name']);
+        if ($checkname != $_FILES['file']['name']) {
+            $res['nameError'] = true;
+            $res['message'] = 'Unacceptable name';
+            return $res;
+        }
+
+        $uniqid = (string)uniqid();
+        $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
+        mkdir($newDocDir);
+        $newDocFilename = Utils::mb_basename($_FILES['file']['name']);
+        $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
+        $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
+
+        $absolutePath = $newDocDir . $newDocFilename;
+        $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
+
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $absolutePath)) {
+            $props = new PropertyCollection();
+
+            foreach ($ar as $prop) {
+                $props->add(new Property((string)$prop[0], (string)$prop[1]));
+            }
+            
+            $doc = Utils::createDocument($relativePath, $props);      
+        }
+    
+        unset($_FILES['file']['name']);
+
+        $res["message"] = "Document is uploaded";
+        $res["success"] = true;
+        
         return $res;
     }
 
