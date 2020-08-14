@@ -41,6 +41,7 @@ $MESS["TR_CA_DOCS_COL_SIGN"] = "Информация о сертификате �
 $MESS["TR_CA_DOCS_COL_TYPE"] = "Тип документа";
 $MESS["TR_CA_DOCS_COL_STATUS"] = "Статус документа";
 $MESS["TR_CA_DOCS_COL_OWNER"] = "Владелец документа";
+$MESS["TR_CA_DOCS_COL_USER"] = "Автор";
 
 $MESS["TR_CA_DOCS_COL_USER_ID"] = "ID";
 $MESS["TR_CA_DOCS_COL_DOCS"] = "Документы";
