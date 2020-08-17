@@ -674,6 +674,17 @@ trustedCA.reloadGrid = function (gridId) {
     }
 };
 
+trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onFailure = null) {
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        console.log(file);
+        let upload = () => { trustedCA.uploadFile(file, props, onSuccess, onFailure) };
+        let accessCheck = () => { trustedCA.checkAccessFile(file, upload, onFailure) };
+        let nameCheck = () => { trustedCA.checkName(file, accessCheck, onFailure) };
+        trustedCA.checkFileSize(file, maxsize, nameCheck, onFailure);
+    }
+}
+
 trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null) {
     var xhr = new XMLHttpRequest();
     let formData = new FormData;

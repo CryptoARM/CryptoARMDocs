@@ -267,15 +267,14 @@ Vue.component ("docs-upload-file", {
         <form enctype="multipart/form-data" method="POST"  id="trca-docs-footer-upload">
             <div class="trca-docs-footer-upload-button">
                 <input id="trca-docs-footer-upload-input" class="trca-docs-footer-upload-input"
-                       data-id="data-upload" 
-                       name="tr_ca_upload_comp_by_user" type="file" v-on:change="buttonClick">
+                       data-id="data-upload" multiple
+                       name="tr_ca_upload_comp_by_user[]" type="file" v-on:change="buttonClick">
                 {{ title }}
             </div>
         </form>
     </div>`,
     methods: {
         buttonClick: function(event) {
-            file = event.target.files[0];
             let onFailure = () => { $('#trca-docs-footer-upload-input').val(null) };
             let onSuccess = () => {trustedCA.reloadDoc()};
 
@@ -285,10 +284,14 @@ Vue.component ("docs-upload-file", {
                 [name, value],
             ]); 
              
-            let upload = () => { trustedCA.uploadFile(file, props, onSuccess, onFailure) };
-            let accessCheck = () => { trustedCA.checkAccessFile(file, upload, onFailure) };
-            let nameCheck = () => { trustedCA.checkName(file, accessCheck, onFailure) };
-            trustedCA.checkFileSize(file, this.maxsize, nameCheck, onFailure);
+            for (let i = 0; i<event.target.files.length; i++) {
+                let file = event.target.files[i];
+                console.log(file);
+                let upload = () => { trustedCA.uploadFile(file, props, onSuccess, onFailure) };
+                let accessCheck = () => { trustedCA.checkAccessFile(file, upload, onFailure) };
+                let nameCheck = () => { trustedCA.checkName(file, accessCheck, onFailure) };
+                trustedCA.checkFileSize(file, this.maxsize, nameCheck, onFailure);
+            }A.checkFileSize(file, this.maxsize, nameCheck, onFailure);
         }
     }
 })

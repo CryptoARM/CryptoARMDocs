@@ -235,7 +235,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ \.-]/u', '', $_FILES['file']['name']);
+        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ (){}[]\.-]/u', '', $_FILES['file']['name']);
         if ($checkname != $_FILES['file']['name']) {
             $res['nameError'] = true;
             $res['message'] = 'Unacceptable name';
