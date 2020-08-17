@@ -323,6 +323,12 @@ $comp_id = Docs\Utils::generateUUID() ;
     new Vue({
         el: '#trca-docs-by-user_<?= $comp_id?>',
         methods: {
+            groupActions: function (ids, action) {
+                if (ids.length != 0) {
+                    action();
+                } else 
+                    trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+            },
             getChecked: function () {
                 let ids = new Array;
                 $('input[id^="check_"]').each(function(){
@@ -342,10 +348,8 @@ $comp_id = Docs\Utils::generateUUID() ;
                 let object = new Object();
                 let ids = new Array;
                 ids = this.getChecked();
-                if (ids.length != 0) {
-                    trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
-                } else 
-                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+                let action = () => {trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO')};
+                this.groupActions(ids, action);
             },
             sign: function (id, role) {
                 trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
@@ -353,10 +357,8 @@ $comp_id = Docs\Utils::generateUUID() ;
             signSome: function (role) {
                 let ids = new Array;
                 ids = this.getChecked();
-                if (ids.length != 0) {
-                    trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
-                } else 
-                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+                let action = () => {trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'))};
+                this.groupActions(ids, action);
             },
             verify: function (id) {
                 trustedCA.verify(id);
@@ -364,10 +366,8 @@ $comp_id = Docs\Utils::generateUUID() ;
             verifySome: function () {
                 let ids = new Array;
                 ids = this.getChecked();
-                if (ids.length != 0) {
-                    trustedCA.verify(ids);
-                } else 
-                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+                let action = () => {trustedCA.verify(ids)};
+                this.groupActions(ids, action);
             },
             download: function (id, zipname) {
                 trustedCA.download(id, zipname);
@@ -375,10 +375,8 @@ $comp_id = Docs\Utils::generateUUID() ;
             downloadSome: function (zipname) {
                 let ids = new Array;
                 ids = this.getChecked();
-                if (ids.length != 0) {
-                    trustedCA.download(ids, zipname);
-                } else 
-                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+                let action = () => {trustedCA.download(ids, zipname)};
+                this.groupActions(ids, action);
             },
             protocol: function (idAr) {
                 id = idAr[0];
@@ -393,10 +391,8 @@ $comp_id = Docs\Utils::generateUUID() ;
             removeSome: function() {
                 let ids = new Array;
                 ids = this.getChecked();
-                if (ids.length != 0) {
-                    trustedCA.remove(ids, false, trustedCA.reloadDoc);
-                } else 
-                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+                let action = () => {trustedCA.remove(ids, false, trustedCA.reloadDoc)};
+                this.groupActions(ids, action);
             },
             unshare: function (id) {
                 trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
