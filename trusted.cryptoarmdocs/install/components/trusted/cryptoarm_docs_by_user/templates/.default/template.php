@@ -345,7 +345,7 @@ $comp_id = Docs\Utils::generateUUID() ;
                 if (ids.length != 0) {
                     trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
                 } else 
-                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
+                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
             },
             sign: function (id, role) {
                 trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
@@ -356,7 +356,7 @@ $comp_id = Docs\Utils::generateUUID() ;
                 if (ids.length != 0) {
                     trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
                 } else 
-                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
+                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
             },
             verify: function (id) {
                 trustedCA.verify(id);
@@ -367,7 +367,7 @@ $comp_id = Docs\Utils::generateUUID() ;
                 if (ids.length != 0) {
                     trustedCA.verify(ids);
                 } else 
-                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
+                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
             },
             download: function (id, zipname) {
                 trustedCA.download(id, zipname);
@@ -378,7 +378,7 @@ $comp_id = Docs\Utils::generateUUID() ;
                 if (ids.length != 0) {
                     trustedCA.download(ids, zipname);
                 } else 
-                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
+                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
             },
             protocol: function (idAr) {
                 id = idAr[0];
@@ -396,7 +396,7 @@ $comp_id = Docs\Utils::generateUUID() ;
                 if (ids.length != 0) {
                     trustedCA.remove(ids, false, trustedCA.reloadDoc);
                 } else 
-                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
+                trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
             },
             unshare: function (id) {
                 trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
@@ -410,4 +410,3 @@ $comp_id = Docs\Utils::generateUUID() ;
         }
     })
 </script>
-
