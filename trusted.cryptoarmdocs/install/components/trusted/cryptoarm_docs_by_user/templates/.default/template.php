@@ -342,7 +342,10 @@ $comp_id = Docs\Utils::generateUUID() ;
                 let object = new Object();
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
+                if (ids.length != 0) {
+                    trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
+                } else 
+                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
             },
             sign: function (id, role) {
                 trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
@@ -350,7 +353,10 @@ $comp_id = Docs\Utils::generateUUID() ;
             signSome: function (role) {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
+                if (ids.length != 0) {
+                    trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'));
+                } else 
+                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
             },
             verify: function (id) {
                 trustedCA.verify(id);
@@ -358,7 +364,10 @@ $comp_id = Docs\Utils::generateUUID() ;
             verifySome: function () {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.verify(ids);
+                if (ids.length != 0) {
+                    trustedCA.verify(ids);
+                } else 
+                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
             },
             download: function (id, zipname) {
                 trustedCA.download(id, zipname);
@@ -366,7 +375,10 @@ $comp_id = Docs\Utils::generateUUID() ;
             downloadSome: function (zipname) {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.download(ids, zipname);
+                if (ids.length != 0) {
+                    trustedCA.download(ids, zipname);
+                } else 
+                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
             },
             protocol: function (idAr) {
                 id = idAr[0];
@@ -381,7 +393,10 @@ $comp_id = Docs\Utils::generateUUID() ;
             removeSome: function() {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.remove(ids, false, trustedCA.reloadDoc)
+                if (ids.length != 0) {
+                    trustedCA.remove(ids, false, trustedCA.reloadDoc);
+                } else 
+                    alert("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>");
             },
             unshare: function (id) {
                 trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
