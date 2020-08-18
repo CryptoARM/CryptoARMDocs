@@ -284,14 +284,7 @@ Vue.component ("docs-upload-file", {
                 [name, value],
             ]); 
              
-            for (let i = 0; i<event.target.files.length; i++) {
-                let file = event.target.files[i];
-                console.log(file);
-                let upload = () => { trustedCA.uploadFile(file, props, onSuccess, onFailure) };
-                let accessCheck = () => { trustedCA.checkAccessFile(file, upload, onFailure) };
-                let nameCheck = () => { trustedCA.checkName(file, accessCheck, onFailure) };
-                trustedCA.checkFileSize(file, this.maxsize, nameCheck, onFailure);
-            }A.checkFileSize(file, this.maxsize, nameCheck, onFailure);
+            trustedCA.multipleUpload(event.target.files, props, this.maxsize, onSuccess, onFailure);
         }
     }
 })
