@@ -109,8 +109,8 @@ foreach ($docs->getList() as $doc) {
 }
 
 $blockedDocs = [
-    "TOKENS" => json_encode(array_unique($blockedDocs["TOKENS"])),
-    "IDS" => json_encode(array_unique($blockedDocs["IDS"])),
+    "TOKENS" => json_encode((!is_array($blockedDocs["TOKENS"])) ? $blockedDocs["TOKENS"] :array_unique($blockedDocs["TOKENS"])),
+    "IDS" => json_encode((!is_array($blockedDocs["IDS"])) ? $blockedDocs["IDS"] :array_unique($blockedDocs["IDS"])),
 ];
 
 $arResult = array(

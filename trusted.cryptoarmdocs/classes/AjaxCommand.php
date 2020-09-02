@@ -635,9 +635,9 @@ class AjaxCommand {
                 return $res;
             }
             $userId = $transactionInfo["USER_ID"];
-            if ($transactionInfo["TRANSACTION_TYPE"] === DOC_TRANSACTION_TYPE_VERIFY) {
-                Database::removeTransaction($token);
-            }
+            // if ($transactionInfo["TRANSACTION_TYPE"] === DOC_TRANSACTION_TYPE_VERIFY) {
+            //     //Database::removeTransaction($token);
+            // }
         }
 
         if (!$userId) {
@@ -1091,7 +1091,7 @@ class AjaxCommand {
         }
 
         $ids = $params["ids"];
-        $usersEmail = explode(" ", $params["email"]);
+        $usersEmail = $params["email"];
 
         foreach ($usersEmail as $email) {
             $userId = Utils::getUserIdByEmail($email);
