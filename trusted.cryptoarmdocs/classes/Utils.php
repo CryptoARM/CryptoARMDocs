@@ -588,11 +588,12 @@ class Utils
         $pass = substr(md5(mt_rand()), 0, 12);
         $check = substr(md5(mt_rand()), 0, 12);
         $name = $email;
+        $dateRegist = date("Y-m-d H:i:s", time());
         $sql = "
         INSERT INTO b_user
-            (LOGIN, PASSWORD, CHECKWORD, ACTIVE, EMAIL, NAME)
+            (LOGIN, PASSWORD, CHECKWORD, ACTIVE, EMAIL, NAME, DATE_REGISTER)
         VALUES
-            ('" . $login . "', '" . $pass . "', '" . $check . "', 'Y', '" . $email . "', '" . $name . "');";
+            ('" . $login . "', '" . $pass . "', '" . $check . "', 'Y', '" . $email . "', '" . $name . "', '" . $dateRegist . "');";
         $DB->Query($sql);
     }
 
