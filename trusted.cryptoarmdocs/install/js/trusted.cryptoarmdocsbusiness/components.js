@@ -259,28 +259,36 @@ Vue.component ("doc-button-arr", {
 Vue.component ("docs-upload-file", {
     props: {
         maxsize: String,
-        title: String
+        title: String,
+        value: String
     },
     template: `
     <div class="trca-docs-footer">
-        <form enctype="multipart/form-data" method="POST" id="trca-docs-footer-upload">
+        <form enctype="multipart/form-data" method="POST"  id="trca-docs-footer-upload">
             <div class="trca-docs-footer-upload-button">
                 <input id="trca-docs-footer-upload-input" class="trca-docs-footer-upload-input"
-                       data-id="data-upload"
-                       name="tr_ca_upload_comp_by_user" type="file" @change="buttonClick">
+                       data-id="data-upload" multiple
+                       name="tr_ca_upload_comp_by_user[]" type="file" v-on:change="buttonClick">
                 {{ title }}
             </div>
         </form>
     </div>`,
     methods: {
         buttonClick: function(event) {
-            file = event.target.files[0];
             let onFailure = () => { $('#trca-docs-footer-upload-input').val(null) };
-            let onSuccess = () => { $('#trca-docs-footer-upload').submit() };
-            trustedCA.checkFileSize(file, this.maxsize, () => { trustedCA.checkName(file, () => { trustedCA.checkAccessFile(file, onSuccess , onFailure ) } , onFailure ) }, onFailure );
+            let onSuccess = () => {trustedCA.reloadDoc()};
+
+            let name = "USER";
+            let value = this.value;
+            var props = new Map([
+                [name, value],
+            ]); 
+             
+            trustedCA.multipleUpload(event.target.files, props, this.maxsize, onSuccess, onFailure);
         }
     }
 })
+
 
 Vue.component ("doc-menu", {
     props: {

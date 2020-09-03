@@ -478,6 +478,10 @@
     background-color: #e2ffd9;
 }
 
+.trca-popup-window .trca-popup-content.neural{
+    background-color: #ecfae8;;
+}
+
 .trca-popup-window .trca-popup-icon {
     margin: auto 20px;
     color: rgb(33, 150, 243);
@@ -489,6 +493,10 @@
 
 .trca-popup-window .trca-popup-icon.positive{
     color: green;
+}
+
+.trca-popup-window .trca-popup-icon.neural{
+    color: rgb(157, 199, 157);
 }
 
 .trca-popup-window .trca-popup-icon .material-icons {

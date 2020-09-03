@@ -15,6 +15,7 @@ $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_ALL"] = "Скачать все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_SOME"] = "Скачать выбранные";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_ALL"] = "Удалить все";
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_SOME"] = "Удалить выбранные";
+$MESS["TR_CA_DOCS_NOTHING_SELECTED"] = "Ничего не выбрано";
 
 $MESS["TR_CA_DOCS_COMP_DOCS_BY_USER_MUST_TO_SIGN"] = "Требуется подпись";
 

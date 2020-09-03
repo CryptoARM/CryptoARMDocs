@@ -50,20 +50,6 @@ $comp_id = Docs\Utils::generateUUID() ;
 
 <a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
 
-<?
-$APPLICATION->IncludeComponent(
-    'trusted:cryptoarm_docs_upload',
-    '.default',
-    [
-        'FILES' => ['tr_ca_upload_comp_by_user'],
-        'PROPS' => [
-            'USER' => $USER->GetID(),
-        ],
-    ],
-    false
-);
-?>
-
 <div id="trca-docs-by-user_<?= $comp_id?>">
     <trca-docs>
         <header-title title="<?= $compTitle ?>">
@@ -313,7 +299,8 @@ $APPLICATION->IncludeComponent(
                 $maxSize = Docs\Utils::maxUploadFileSize();
                 ?>
                 <docs-upload-file maxSize="<?= $maxSize ?>"
-                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>">
+                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>"
+                                  value="<?= Docs\Utils::currUserId() ?>">
                 </docs-upload-file>
                 <?
             }
@@ -336,6 +323,12 @@ $APPLICATION->IncludeComponent(
     new Vue({
         el: '#trca-docs-by-user_<?= $comp_id?>',
         methods: {
+            groupActions: function (ids, action) {
+                if (ids.length != 0) {
+                    action();
+                } else 
+                    trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
+            },
             getChecked: function () {
                 let ids = new Array;
                 $('input[id^="check_"]').each(function(){
@@ -355,7 +348,8 @@ $APPLICATION->IncludeComponent(
                 let object = new Object();
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
+                let action = () => {trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO')};
+                this.groupActions(ids, action);
             },
             sign: function (id, role) {
                 trustedCA.sign(id, JSON.parse(`{"role": "${role}"}`));
@@ -371,7 +365,8 @@ $APPLICATION->IncludeComponent(
             verifySome: function () {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.verify(ids);
+                let action = () => {trustedCA.verify(ids)};
+                this.groupActions(ids, action);
             },
             download: function (id, zipname) {
                 trustedCA.download(id, zipname);
@@ -379,7 +374,8 @@ $APPLICATION->IncludeComponent(
             downloadSome: function (zipname) {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.download(ids, zipname);
+                let action = () => {trustedCA.download(ids, zipname)};
+                this.groupActions(ids, action);
             },
             protocol: function (idAr) {
                 id = idAr[0];
@@ -394,7 +390,8 @@ $APPLICATION->IncludeComponent(
             removeSome: function() {
                 let ids = new Array;
                 ids = this.getChecked();
-                trustedCA.remove(ids, false, trustedCA.reloadDoc)
+                let action = () => {trustedCA.remove(ids, false, trustedCA.reloadDoc)};
+                this.groupActions(ids, action);
             },
             unshare: function (id) {
                 trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
@@ -408,4 +405,3 @@ $APPLICATION->IncludeComponent(
         }
     })
 </script>
-
