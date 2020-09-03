@@ -287,90 +287,109 @@ class AjaxCommand {
             "message" => "Unknown error in AjaxCommand.upload",
         ];
 
-        $doc = Database::getDocumentById($params['id']);
+        if (!count($params)) {
+            $res["message"] = "No ids documents";
+            return $res;
+        }
 
-        if (isset($params["success"]) && !$params["success"]) {
+        $id = $params["params"]["id"];
+        if ($id) {
+            $transaction = Database::getTransaction($params["params"]["id"]);
+            $extra = json_decode($transaction["EXTRA"], true);
+        }
+
+        if ($params["params"]["status"] == "Canceled") {
+            foreach ($transaction["DOCUMENTS_ID"] as $idDoc) {
+                $doc = Database::getDocumentById($idDoc);
+                $doc->unblock();
+                $doc->save();
+            }
+            $res["message"] = "Transaction canceled";
+            return $res;
+        }
+
+        foreach ($params["params"]["directResults"] as $arResult) {
+
+            $idDoc = $arResult["id"];
+            $doc = Database::getDocumentById($idDoc);
+            $lastDoc = $doc->getLastDocument();
+
+            if (DOC_TYPE_SIGNED_FILE === 1) {
+                if ($lastDoc) {
+                    $doc = $lastDoc;
+                    $idDoc = $doc->getId();
+                }
+            }
+
+            if (!$doc) {
+                $res["message"] = "Document is not found";
+                return $res;
+            }
+            if ($lastDoc->getId() !== $doc->getId()) {
+                $res["message"] = "Document already has child.";
+                return $res;
+            }
+            if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
+                $res["message"] = "Document not blocked";
+                return $res;
+            }
+            if ($doc->getBlockToken() !== $id) {
+                $res["message"] = "Wrong token";
+                return $res;
+            }
+
+            $doc->setSignType(TR_CA_DOCS_TYPE_SIGN);
+            $doc->save();
+            $newDoc = $doc->copy();
+            $signatures = json_encode($arResult["signers"]);
+            $newDoc->setSignatures($signatures);
+            // Append new user to the list of signers
+            $newDoc->addSigner($doc->getBlockBy());
+            $newDoc->setType(DOC_TYPE_SIGNED_FILE);
+            $newDoc->setParent($doc);
+            //Detect document by order signing
+            if ($extra["role"]) {
+                DocumentsByOrder::upload($newDoc, $extra);
+            }
+
+            $requires = $newDoc->getRequires()->getList();
+            foreach ($requires as &$require) {
+                if ($require->getUserId() == $doc->getBlockBy()) {
+                    $require->setSignStatus(true);
+                }
+            }
+
+            if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
+                $newDoc->setName($newDoc->getName() . '.sig');
+                $newDoc->setPath($newDoc->getPath() . '.sig');
+            }
+
+            $content = base64_decode($arResult["out"]);
+            file_put_contents($_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath()), $content);
+
+            $newDoc->setHash(hash_file('md5',$_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())));
+            $newDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
+            $newDoc->save();
+
+            // Drop "blocked" status of original doc
+            $doc = Database::getDocumentById($idDoc);
             $doc->unblock();
             $doc->save();
-        }
+            $res["success"] = true;
+            $res["message"] = "File uploaded";
 
-        if ($doc) {
-            $lastDoc = $doc->getLastDocument();
-        } else {
-            $res["message"] = "Document is not found";
-            return $res;
-        }
-        if ($lastDoc->getId() !== $doc->getId()) {
-            $res["message"] = "Document already has child.";
-            return $res;
-        }
-        if ($doc->getStatus() !== DOC_STATUS_BLOCKED) {
-            $res["message"] = "Document not blocked";
-            return $res;
-        }
-        $extra = json_decode($params["extra"], true);
-        if ($doc->getBlockToken() !== $extra['token']) {
-            $res["message"] = "Wrong token";
-            return $res;
-        }
-
-        if ($doc->getId() !== $doc->getOriginalId() && $doc->getSignType() !== $extra["signType"]) {
-            $res["message"] = "Wrong sign type";
-            return $res;
-        }
-
-        $doc->setSignType($extra["signType"]);
-        $doc->save();
-        $newDoc = $doc->copy();
-        $signatures = urldecode($params["signers"]);
-        $newDoc->setSignatures($signatures);
-        // Append new user to the list of signers
-        $newDoc->addSigner($doc->getBlockBy());
-        $newDoc->setType(DOC_TYPE_SIGNED_FILE);
-        $newDoc->setParent($doc);
-        $file = $_FILES["file"];
-        $newDoc->setHash(hash_file('md5', $file['tmp_name']));
-        // Detect document by order signing
-        if (array_key_exists("role", $extra)) {
-            DocumentsByOrder::upload($newDoc, $extra);
-        }
-
-        $requires = $newDoc->getRequires()->getList();
-        foreach ($requires as &$require) {
-            if ($require->getUserId() == $doc->getBlockBy()) {
-                $require->setSignStatus(true);
+            //Detect document by form signing
+            if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
+                if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
+                    Loader::includeModule("trusted.cryptoarmdocsforms");
+                    Form::upload($doc, $extra);
+                }
             }
         }
-
-        if ($newDoc->getParent()->getType() == DOC_TYPE_FILE) {
-            $newDoc->setName($newDoc->getName() . '.sig');
-            $newDoc->setPath($newDoc->getPath() . '.sig');
-        }
-        $newDoc->setSignType($extra["signType"]);
-        $newDoc->save();
-        move_uploaded_file(
-            $file['tmp_name'],
-            $_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())
-        );
-        // Drop "blocked" status of original doc
-        $doc = Database::getDocumentById($params['id']);
-        $doc->unblock();
-        $doc->save();
-        $res["success"] = true;
-        $res["message"] = "File uploaded";
-
-        // Detect document by form signing
-        if ($extra["send_email_to_user"] || $extra["send_email_to_admin"]) {
-            if (\IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-                Loader::includeModule("trusted.cryptoarmdocsforms");
-                Form::upload($doc, $extra);
-            }
-        }
-
         Utils::log([
             "action" => "signed",
             "docs" => $doc,
-            "extra" => $params["extra"],
+            "extra" => $extra,
         ]);
         return $res;
     }
@@ -680,17 +699,35 @@ class AjaxCommand {
             "message" => "Unknown error in Ajax.content",
         ];
 
-        if (!Utils::checkAuthorization()) {
-            $res["message"] = 'No auth';
-            $res["noAuth"] = true;
+        $token = $params["accessToken"];
+        $userId = null;
+
+        if (Utils::checkAuthorization()) {
+            $userId = Utils::currUserId();
+        }
+
+        if ($token) {
+            $transactionInfo = Database::getTransaction($token);
+            if (!$transactionInfo) {
+                $res["message"] = "Transaction does not exist";
+                return $res;
+            }
+            $userId = $transactionInfo["USER_ID"];
+            // if ($transactionInfo["TRANSACTION_TYPE"] === DOC_TRANSACTION_TYPE_VERIFY) {
+            //     //Database::removeTransaction($token);
+            // }
+        }
+
+        if (!$userId) {
+            $res["message"] = "No authorization or no token";
             return $res;
         }
-        
+
         if ($params["id"]) {
             $doc = Database::getDocumentById($params['id']);
             if ($doc) {
-                if (!$doc->accessCheck(Utils::currUserId(), DOC_SHARE_READ)) {
-                    $res["message"] = 'No access';
+                if (!($doc->getOwner() == $userId || $doc->accessCheck($userId, DOC_SHARE_READ))) {
+                    $res["message"] = "No access";
                     return $res;
                 }
                 if ($params["force"]) {
@@ -994,7 +1031,6 @@ class AjaxCommand {
             if ($doc->accessCheck($userId, DOC_SHARE_READ)) {
                 $res["message"] = "User already have access";
                 $res["HaveAccess"] = true;
-                return $res;                
             }
 
             if ($sendEmail) {
@@ -1133,7 +1169,7 @@ class AjaxCommand {
         }
 
         $ids = $params["ids"];
-        $usersEmail = explode(" ", $params["email"]);
+        $usersEmail = $params["email"];
 
         foreach ($usersEmail as $email) {
             $userId = Utils::getUserIdByEmail($email);
@@ -1309,7 +1345,9 @@ class AjaxCommand {
             return $res;
         }
 
-        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method)) {
+        $extra = json_encode($params["extra"]);
+
+        if ($transactionInfo = Database::insertTransaction($ids, $userId, $method, $extra)) {
             $res["success"] = true;
             $res["uuid"] = $transactionInfo;
             return $res;
@@ -1326,7 +1364,7 @@ class AjaxCommand {
 
         $deauthorize = false;
 
-        $UUID = $params["accessToken"];
+        $UUID = $params["id"];
 
         if (!$UUID) {
             $res["message"] = "accessToken is not find in params";
@@ -1359,21 +1397,24 @@ class AjaxCommand {
         }
 
         $JSON = new class {};
+        $result = new class {};
+        $props = new class {};
         $extra = new class {};
-        $params = new class {};
 
         switch ($transactionType) {
             case DOC_TRANSACTION_TYPE_SIGN:
                 $response = self::sign(["id" => $docsId, "UUID" => $UUID]);
-                $JSON->method = "sign";
+                $result->operation = ["SIGN"];
                 $extra->token = $response["token"];
                 $extra->signType = TR_CA_DOCS_TYPE_SIGN;
                 $extra->signStandard = TR_CA_DOCS_SIGN_STANDARD;
-                $params->extra = $extra;
+                $props->extra = $extra;
                 break;
             case DOC_TRANSACTION_TYPE_VERIFY:
                 $response = self::verify(["id" => $docsId]);
-                $JSON->method = "verify";
+                $result->operation  = ["VERIFYSIGN"];
+                $extra->token = $UUID;
+                $props->extra = $extra;
                 break;
             default:
                 $res["message"] = "Unknown transaction type";
@@ -1386,10 +1427,10 @@ class AjaxCommand {
         }
 
         $JSON->jsonrpc = "2.0";
-        $params->files = json_decode($response["docsOk"]);
-        $params->license = $response["license"];
-        $params->uploader = TR_CA_DOCS_AJAX_CONTROLLER . '?command=upload';
-        $JSON->params = $params;
+        $props->files = json_decode($response["docsOk"]);
+        $props->license = $response["license"];
+        $result->props = $props;
+        $JSON->result = $result;
 
         if ($deauthorize) {
             $USER->Logout();

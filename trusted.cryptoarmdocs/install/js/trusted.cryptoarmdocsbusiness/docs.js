@@ -40,6 +40,7 @@ trustedCA.initVar = function () {
     DOWNLOAD_FILE_1 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_1");
     DOWNLOAD_FILE_2 = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_2");
     DOWNLOAD_FILE_ZERO_SIZE = BX.message("TR_CA_DOCS_ACT_DOWNLOAD_FILE_ZERO_SIZE");
+    DOWNLOAD_FILE_NAME_SYMBOLS = BX.message("TR_CA_DOCS_NAME_SYMBOLS");
     DOWNLOAD_FILE_ERROR_NAME = BX.message("TR_CA_DOCS_ACT_ERROR_NAME");
     DOWNLOAD_ERROR = BX.message("TR_CA_DOCS_DOWNLOAD_ERROR");
     ONLOAD_1 = BX.message("TR_CA_DOCS_ONLOAD_1");
@@ -54,7 +55,7 @@ trustedCA.initVar = function () {
     MODAL_CANCEL = BX.message('TR_CA_DOCS_MODAL_CANCEL');
     ACT_SHARE = BX.message('TR_CA_DOCS_ACT_SHARE');
     UNSHARE_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_CONFIRM');
-    SIGN_TYPE = BX.message('TR_CA_DOCS_SIGN_TYPE');
+    // SIGN_TYPE = BX.message('TR_CA_DOCS_SIGN_TYPE');
     UNSHARE_FROM_MODAL_CONFIRM = BX.message('TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM');
     NO_ACCESS_FILE = BX.message('TR_CA_DOCS_NO_ACCESS_FILE');
     CLOSE_WINDOW = BX.message('TR_CA_DOCS_CLOSE_INFO_WINDOW');
@@ -191,13 +192,18 @@ trustedCA.sign = function (ids, extra = null, onSuccess = null, onFailure = null
     if (typeof extra['signType'] !== "undefined") {
         extra.signType = 0;
     }
+    console.log(extra);
     $.ajax({
         url: AJAX_CONTROLLER + '?command=createTransaction',
         type: 'post',
-        data: {id: ids, method: "sign"},
+        data: {id: ids, method: "sign", extra: extra},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://sign/" + AJAX_CONTROLLER  + '?command=JSON&accessToken=' + d.uuid;
+                let role = "";
+                if (d.role) {
+                    role = "&role=" + d.role;
+                }
+                let url = "cryptoarm://signAndEncrypt/" + AJAX_CONTROLLER  + '?command=JSON&id=' + d.uuid + role;
                 window.location = url;
                 ids = [];
                 try {
@@ -295,7 +301,7 @@ trustedCA.getInfoForModalWindow = (id) => {
 }
 
 trustedCA.showInfoModalWindow = function (ids, docname, sharedstatus, currentuseraccess) {
-    id = ids[0];
+    id = ids[0].replace("check_", "");
     trustedCA.modalInfoDiv.className = "trca-modal";
     trustedCA.modalInfoDiv.innerHTML = trustedCA.modalWindowInfo;
     document.body.appendChild(trustedCA.modalInfoDiv);
@@ -427,7 +433,7 @@ trustedCA.verify = function (ids) {
         data: {id: ids, method: "verify"},
         success: function (d) {
             if (d.success) {
-                let url = "cryptoarm://verify/" + AJAX_CONTROLLER + '?command=JSON&accessToken=' + d.uuid;
+                let url = "cryptoarm://signAndEncrypt/" + AJAX_CONTROLLER + '?command=JSON&id=' + d.uuid;
                 window.location = url;
             } else {
                 trustedCA.show_messages(d);
@@ -723,7 +729,7 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null)
 };
 
 trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
-    var new_name = file.name.replace(/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/,'');
+    var new_name = file.name.replace(DOWNLOAD_FILE_NAME_SYMBOLS,'');
     if (new_name !== file.name){
         trustedCA.showPopupMessage(DOWNLOAD_FILE_ERROR_NAME, 'highlight_off', 'negative');
         if (typeof onFailure === 'function') {

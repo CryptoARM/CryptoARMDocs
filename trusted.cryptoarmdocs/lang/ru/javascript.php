@@ -52,9 +52,10 @@ $MESS["TR_CA_DOCS_ERR"] = "Ошибка";
 
 $MESS["TR_CA_DOCS_UNSHARE_CONFIRM"] = " Документ будет удалён из вашего списка, но останется у пользователя, который вам его предоставил. Продолжить?";
 $MESS["TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM"] = " Документ будет удалён из списка пользователя. Продолжить?";
+$MESS["TR_CA_DOCS_NAME_SYMBOLS"] = "/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/";
 $MESS["TR_CA_DOCS_ACT_ERROR_NAME"] = "В названии файла используются недопустимые символы";
 
-$MESS["TR_CA_DOCS_SIGN_TYPE"] = TR_CA_DOCS_TYPE_SIGN;
+// $MESS["TR_CA_DOCS_SIGN_TYPE"] = TR_CA_DOCS_TYPE_SIGN;
 
 $MESS["TR_CA_DOCS_MODAL_MESSAGE_1"] = "Документ передан в КриптоАрм";
 $MESS["TR_CA_DOCS_MODAL_MESSAGE_2"] = "Для завершения процесса подпишите документ, либо нажмите ";

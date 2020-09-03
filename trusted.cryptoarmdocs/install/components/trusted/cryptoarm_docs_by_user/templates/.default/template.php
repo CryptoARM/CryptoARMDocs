@@ -352,13 +352,12 @@ $comp_id = Docs\Utils::generateUUID() ;
                 this.groupActions(ids, action);
             },
             sign: function (id, role) {
-                trustedCA.sign(id, JSON.parse('{"role": "${role}"}'));
+                trustedCA.sign(id, JSON.parse(`{"role": "${role}"}`));
             },
             signSome: function (role) {
                 let ids = new Array;
                 ids = this.getChecked();
-                let action = () => {trustedCA.sign(ids, JSON.parse('{"role": "${role}"}'))};
-                this.groupActions(ids, action);
+                trustedCA.sign(ids, JSON.parse(`{"role": "${role}"}`));
             },
             verify: function (id) {
                 trustedCA.verify(id);

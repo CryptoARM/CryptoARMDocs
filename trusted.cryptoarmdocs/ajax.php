@@ -94,7 +94,13 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::requireToSign($params);
             break;
         case "JSON":
-            $res = Docs\AjaxCommand::generateJson($_REQUEST);
+            $postData = file_get_contents('php://input');
+            $params = json_decode($postData, true);
+            if ($params["method"] === "signAndEncrypt.parameters") {
+                $res = Docs\AjaxCommand::generateJson($_REQUEST);
+            } else {
+                $res = Docs\AjaxCommand::upload($params);
+            }
             break;
         case "createTransaction":
             $res = Docs\AjaxCommand::createTransaction($params);

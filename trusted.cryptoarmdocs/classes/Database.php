@@ -116,7 +116,7 @@ class Database {
      * @return string transaction UUID
      * @global object $DB     Bitrix global CDatabase object
      */
-    static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null) {
+    static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null, $extra = null) {
         if (is_null($docsId)) {
             return false;
         }
@@ -134,12 +134,13 @@ class Database {
 
         global $DB;
         $sql = 'INSERT INTO ' . DB_TABLE_TRANSACTION . ' '
-            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE) '
+            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE, EXTRA) '
             . 'VALUES ('
             . '"' . $UUID . '", '
             . '"' . $DB->ForSql($insertDocsId) . '", '
             . $userId . ', '
-            . $typeTransaction
+            . $typeTransaction . ', '
+            .'"' . $DB->ForSql($extra) . '"'
             . ')';
         $DB->Query($sql);
 
@@ -164,6 +165,7 @@ class Database {
             $array["USER_ID"] = (int)$array["USER_ID"];
             $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
             $array["TRANSACTION_TYPE"] = (int)$array["TRANSACTION_TYPE"];
+            $array["EXTRA"] = (string)$array["EXTRA"];
             return $array;
         }
         return null;
@@ -179,6 +181,19 @@ class Database {
         global $DB;
         $sql = 'UPDATE ' . DB_TABLE_TRANSACTION . ' SET '
             . 'TRANSACTION_STATUS = ' . DOC_TRANSACTION_COMPLETED . ' '
+            . 'WHERE UUID = "' . $UUID . '"';
+        $DB->Query($sql);
+    }
+
+    /**
+     * Remove sign transaction by UUID in DB
+     * @param string $UUID transaction UUID
+     * @return void
+     * @global object $DB Bitrix global CDatabase object
+     */
+    static function removeTransaction($UUID) {
+        global $DB;
+        $sql = 'DELETE FROM ' . DB_TABLE_TRANSACTION . '  '
             . 'WHERE UUID = "' . $UUID . '"';
         $DB->Query($sql);
     }

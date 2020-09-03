@@ -136,7 +136,7 @@ Vue.component ("docs-items", {
     methods: {
         buttonClick: function () {
             let idAr = new Array();
-            idAr = [this.id];
+            idAr = [this.id.replace("check_", "")];
             this.$emit('button-click', idAr, this.docname, this.sharedstatus, this.currentuseraccess);
             $(document).on('click', function (e) {
                 if ($(e.target).closest(".trca-modal-overlay").length) {
