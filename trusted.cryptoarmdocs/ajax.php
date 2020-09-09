@@ -35,6 +35,12 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "newMessage":
+            $res = Docs\AjaxCommand::newMessage($params);
+            break;
+        case "changeDraft":
+            $res = Docs\AjaxCommand::changeDraft($params);
+            break;
         case "share":
             $res = Docs\AjaxCommand::share($params);
             break;

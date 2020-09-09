@@ -195,6 +195,53 @@ class AjaxCommand {
     }
 
     /**
+     * Writes all the message's data into the database
+     * 
+     * @param array $params [docsIds]: array of doc Ids in message
+     *                      [fields]: array of message's fields
+     *                              []
+     *                              []
+     *                      [send]: if false - message in draft
+     */
+
+    static function newMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.createMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAith'] = 'true';
+        };
+
+
+
+        if(!$params['docsIds']) {
+            $res['message'] = 'Nothing to send';
+            return $res;
+        };
+        $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+        $args['docId'] = $params['docsIds'];
+        $params['recepientId'] = $userId;
+        $args['theme'] = $params['theme'];
+        $args['comment'] = $params['comment'];
+
+        $draft = Messages::createDraft($params);
+        $res['message'] = "Draft is created";
+
+        
+        if($params['send']) {
+            $par['messId'] = $draft;
+            Messages::sendMessage($par);
+            $res['message'] = "Message sent";
+        }
+
+        $res['success'] = true;
+        return $res;
+    }
+
+    /**
      * @param array $params [props]: array of docs properties
      *              
      *

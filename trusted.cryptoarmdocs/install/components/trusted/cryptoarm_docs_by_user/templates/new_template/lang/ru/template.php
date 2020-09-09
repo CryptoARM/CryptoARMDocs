@@ -1,0 +1,29 @@
+<?php
+
+$MESS["TR_CA_DOCS_COMP_UPLOAD_1"] = "Перетащите файлы или ";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_2"] = "загрузите с компьютера";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_STEP_ONE"] = "Загрузка документов";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_CANCEL"] = "Отмена";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_MORE"] = "Загрузить еще";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SAVE_IN_DOCS"] = "Сохранить в документах";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND"] = "Отправить";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SAVE"] = "Сохранить";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_DONT_SAVE"] = "Не сохранять";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SIGN_SEND"] = "Подписать и отправить";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_STEP_TWO"] = "Отправка документов";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_REQUIRE_SIGN"] = "Запросить подпись получателя";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_RECEPIENT"] = "Кому:";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_RECEPIENT_1"] = "Укажите электронную почту получателей";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_THEME"] = "Тема:";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_COMMENT"] = "Комментарий для получателя ";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_B"] = "Б";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_KB"] = "КБ";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_MB"] = "МБ";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_GB"] = "ГБ";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_POPUP_SUCCESS"] = "Документы успешно загружены";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_BUTTON"] = "Загрузить документы";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1"] = "Документы успешно";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2"] = "отправлены";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT"] = "Сохранить черновик?";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT_TEXT"] = "Вы можете вернуться к черновику позже";
+$MESS["TR_CA_DOCS_COMP_UPLOAD_CANCEL_SENDING"] = "Отменить";

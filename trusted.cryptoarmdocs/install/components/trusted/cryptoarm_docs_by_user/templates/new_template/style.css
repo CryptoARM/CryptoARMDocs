@@ -1,0 +1,515 @@
+.trca_upload_save_draft {
+    width: 387px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    font-family: Roboto;
+    color: #4B4B4B;
+}
+
+.trca_upload_save_draft_header {
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 35px;
+}
+
+.trca_upload_save_draft_text {
+    height: 40px;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 35px;
+}
+
+.trca_upload_save_draft_footer {
+    height: 86px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.trca_upload_modal_window {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    pointer-events: auto;
+    overflow-y: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.trca_upload_modal_window-dialog {
+    position: relative;
+    width: auto;
+    margin: 10px;
+}
+
+.trca_upload_success {
+    width: 477px;
+    height: 54px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    font-family: Roboto;
+    font-size: 16px;
+    color: #868687;
+    background: #FFFFFF;
+}
+
+.material-icons {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+}
+
+.trca_upload_button {
+    background: #67B7F7;
+    border-radius: 20px;
+    width: 230px;
+    height: 42px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #FFFFFF;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.trca_upload_button:hover {
+    background: #78c2ff;
+    transition-duration: 700ms;
+}
+
+.trca_upload_window {
+    position: relative;
+    width: 604px;
+    /* height: 296px; */
+    justify-content: center;
+    font-family: Roboto;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    background: #FFFFFF;
+}
+
+#trca_drop_area {
+    margin: auto;
+    width: 432px;
+    height: 129px;
+    display: flex;
+    flex-direction: column-reverse;
+    text-align: center;
+    background-color: #F9F9F9;
+    border: 2px dashed #E5E5E5;
+    border-radius: 2px;
+}
+
+#trca_drop_area.highlight {
+    border-color: rgb(33, 150, 243);
+    background-color: rgba(33, 149, 243, 0.151);
+}
+
+p {
+    margin-top: 0;
+}
+
+textarea:focus::placeholder,
+input:focus::placeholder {
+    color: transparent;
+}
+
+.trca_upload_window_header {
+    height: 88px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 6%;
+    padding-right: 12%;
+}
+
+.trca_upload_window_header_close .material-icons {
+    position: absolute;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.158);
+    cursor: pointer;
+    top: 20px;
+    right: 20px;
+    border-radius: 10px;
+}
+
+.trca_upload_window_header_close .material-icons:hover {
+    background-color: rgba(168, 171, 186, 0.3);
+    color: rgba(0, 0, 0, 0.432);
+    transition-duration: 700ms;
+}
+
+.trca_upload_window_header_step {
+    width: 42%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.trca_upload_window_header_step_number {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    text-align: center;
+    font-weight: 500;
+    color: white;
+    background: #67B7F7;
+    border-radius: 15px;
+}
+
+.trca_upload_window_header_step_number_text {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.trca_upload_window_header_step_name {
+    line-height: 19px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    color: #4B4B4B;
+}
+
+.trca_upload_window_header_upload_more {
+    height: 16px;
+    line-height: 16px;
+    font-size: 15px;
+    text-decoration: underline;
+    color: #67B7F6;
+    cursor: pointer;
+}
+
+.trca_upload_window_footer {
+    height: 88px;
+    display: flex;
+    padding: 0 25px 0 25px;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
+}
+
+.trca_upload_window_footer_cancel {
+    width: 83px;
+    height: 79px;
+    display: flex;
+    text-align: center;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.486);
+    font-weight: bolder;
+    justify-content: center;
+    align-items: center;
+    transition-duration: 700ms;
+}
+
+.trca_upload_window_footer_cancel:hover {
+    background-color: rgba(0, 0, 0, 0.041);
+    border-radius: 5px;
+    transition-duration: 700ms;
+
+}
+
+.trca_upload_window_footer_docs_actions {
+    width: 60%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.trca_upload_window_footer_save_in_docs {
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    text-decoration: underline;
+    text-align: center;
+    font-weight: bold;
+    color: #67B7F6;
+    cursor: pointer;
+}
+
+.trca_upload_window_footer_send_button {
+    height: 36px;
+    padding: 0 16px 0 16px;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    background: #67B7F7;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 2px rgba(0, 0, 0, 0.24);
+    color: white;
+    cursor: pointer;
+}
+
+.trca_upload_form_icon {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+}
+
+.trca_upload_form_icon .material-icons {
+    height: 47px;
+    font-size: 47px;
+    width: 47px;
+    color: #A6CDFF
+}
+
+.trca_upload_form_text {
+    font-family: 'Roboto';
+    color: rgba(0, 0, 0, 0.747);
+    font-size: 15px;
+    margin-bottom: 22px;
+}
+
+.trca_upload_form label {
+    color: rgb(33, 150, 243);
+    cursor: pointer;
+}
+
+.trca_upload_file_list {
+    border: 1px solid #E5E5E5;
+    margin: auto;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 434px;
+    height: 104px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 13px 15px 13px 17px;
+}
+
+.trca_doc_list_item {
+    display: flex;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    height: 35px;
+    color: #67B7F7;
+    justify-content: space-around;
+    align-items: center;
+    flex: 0 0 35%;
+}
+
+.trca_doc_list_remove {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    font-size: 15px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.trca_doc_list_remove:hover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #67B7F7;
+    color: white !important;
+}
+
+.trca_doc_list_item_name {
+    width: 80%;
+    display: inline-flex;
+    justify-content: flex-start;
+    white-space: nowrap;
+    font-size: 14px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#trca_docs_uploaded_popup {
+    height: 54px;
+    width: 477px;
+}
+
+.pdf::before {
+    background: url(icons/formats/png/pdf.png)left/20px no-repeat;
+}
+
+.doc::before {
+    background: url(icons/formats/png/doc.png)left/20px no-repeat;
+}
+
+.zip::before {
+    background: url(icons/formats/png/zip.png)left/20px no-repeat;
+}
+
+.jpg::before {
+    background: url(icons/formats/png/jpg.png)left/20px no-repeat;
+}
+
+.php::before {
+    background: url(icons/formats/png/php.png)left/20px no-repeat;
+}
+
+.docx::before {
+    background: url(icons/formats/png/doc.png)left/20px no-repeat;
+}
+
+.png::before {
+    background: url(icons/formats/png/png.png)left/20px no-repeat;
+}
+
+.js::before {
+    background: url(icons/formats/png/js.png)left/20px no-repeat;
+}
+
+.bmp::before {
+    background: url(icons/formats/png/bmp.png)left/20px no-repeat;
+}
+
+.svg::before {
+    background: url(icons/formats/png/svg.png)left/20px no-repeat;
+}
+
+.txt::before {
+    background: url(icons/formats/png/txt.png)left/20px no-repeat;
+}
+
+.xml::before {
+    background: url(icons/formats/png/xml.png)left/20px no-repeat;
+}
+
+.xls::before {
+    background: url(icons/formats/png/xls.png)left/16px no-repeat;
+}
+
+.css::before {
+    background: url(icons/formats/png/css.png)left/16px no-repeat;
+}
+
+.trca_doc_list_item_name::before {
+    content: " ";
+    padding: 0 14px;
+}
+
+.trca_doc_list_item_size {
+    width: 15%;
+    display: flex;
+    justify-content: flex-start;
+    font-size: 12px;
+    color: #A8ABBA;
+}
+
+#fileElem {
+    display: none;
+}
+
+#trca_upload_popup {
+    width: 477px;
+    height: 54px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.trca_upload_window_send_form {
+    width: 434px;
+    display: flex;
+    margin: auto;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 146px;
+}
+
+.trca_upload_window_send_form_field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 434px;
+    height: 29px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    color: #67B7F7;
+}
+
+.trca_upload_window_send_form_field input {
+    width: 382px;
+    font-size: 12px;
+    height: 25px;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 2px;
+    text-indent: 9px;
+    line-height: 14px;
+}
+
+.trca_upload_window_send_form_field input::placeholder {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    display: flex;
+    line-height: 13px;
+    align-items: center;
+    color: #C4C4C4
+}
+
+.trca_upload_window_send_form_field input:focus::placeholder {
+    color: transparent;
+}
+
+.trca_upload_window_send_form_comment_field {
+    width: 434px;
+    height: 47px;
+}
+
+.trca_upload_window_send_form_comment_field textarea {
+    width: 434px;
+    height: 47px;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    box-sizing: border-box;
+    border-radius: 2px;
+    text-indent: 9px;
+}
+
+.trca_upload_window_send_form_comment_field textarea::placeholder {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 14px;
+    display: flex;
+    align-items: center;
+    color: #C4C4C4
+}
+
+.trca_upload_window_send_form_comment_field textarea:focus::placeholder {
+    color: transparent;
+}
+
+.trca_upload_window_send_form_require_sign {
+    width: 434px;
+    color: #868687;
+    display: flex;
+    align-items: center;
+}

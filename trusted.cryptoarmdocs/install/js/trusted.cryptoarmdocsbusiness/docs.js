@@ -686,40 +686,43 @@ trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onF
 }
 
 trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null) {
-    var xhr = new XMLHttpRequest();
-    let formData = new FormData;
-    let url = AJAX_CONTROLLER + '?command=uploadFile';
-    xhr.open('POST', url, true);
-    formData.append('file', file);
-    formData.append('props', JSON.stringify(props));
-    xhr.responseType = "json";
-    xhr.addEventListener('readystatechange', function() {
-        console.log(xhr.readyState);
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            trustedCA.show_messages(xhr.response);
-            console.log(xhr.response);
-            if (xhr.response.success) {
-                if (typeof onSuccess == 'function') {
-                    onSuccess();
-                };
-                trustedCA.showPopupMessage(UPLOAD_1 + file.name + UPLOAD_2, 'done', 'positive' );
-            } else {
+    trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false) {
+        var xhr = new XMLHttpRequest();
+        let formData = new FormData;
+        let url = AJAX_CONTROLLER + '?command=uploadFile';
+        let param = null;
+        xhr.open('POST', url, true);
+        formData.append('file', file);
+        formData.append('props', JSON.stringify(props));
+        xhr.responseType = "json";
+        xhr.addEventListener('readystatechange', function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                trustedCA.show_messages(xhr.response);
+                if (xhr.response.success) {
+                    if (typeof onSuccess == 'function') {
+                        if (toShare) {
+                            param = xhr.response.doc;
+                        } 
+                        onSuccess(param);
+                    };
+                    trustedCA.showPopupMessage(UPLOAD_1 + file.name + UPLOAD_2, 'done', 'positive' );
+                } else {
+                    if (typeof onFailure == 'function') {
+                        onFailure();
+                    }
+                    trustedCA.showPopupMessage(ERR, 'highlight_off', 'negative');
+                }
+            }
+            else if (xhr.readyState == 4 && xhr.status != 200) {
                 if (typeof onFailure == 'function') {
                     onFailure();
                 }
-                trustedCA.showPopupMessage(ERR, 'highlight_off', 'negative');
             }
+        });
+        xhr.upload.onprogress = function(file) {
+            trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
         }
-        else if (xhr.readyState == 4 && xhr.status != 200) {
-            if (typeof onFailure == 'function') {
-                onFailure();
-            }
-        }
-    });
-    xhr.upload.onprogress = function(file) {
-        trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
-    }
-    xhr.send(formData);
+        xhr.send(formData);
 };
 
 trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
