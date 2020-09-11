@@ -20,29 +20,23 @@ foreach ($coreIds as $coreId) {
 
 class Messages {
 
-    /**
-     * @param array $params[theme, comment]
-     * 
-     * 
-     * 
-     * 
-     */
-    static function newMessage($params) {
-        global $DB;
-        $sql = "
-        INSERT INTO " . DB_TABLE_MESSAGES . " (THEME, COMMENT, TIMESTAMP_X)
-            VALUES (" . $params["theme"] . "," . $params["comment"] . ", now());";
-        $DB->Query($sql);
-    }
-    
-    static function getOutgoingMessages($userId) {
+    static function getOutgoingMessages($args) {
         // global $DB;
         // $sql = "SELECT  
 
         //         FROM " . DB_TABLE_PROPERTY . "
         //         WHERE ";
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE SENDER_ID=" . $userId;
+        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE SENDER_ID=" . $args["userId"] . ' AND ';
+        if($args['typeOfMessage'] == 'drafts')
+        {
+            $sql .= 'MES_STATUS = "DRAFT" ';
+        } else {
+            $sql .= 'MES_STATUS <> "DRAFT"'; 
+        }
+        if ($args["firstElem"] && $args["count"]) {
+            $sql .= ' LIMIT ' . $args["firstElem"] . ', ' . $args["count"];
+        }
         $rows = $DB->Query($sql);
         $messages = [];
         while ($row = $rows->Fetch()) {
@@ -51,7 +45,7 @@ class Messages {
         return $messages;
     }
 
-    static function getIncomingMessages($userId) {
+    static function getIncomingMessages($args) {
         // global $DB;
         // $sql = "SELECT DISTINCT
         //             mes.MESSAGE_ID as message
@@ -70,7 +64,10 @@ class Messages {
         // }
         // return $messageIDS;
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $userId;
+        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $args['userId'] . ' AND  MES_STATUS <> "DRAFT"';
+        if ($args["firstElem"] && $args["count"]) {
+            $sql .= ' LIMIT ' . $args["firstElem"] . ', ' . $args["count"];
+        }
         $rows = $DB->Query($sql);
         $messages = [];
         while ($row = $rows->Fetch()) {
@@ -102,7 +99,8 @@ class Messages {
         global $DB;
         $sql = "SELECT SENDER_ID FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
-        $senderId = $rows["SENDER_ID"];
+        while ($row = $rows->Fetch())
+            $senderId = $row["SENDER_ID"];
         return $senderId;
     }
     
@@ -154,7 +152,7 @@ class Messages {
                     LABEL_ID as ids FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE MESSAGE_ID=" . $messId;
         $rows = $DB->Query($sql);
         $labelsID = array();
-        $userLabelsId = Messages::getUserLables(Utils::currUserId());
+        $userLabelsId = Messages::getUserlabels(Utils::currUserId());
         while ($row = $rows->Fetch()) {
             if (in_array($row["ids"], $userLabelsId)) {
                 $labelsID[] = $row["ids"];
@@ -163,7 +161,7 @@ class Messages {
         return $labelsID;
     }
 
-    static function getUserLables($userId) {
+    static function getUserlabels($userId) {
         global $DB;
         $sql = "SELECT ID FROM " . DB_TABLE_LABELS . " WHERE USER_ID=" . $userId;
         $rows = $DB->Query($sql);
@@ -192,11 +190,11 @@ class Messages {
         $sql = "SELECT * FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
         $mes = [];
-        if ($rows) {
-            $mes["theme"] = $rows["THEME"];
-            $mes["comment"] = $rows["COMMENT"];
-            $mes["status"] = $rows["MES_STATUS"];
-            $mes["time"] = $rows["TIMESTAMP_X"];
+        while ($row = $rows->Fetch()) {
+            $mes["theme"] = $row["THEME"];
+            $mes["comment"] = $row["COMMENT"];
+            $mes["status"] = $row["MES_STATUS"];
+            $mes["time"] = $row["TIMESTAMP_X"];
         }
         $mes["labels"] = Messages::getMessageLabels($messId);
         $mes["sender"] = Messages::getSenderId($messId);
@@ -204,6 +202,7 @@ class Messages {
         if ($mes['status'] == "REJECTED") {
             $mes['rejected_comment'] = $rows['REJECTED_COMMENT'];
         }
+        $mes["docs"] = Messages::getDocsInMessage($messId);
         return $mes;
     }
 
@@ -314,6 +313,37 @@ class Messages {
             $docsId[] = $row["DOC_ID"];
         }
         return $docsId;
+    }
+
+    static function isDocumentInMessage($docId) {
+        global $DB;
+        $sql = 'SELECT count(*) as count FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE DOC_ID="' . $docId . '"';
+        $rows = $DB->Query($sql);
+        while ($row = $rows->Fetch()) {
+            $count = $row['count'];
+        };
+        return $count == 0 ? false : true;
+    }
+
+    /**
+     * @param array $params:[messId] - message id
+     *                      [newStatus] - new status of message may be: DRAFT
+     *                                                                  NOT_READED
+     *                                                                  READED
+     *                                                                  REJECTED
+     *                                                                  RECALLED
+     *                      [comment] - comment when message is reject
+     *                      []
+     */
+
+    static function changeStatus($params) {
+        global $DB;
+        $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_SATAUS = "' . $params["newStatus"] . '" WHERE ID = ' . $params['mess'];
+        $DB->Query($sql);
+        if($params['comment']) {
+            $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET REJECTED_COMMENT = "' . $params['comment'] . '"';
+            $DB->Query($sql);
+        };
     }
 }
 

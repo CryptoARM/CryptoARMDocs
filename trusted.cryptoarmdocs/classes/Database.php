@@ -877,7 +877,7 @@ class Database {
      * @param true    $shared Include shared documents
      * @return DocumentCollection
      */
-    static function getDocumentsByUser($userId, $shared = false) {
+    static function getDocumentsByUser($userId, $shared = false, $page = null, $count = null) {
         global $DB;
         $userId = (int)$userId;
 
@@ -899,7 +899,11 @@ class Database {
             $sql .= "
                 TDP.TYPE = 'USER' AND TDP.VALUE = '$userId'";
         }
-        $sql .= " GROUP BY TD.ID;";
+        $sql .= " GROUP BY TD.ID ";
+        if ($page && $count) {
+            $firstElem = $page * $count;
+            $sql .= "LIMIT " . $firstElem . ", " . $count;
+        }
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
         while ($row = $rows->Fetch()) {

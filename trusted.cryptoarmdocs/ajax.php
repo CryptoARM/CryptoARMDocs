@@ -38,6 +38,9 @@ if (isset($command)) {
         case "newMessage":
             $res = Docs\AjaxCommand::newMessage($params);
             break;
+        case "getMessageList":
+            $res = Docs\AjaxCommand::getMessageList($params);
+            break;
         case "changeDraft":
             $res = Docs\AjaxCommand::changeDraft($params);
             break;

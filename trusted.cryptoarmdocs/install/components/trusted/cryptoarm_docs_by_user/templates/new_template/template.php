@@ -25,7 +25,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
     if ($USER->IsAuthorized()) {
         $maxSize = Docs\Utils::maxUploadFileSize();
         ?>
-<div id="trca_upload_save_draft" class="trca_upload_save_draft">
+<div id="trca_upload_save_draft" class="trca_upload_save_draft" style="display:none">
     <div class="trca_upload_save_draft_header">
         <div class="trca_upload_window_header_step_name">
             <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT") ?>
@@ -66,6 +66,32 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
     </div>
 </div>
 <div id="trca_upload_component">
+    <div id="trca_upload_save_draft" class="trca_upload_save_draft" style="display:none">
+        <div class="trca_upload_save_draft_header">
+            <div class="trca_upload_window_header_step_name">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT") ?>
+            </div>
+            <div onclick="hideModal()">
+                <div class="material-icons"
+                    style="font-size: 20px; color: rgba(0, 0, 0, 0.158); position: relative; bottom: 13px; right: 16px;">
+                    close
+                </div>
+            </div>
+        </div>
+        <div class="trca_upload_save_draft_text">
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT_TEXT") ?>
+        </div>
+        <div class="trca_upload_save_draft_footer">
+            <div style="width:276px; display: flex; justify-content: space-around; align-items: center">
+                <div style="color: #868687">
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_DONT_SAVE") ?>
+                </div>
+                <div class="trca_upload_window_footer_send_button">
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE") ?>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="trca_upload_button" onclick="showModal()">
         <div style="font-size: 35px; font-weight: 100">+</div>
         <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_BUTTON") ?>
@@ -221,15 +247,16 @@ function uploadFiles() {
 }
 
 function addAndUpload(file, docarea, i) {
-    addFileInList(file, docarea, i);
     name = 'USER';
     value = "<?= Docs\Utils::currUserId() ?>";
     var currDocId;
     var props  =new Map([
         [name, value],
     ])
-    trustedCA.uploadFile(file, props, (item)=>{docsIds.push(item)}, null, true);
+    trustedCA.uploadFile(file, props, (item)=>{currDocId = item}, null, true);
+    docsIds.push(currDocId);
     console.log(docsIds);
+    addFileInList(file, docarea, currDocId);
 }
 
 function handleFiles(files) {
@@ -252,10 +279,10 @@ function handleFiles(files) {
     };
 }
 
-function addFileInList(file, docarea) {
+function addFileInList(file, docarea, currDocId) {
     filesToUpload.push(file);
     var docDiv = document.createElement('div');
-    docDiv.id = "trca_doc_" + (Math.floor(Math.random() * 1000000 * Math.random() * Math.random()));
+    docDiv.id = "trca_doc_" + currDocId;
     docDiv.className = "trca_doc_list_item";
     docarea.appendChild(docDiv);
     var docName = document.createElement('div');
@@ -272,7 +299,8 @@ function addFileInList(file, docarea) {
     docRemove.innerHTML = "close";
     docRemove.style.color = '#C4C4C4';
     docRemove.onclick = function() {
-        removeFromList(docDiv.id, file)
+        removeFromList(docDiv.id, file);
+        trustedCA.remove(id)
     }
     docDiv.appendChild(docRemove);
 }
@@ -368,7 +396,7 @@ function showSendForm() {
     let sendFormFooter = `
     <div class="trca_upload_window_footer" id="trca_upload_third_step_footer" style="justify-content: space-between">
         <div class="trca_upload_window_footer_docs_actions" style="width: 30%">
-            <div class="trca_upload_window_footer_cancel" onclick="hideModal()">
+            <div class="trca_upload_window_footer_cancel" onclick="showSaveDraftPopup()">
                 <span class="trca_upload_window_footer_cancel_text">
                     <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
                 </span>
@@ -378,10 +406,10 @@ function showSendForm() {
             </div>
         </div>
         <div class="trca_upload_window_footer_docs_actions" style="width:55%">
-            <div class="trca_upload_window_footer_save_in_docs" onclick=send()>
+            <div class="trca_upload_window_footer_save_in_docs" onclick=send(true)>
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND") ?>
             </div>
-            <div class="trca_upload_window_footer_send_button" onclick=send()>
+            <div class="trca_upload_window_footer_send_button" onclick=send(true)>
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SIGN_SEND") ?>
             </div>
         </div>
@@ -389,13 +417,17 @@ function showSendForm() {
     uploadWindow.insertAdjacentHTML('beforeend', sendFormFooter);
 }
 
-function send() {
-    let recepientEmail = document.getElementById("trca_upload_send_rec").value;
-    let theme = document.getElementById("trca_upload_send_theme").value;
-    let comment = document.getElementById("trca_comment").value;
-    let send = true;
+function send(send = false) {
+    var recepientEmail = document.getElementById("trca_upload_send_rec").value;
+    var theme = document.getElementById("trca_upload_send_theme").value;
+    var comment = document.getElementById("trca_comment").value;
     console.log(docsIds);
     trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send})
+}
+
+function showSaveDraftPopup() {
+    $("#trca_upload_save_draft").show();
+
 }
 
 function hideModal() {
