@@ -297,6 +297,42 @@ class AjaxCommand {
         return $res;
     }
 
+     /**
+     * @param array $params [messId]: id of draft
+     *                      [filelds]: array of changes
+     *                      [send]: if true - send draft
+     * 
+     */
+
+    static function changeDraft($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.verify",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['naAuth'] = true;
+            return $res;
+        }
+
+        if($params['fields']) {
+            $args['docId'] = $params['docsIds'];
+            $args['recepientId'] = $params['fields']['recepientId'];
+            $args['theme'] = $params['fields']['theme'];
+            $args['comment'] = $params['fields']['comment'];
+            $draft = Messages::updateDraft($args);
+            $res['message'] = "Draft succesfully updated";
+        }
+
+        if($res['send']) {
+            Messages::sendMessage($draft);
+            $res['message'] = "Message succesfully sent";
+        }
+
+        return $res;
+    }
+
     /**
      * @param array $params [props]: array of docs properties
      *              
