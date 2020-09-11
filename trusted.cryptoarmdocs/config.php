@@ -25,6 +25,10 @@ define("DB_TABLE_DOCUMENTS", "tr_ca_docs");
 define("DB_TABLE_PROPERTY", "tr_ca_docs_property");
 define("DB_TABLE_REQUIRE", "tr_ca_docs_require");
 define("DB_TABLE_TRANSACTION", "tr_ca_docs_transaction");
+define("DB_TABLE_MESSAGES", "tr_ca_docs_messages");
+define("DB_TABLE_MESSAGES_PROPERTY", "tr_ca_docs_messages_property");
+define("DB_TABLE_LABELS", "tr_ca_docs_labels");
+define("DB_TABLE_LABELS_PROPERTY", "tr_ca_docs_labels_property");
 
 // TRANSACTION STATUS
 define("DOC_TRANSACTION_NOT_COMPLETED", 0);
