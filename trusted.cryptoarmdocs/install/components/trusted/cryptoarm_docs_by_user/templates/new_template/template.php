@@ -249,14 +249,15 @@ function uploadFiles() {
 function addAndUpload(file, docarea, i) {
     name = 'USER';
     value = "<?= Docs\Utils::currUserId() ?>";
-    var currDocId;
+    let currDocId;
+    function getUploadedDocId(item) {
+        docsIds.push(item);
+        addFileInList(file, docarea, item);
+    }
     var props  =new Map([
         [name, value],
     ])
-    trustedCA.uploadFile(file, props, (item)=>{currDocId = item}, null, true);
-    docsIds.push(currDocId);
-    console.log(docsIds);
-    addFileInList(file, docarea, currDocId);
+    trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true);
 }
 
 function handleFiles(files) {
@@ -271,12 +272,14 @@ function handleFiles(files) {
             })
         });
     };
-    if (filesToUpload.length != 0) {
+    setTimeout(()=>{
+        if (filesToUpload.length != 0) {
         $("#trca_upload_window_header_upload_more").show();
         $("#trca_upload_window_first_step").hide();
         $("#trca_upload_window_second_step").show();
-        $("#trca_upload_second_step_footer").show();
-    };
+        $("#trca_upload_second_step_footer").show();}
+        }, 5000)
+    ;
 }
 
 function addFileInList(file, docarea, currDocId) {
@@ -300,7 +303,7 @@ function addFileInList(file, docarea, currDocId) {
     docRemove.style.color = '#C4C4C4';
     docRemove.onclick = function() {
         removeFromList(docDiv.id, file);
-        trustedCA.remove(id)
+        trustedCA.remove([currDocId]);
     }
     docDiv.appendChild(docRemove);
 }
