@@ -272,14 +272,13 @@ function handleFiles(files) {
             })
         });
     };
-    setTimeout(()=>{
-        if (filesToUpload.length != 0) {
+    timeout = setTimeout(()=> {
+    if (filesToUpload.length != 0) {
         $("#trca_upload_window_header_upload_more").show();
         $("#trca_upload_window_first_step").hide();
         $("#trca_upload_window_second_step").show();
-        $("#trca_upload_second_step_footer").show();}
-        }, 5000)
-    ;
+        $("#trca_upload_second_step_footer").show();
+    }}, 5000);
 }
 
 function addFileInList(file, docarea, currDocId) {
@@ -303,7 +302,9 @@ function addFileInList(file, docarea, currDocId) {
     docRemove.style.color = '#C4C4C4';
     docRemove.onclick = function() {
         removeFromList(docDiv.id, file);
-        trustedCA.remove([currDocId]);
+        var ids = new Array;
+        ids.push(currDocId);
+        trustedCA.ajax("remove", {ids});
     }
     docDiv.appendChild(docRemove);
 }
