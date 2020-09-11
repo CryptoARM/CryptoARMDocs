@@ -387,7 +387,6 @@ class AjaxCommand {
         $newDocFilename = Utils::mb_basename($_FILES['file']['name']);
         $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
         $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
-
         $absolutePath = $newDocDir . $newDocFilename;
         $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
 
@@ -398,12 +397,13 @@ class AjaxCommand {
                 $props->add(new Property((string)$prop[0], (string)$prop[1]));
             }
             
-            $doc = Utils::createDocument($relativePath, $props);      
+            $doc = Utils::createDocument($relativePath, $props);
         }
     
         unset($_FILES['file']['name']);
 
         $res["message"] = "Document is uploaded";
+        $res["doc"] = $doc->getId();
         $res["success"] = true;
         
         return $res;
