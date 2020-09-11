@@ -76,7 +76,30 @@ class Messages {
         return $messages;
     }
 
-    
+    /**
+     * @param array $params [searchKey]
+     *                      [typeOfMessage]
+     */
+    static function searchMessage($params) {
+        global $DB;
+        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' as TDM RIGHT JOIN b_user as BU ON (';
+        if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
+            $sql .= 'TDM.RECEPIENT_ID = BU.ID';
+        } else if ($params["typeOfMessage"] == 'incoming') {
+            $sql .= 'TDM.SENDER_ID = BU.ID';
+        };
+        $sql .= ') ';
+        $sql .= 'WHERE (';
+        $sql .= "BU.EMAIL LIKE '%" . $params["searchKey"] . "%' OR";
+        $sql .= "TDM.COMMENT LIKE '%" . $params["searchKey"] . "%' OR";
+        $sql .= "TDM.THEME LIKE '%" . $params["searchKey"] . "%')";
+        $rows = $DB->Query($sql);
+        $messageIDS = [];
+        while ($row = $rows->Fetch()) {
+            $messageIDS[] = $row['ID'];
+        }
+        return $messageIDS;
+    }
 
     static function getDocumentsInMessage($messId) {
         global $DB;
@@ -372,6 +395,17 @@ class Messages {
             $count = $row['count'];
         };
         return $count == 0 ? false : true;
+    }
+
+    static function getMessagesByDocument($docId) {
+        global $DB;
+        $sql = 'SELECT MESSAGE_ID FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE DOC_ID="' . $docId . '"';
+        $rows =$DB->Query($sql);
+        $messageIDS = [];
+        while ($row = $rows->Fetch()) {
+            $messageIDS[] = $row['MESSAGE_ID'];
+        };
+        return $messageIDS;
     }
 
     /**
