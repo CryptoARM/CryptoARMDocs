@@ -76,6 +76,8 @@ class Messages {
         return $messages;
     }
 
+    
+
     static function getDocumentsInMessage($messId) {
         global $DB;
         $sql = "SELECT  
@@ -134,7 +136,7 @@ class Messages {
         $userId = Utils::currUserId();
         $sql = "
             INSERT INTO " . DB_TABLE_LABELS . " (USER_ID, TEXT, STYLE)
-                VALUES (" . $userId . " , " . $params["text"] . " , " . $params["style"] . ")";
+                VALUES (" . $userId . " , " . $params["text"] . ' , "'  . $params["style"] . '")';
         $DB->Query($sql);
     }
 
@@ -161,6 +163,28 @@ class Messages {
         return $labelsID;
     }
 
+    /**
+     * @param array $params [labelId]
+     *                      [newStyle]
+     *                      [newText]
+     */
+
+    static function editLabel($params) {
+        global $DB;
+        $sql = "UPDATE " . DB_TABLE_LABELS . ' SET( ';
+        if ($params['newText']) {
+            $sql .= 'TEXT="' . $params["newText"] . '"';
+            if ($params['newStyle']) {
+                $sql .= ', ';
+            }
+        }
+        if ($params['newStyle']) {
+            $sql .= 'STYLE="' . $params['newStyle'] . '"';
+        }
+        $sql .= ') WHERE ID=' . $params["labelId"];
+        $DB->Query($sql);
+    }
+
     static function getUserlabels($userId) {
         global $DB;
         $sql = "SELECT ID FROM " . DB_TABLE_LABELS . " WHERE USER_ID=" . $userId;
@@ -183,6 +207,20 @@ class Messages {
             $status = $row["MES_STATUS"];
             return $status;
         }
+    }
+
+    static function getMessagesByLabel($labelId, $userId) {
+        global $DB;
+        $sql = 'SELECT MESSAGE_ID FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID=' . $labelId;
+        $rows = $DB->Query($sql);
+        $messageLabels = [];
+        $userLabels = Messages::getUserLabels($userId);
+        while ($row = $rows->Fetch()) {
+            if(in_array($row["MESSAGE_ID"], $userLabels)) {
+                $messageLabels[] = $row["MESSAGE_ID"];
+            }
+        }
+        return $messageLabels;
     }
 
     static function getMessageInfo($messId) {
