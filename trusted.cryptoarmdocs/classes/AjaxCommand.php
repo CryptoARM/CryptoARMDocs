@@ -195,6 +195,62 @@ class AjaxCommand {
     }
 
     /**
+     * @param array $params [typeOfMessage]
+     *                      [page]
+     *                      [count]
+     */
+
+    static function getMessageList($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getMessageList",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if(!$params["typeOfMessage"]) {
+            $res['message'] = 'Get no type';
+            return $res;
+        }
+
+        if ($params["page"] && $params["count"] ) {
+            $args['firstElem'] = $params["page"] * $params["count"];
+            $args['count'] = $params['count'];
+        }
+
+        $args["userId"] = Utils::currUserId();
+
+        $args['typeOfMessage'] = $params['typeOfMessage'];
+        switch ($args["typeOfMessage"]) {
+            case "incoming":
+                $mesIds = Messages::getIncomingMessages($args);
+                break;
+            case "drafts":
+            case "outgoing":
+                $mesIds = Messages::getOutgoingMessages($args);
+                break;
+            default:
+                $res["message"] = "Unknown type";
+                return $res;                
+        }
+        if ($mesIds) {
+            $res['messages'] = [];
+            foreach ($mesIds as $mesId) {
+                $res['messages'][] = Messages::getMessageInfo($mesId);
+            }
+            $res['success'] = true;
+            $res['message'] = 'Success';
+        } else {
+            $res['message'] = 'No messages';
+            $res['noMess'] = true;
+        }
+        return $res;
+    }
+
+    /**
      * Writes all the message's data into the database
      * 
      * @param array $params [docsIds]: array of doc Ids in message
