@@ -244,6 +244,17 @@ class Messages {
         return $mes;
     }
 
+    static function getNewIncomingMessages($userId) {
+        global $DB;
+        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID = " . $userId . ' AND MES_STATUS="NOT_READED"';
+        $rows = $DB->Query($sql);
+        $mess = [];
+        while ($row = $rows->Fetch()) {
+            $mess[] = $row["count"];
+        }
+        return $mess;
+    }
+
     /**
      * @param array $params[]
      * 
