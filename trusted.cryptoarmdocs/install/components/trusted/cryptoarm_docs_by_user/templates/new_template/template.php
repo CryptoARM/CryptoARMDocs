@@ -253,6 +253,10 @@ function addAndUpload(file, docarea, i) {
     function getUploadedDocId(item) {
         docsIds.push(item);
         addFileInList(file, docarea, item);
+        $("#trca_upload_window_header_upload_more").show();
+        $("#trca_upload_window_first_step").hide();
+        $("#trca_upload_window_second_step").show();
+        $("#trca_upload_second_step_footer").show();
     }
     var props  =new Map([
         [name, value],
@@ -272,13 +276,13 @@ function handleFiles(files) {
             })
         });
     };
-    timeout = setTimeout(()=> {
-    if (filesToUpload.length != 0) {
-        $("#trca_upload_window_header_upload_more").show();
-        $("#trca_upload_window_first_step").hide();
-        $("#trca_upload_window_second_step").show();
-        $("#trca_upload_second_step_footer").show();
-    }}, 5000);
+    // timeout = setTimeout(()=> {
+    // if (filesToUpload.length != 0) {
+    //     $("#trca_upload_window_header_upload_more").show();
+    //     $("#trca_upload_window_first_step").hide();
+    //     $("#trca_upload_window_second_step").show();
+    //     $("#trca_upload_second_step_footer").show();
+    // }}, 5000);
 }
 
 function addFileInList(file, docarea, currDocId) {
@@ -304,6 +308,8 @@ function addFileInList(file, docarea, currDocId) {
         removeFromList(docDiv.id, file);
         var ids = new Array;
         ids.push(currDocId);
+        var i = docsIds.indexOf(currDocId);
+        docsIds.splice(i, 1);
         trustedCA.ajax("remove", {ids});
     }
     docDiv.appendChild(docRemove);
@@ -315,8 +321,6 @@ function removeFromList(divid, file) {
     $('#' + divid).hide();
     if (filesToUpload.length == 0) {
         toFirstStep()
-        // $("#trca_upload_component").load(location.href + " #trca_upload_component");
-        // $("#trca_upload_window_steps").show();
     };
 }
 
