@@ -1668,9 +1668,17 @@ class AjaxCommand {
         }
 
         $res['messageIds'] = Messages::searchMessage($params);
+        if (count($res['messageIds']) != 0) {
+            $res['message'] = 'Found some';
+            $res['noMess'] = true;
+        } else {
+            $res['message'] = 'Found nothing';
+            $res['founded'] = true;
+        }
         $res['success'] = true;
         return $res;
     }
+
 
     /**
      * @param array $params [messId]: id of draft
