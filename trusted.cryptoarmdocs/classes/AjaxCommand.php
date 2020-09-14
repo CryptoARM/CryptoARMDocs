@@ -1670,10 +1670,10 @@ class AjaxCommand {
         $res['messageIds'] = Messages::searchMessage($params);
         if (count($res['messageIds']) != 0) {
             $res['message'] = 'Found some';
-            $res['noMess'] = true;
+            $res['founded'] = true;
         } else {
             $res['message'] = 'Found nothing';
-            $res['founded'] = true;
+            $res['noMess'] = true;
         }
         $res['success'] = true;
         return $res;
