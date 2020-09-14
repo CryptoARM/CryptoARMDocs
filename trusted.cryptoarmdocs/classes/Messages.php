@@ -76,34 +76,51 @@ class Messages {
      *                      [userId]: id of user
      * @return array $messageIDS: array of finded message ids;
      */
-
     static function searchMessage($params) {
         global $DB;
-        $sql = 'SELECT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES . ' as TDM RIGHT JOIN b_user as BU ON (';
-        if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
-            $sql .= 'TDM.RECEPIENT_ID = BU.ID';
-        } else if ($params["typeOfMessage"] == 'incoming') {
-            $sql .= 'TDM.SENDER_ID = BU.ID';
-        };
-        $sql .= ') ';
-        $sql .= 'WHERE ((';
-        $sql .= "BU.EMAIL LIKE '%" . $params["searchKey"] . "%' OR ";
-        $sql .= "TDM.COMMENT LIKE '%" . $params["searchKey"] . "%' OR ";
-        $sql .= "TDM.THEME LIKE '%" . $params["searchKey"] . "%') AND (";
-        if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
-            $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
-            if ($params['typeOfMessage'] == 'draft') {
-                $sql .= ' AND TDM.MES_STATUS = "DRAFT"))';
-            } else {
-                $sql .= ' AND TDM.MES_STATUS <> "DRAFT"))';
-            }
-        } else if ($params['typeOfMessage' == 'outgoing']) {
-            $sql .= 'TDM.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> DRAFT))';
-        }
-        $rows = $DB->Query($sql);
         $messageIDS = [];
-        while ($row = $rows->Fetch()) {
-            $messageIDS[] = $row['ID'];
+        if ($params["typeOfMessage"] != 'all') {
+            $sql = 'SELECT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES . ' as TDM RIGHT JOIN b_user as BU ON (';
+            if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
+                $sql .= 'TDM.RECEPIENT_ID = BU.ID';
+            } else if ($params["typeOfMessage"] == 'incoming') {
+                $sql .= 'TDM.SENDER_ID = BU.ID';
+            };
+            $sql .= ') ';
+            $sql .= 'WHERE ((';
+            $sql .= "BU.EMAIL LIKE '%" . $params["searchKey"] . "%' OR ";
+            $sql .= "TDM.COMMENT LIKE '%" . $params["searchKey"] . "%' OR ";
+            $sql .= "TDM.THEME LIKE '%" . $params["searchKey"] . "%') AND (";
+            if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
+                $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
+                if ($params['typeOfMessage'] == 'draft') {
+                    $sql .= ' AND TDM.MES_STATUS = "DRAFT"))';
+                } else {
+                    $sql .= ' AND TDM.MES_STATUS <> "DRAFT"))';
+                }
+            } else if ($params['typeOfMessage'] == 'incoming') {
+                $sql .= 'TDM.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> "DRAFT"))';
+            }
+            $rows = $DB->Query($sql);
+            while ($row = $rows->Fetch()) {
+                $messageIDS[] = $row['ID'];
+            }
+        } else {
+            $sql = 'SELECT TDM.ID AS ID FROM ' . DB_TABLE_MESSAGES . ' AS TDM ';
+            $sql .= 'RIGHT JOIN b_user AS BUS ON (TDM.SENDER_ID = BUS.ID) ';
+            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDM.RECEPIENT_ID = BUR.ID)';
+            $sql .= 'WHERE (( TDM.SENDER_ID=' . $params['userId'] . " AND ";
+            $sql .= '( TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
+            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
+            $sql .= 'BUR.EMAIL LIKE "%' . $params['searchKey'] . '%" )) OR ((';
+            $sql .= 'TDM.MES_STATUS <> "DRAFT" AND TDM.RECEPIENT_ID = ' . $params['userId'] . ') AND (';
+            $sql .= 'TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
+            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
+            $sql .= 'BUS.EMAIL LIKE "%' . $params['searchKey'] . '%" )))';
+            $rows = $DB->Query($sql);
+            while ($row = $rows->Fetch()) {
+                $messageIDS[] = $row['ID'];
+            }
         }
         return $messageIDS;
     }
