@@ -35,6 +35,9 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "searchMessage":
+            $res = Docs\AjaxCommand::searchMessage($params);
+            break;
         case "newMessage":
             $res = Docs\AjaxCommand::newMessage($params);
             break;

@@ -4,9 +4,9 @@ namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
 use DateTime;
-use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * Controllers for AJAX requests.
@@ -195,147 +195,12 @@ class AjaxCommand {
     }
 
     /**
-     * @param array $params [typeOfMessage]
-     *                      [page]
-     *                      [count]
-     */
-
-    static function getMessageList($params) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in AjaxCommand.getMessageList",
-        ];
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            return $res;
-        }
-
-        if(!$params["typeOfMessage"]) {
-            $res['message'] = 'Get no type';
-            return $res;
-        }
-
-        if ($params["page"] && $params["count"] ) {
-            $args['firstElem'] = $params["page"] * $params["count"];
-            $args['count'] = $params['count'];
-        }
-
-        $args["userId"] = Utils::currUserId();
-
-        $args['typeOfMessage'] = $params['typeOfMessage'];
-        switch ($args["typeOfMessage"]) {
-            case "incoming":
-                $mesIds = Messages::getIncomingMessages($args);
-                break;
-            case "drafts":
-            case "outgoing":
-                $mesIds = Messages::getOutgoingMessages($args);
-                break;
-            default:
-                $res["message"] = "Unknown type";
-                return $res;                
-        }
-        if ($mesIds) {
-            $res['messages'] = [];
-            foreach ($mesIds as $mesId) {
-                $res['messages'][] = Messages::getMessageInfo($mesId);
-            }
-            $res['success'] = true;
-            $res['message'] = 'Success';
-        } else {
-            $res['message'] = 'No messages';
-            $res['noMess'] = true;
-        }
-        return $res;
-    }
-
-    /**
-     * Writes all the message's data into the database
      * 
-     * @param array $params [docsIds]: array of doc Ids in message
-     *                      [fields]: array of message's fields
-     *                              []
-     *                              []
-     *                      [send]: if false - message in draft
-     */
-
-    static function newMessage($params) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in AjaxCommand.createMessage",
-        ];
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            $res['noAith'] = 'true';
-        };
-
-
-
-        if(!$params['docsIds']) {
-            $res['message'] = 'Nothing to send';
-            return $res;
-        };
-        $userId = Utils::getUserIdByEmail($params['recepientEmail']);
-        $args['docId'] = $params['docsIds'];
-        $params['recepientId'] = $userId;
-        $args['theme'] = $params['theme'];
-        $args['comment'] = $params['comment'];
-
-        $draft = Messages::createDraft($params);
-        $res['message'] = "Draft is created";
-
-        
-        if($params['send']) {
-            $par['messId'] = $draft;
-            Messages::sendMessage($par);
-            $res['message'] = "Message sent";
-        }
-
-        $res['success'] = true;
-        return $res;
-    }
-
-     /**
-     * @param array $params [messId]: id of draft
-     *                      [filelds]: array of changes
-     *                      [send]: if true - send draft
+     *
      * 
-     */
-
-    static function changeDraft($params) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in AjaxCommand.verify",
-        ];
-
-        if(!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            $res['naAuth'] = true;
-            return $res;
-        }
-
-        if($params['fields']) {
-            $args['docId'] = $params['docsIds'];
-            $args['recepientId'] = $params['fields']['recepientId'];
-            $args['theme'] = $params['fields']['theme'];
-            $args['comment'] = $params['fields']['comment'];
-            $draft = Messages::updateDraft($args);
-            $res['message'] = "Draft succesfully updated";
-        }
-
-        if($res['send']) {
-            Messages::sendMessage($draft);
-            $res['message'] = "Message succesfully sent";
-        }
-
-        return $res;
-    }
-
-    /**
+     *
      * @param array $params [props]: array of docs properties
-     *              
+     *                      [files]: array of files to upload
      *
      * @return array [success]: operation result status
      *               [message]: operation result message
@@ -1667,6 +1532,180 @@ class AjaxCommand {
             return $res;
         }
 
+    }
+
+    /**
+     * @param array $params [typeOfMessage]
+     *                      [page]
+     *                      [count]
+     */
+
+    static function getMessageList($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getMessageList",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if(!$params["typeOfMessage"]) {
+            $res['message'] = 'Get no type';
+            return $res;
+        }
+
+        if ($params["page"] && $params["count"] ) {
+            $args['firstElem'] = $params["page"] * $params["count"];
+            $args['count'] = $params['count'];
+        }
+
+        $args["userId"] = Utils::currUserId();
+
+        $args['typeOfMessage'] = $params['typeOfMessage'];
+        switch ($args["typeOfMessage"]) {
+            case "incoming":
+                $mesIds = Messages::getIncomingMessages($args);
+                break;
+            case "drafts":
+            case "outgoing":
+                $mesIds = Messages::getOutgoingMessages($args);
+                break;
+            default:
+                $res["message"] = "Unknown type";
+                return $res;
+        }
+        if ($mesIds) {
+            $res['messages'] = [];
+            foreach ($mesIds as $mesId) {
+                $res['messages'][] = Messages::getMessageInfo($mesId);
+            }
+            $res['success'] = true;
+            $res['message'] = 'Success';
+        } else {
+            $res['message'] = 'No messages';
+            $res['noMess'] = true;
+        }
+        return $res;
+    }
+
+    /**
+     * Writes all the message's data into the database
+     * 
+     * @param array $params [docsIds]: array of doc Ids in message
+     *                      [fields]: array of message's fields
+     *                              []
+     *                              []
+     *                      [send]: if false - message in draft
+     */
+
+    static function newMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.createMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAith'] = 'true';
+        };
+
+        if(!$params['docsIds']) {
+            $res['message'] = 'Nothing to send';
+            return $res;
+        };
+        $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+        if (!$userId) {
+            $res['message'] = 'User not exists';
+            return $res;
+        }
+        $args['docsIds'] = $params['docsIds'];
+        $params['recepientId'] = $userId;
+        $args['theme'] = $params['theme'];
+        $args['comment'] = $params['comment'];
+
+        $draft = Messages::createDraft($params);
+        $res['message'] = "Draft is created";
+
+        if($params['send']) {
+            $par['messId'] = $draft;
+            Messages::sendMessage($par);
+            $res['message'] = "Message sent";
+        }
+
+        $res['success'] = true;
+        return $res;
+    }
+
+    /**
+     * @param array $params [searchKey]
+     *                      [typeOfMessage]
+     */
+
+    static function searchMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.searchMessage",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        } else {
+            $params['userId'] = Utils::currUserId();
+        }
+
+        if (!$params['searchKey']) {
+            $res['message'] = 'Nothing to search';
+            return $res;
+        }
+
+        if (!$params['typeOfMessage']) {
+            $res['message'] = 'Nowhere to search';
+            return $res;
+        }
+
+        $res['messageIds'] = Messages::searchMessage($params);
+        $res['success'] = true;
+        return $res;
+    }
+
+    /**
+     * @param array $params [messId]: id of draft
+     *                      [filelds]: array of changes
+     *                      [send]: if true - send draft
+     * 
+     */
+
+    static function changeDraft($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.verify",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        if($params['fields']) {
+            $args['docId'] = $params['docsIds'];
+            $args['recepientId'] = $params['fields']['recepientId'];
+            $args['theme'] = $params['fields']['theme'];
+            $args['comment'] = $params['fields']['comment'];
+            $draft = Messages::updateDraft($args);
+            $res['message'] = "Draft succesfully updated";
+        }
+
+        if($res['send']) {
+            Messages::sendMessage($draft);
+            $res['message'] = "Message succesfully sent";
+        }
+
+        return $res;
     }
 }
 
