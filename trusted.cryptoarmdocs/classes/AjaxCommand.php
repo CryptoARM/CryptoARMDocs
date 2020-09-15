@@ -981,7 +981,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $email = $params["email"];
+        $email = $params["email"][0];
         $level = $params["level"];
         $sendEmail = array_key_exists("sendEmail", $params) ? $params["sendEmail"] : true;
 
