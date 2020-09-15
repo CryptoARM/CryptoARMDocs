@@ -464,6 +464,7 @@ class AjaxCommand {
             return $res;
         }
 
+        $wfs = [];
         if($wf) {
             $docsInWF = Database::getDocumentIdsInWorkflows();
             foreach ($ids as $id) {

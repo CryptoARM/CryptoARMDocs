@@ -371,7 +371,7 @@ class Database {
         // Removes childId from parent document
         Database::saveDocumentParent($doc);
     }
-    
+
     /**
      * Returns ids of all documents using in Workflows
      * @return array
@@ -381,6 +381,7 @@ class Database {
         global $DB;
         $sql = 'SELECT DISTINCT DOCUMENT_ID FROM b_bp_workflow_instance GROUP BY DOCUMENT_ID';
         $row = $DB->Query($sql);
+        $docIds = array();
         while ($array = $row->Fetch()) {
             $doc = $array["DOCUMENT_ID"];
             $docIds[] =  $doc;
