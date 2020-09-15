@@ -1,4 +1,6 @@
 .trca_upload_save_draft {
+    background-color: white;
+    position: relative;
     width: 387px;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
     display: flex;

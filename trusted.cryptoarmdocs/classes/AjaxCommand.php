@@ -1534,7 +1534,7 @@ class AjaxCommand {
 
     }
 
-    /**
+     /**
      * @param array $params [typeOfMessage]
      *                      [page]
      *                      [count]
@@ -1592,7 +1592,7 @@ class AjaxCommand {
 
     /**
      * Writes all the message's data into the database
-     * 
+     *
      * @param array $params [docsIds]: array of doc Ids in message
      *                      [fields]: array of message's fields
      *                              []
@@ -1615,20 +1615,36 @@ class AjaxCommand {
             $res['message'] = 'Nothing to send';
             return $res;
         };
-        $userId = Utils::getUserIdByEmail($params['recepientEmail']);
-        if (!$userId) {
-            $res['message'] = 'User not exists';
-            return $res;
+
+        $params['recepientEmail'] = trim($params['recepientEmail']);
+
+        if ($params['send'] == "true"){
+            if ($params['recepientEmail'] == null) {
+                $res['message'] = 'No Email';
+                return $res;
+            };
+
+            $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+            if (!$userId) {
+                $res['message'] = 'User not exists';
+                return $res;
+            }
+        } else {
+            if ($params['recepientEmail'] != null) {
+                $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+                if (!$userId) {
+                    $res['message'] = 'User not exists';
+                    return $res;
+                }
+            }
         }
-        $args['docsIds'] = $params['docsIds'];
+
         $params['recepientId'] = $userId;
-        $args['theme'] = $params['theme'];
-        $args['comment'] = $params['comment'];
 
         $draft = Messages::createDraft($params);
         $res['message'] = "Draft is created";
 
-        if($params['send']) {
+        if($params['send'] == "true") {
             $par['messId'] = $draft;
             Messages::sendMessage($par);
             $res['message'] = "Message sent";
@@ -1679,12 +1695,11 @@ class AjaxCommand {
         return $res;
     }
 
-
     /**
      * @param array $params [messId]: id of draft
      *                      [filelds]: array of changes
      *                      [send]: if true - send draft
-     * 
+     *
      */
 
     static function changeDraft($params) {

@@ -22,10 +22,10 @@ class Messages {
 
    /**
     * Returns Ids of all outgoing messages
-    * @param array $params[userId]: id of user
-    *                     [typeOfMessage]: if 'DRAFT' retuns all the drafts
-    *                     [firstElem]: first needed message number for pagination
-    *                     [count]: count of messages on page
+    * @param array $params ["userId"]: id of user
+    *                      ["typeOfMessage"]: if 'DRAFT' retuns all the drafts
+    *                      ["firstElem"]: first needed message number for pagination
+    *                      ["count"]: count of messages on page
     * @return array $messages: Ids of messages
     */
     static function getOutgoingMessages($params) {
@@ -35,7 +35,7 @@ class Messages {
         {
             $sql .= 'MES_STATUS = "DRAFT" ';
         } else {
-            $sql .= 'MES_STATUS <> "DRAFT"'; 
+            $sql .= 'MES_STATUS <> "DRAFT"';
         }
         if ($params["firstElem"] && $params["count"]) {
             $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
@@ -50,9 +50,9 @@ class Messages {
 
    /**
     * Returns Ids of all the incoming messages
-    * @param array $params[userId]: id of user
-    *                     [firstElem]: first needed message number for pagination
-    *                     [count]: count of messages on page
+    * @param array $params [userId]: id of user
+    *                      [firstElem]: first needed message number for pagination
+    *                      [count]: count of messages on page
     * @return array $messages: Ids of messages
     */
     static function getIncomingMessages($params) {
@@ -76,6 +76,7 @@ class Messages {
      *                      [userId]: id of user
      * @return array $messageIDS: array of finded message ids;
      */
+
     static function searchMessage($params) {
         global $DB;
         $messageIDS = [];
@@ -128,31 +129,30 @@ class Messages {
    /**
     * Returns sender id
     * @param int $messId: id of message
-    * 
+    *
     * @return int $senderId: id of sender
     */
     static function getSenderId($messId) {
         global $DB;
         $sql = "SELECT SENDER_ID FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch())
-            $senderId = $row["SENDER_ID"];
+        $row = $rows->Fetch();
+        $senderId = $row["SENDER_ID"];
         return $senderId;
     }
 
     /**
     * Returns recepient id
     * @param int $messId: id of message
-    * 
+    *
     * @return int $recepientId: id of recepient
     */
     static function getRecepientId($messId) {
         global $DB;
         $sql = "SELECT RECEPIENT_ID FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch()) {
-            $recepientId = $row["RECEPIENT_ID"];
-        }
+        $row = $rows->Fetch();
+        $recepientId = $row["RECEPIENT_ID"];
         return $recepientId;
     }
 
@@ -178,7 +178,7 @@ class Messages {
         $sql = "SELECT
                     LABEL_ID as ids FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE MESSAGE_ID=" . $messId;
         $rows = $DB->Query($sql);
-        $labelsID = array();
+        $labelsID = [];
         $userLabelsId = Messages::getUserlabels(Utils::currUserId());
         while ($row = $rows->Fetch()) {
             if (in_array($row["ids"], $userLabelsId)) {
@@ -208,7 +208,7 @@ class Messages {
         global $DB;
         $sql = "SELECT ID FROM " . DB_TABLE_LABELS . " WHERE USER_ID=" . $userId;
         $rows = $DB->Query($sql);
-        $labelsID = array();
+        $labelsID = [];
         while ($row = $rows->Fetch()) {
             $lablsID[] = $row["id"];
         }
@@ -218,7 +218,7 @@ class Messages {
    /**
     * Returns status of message
     * @param int $messId: id of message
-    * 
+    *
     * @return string $status: status of document
     */
     static function getMessageStatus($messId) {
@@ -228,10 +228,9 @@ class Messages {
                 FROM " . DB_TABLE_MESSAGES . "
                 WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch()) {
-            $status = $row["MES_STATUS"];
-            return $status;
-        }
+        $row = $rows->Fetch();
+        $status = $row["MES_STATUS"];
+        return $status;
     }
 
     static function getMessagesByLabel($labelId, $userId) {
@@ -250,7 +249,7 @@ class Messages {
 
    /**
     * @param int $messId: id of message
-    * 
+    *
     * @return array $mes [theme] theme of message
     *                    [comment] comment to message
     *                    [status] status of message
@@ -266,18 +265,15 @@ class Messages {
         $sql = "SELECT * FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
         $rows = $DB->Query($sql);
         $mes = [];
-        while ($row = $rows->Fetch()) {
-            $mes["theme"] = $row["THEME"];
-            $mes["comment"] = $row["COMMENT"];
-            $mes["status"] = $row["MES_STATUS"];
-            $mes["time"] = $row["TIMESTAMP_X"];
-        }
+        $row = $rows->Fetch();
+        $mes["theme"] = $row["THEME"];
+        $mes["comment"] = $row["COMMENT"];
+        $mes["status"] = $row["MES_STATUS"];
+        $mes["time"] = $row["TIMESTAMP_X"];
+        $mes['rejectedComment'] = $row['REJECTED_COMMENT'];
         $mes["labels"] = Messages::getMessageLabels($messId);
         $mes["sender"] = Messages::getSenderId($messId);
         $mes["recepient"] = Messages::getRecepientId($messId);
-        if ($mes['status'] == "REJECTED") {
-            $mes['rejectedComment'] = $rows['REJECTED_COMMENT'];
-        }
         $mes["docs"] = Messages::getDocsInMessage($messId);
         return $mes;
     }
@@ -285,7 +281,7 @@ class Messages {
    /**
     * Returns all the new messages
     * @param int $userId: id of user
-    * 
+    *
     * @return int $mess: ids of new messages
     */
     static function getNewIncomingMessages($userId) {
@@ -339,8 +335,8 @@ class Messages {
    /**
     * Assigns document to message
     * @param int $mes: id of message
-    * @param int $docId: od of document
-    * 
+    * @param int $docId: id of document
+    *
     */
     static function setMesProp($mes, $docId) {
         global $DB;
@@ -372,7 +368,7 @@ class Messages {
    /**
     * remove draft from database
     * @param array $params [draftId]: id of draft
-    * 
+    *
     */
     static function deleteDraft($params) {
         global $DB;
@@ -406,7 +402,7 @@ class Messages {
    /**
     * Check message existing in database
     * @param int $messId: id of message
-    * 
+    *
     * @return bool
     */
     static function isMessageExists($messId) {
@@ -423,7 +419,7 @@ class Messages {
    /**
     * Returns all the documents in the message
     * @param int $messId: id of message
-    * 
+    *
     * @return array $docsId: ids of all the documents in message
     */
     static function getDocsInMessage($messId) {
@@ -440,7 +436,7 @@ class Messages {
    /**
     * Check is document in message
     * @param int $docId: id of document
-    * 
+    *
     * @return bool
     */
     static function isDocumentInMessage($docId) {
@@ -456,7 +452,7 @@ class Messages {
    /**
     * returns all the message with this document
     * @param int $docId: id of document
-    * 
+    *
     * @return $messageIDS: id of all the message with this document
     */
     static function getMessagesByDocument($docId) {
