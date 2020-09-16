@@ -209,7 +209,7 @@ class AjaxCommand {
         ];
 
         $ar = json_decode($params["props"], true);
-        
+
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
             $res['noAuth'] = true;
@@ -258,15 +258,15 @@ class AjaxCommand {
             foreach ($ar as $prop) {
                 $props->add(new Property((string)$prop[0], (string)$prop[1]));
             }
-            
-            $doc = Utils::createDocument($relativePath, $props);      
+
+            $doc = Utils::createDocument($relativePath, $props);
         }
-    
+
         unset($_FILES['file']['name']);
 
         $res["message"] = "Document is uploaded";
         $res["success"] = true;
-        
+
         return $res;
     }
 
@@ -369,7 +369,6 @@ class AjaxCommand {
 
             $newDoc->setHash(hash_file('md5',$_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())));
             $newDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
-            $newDoc->save();
 
             // Drop "blocked" status of original doc
             $doc = Database::getDocumentById($idDoc);
@@ -385,6 +384,7 @@ class AjaxCommand {
                     Form::upload($doc, $extra);
                 }
             }
+            $newDoc->save();
         }
         Utils::log([
             "action" => "signed",
