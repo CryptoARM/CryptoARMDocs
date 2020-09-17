@@ -685,7 +685,7 @@ trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onF
     }
 }
 
-trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false) {
+trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false, onLoad = null) {
     var xhr = new XMLHttpRequest();
     let formData = new FormData;
     let url = AJAX_CONTROLLER + '?command=uploadFile';
@@ -704,6 +704,7 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null,
                     } 
                     onSuccess(param);
                 };
+                console.log(xhr.response.doc);
                 trustedCA.showPopupMessage(UPLOAD_1 + file.name + UPLOAD_2, 'done', 'positive' );
             } else {
                 if (typeof onFailure == 'function') {
@@ -719,7 +720,13 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null,
         }
     });
     xhr.upload.onprogress = function(file) {
-        trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+        if (!toShare) {
+            trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+        } else {
+            if (typeof onLoad == 'function') {
+                onLoad(file.loaded, file.total);
+            }
+        }
     }
     xhr.send(formData);
 };

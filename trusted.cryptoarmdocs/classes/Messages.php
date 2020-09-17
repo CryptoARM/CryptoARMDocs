@@ -399,6 +399,34 @@ class Messages {
         $DB->Query($sql);
     }
 
+    /**
+     * Change status of message to the draft and remove shares docs property
+     * @param int $messId: id of message
+     * @return boolean if false - it's too late for cancel
+     */
+
+    static function sendCancelInDB($params) {
+        global $DB;
+        $sql = 'SELECT TIMESTAMP_X as TIME FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $params['messId'];
+        $rows = $DB->Query($sql);
+        $row = $rows->Fetch();
+        $time = strtotime($row['TIME']);
+        $currTime = strtotime(date("Y-m-d H:i:s"));
+        $interval = $currTime - $time;
+        if ($interval > 1000) {
+            return false;
+        } else {
+            $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "DRAFT" WHERE ID = ' . $params['messId'];
+            $DB->Query($sql);
+            $docsIds = Messages::getDocsInMessage($params['messId']);
+            foreach ($docsIds as $docId) {
+                $sql = 'DELETE FROM '  . DB_TABLE_PROPERTY . ' WHERE (DOCUMENT_ID = ' . $docId .' AND (TYPE = "SHARE_READ" OR TYPE = "SHARE_SIGN"))';
+                $DB->Query($sql);
+            }
+            return true;
+        }
+    }
+
    /**
     * Check message existing in database
     * @param int $messId: id of message

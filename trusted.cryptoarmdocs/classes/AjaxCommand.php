@@ -1534,7 +1534,7 @@ class AjaxCommand {
 
     }
 
-     /**
+         /**
      * @param array $params [typeOfMessage]
      *                      [page]
      *                      [count]
@@ -1642,6 +1642,7 @@ class AjaxCommand {
         $params['recepientId'] = $userId;
 
         $draft = Messages::createDraft($params);
+        $res['messId'] = $draft;
         $res['message'] = "Draft is created";
 
         if($params['send'] == "true") {
@@ -1652,6 +1653,51 @@ class AjaxCommand {
 
         $res['success'] = true;
         return $res;
+    }
+
+    /**
+     * Cancel sending of message
+     * @param array $params ["messId"]: id of message
+     * 
+     */
+
+    static function sendCancel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.sendCancel",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        } else {
+            $userId = Utils::currUserId();
+            if (!$params["messId"]) {
+                $res['message'] = 'Nothing to remove';
+                return $res; 
+            }
+            if (!Messages::isMessageExists($params["messId"])) {
+                $res['message'] = 'Message not exists';
+                return $res;
+            }
+            if (!($userId == Messages::getSenderId($params['messId']))) {
+                $res['message'] = 'Not a sender try to cancel';
+                return $res;
+            }
+        }
+
+        $messId = $params['messId'];
+        $success = Messages::sendCancelInDB($params);
+        if ($success) {
+            $res['message'] = 'Message sending is cancelled';
+            $res['success'] = true;
+        } else {
+            $res['message'] = 'Too late to cancel';
+            $res['success'] = false;
+            $res['toLate'] = true;
+            return $res;
+        }
     }
 
     /**

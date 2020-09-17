@@ -35,6 +35,9 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "sendCancel": 
+            $res = Docs\AjaxCommand::sendCancel($params);
+            break;
         case "searchMessage":
             $res = Docs\AjaxCommand::searchMessage($params);
             break;
