@@ -1534,7 +1534,7 @@ class AjaxCommand {
 
     }
 
-         /**
+    /**
      * @param array $params [typeOfMessage]
      *                      [page]
      *                      [count]

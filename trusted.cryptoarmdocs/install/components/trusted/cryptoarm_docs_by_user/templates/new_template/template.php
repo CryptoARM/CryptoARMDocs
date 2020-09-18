@@ -25,20 +25,6 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
     if ($USER->IsAuthorized()) {
         $maxSize = Docs\Utils::maxUploadFileSize();
         ?>
-<!-- <div id="trca_upload_succesful_send" class="trca_upload_success">
-    <div>
-        <span>
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1") ?></span>
-        <span style="color:#67B7F7">
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2") ?></span>
-    </div>
-    <div onclick="cancel()">
-        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL_SENDING") ?>
-    </div>
-    <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
-        close
-    </div>
-</div> -->
 <div id="trca_upload_component">
     <div class="trca_upload_button" onclick="showModal()">
         <div style="font-size: 35px; font-weight: 100">+</div>
@@ -151,7 +137,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                     </div>
                     <div class="trca_upload_window_footer" style="justify-content:space-between"
                         id="trca_upload_second_step_footer">
-                        <div class="trca_upload_window_footer_cancel" style="margin-left:25px" onclick="hideModal()">
+                        <div class="trca_upload_window_footer_cancel" style="margin-left:25px" onclick="cancelUpload()">
                             <span class="trca_upload_window_footer_cancel_text">
                                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
                             </span>
@@ -220,56 +206,84 @@ function handleDrop(e) {
 let docsIds = new Array;
 
 function uploadFiles() {
-    // filesToUpload.forEach((file) => {
-    //     name = 'USER';
-    //     value = "<?= Docs\Utils::currUserId() ?>"
-    //     var props = new Map([
-    //         [name, value],
-    //     ]);
-    //     trustedCA.uploadFile(file, props, (item)=>{docIds.push(item)}, null, false);
-    // })
-
     $("#trca_upload_window_first_n_second_step").hide();
     $("#trca_upload_success").show();
 }
 
-function addAndUpload(file, docarea, i) {
+function addTemporaryListItem(file, i, xhr, files) {
+    var docarea = document.getElementById('trca_upload_file_list');
+    var docDiv = document.createElement('div');
+    docDiv.id = "trca_doc_temporary_" + i;
+    docDiv.className = "trca_doc_list_item";
+    docarea.appendChild(docDiv);
+    docDiv.insertAdjacentHTML('beforeend', getProgressCircle(i));
+    var docName = document.createElement('div');
+    docName.className = "trca_doc_list_item_name onload";
+    docName.title = file.name;
+    docName.innerHTML = file.name;
+    docDiv.appendChild(docName);
+    var docSize = document.createElement('div');
+    docSize.className = "trca_doc_list_item_size";
+    docSize.innerHTML = getFileSize(file.size);
+    docDiv.appendChild(docSize);
+    var docRemove = document.createElement('div');
+    docRemove.className = "trca_doc_list_remove material-icons"
+    docRemove.innerHTML = "close";
+    docRemove.style.color = '#C4C4C4';
+    docRemove.onclick = function() {
+        xhr.abort();
+        $(docDiv).remove();
+        var listItems = $(".trca_doc_list_item");
+        if (listItems.length == 0) {
+            toFirstStep();
+        }
+    }
+    docDiv.appendChild(docRemove);
+}
+
+function cancelUpload() {
+    $(".trca_doc_list_remove").each(function(){
+        $(this).click();
+    })
+    hideModal();
+}
+
+function addAndUpload(file, docarea, i, files) {
     name = 'USER';
+    var xhr;
+    function getXHR(request) {
+        xhr = request;
+    }
     value = "<?= Docs\Utils::currUserId() ?>";
+    $("#trca_upload_window_header_upload_more").show();
+    $("#trca_upload_window_first_step").hide();
+    $("#trca_upload_window_second_step").show();
+    $("#trca_upload_second_step_footer").show();
     let currDocId;
 
     function getUploadedDocId(item) {
         docsIds.push(item);
-        addFileInList(file, docarea, item);
-        $("#trca_upload_window_header_upload_more").show();
-        $("#trca_upload_window_first_step").hide();
-        $("#trca_upload_window_second_step").show();
-        $("#trca_upload_second_step_footer").show();
+        addFileInList(file, docarea, item, i);
     }
 
-    function fileOnLoad(loaded, total) {
-        var process = total/loaded;
-        // var loadBar = document.createElement('div');
-        // var circle = document.createElement('div');
-        // circle.className = 'ball';
-        // let uplwindow = document.getElementById("trca_upload_window");
-        // uplwindow.appendChild(circle);
-        // trustedCA.showPopupMessage(ONLOAD_1 + (loaded/1024/1024).toFixed(2) + ONLOAD_2 + (total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+    function fileOnLoad(loaded, total, i) {
+        var progress = loaded/total * 180;
+        var progressEl = document.querySelector('#progress_'+i); 
+        progressEl.style.transform = 'rotate('+progress+'deg)';
     }
 
     var props  =new Map([
         [name, value],
     ])
-    trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true, (loaded, total)=>{fileOnLoad(loaded, total)});
+    trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true, (loaded, total)=>{fileOnLoad(loaded, total, i)}, (request)=>{getXHR(request)});
+    addTemporaryListItem(file, i, xhr, files);
 }
 
-function showFilesOnLoad(files) {
-    for (let i = 0; i < files.length; i++) {
-        var docDiv = document.createElement('div');
-        docDiv.className = 'trca_doc_list_item';
-        docDiv.id = '';
-
-    }
+function getProgressCircle(i) {
+    return `<div class="circle-out" id=circle_`+i+`> 
+                <div class="progress" id="progress_`+i+`"></div> 
+                <div class="circle-in"> </div> 
+            </div> `;
 }
 
 function handleFiles(files) {
@@ -280,28 +294,21 @@ function handleFiles(files) {
         file = files[i];
         trustedCA.checkFileSize(file, maxsize, () => {
             trustedCA.checkName(file, () => {
-                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i))
+                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i, files))
             })
         });
     };
-    // timeout = setTimeout(()=> {
-    // if (filesToUpload.length != 0) {
-    //     $("#trca_upload_window_header_upload_more").show();
-    //     $("#trca_upload_window_first_step").hide();
-    //     $("#trca_upload_window_second_step").show();
-    //     $("#trca_upload_second_step_footer").show();
-    // }}, 5000);
 }
 
-function addFileInList(file, docarea, currDocId) {
+function addFileInList(file, docarea, currDocId, i) {
     filesToUpload.push(file);
     var docDiv = document.createElement('div');
     docDiv.id = "trca_doc_" + currDocId;
     docDiv.className = "trca_doc_list_item";
-    docarea.appendChild(docDiv);
+    $("#trca_doc_temporary_" + i).replaceWith(docDiv);
+    $("#trca_doc_temporary_" + i).remove();
     var docName = document.createElement('div');
     docName.className = "trca_doc_list_item_name " + (file.name.substr(file.name.lastIndexOf(".") + 1));
-    // docName.className = "trca_doc_list_item_name ball";
     docName.title = file.name;
     docName.innerHTML = file.name;
     docDiv.appendChild(docName);
@@ -327,7 +334,7 @@ function addFileInList(file, docarea, currDocId) {
 function removeFromList(divid, file) {
     var ind = filesToUpload.indexOf(file);
     filesToUpload.splice(ind, 1);
-    $('#' + divid).hide();
+    $('#' + divid).remove();
     if (filesToUpload.length == 0) {
         toFirstStep()
     };
@@ -352,26 +359,8 @@ function getFileSize(size) {
     }
 }
 
-// function uploadFiles() {
-//     filesToUpload.forEach((file) => {
-//         name = 'USER';
-//         value = "<?= Docs\Utils::currUserId() ?>"
-//         var props = new Map([
-//             [name, value],
-//         ]);
-//         trustedCA.uploadFile(file, props, (item)=>{docIds.push(item)}, null);
-//     })
-//     console.log(idsToShare);
-
-//     $("#trca_upload_window_first_n_second_step").hide();
-//     $("#trca_upload_success").show();
-// }
-
 function showSendForm() {
-    // $("#trca_upload_window_first_n_second_step").hide();
-    // $("#trca_upload_window_third_step").show();
     let uploadWindow = document.getElementById("trca_upload_window");
-    // uploadWindow.style.height = '491px';
     var docarea = document.getElementById('trca_upload_file_list');
     docarea.style = 'height: 96px; width: 434px; border-radius: 2px;';
     let firstStepLabel = document.getElementById('trca_upload_first_step');
@@ -447,21 +436,6 @@ function send(send = false) {
         $("#trca_upload_window_first_n_second_step").hide();
         $('#trca_upload_succesful_send').show();
     }
-    // let sending = new Promise((resolve, rejected) => {
-    //     $.ajax({
-    //         url: AJAX_CONTROLLER + '?command=newMessage',
-    //         type: 'post',
-    //         data: {recepientEmail, theme, comment, docsIds, send},
-    //         success: function(d) {
-    //             if(d.success) {
-    //                 resolve(d);
-    //             }
-    //         }
-    //     })
-    // })
-    // sending.then(
-        
-    // )
 }
 
 function cancelSend() {

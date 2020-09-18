@@ -1,33 +1,30 @@
-.ball::before {
-    background-color: rgba(0,0,0,0);
-    border:1px solid rgba(0,183,229,0.9);
-    opacity:.9;
-    border-radius:10px;
-    /* width:10px; */
-    /* height:10px; */
-    -moz-animation:spin .9s infinite linear;
-    -webkit-animation:spin .9s infinite linear;
+.circle-out { 
+    position:relative; 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #ccc; 
+    overflow: hidden; 
+} 
+.circle-in { 
+    position: absolute; 
+    width: 16px; 
+    height: 16px; 
+    margin: 2px; 
+    border-radius: 50%; 
+    background: white; 
 }
-
-@-moz-keyframes spin {
- 0% { -moz-transform:rotate(0deg); }
- 100% { -moz-transform:rotate(360deg); }
-}
-
-@-moz-keyframes spinoff {
- 0% { -moz-transform:rotate(0deg); }
- 100% { -moz-transform:rotate(-360deg); }
-}
-
-@-webkit-keyframes spin {
- 0% { -webkit-transform:rotate(0deg); }
- 100% { -webkit-transform:rotate(360deg); }
-}
-
-@-webkit-keyframes spinoff {
- 0% { -webkit-transform:rotate(0deg); }
- 100% { -webkit-transform:rotate(-360deg); }
-}
+.progress { 
+    height: 22px;
+    width: 44px;
+    background: rgb(33, 150, 243);
+    position: absolute;
+    top:-22px;
+    left: -12px;
+    transform: rotate();
+    transform-origin: 22px 22px;
+    transition: all .3s;
+} 
 
 .trca_upload_save_draft {
     background-color: white;
@@ -443,6 +440,11 @@ input:focus::placeholder {
 .trca_doc_list_item_name::before {
     content: " ";
     padding: 0 14px;
+}
+
+.onload:before{
+    content: " ";
+    padding: 0 5px;
 }
 
 .trca_doc_list_item_size {

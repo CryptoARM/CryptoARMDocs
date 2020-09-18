@@ -685,7 +685,7 @@ trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onF
     }
 }
 
-trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false, onLoad = null) {
+trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false, onLoad = null, getXHR = null) {
     var xhr = new XMLHttpRequest();
     let formData = new FormData;
     let url = AJAX_CONTROLLER + '?command=uploadFile';
@@ -719,6 +719,9 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null,
             }
         }
     });
+    if (typeof getXHR == 'function') {
+        getXHR(xhr);
+    }
     xhr.upload.onprogress = function(file) {
         if (!toShare) {
             trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
