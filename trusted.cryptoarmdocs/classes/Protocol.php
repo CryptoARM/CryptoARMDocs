@@ -57,7 +57,7 @@ HTML;
     }
 
 
-    static function createProtocol($doc)
+    static function createProtocol($doc, $saveProtocol)
     {
 
         $firstDoc = $doc->getFirstParent();
@@ -173,7 +173,11 @@ HTML;
             $pdf->writeHTMLCell(0, 0, '', '', $signaturesText, 0, 1, 0, true, '', true);
         }
 
-        $pdf->Output($doc->getName() . '_protocol.pdf', 'D');
+        if ($saveProtocol) {
+            print_r($pdf->Output($doc->getName() . '_protocol.pdf', 'S'));
+        } else {
+            $pdf->Output($doc->getName() . '_protocol.pdf', 'D');
+        }
     }
 
 }

@@ -20,15 +20,6 @@ foreach ($coreIds as $coreId) {
     }
 }
 
-$this->addExternalJS("https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
-CJSCore::RegisterExt(
-    "components",
-    [
-        "js" => "/bitrix/js/" . $module_id . "/components.js",
-    ]
-);
-CUtil::InitJSCore(['components']);
-
 $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
@@ -44,364 +35,442 @@ if ($USER->GetFullName()) {
     $compTitle = Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOCS_BY_ORDER") . $USER->GetEmail();
 }
 
-$zipName = $compTitle . " " . date($DB->DateFormatToPHP(CSite::GetDateFormat("FULL")), time());
-$comp_id = Docs\Utils::generateUUID() ;
+include(__DIR__ . "/upload.php");
 ?>
 
-<a id="trca-reload-doc" href="<?= $_SERVER["REQUEST_URI"] ?>"></a>
+<!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
 
-<div id="trca-docs-by-user_<?= $comp_id?>">
-    <trca-docs>
-        <header-title title="<?= $compTitle ?>">
-            <?
-            if (!empty($allIds)) {
-                ?>
-                <header-menu id="trca-docs-header-menu-by-user">
-                    <header-menu-button icon="help"
-                                        :id="<?= $allIdsJs ?>"
-                                        @button-click="verifySome"
-                                        data-id="data-verify-some"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY_SOME"); ?>">
-                    </header-menu-button>
-                    <header-menu-button icon="create"
-                                        :id="<?= $allIdsJs ?>"
-                                        role="CLIENT"
-                                        @button-click="signSome"
-                                        data-id="data-sign-some"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_SOME"); ?>">
-                    </header-menu-button>
-                    <header-menu-button icon="file_download"
-                                        zipname="<?= $zipName ?>"
-                                        :id="<?= $allIdsJs ?>"
-                                        @button-click="downloadSome"
-                                        data-id="data-download-some"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD_SOME"); ?>">
-                    </header-menu-button>
-                    <header-menu-button icon="email"
-                                        :id="<?= $allIdsJs ?>"
-                                        @button-click="sendSome"
-                                        data-id="data-send-some"
-                                        message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_DOCS_SOME"); ?>">
-                    </header-menu-button>
-                    <?
-                    if ($arParams["ALLOW_REMOVAL"] === 'Y') {
-                        ?>
-                        <header-menu-button icon="delete"
-                                            :id="<?= $allIdsJs ?>"
-                                            @button-click="removeSome"
-                                            data-id="data-remove-some"
-                                            message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DELETE_SOME"); ?>">
-                        </header-menu-button>
-                        <?
-                    }
-                    ?>
-                </header-menu>
-                <?
-            }
-            ?>
-        </header-title>
-        <docs-header title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOC") ?>"
-                     date="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP") ?>"
-                     id="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_IDN") ?>"
-        ></docs-header>
-        <docs-content>
-            <?
-            if (is_array($docs)) {
-                foreach ($docs as $doc) {
-                    $docId = $doc["ID"];
-                    $docType = $doc["TYPE"];
-                    $docStatus = $doc["STATUS"];
-                    $docAccessLevel = $doc["ACCESS_LEVEL"];
-                    $docName = $doc["NAME"];
-                    $docCreated = $doc["DATE_CREATED"];
-                    $mustToSign = $doc["MUST_TO_SIGN"];
-                    $sharedStatus = $doc["SHARED_STATUS_JS"];
+<div id="trca_edo" class="trca_edo">
+    <div class="trca_edo_body">
+        <div class="trca_edo_menu ">
+            <div class="trca_edo_upload_button"  onclick="showModal()">
+                <span>Загрузить документы </span>
+            </div>
+            <div class="trca_edo_message trca_menu">
+                <div class="trca_edo_menu_item">
+                    <div class="trca_edo_check"></div>
+                    <span>Сообщения</span>
+                </div>
+                <div class="trca_edo_inbox submenu" onclick="getMessageList('incoming', 0)">
+                    <span>Исходящие</span>
+                </div>
+                <div class="trca_edo_outbox submenu" onclick="getMessageList('outgoing', 0)">
+                    <span>Входящие</span>
+                </div>
+                <div class="trca_edo_draft submenu">
+                    <span>Черновики</span>
+                </div>
+            </div>
+            <div class="trca_edo_documents trca_menu">
+                <div class="trca_edo_menu_item">
+                    <div class="trca_edo_check"></div>
+                    <span>Документы</span>
+                </div>
+                <div class="trca_edo_download submenu active_menu" onclick="getDocList(0, 0)">
+                    <span>Загруженые</span>
+                </div>
+                <div class="trca_edo_available submenu" onclick="getDocList(1, 0)">
+                    <span>Доступные</span>
+                </div>
+            </div>
+            <div class="trca_edo_label trca_menu">
+                <div class="trca_edo_menu_item">
+                    <div class="trca_edo_check"></div>
+                    <span>Метки</span>
+                </div>
+                <div class="trca_edo_labels">
+                    <div class="trca_label label_orange">Важно</div>
+                    <div class="trca_label label_violet">Партнер</div>
+                    <div class="trca_label label_blue">Тест</div>
+                    <div class="trca_label label_green">Тест</div>
+                </div>
+            </div>
+        </div>
+        <div class="trca_edo_content">
+            <div class="trca_edo_header_menu">
+                <div id="trca_edo_header_menu_buttons" class="trca_edo_header_menu_buttons">
+                    <div class="trca_header_check">
+                        <input type="checkbox">
+                    </div>
+                    <div class="trca_header_button trca_button_send" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>"></div>
+                    <div class="trca_header_button trca_button_download" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>" onclick="uploadFile()"></div>
+                    <div class="trca_header_button trca_button_remove" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>" onclick="remove()"></div>
+                </div>
+                <div class="trca_edo_header_menu_search">
+                    <div class="trca_button_search"></div>
+                    <input placeholder="Поиск">
+                    <!-- <div class="trca_button_close"></div> -->
+                </div>
+            </div>
+            <div class="trca_edo_items">
+                <div id="trca_edo_items_table" class="trca_edo_items_table">
+                    <div class="trca_edo_item" file_id="<?= $doc["ID"] ?>">
+                        <div class="trca_edo_check_item">
+                            <input type="checkbox">
+                        </div>
+                        <div class="trca_edo_item_properties">
+                            <div class="trca_edo_item_first_col">
+                                <div class="trca_edo_item_first_col_row first c_black f_s_16"></div>
+                                <div class="trca_edo_item_first_col_row second c_black"></div>
+                                <div class="trca_edo_item_first_col_row third c_gray"></div>
+                                <div class="trca_edo_item_first_col_row fourth c_gray"></div>
+                                <div></div>
+                            </div>
+                            <!-- <div class="<?//= $style ?>"></div>
+                            <div class="trca_edo_item_status">
+                                <?//= $status ?>
+                            </div> -->
+                            <div class="trca_edo_item_time">
+                                <?= $docCreated ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="trca_edo_info" style="display: none;">
+                    <div class="trca_edo_info_close"></div>
+                    <div class="trca_edo_info_title">
+                        <span><?=  Loc::getMessage("TR_CA_DOCS_COMP_DOC_INFO") ?></span>
+                        <div class="trca_edo_info_text">
+                            <div class="trca_edo_info_doc_properties">
+                                <div class="trca_edo_info_doc_first">
+                                    <?=  Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>
+                                </div>
+                                <div id="info_file_owner" class="trca_edo_info_doc_second"></div>
+                            </div>
+                            <!-- <div class="trca_edo_info_doc_properties">
+                                <div class="trca_edo_info_doc_first">
+                                    <?//=  Loc::getMessage("TR_CA_DOCS_COMP_STATUS") ?>
+                                </div>
+                                <div id="info_file_status" class="trca_edo_info_doc_second"></div>
+                            </div> -->
+                            <div class="trca_edo_info_doc_properties">
+                                <div class="trca_edo_info_doc_first">
+                                    <?=  Loc::getMessage("TR_CA_DOCS_COMP_SIZE") ?>
+                                </div>
+                                <div id="info_file_size" class="trca_edo_info_doc_second"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="trca_edo_info_title">
+                        <span><?//=  Loc::getMessage("TR_CA_DOCS_COMP_SIGN_INFO") ?></span>
+                        <div class="trca_edo_info_text">
+                            <div class="trca_edo_info_sign sign_green">
+                                <div class="trca_edo_info_sign_info">
+                                    Вы подписали и отправили документ partners@digt.ru
+                                    <br>
+                                    10 мая 07:58
+                                </div>
+                            </div>
 
-                    if ($docType == DOC_TYPE_SIGNED_FILE) {
-                        if ($docStatus == DOC_STATUS_BLOCKED) {
-                            $icon = "lock";
-                            $iconCss = "color: red";
-                        } else {
-                            if ($mustToSign) {
-                                $icon = "create";
-                                $iconCss = "color: rgb(33, 150, 243)";
-                            } else {
-                                $icon = "done_all";
-                                $iconCss = "color: green";
-                            }
-                        }
-                    } else {
-                        switch ($docStatus) {
-                            case DOC_STATUS_NONE:
-                                $icon = $mustToSign ? "create" : "";
-                                $iconCss = "color: rgb(33, 150, 243)";
-                                break;
-                            case DOC_STATUS_BLOCKED:
-                                $icon = "lock";
-                                $iconCss = "color: red";
-                                break;
-                            case DOC_STATUS_CANCELED:
-                                $icon = "check";
-                                $iconCss = "color: red";
-                                break;
-                            case DOC_STATUS_ERROR:
-                                $icon = "error";
-                                $iconCss = "color: red";
-                                break;
-                        }
-                    }
-                    ?>
-                    <docs-items id="check_<?= $docId ?>"
-                                docname="<?= $docName ?>"
-                                currentUserAccess='<?= $docAccessLevel ?>'
-                                :sharedstatus='<?= $sharedStatus ?>'
-                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_MODAL_INFO"); ?>"
-                                @button-click= "showInfoWindow"
-                                sendSome=<?= $asd ?>>
-                        <doc-name color="<?= $iconCss ?>"
-                                  icon="<?= $icon ?>"
-                                  name="<?= $doc["NAME"] ?>"
-                                  description="<?
-                                  if ($docStatus === DOC_STATUS_BLOCKED) {
-                                      echo $doc['STATUS_STRING'];
-                                  } else {
-                                      if ($mustToSign) {
-                                          echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_MUST_TO_SIGN");
-                                      } else {
-                                          echo $doc['TYPE_STRING'];
-                                      }
-                                  } ?>">
-                            <doc-name-owner owner="<?
-                            echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER");
-                            if ($docAccessLevel == "OWNER") {
-                                echo Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_OWNER2");
-                            } else {
-                                echo $doc['OWNER_USERNAME'];
-                            }
-                            ?>">
-                            </doc-name-owner>
-                        </doc-name>
-
-                        <doc-info info="<?= $docCreated ?>"
-                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_TIMESTAMP"); ?>">
-                        </doc-info>
-                        <doc-info info="<?= $doc["ORIGINAL_ID"] ?>"
-                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ID"); ?>">
-                        </doc-info>
-
-                        <doc-buttons component="by_user">
-                            <? if ($doc["TYPE"] == "1") { ?>
-                                <doc-button icon="help"
-                                                 :id="<?= $docId ?>"
-                                                 docname="<?= $docName ?>"
-                                                 @button-click="verify"
-                                                 data-id="data-verify"
-                                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_VERIFY"); ?>">
-                                </doc-button>
-                                <?
-                            }
-                            ?>
-
-                            <?
-                            if ($docAccessLevel == "SIGN" || $docAccessLevel == "OWNER") {
-                                ?>
-                                <doc-button icon="create"
-                                            :id="<?= $docId ?>"
-                                            role="CLIENT"
-                                            @button-click="sign"
-                                            data-id="data-sign"
-                                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN"); ?>">
-                                </doc-button>
-                                <?
-                            }
-                            ?>
-
-                            <doc-button icon="file_download"
-                                        :id="<?= $docId ?>"
-                                        @button-click="download"
-                                        data-id="data-download"
-                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_DOWNLOAD"); ?>">
-                            </doc-button>
-
-                            <doc-button icon="info"
-                                        :id="<?= $docId ?>"
-                                        @button-click="protocol"
-                                        data-id="data-protocol"
-                                        title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_PROTOCOL"); ?>">
-                            </doc-button>
-
-                            <doc-menu icon="share"
-                                      id="trca-docs-share-menu-by-user-<?= $docId ?>"
-                                      title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND"); ?>">
-                                <doc-menu-button icon="email"
-                                                 :id="<?= $docId ?>"
-                                                 @button-click="sendEmail"
-                                                 data-id="data-email"
-                                                 message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>"
-                                                 title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SEND_BY_EMAIL"); ?>">
-                                </doc-menu-button>
-                                <?
-                                if ($docAccessLevel == "OWNER") {
-                                    ?>
-                                    <doc-menu-button icon="supervisor_account"
-                                                     :id="<?= $docId ?>"
-                                                     @button-click="share"
-                                                     data-id="data-share"
-                                                     message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE"); ?>"
-                                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SHARE_TITLE"); ?>">
-                                    </doc-menu-button>
-                                    <doc-menu-button icon="reply_all"
-                                                     :id="<?= $docId ?>"
-                                                     @button-click="requireToSign"
-                                                     data-id="data-requireToSign"
-                                                     message="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST"); ?>"
-                                                     title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SIGN_REQUEST_TITLE"); ?>">
-                                    </doc-menu-button>
-                                    <?
-                                }
-                                ?>
-                            </doc-menu>
-                            <?
-                            if ($docAccessLevel == "OWNER") {
-                                ?>
-                                <?
-                                if ($arParams["ALLOW_REMOVAL"] === 'Y') {
-                                    ?>
-                                    <doc-button icon="delete"
-                                                :id="<?= $docId ?>"
-                                                @button-click="remove"
-                                                data-id="data-remove"
-                                                title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_REMOVE"); ?>">
-                                    </doc-button>
-                                    <?
-                                }
-                            } elseif ($docAccessLevel === "SIGN" || $docAccessLevel === "READ") {
-                                ?>
-                                <doc-button icon="close"
-                                            :id="<?= $docId ?>"
-                                            @button-click="unshare"
-                                            data-id="data-unshare"
-                                            title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_UNSHARE"); ?>">
-                                </doc-button>
-                                <?
-                            }
-                            ?>
-                        </doc-buttons>
-                    </docs-items>
-                    <?
-                }
-            }
-            ?>
-        </docs-content>
-        <?
-        if ($arParams["ALLOW_ADDING"] === 'Y') {
-            if ($USER->IsAuthorized()) {
-                $maxSize = Docs\Utils::maxUploadFileSize();
-                ?>
-                <docs-upload-file maxSize="<?= $maxSize ?>"
-                                  title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_ADD"); ?>"
-                                  value="<?= Docs\Utils::currUserId() ?>">
-                </docs-upload-file>
-                <?
-            }
-        }
-        ?>
-    </trca-docs>
+                            <div class="trca_edo_info_sign sign_orange">
+                                Требуется подпись 123@digt.ru
+                            </div>
+                        </div>
+                    </div> -->
+                    <div id="trca_edo_info_title_message" class="trca_edo_info_title" style="display: none;">
+                        <span><?=  Loc::getMessage("TR_CA_DOCS_COMP_MESSAGES") ?></span>
+                        <div class="trca_edo_info_text">
+                            <div class="trca_edo_info_message_content">
+                                <div class="trca_edo_info_message_header">
+                                    <div class="trca_edo_info_message_email"></div>
+                                    <div class="trca_edo_info_message_time"></div>
+                                </div>
+                                <div class="trca_edo_info_message_topic"></div>
+                                <div class="trca_edo_info_message_text"></div>
+                                <!-- <div class="trca_edo_info_message_docs">
+                                </div> -->
+                            </div>
+                            <div class="trca_edo_info_message_open"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    var blockedDocIds = <?= $arResult["BLOCKED_DOCUMENTS"]["IDS"]?>;
-    var blockedDocTokens = <?= $arResult["BLOCKED_DOCUMENTS"]["TOKENS"]?>;
+function showModal() {
+    $("#trca_upload_window_steps").show();
+    $("#trca_upload_window_first_n_second_step").show();
+}
 
-    if (blockedDocTokens) {
-        if (!$('#trca-modal-overlay').length > 0) {
-            trustedCA.showModalWindow(blockedDocIds);
-            var interval = setInterval(() => trustedCA.blockCheck(blockedDocTokens, interval, null), 5000);
-        }
+function uploadFile() {
+    $("#trca_upload_window_steps").show();
+    $("#trca_upload_window_download").show();
+    getChecked();
+}
+
+function downloadFiles(zipName) {
+    let ids = getChecked();
+    let methodDownload = $('input[name="download_files"]:checked').val();
+    switch (methodDownload) {
+        case "all":
+            trustedCA.download(ids, zipName, true);
+            break;
+        case "docs":
+            trustedCA.download(ids, zipName);
+            break;
     }
+    hideModal();
+}
 
-    new Vue({
-        el: '#trca-docs-by-user_<?= $comp_id?>',
-        methods: {
-            groupActions: function (ids, action) {
-                if (ids.length != 0) {
-                    action();
-                } else 
-                    trustedCA.showPopupMessage("<?= Loc::getMessage("TR_CA_DOCS_NOTHING_SELECTED") ?>", 'highlight_off', 'negative');
-            },
-            getChecked: function () {
-                let ids = new Array;
-                $('input[id^="check_"]').each(function(){
-                    if($(this).prop("checked")) {
-                        let idStr = $(this).attr("id");
-                        let id = idStr.replace("check_", "");
-                        ids.push(id);
-                    };
-                });
-                return ids;
-            },
-            sendEmail: function (id) {
-                let object = new Object();
-                trustedCA.promptAndSendEmail(id, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO');
-            },
-            sendSome: function () {
-                let object = new Object();
-                let ids = new Array;
-                ids = this.getChecked();
-                let action = () => {trustedCA.promptAndSendEmail(ids, 'MAIL_EVENT_ID_TO', object, 'MAIL_TEMPLATE_ID_TO')};
-                this.groupActions(ids, action);
-            },
-            sign: function (id, role) {
-                trustedCA.sign(id, JSON.parse(`{"role": "${role}"}`));
-            },
-            signSome: function (role) {
-                let ids = new Array;
-                ids = this.getChecked();
-                trustedCA.sign(ids, JSON.parse(`{"role": "${role}"}`));
-            },
-            verify: function (id) {
-                trustedCA.verify(id);
-            },
-            verifySome: function () {
-                let ids = new Array;
-                ids = this.getChecked();
-                let action = () => {trustedCA.verify(ids)};
-                this.groupActions(ids, action);
-            },
-            download: function (id, zipname) {
-                trustedCA.download(id, zipname);
-            },
-            downloadSome: function (zipname) {
-                let ids = new Array;
-                ids = this.getChecked();
-                let action = () => {trustedCA.download(ids, zipname)};
-                this.groupActions(ids, action);
-            },
-            protocol: function (idAr) {
-                id = idAr[0];
-                trustedCA.protocol(id);
-            },
-            share: function (id) {
-                trustedCA.promptAndShare(id, 'SHARE_SIGN');
-            },
-            remove: function (id) {
-                trustedCA.remove(id, false, trustedCA.reloadDoc);
-            },
-            removeSome: function() {
-                let ids = new Array;
-                ids = this.getChecked();
-                let action = () => {trustedCA.remove(ids, false, trustedCA.reloadDoc)};
-                this.groupActions(ids, action);
-            },
-            unshare: function (id) {
-                trustedCA.unshare(id, null, false, trustedCA.reloadDoc);
-            },
-            requireToSign: function (id) {
-                trustedCA.promptAndRequireToSign(id);
-            },
-            showInfoWindow: function (id, docname, sharedstatus, currentuseraccess) {
-                trustedCA.showInfoModalWindow(id, docname, sharedstatus, currentuseraccess);
-            }
+function remove() {
+    let ids = getChecked();
+    trustedCA.remove(ids, false, () => {$(".active_menu").click()});
+}
+
+function sign() {
+    let ids = getChecked();
+    trustedCA.sign(ids, null, () => {$(".active_menu").click()});
+}
+
+function getChecked() {
+    let ids = new Array;
+    $('.trca_edo_item').each(function(){
+        if($(this).find(".trca_edo_check_item input").prop("checked")) {
+            let id = $(this).attr("file_id");
+            ids.push(id);
+        };
+    });
+    if (ids.length !== 0) {
+        return ids;
+    } else {
+        trustedCA.showPopupMessage("Для дальнейших действий выберите документы", 'highlight_off', 'negative');
+        hideModal();
+    }
+}
+
+$('.trca_edo_info_close').click( function() {
+    $(this).parent().hide();
+});
+
+function infoItemInitialization() {
+    $(".trca_edo_item_properties").click(function() {
+        let file_id = $(this).parent().attr("file_id");
+        if (file_id) {
+            $.ajax({
+                url: AJAX_CONTROLLER + '?command=getInfoDoc',
+                type: 'post',
+                data: {id: file_id},
+                success: function (d) {
+                    if (d.data.message == true) {
+                        $("#info_file_owner").text(d.data.docowner);
+                        $("#info_file_size").text(d.data.docsize);
+                        $(".trca_edo_info_message_email").text(d.data.messageAuthor);
+                        $(".trca_edo_info_message_topic").text(d.data.messageTheme);
+                        $(".trca_edo_info_message_text").text(d.data.messageContent);
+                        $("#trca_edo_info_title_message").show();
+                    } else {
+                        $("#info_file_owner").text(d.data.docowner);
+                        $("#info_file_size").text(d.data.docsize);
+                        $("#trca_edo_info_title_message").hide();
+                    }
+                    $(".trca_edo_info").show();
+                }
+
+            });
+        } else {
+            let message_id = $(this).parent().attr("message_id");
+            $.ajax({
+                url: AJAX_CONTROLLER + '?command=getInfoMessage',
+                type: 'post',
+                data: {id: message_id},
+                success: function (d) {
+                    if (d.data.message == true) {
+                        $("#info_file_owner").text(d.data.docowner);
+                        $("#info_file_size").text(d.data.docsize);
+                        $(".trca_edo_info_message_email").text(d.data.messageAuthor);
+                        $(".trca_edo_info_message_topic").text(d.data.messageTheme);
+                        $(".trca_edo_info_message_text").text(d.data.messageContent);
+                        $("#trca_edo_info_title_message").show();
+                    } else {
+                        $("#info_file_owner").text(d.data.docowner);
+                        $("#info_file_size").text(d.data.docsize);
+                        $("#trca_edo_info_title_message").hide();
+                    }
+                    $(".trca_edo_info").show();
+                }
+            });
         }
-    })
+    });
+}
+infoItemInitialization();
+
+function chechActionInitialization(){
+    $(".trca_header_check input").removeClass("show");
+    $(".trca_edo_check_item input").click( function() {
+        let check = false;
+        $('.trca_edo_check_item input').each(function(){
+            if($(this).prop("checked")) {
+                check = true;
+            };
+        });
+
+        if (check) {
+            $(".trca_edo_check_item input").addClass("show");
+            $(".trca_header_check input").addClass("show");
+            $(".trca_header_button").addClass("op_5");
+            $(this).parent().parent().addClass("trca_edo_item_cheched");
+        } else {
+            $(".trca_edo_check_item input").removeClass("show");
+            $(".trca_header_check input").removeClass("show");
+            $(".trca_header_button").removeClass("op_5");
+            $(this).parent().parent().removeClass("trca_edo_item_cheched");
+        }
+    });
+
+
+    $(".trca_header_check input").click( function() {
+        if ($(this).prop("checked")) {
+            $(".trca_edo_check_item input").prop( 'checked', true);
+            $(".trca_edo_item").addClass("trca_edo_item_cheched");
+        } else {
+            $(".trca_edo_check_item input").prop( 'checked', false);
+            $(".trca_edo_check_item input").removeClass("show");
+            $(".trca_header_check input").removeClass("show");
+            $(".trca_edo_item").removeClass("trca_edo_item_cheched");
+        }
+    });
+}
+chechActionInitialization();
+
+// shared - boolean(0 or 1)
+// page - integer(0 => 1)
+function getDocList(shared, page) {
+    let count = 2;
+    let data = {shared: shared, page: page, count: count}
+    $(".trca_edo_info").hide();
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getDocList',
+        type: 'post',
+        data: data,
+        success: function (d) {
+            let buttons = document.querySelectorAll(".trca_header_button");
+            buttons.forEach((element) => {
+                element.remove();
+            });
+            if (shared == 0) {
+                $('.trca_edo_download').addClass("active_menu");
+                $('.trca_edo_available').removeClass("active_menu");
+                createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", null);
+                createHeaderButton("trca_button_download", "<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>", "uploadFile()");
+                createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "remove()");
+            } else {
+                $('.trca_edo_available').addClass("active_menu");
+                $('.trca_edo_download').removeClass("active_menu");
+                createHeaderButton("trca_button_download", "<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>", "uploadFile()");
+                createHeaderButton("trca_button_sign", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SIGN") ?>", "sign()");
+            }
+            createtableDocs(d.data);
+            infoItemInitialization();
+            chechActionInitialization();
+        }
+    });
+}
+//type - incoming,drafts,outgoing
+//page
+//count
+function getMessageList(type, page) {
+    let count = 10;
+    let data = {typeOfMessage: type, page: page, count: count}
+    $(".trca_edo_info").hide();
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getMessageList',
+        type: 'post',
+        data: data,
+        success: function (d) {
+            createtableMessages(d.messages);
+            infoItemInitialization();
+            chechActionInitialization();
+        }
+    });
+}
+
+function createtableDocs(docs) {
+    let table = document.getElementById("trca_edo_items_table");
+    table.innerHTML = "";
+
+    docs.forEach(doc => {
+        if (doc.owner == true) {
+            doc.owner = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER_I") ?>";
+        }
+        let element = {};
+        element.file_id = doc.id;
+        element.fisrt = doc.name;
+        element.second = '';
+        element.third = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>" + doc.owner;
+        element.fourth = '';
+        element.dateCreated = doc.dateCreated;
+        let itemTable = createItemTable(element);
+        table.appendChild(itemTable);
+    });
+}
+
+function createtableMessages(messages) {
+    console.log(messages);
+    let table = document.getElementById("trca_edo_items_table");
+    table.innerHTML = "";
+
+    messages.forEach(message => {
+        let element = {};
+        element.message_id = message.id;
+        element.docs = message.docs;
+        element.fisrt = message.sender;
+        element.second = message.theme;
+        element.third = message.comment;;
+        element.dateCreated = message.time;
+        let itemTable = createItemTable(element);
+        table.appendChild(itemTable);
+    });
+}
+
+
+function createItemTable(element) {
+    let itemTable = document.createElement("div");
+    itemTable.className= "trca_edo_item";
+    if (element.file_id)
+        itemTable.setAttribute("file_id", element.file_id);
+    if (element.message_id)
+        itemTable.setAttribute("message_id", element.message_id);
+
+    if ( element.docs) {
+        element.fourth  = ``;
+        element.docs.forEach(doc =>{
+            element.fourth += `
+            <div class="trca_edo_item_first_col_row_file ${doc.name.substr(doc.name.lastIndexOf(".") + 1)}" file_id="${doc.id}">${doc.name}</div>`;
+        });
+    }
+    let itemTableContent= `
+    <div class="trca_edo_check_item">
+        <input type="checkbox">
+    </div>
+    <div class="trca_edo_item_properties">
+        <div class="trca_edo_item_first_col">
+            <div class="trca_edo_item_first_col_row first   c_black f_s_16">${element.fisrt}</div>
+            <div class="trca_edo_item_first_col_row second  c_black">${element.second}</div>
+            <div class="trca_edo_item_first_col_row third   c_gray">${element.third}</div>
+            <div class="trca_edo_item_first_col_row fourth  c_gray ">${element.fourth}</div>
+        </div>
+        <div class="trca_edo_item_time">
+            ${element.dateCreated}
+        </div>
+    </div>`;
+    itemTable.innerHTML = itemTableContent;
+
+    return itemTable;
+}
+
+function createHeaderButton(style, title, action) {
+    let button = document.createElement("div");
+    button.classList = "trca_header_button ";
+    button.className += style;
+    button.setAttribute("title", title);
+    button.setAttribute("onclick", action);
+    button.textContent = title;
+
+    let header = document.getElementById("trca_edo_header_menu_buttons");
+    header.appendChild(button);
+}
+
 </script>

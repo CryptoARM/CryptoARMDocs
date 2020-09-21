@@ -116,7 +116,7 @@ class Database {
      * @return string transaction UUID
      * @global object $DB     Bitrix global CDatabase object
      */
-    static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null, $extra = null) {
+    static function insertTransaction($docsId = null, $userId = null, $typeTransaction = null) {
         if (is_null($docsId)) {
             return false;
         }
@@ -134,13 +134,12 @@ class Database {
 
         global $DB;
         $sql = 'INSERT INTO ' . DB_TABLE_TRANSACTION . ' '
-            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE, EXTRA) '
+            . '(UUID, DOCUMENTS_ID, USER_ID, TRANSACTION_TYPE) '
             . 'VALUES ('
             . '"' . $UUID . '", '
             . '"' . $DB->ForSql($insertDocsId) . '", '
             . $userId . ', '
-            . $typeTransaction . ', '
-            .'"' . $DB->ForSql($extra) . '"'
+            . $typeTransaction
             . ')';
         $DB->Query($sql);
 
@@ -165,7 +164,6 @@ class Database {
             $array["USER_ID"] = (int)$array["USER_ID"];
             $array["TRANSACTION_STATUS"] = (int)$array["TRANSACTION_STATUS"];
             $array["TRANSACTION_TYPE"] = (int)$array["TRANSACTION_TYPE"];
-            $array["EXTRA"] = (string)$array["EXTRA"];
             return $array;
         }
         return null;
@@ -181,19 +179,6 @@ class Database {
         global $DB;
         $sql = 'UPDATE ' . DB_TABLE_TRANSACTION . ' SET '
             . 'TRANSACTION_STATUS = ' . DOC_TRANSACTION_COMPLETED . ' '
-            . 'WHERE UUID = "' . $UUID . '"';
-        $DB->Query($sql);
-    }
-
-    /**
-     * Remove sign transaction by UUID in DB
-     * @param string $UUID transaction UUID
-     * @return void
-     * @global object $DB Bitrix global CDatabase object
-     */
-    static function removeTransaction($UUID) {
-        global $DB;
-        $sql = 'DELETE FROM ' . DB_TABLE_TRANSACTION . '  '
             . 'WHERE UUID = "' . $UUID . '"';
         $DB->Query($sql);
     }
@@ -371,7 +356,7 @@ class Database {
         // Removes childId from parent document
         Database::saveDocumentParent($doc);
     }
-
+    
     /**
      * Returns ids of all documents using in Workflows
      * @return array
@@ -381,7 +366,6 @@ class Database {
         global $DB;
         $sql = 'SELECT DISTINCT DOCUMENT_ID FROM b_bp_workflow_instance GROUP BY DOCUMENT_ID';
         $row = $DB->Query($sql);
-        $docIds = array();
         while ($array = $row->Fetch()) {
             $doc = $array["DOCUMENT_ID"];
             $docIds[] =  $doc;
@@ -893,7 +877,7 @@ class Database {
      * @param true    $shared Include shared documents
      * @return DocumentCollection
      */
-    static function getDocumentsByUser($userId, $shared = false) {
+    static function getDocumentsByUser($userId, $shared = false, $page = null, $count = null) {
         global $DB;
         $userId = (int)$userId;
 
@@ -915,7 +899,11 @@ class Database {
             $sql .= "
                 TDP.TYPE = 'USER' AND TDP.VALUE = '$userId'";
         }
-        $sql .= " GROUP BY TD.ID;";
+        $sql .= " GROUP BY TD.ID ";
+        if ($page && $count) {
+            $firstElem = $page * $count;
+            $sql .= "LIMIT " . $firstElem . ", " . $count;
+        }
         $rows = $DB->Query($sql);
         $docs = new DocumentCollection;
         while ($row = $rows->Fetch()) {

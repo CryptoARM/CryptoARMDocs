@@ -4,9 +4,9 @@ namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
 use DateTime;
-use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\ModuleManager;
+use Bitrix\Main\Localization\Loc;
 
 /**
  * Controllers for AJAX requests.
@@ -195,82 +195,6 @@ class AjaxCommand {
     }
 
     /**
-     * @param array $params [props]: array of docs properties
-     *              
-     *
-     * @return array [success]: operation result status
-     *               [message]: operation result message
-     */
-
-    static function uploadFile($params) {
-        $res = [
-            "success" => false,
-            "message" =>"Unknown error in AjaxCommand.uploadFile",
-        ];
-
-        $ar = json_decode($params["props"], true);
-
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            $res['noAuth'] = true;
-            return $res;
-        }
-
-        $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
-
-        if (empty($_FILES['file']['name'])) {
-            $res['message'] = 'Nothing to download';
-        }
-
-        if ($_FILES['file']['error'] != 0) {
-            $res['message'] = 'File error';
-            $res['fileError'] = true;
-            $res['errorCode'] = $_FILES['file']['error'];
-            return $res;
-        }
-
-        if ($_FILES['file']['size'] == 0) {
-            $res['emptyFile'] = true;
-            $res['message'] = 'Empty file';
-            return $res;
-        }
-
-        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ (){}[]\.-]/u', '', $_FILES['file']['name']);
-        if ($checkname != $_FILES['file']['name']) {
-            $res['nameError'] = true;
-            $res['message'] = 'Unacceptable name';
-            return $res;
-        }
-
-        $uniqid = (string)uniqid();
-        $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
-        mkdir($newDocDir);
-        $newDocFilename = Utils::mb_basename($_FILES['file']['name']);
-        $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
-        $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
-
-        $absolutePath = $newDocDir . $newDocFilename;
-        $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
-
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $absolutePath)) {
-            $props = new PropertyCollection();
-
-            foreach ($ar as $prop) {
-                $props->add(new Property((string)$prop[0], (string)$prop[1]));
-            }
-
-            $doc = Utils::createDocument($relativePath, $props);
-        }
-
-        unset($_FILES['file']['name']);
-
-        $res["message"] = "Document is uploaded";
-        $res["success"] = true;
-
-        return $res;
-    }
-
-    /**
      * Recieves signed file from signing client through POST method.
      *
      * Creates new document and updates type and status of other documents accordingly.
@@ -369,6 +293,7 @@ class AjaxCommand {
 
             $newDoc->setHash(hash_file('md5',$_SERVER['DOCUMENT_ROOT'] . '/' . rawurldecode($newDoc->getPath())));
             $newDoc->setSignType(TR_CA_DOCS_TYPE_SIGN);
+            $newDoc->save();
 
             // Drop "blocked" status of original doc
             $doc = Database::getDocumentById($idDoc);
@@ -384,7 +309,6 @@ class AjaxCommand {
                     Form::upload($doc, $extra);
                 }
             }
-            $newDoc->save();
         }
         Utils::log([
             "action" => "signed",
@@ -464,7 +388,6 @@ class AjaxCommand {
             return $res;
         }
 
-        $wfs = [];
         if($wf) {
             $docsInWF = Database::getDocumentIdsInWorkflows();
             foreach ($ids as $id) {
@@ -589,7 +512,8 @@ class AjaxCommand {
                     $detachedSign = $doc;
                     $doc = Database::getDocumentById($doc->getOriginalId());
                 } else {
-                    if ($count === 1) {
+                    $protocolFlage =json_decode($params["protocol"], true);
+                    if ($count === 1 && !$protocolFlage) {
                         return self::content(["id" => $doc->getId()]);
                     }
                 }
@@ -639,11 +563,41 @@ class AjaxCommand {
                     }
                     $docsFoundPaths[] = $newDocPath;
                 }
+                if ($params["protocol"]) {
+                    ob_start();
+                    $paramsProtocol = [
+                        "id" => $doc->getId(),
+                        "protocol" => true
+                    ];
+                    AjaxCommand::protocol($paramsProtocol);
+                    $pdf_content=ob_get_contents();
+                    ob_clean();
+
+                    $protocolId = \CFile::SaveFile(array(
+                        'name' => $doc->getName() . '_protocol.pdf',
+                        'size' => strlen($pdf_content),
+                        'type' => 'application/pdf',
+                        'content' => $pdf_content,
+                        ),
+                        'tmp'
+                    );
+
+                    $protocolIds[] = $protocolId;
+                    $pathProtocol = $_SERVER['DOCUMENT_ROOT'] . \CFile::GetPath($protocolId);
+                    $newDocPath = $sDirTmpPath . $doc->getName() . '_protocol.pdf';
+                    copy($pathProtocol, $newDocPath);
+
+                    $docsFoundPaths[] = $newDocPath;
+                }
             }
             $archiveObject->Pack($docsFoundPaths);
 
             foreach ($docsFoundPaths as $file) {
                 if (is_file($file)) unlink($file);
+            }
+
+            foreach ($protocolIds as $protocolId) {
+                if (($protocolId)) \CFile::Delete($protocolId);
             }
 
             rmdir($sDirTmpPath);
@@ -799,7 +753,12 @@ class AjaxCommand {
 
         $doc = $res['docsOk']->getList()[0];
 
-        Protocol::createProtocol($doc);
+        $saveProtocol = $params["protocol"];
+        if ($saveProtocol) {
+            Protocol::createProtocol($doc, true);
+        } else {
+            Protocol::createProtocol($doc, false);
+        }
     }
 
 
@@ -981,7 +940,7 @@ class AjaxCommand {
             return $res;
         }
 
-        $email = $params["email"][0];
+        $email = $params["email"];
         $level = $params["level"];
         $sendEmail = array_key_exists("sendEmail", $params) ? $params["sendEmail"] : true;
 
@@ -1571,5 +1530,468 @@ class AjaxCommand {
         }
 
     }
-}
 
+    /**
+     * @param array $params [typeOfMessage]
+     *                      [page]
+     *                      [count]
+     */
+
+    static function getMessageList($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getMessageList",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if(!$params["typeOfMessage"]) {
+            $res['message'] = 'Get no type';
+            return $res;
+        }
+
+        if ($params["page"] && $params["count"] ) {
+            $args['firstElem'] = $params["page"] * $params["count"];
+            $args['count'] = $params['count'];
+        }
+
+        $args["userId"] = Utils::currUserId();
+
+        $args['typeOfMessage'] = $params['typeOfMessage'];
+        switch ($args["typeOfMessage"]) {
+            case "incoming":
+                $mesIds = Messages::getIncomingMessages($args);
+                break;
+            case "drafts":
+            case "outgoing":
+                $mesIds = Messages::getOutgoingMessages($args);
+                break;
+            default:
+                $res["message"] = "Unknown type";
+                return $res;
+        }
+        if ($mesIds) {
+            $res['messages'] = [];
+            foreach ($mesIds as $mesId) {
+                $message = Messages::getMessageInfo($mesId);
+                $message["id"] = $mesId;
+                if ($message["sender"])
+                    $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+                if ($message["recepient"])
+                    $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+                if ($message["docs"]) {
+                    foreach ($message["docs"] as $docId) {
+                        $docName = Database::getDocumentById($docId)->getName();
+                        $docs[]  = [
+                            "id" => $docId,
+                            "name" => $docName
+                        ];
+                    }
+                    $message["docs"] = $docs;
+                }
+
+                $dateCreated = strtotime($message["time"]);
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+                $message["time"] = $dateCreated;
+
+                $res['messages'][] = $message;
+            }
+            $res['success'] = true;
+            $res['message'] = 'Success';
+        } else {
+            $res['message'] = 'No messages';
+            $res['noMess'] = true;
+        }
+        return $res;
+    }
+
+    /**
+     * Writes all the message's data into the database
+     * 
+     * @param array $params [docsIds]: array of doc Ids in message
+     *                      [fields]: array of message's fields
+     *                              []
+     *                              []
+     *                      [send]: if false - message in draft
+     */
+
+    static function newMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.createMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAith'] = 'true';
+        };
+
+        if(!$params['docsIds']) {
+            $res['message'] = 'Nothing to send';
+            return $res;
+        };
+
+        $params['recepientEmail'] = trim($params['recepientEmail']);
+
+        if ($params['send'] == "true"){
+            if ($params['recepientEmail'] == null) {
+                $res['message'] = 'No Email';
+                return $res;
+            };
+
+            $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+            if (!$userId) {
+                $res['message'] = 'User not exists';
+                return $res;
+            }
+        } else {
+            if ($params['recepientEmail'] != null) {
+                $userId = Utils::getUserIdByEmail($params['recepientEmail']);
+                if (!$userId) {
+                    $res['message'] = 'User not exists';
+                    return $res;
+                }
+            }
+        }
+
+        $params['recepientId'] = $userId;
+
+        $draft = Messages::createDraft($params);
+        $res['messId'] = $draft;
+        $res['message'] = "Draft is created";
+
+        if($params['send'] == "true") {
+            $par['messId'] = $draft;
+            Messages::sendMessage($par);
+            $res['message'] = "Message sent";
+        }
+
+        $res['success'] = true;
+        return $res;
+    }
+
+    static function sendCancel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.sendCancel",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        } else {
+            $userId = Utils::currUserId();
+            if (!$params["messId"]) {
+                $res['message'] = 'Nothing to remove';
+                return $res; 
+            }
+            if (!Messages::isMessageExists($params["messId"])) {
+                $res['message'] = 'Message not exists';
+                return $res;
+            }
+            if (!($userId == Messages::getSenderId($params['messId']))) {
+                $res['message'] = 'Not a sender try to cancel';
+                return $res;
+            }
+        }
+
+        $messId = $params['messId'];
+        $success = Messages::sendCancelInDB($params);
+        if ($success) {
+            $res['message'] = 'Message sending is cancelled';
+            $res['success'] = true;
+        } else {
+            $res['message'] = 'Too late to cancel';
+            $res['success'] = false;
+            $res['toLate'] = true;
+            return $res;
+        }
+    }
+
+    /**
+     * @param array $params [searchKey]
+     *                      [typeOfMessage]
+     */
+
+    static function searchMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.searchMessage",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        } else {
+            $params['userId'] = Utils::currUserId();
+        }
+
+        if (!$params['searchKey']) {
+            $res['message'] = 'Nothing to search';
+            return $res;
+        }
+
+        if (!$params['typeOfMessage']) {
+            $res['message'] = 'Nowhere to search';
+            return $res;
+        }
+
+        $res['messageIds'] = Messages::searchMessage($params);
+        if (count($res['messageIds']) != 0) {
+            $res['message'] = 'Found some';
+            $res['founded'] = true;
+        } else {
+            $res['message'] = 'Found nothing';
+            $res['noMess'] = true;
+        }
+        $res['success'] = true;
+        return $res;
+    }
+
+    /**
+     * @param array $params [messId]: id of draft
+     *                      [filelds]: array of changes
+     *                      [send]: if true - send draft
+     *
+     */
+
+    static function changeDraft($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.verify",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        if($params['fields']) {
+            $args['docId'] = $params['docsIds'];
+            $args['recepientId'] = $params['fields']['recepientId'];
+            $args['theme'] = $params['fields']['theme'];
+            $args['comment'] = $params['fields']['comment'];
+            $draft = Messages::updateDraft($args);
+            $res['message'] = "Draft succesfully updated";
+        }
+
+        if($res['send']) {
+            Messages::sendMessage($draft);
+            $res['message'] = "Message succesfully sent";
+        }
+
+        return $res;
+    }
+
+    /**
+     * @param array $params [props]: array of docs properties
+     *
+     *
+     * @return array [success]: operation result status
+     *               [message]: operation result message
+     */
+
+    static function uploadFile($params) {
+        $res = [
+            "success" => false,
+            "message" =>"Unknown error in AjaxCommand.uploadFile",
+        ];
+
+        $ar = json_decode($params["props"], true);
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        $DOCUMENTS_DIR = Option::get(TR_CA_DOCS_MODULE_ID, 'DOCUMENTS_DIR', '/docs/');
+
+        if (empty($_FILES['file']['name'])) {
+            $res['message'] = 'Nothing to download';
+        }
+
+        if ($_FILES['file']['error'] != 0) {
+            $res['message'] = 'File error';
+            $res['fileError'] = true;
+            $res['errorCode'] = $_FILES['file']['error'];
+            return $res;
+        }
+
+        if ($_FILES['file']['size'] == 0) {
+            $res['emptyFile'] = true;
+            $res['message'] = 'Empty file';
+            return $res;
+        }
+
+        $checkname = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_ (){}[]\.-]/u', '', $_FILES['file']['name']);
+        if ($checkname != $_FILES['file']['name']) {
+            $res['nameError'] = true;
+            $res['message'] = 'Unacceptable name';
+            return $res;
+        }
+
+        $uniqid = (string)uniqid();
+        $newDocDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $DOCUMENTS_DIR . '/' . $uniqid . '/';
+        mkdir($newDocDir);
+        $newDocFilename = Utils::mb_basename($_FILES['file']['name']);
+        $newDocFilename = preg_replace('/[\s]+/u', '_', $newDocFilename);
+        $newDocFilename = preg_replace('/[^a-zA-Z' . Loc::getMessage("TR_CA_DOCS_CYR") . '0-9_\.-]/u', '', $newDocFilename);
+        $absolutePath = $newDocDir . $newDocFilename;
+        $relativePath = $DOCUMENTS_DIR . $uniqid . '/' . $newDocFilename;
+
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $absolutePath)) {
+            $props = new PropertyCollection();
+
+            foreach ($ar as $prop) {
+                $props->add(new Property((string)$prop[0], (string)$prop[1]));
+            }
+
+            $doc = Utils::createDocument($relativePath, $props);
+        }
+
+        unset($_FILES['file']['name']);
+
+        $res["message"] = "Document is uploaded";
+        $res["doc"] = $doc->getId();
+        $res["success"] = true;
+
+        return $res;
+    }
+
+    public function getInfoDoc($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+        ];
+
+        $id = $params["id"];
+
+        if (!$id) {
+            $res["message"] = "id is not find in params";
+            return $res;
+        }
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $doc = Database::getDocumentById($id);
+
+        if ($doc) {
+
+            $messageId = Messages::getMessagesByDocument($doc->getFirstParent()->getId());
+
+            if (count($messageId) > 0) {
+                $message = Messages::getMessageInfo($messageId);
+
+                $data = [
+                    "docname" => $doc->getName(),
+                    "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                    "docowner" =>  Utils::getUserName($doc->getOwner()),
+                    "doctype" => $doc->getType(),
+                    "messageTheme" => $message["theme"],
+                    "messageContent" => $message["comment"],
+                    "messageAuthor" => Utils::getUserName($message["sender"]),
+                    "message" => true,
+                ];
+            } else {
+                $data = [
+                    "docname" => $doc->getName(),
+                    "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                    "docowner" =>  Utils::getUserName($doc->getOwner()),
+                    "doctype" => $doc->getType(),
+                    "message" => false,
+                ];
+            }
+
+            return [
+                "success" => true,
+                "message" => "ok",
+                "data" => $data,
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
+    }
+
+    public function getDocList($params) {
+
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $shared = $params["shared"];
+
+        $page = $params["page"];
+
+        $count = $params["count"];
+        if (!$count) {
+            $res["message"] = "count is not find in params";
+            return $res;
+        }
+
+        $currUserId = Utils::currUserId();
+        $docs = Database::getDocumentsByUser($currUserId, $shared, $page, $count);
+
+        if ($docs) {
+            foreach ($docs->getList() as $doc) {
+
+                if ($doc->getOwner() == $currUserId && $shared)
+                    continue;
+
+                $docProps["id"] = $doc->getId();
+                $docProps["name"] = $doc->getName();
+                if ($doc->getOwner() == $currUserId){
+                    $docProps["owner"] = true;
+                } else {
+                    $docProps["owner"] = Utils::getUserName($doc->getOwner());
+                }
+
+
+                $dateCreated = strtotime(Database::getDocumentById($doc->getId())->getCreated());
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+
+                $docProps["dateCreated"] = $dateCreated;
+                $docsProps[] = $docProps;
+            }
+
+            return [
+                "success" => true,
+                "message" => "ok",
+                "data" => $docsProps,
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
+    }
+}

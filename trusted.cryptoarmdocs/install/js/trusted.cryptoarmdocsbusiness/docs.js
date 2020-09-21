@@ -691,23 +691,26 @@ trustedCA.multipleUpload = function(files, props, maxsize, onSuccess = null, onF
     }
 }
 
-trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null) {
+trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null, toShare = false, onLoad = null, getXHR = null) {
     var xhr = new XMLHttpRequest();
     let formData = new FormData;
     let url = AJAX_CONTROLLER + '?command=uploadFile';
+    let param = null;
     xhr.open('POST', url, true);
     formData.append('file', file);
     formData.append('props', JSON.stringify(props));
     xhr.responseType = "json";
     xhr.addEventListener('readystatechange', function() {
-        console.log(xhr.readyState);
         if (xhr.readyState == 4 && xhr.status == 200) {
             trustedCA.show_messages(xhr.response);
-            console.log(xhr.response);
             if (xhr.response.success) {
                 if (typeof onSuccess == 'function') {
-                    onSuccess();
+                    if (toShare) {
+                        param = xhr.response.doc;
+                    }
+                    onSuccess(param);
                 };
+                console.log(xhr.response.doc);
                 trustedCA.showPopupMessage(UPLOAD_1 + file.name + UPLOAD_2, 'done', 'positive' );
             } else {
                 if (typeof onFailure == 'function') {
@@ -722,12 +725,20 @@ trustedCA.uploadFile = function(file, props, onSuccess = null, onFailure = null)
             }
         }
     });
+    if (typeof getXHR == 'function') {
+        getXHR(xhr);
+    }
     xhr.upload.onprogress = function(file) {
-        trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+        if (!toShare) {
+            trustedCA.showPopupMessage(ONLOAD_1 + (file.loaded/1024/1024).toFixed(2) + ONLOAD_2 + (file.total/1024/1024).toFixed(2) , 'vertical_align_bottom', 'neural' );
+        } else {
+            if (typeof onLoad == 'function') {
+                onLoad(file.loaded, file.total);
+            }
+        }
     }
     xhr.send(formData);
 };
-
 trustedCA.checkName = function (file, onSuccess = null, onFailure = null){
     var new_name = file.name.replace(DOWNLOAD_FILE_NAME_SYMBOLS,'');
     if (new_name !== file.name){

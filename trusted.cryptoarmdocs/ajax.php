@@ -35,6 +35,21 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "sendCancel":
+            $res = Docs\AjaxCommand::sendCancel($params);
+            break;
+        case "searchMessage":
+            $res = Docs\AjaxCommand::searchMessage($params);
+            break;
+        case "newMessage":
+            $res = Docs\AjaxCommand::newMessage($params);
+            break;
+        case "getMessageList":
+            $res = Docs\AjaxCommand::getMessageList($params);
+            break;
+        case "changeDraft":
+            $res = Docs\AjaxCommand::changeDraft($params);
+            break;
         case "share":
             $res = Docs\AjaxCommand::share($params);
             break;
@@ -110,6 +125,12 @@ if (isset($command)) {
             break;
         case "getTransactionUrlByToken":
             $res = Docs\AjaxCommand::getTransactionUrlByToken($_REQUEST);
+            break;
+        case "getDocList":
+            $res = Docs\AjaxCommand::getDocList($params);
+            break;
+        case "getInfoDoc":
+            $res = Docs\AjaxCommand::getInfoDoc($params);
             break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
