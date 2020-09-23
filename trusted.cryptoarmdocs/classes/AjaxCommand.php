@@ -3,6 +3,7 @@
 namespace Trusted\CryptoARM\Docs;
 
 use Bitrix\Main\Loader;
+use Bitrix\UI\Util;
 use DateTime;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
@@ -1774,10 +1775,12 @@ class AjaxCommand {
         }
 
         $mesIds = [];
-        $searchKeys = explode(',', $params['searchKey']);
+        $searchKeys = explode(' ', $params['searchKey']);
         foreach($searchKeys as $key) {
-            $params['searchKey'] = trim($key, '+');
-            $mesIds = array_merge($mesIds, Messages::searchMessage($params));
+            if ($key != null) {
+                $params['searchKey'] = $key;
+                $mesIds = array_merge($mesIds, Messages::searchMessage($params));
+            }
         }
         $mesIds = array_unique($mesIds);
         $res['ids'] = $mesIds;
