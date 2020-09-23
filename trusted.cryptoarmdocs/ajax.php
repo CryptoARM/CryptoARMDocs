@@ -47,8 +47,14 @@ if (isset($command)) {
         case "getMessageList":
             $res = Docs\AjaxCommand::getMessageList($params);
             break;
+        case "getMessageInfo":
+            $res = Docs\AjaxCommand::getMessageInfo($params);
+            break;
         case "changeDraft":
             $res = Docs\AjaxCommand::changeDraft($params);
+            break;
+        case "deleteDraft":
+            $res = Docs\AjaxCommand::deleteDraft($params);
             break;
         case "share":
             $res = Docs\AjaxCommand::share($params);

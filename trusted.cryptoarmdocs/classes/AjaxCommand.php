@@ -1565,8 +1565,8 @@ class AjaxCommand {
             case "incoming":
                 $mesIds = Messages::getIncomingMessages($args);
                 break;
-            case "drafts":
             case "outgoing":
+            case "drafts":
                 $mesIds = Messages::getOutgoingMessages($args);
                 break;
             default:
@@ -1616,7 +1616,7 @@ class AjaxCommand {
 
     /**
      * Writes all the message's data into the database
-     * 
+     *
      * @param array $params [docsIds]: array of doc Ids in message
      *                      [fields]: array of message's fields
      *                              []
@@ -1678,6 +1678,31 @@ class AjaxCommand {
         $res['success'] = true;
         return $res;
     }
+    /**
+     * returns information about message
+     * @param array
+     */
+    static function getMessageInfo($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getMessageInfo",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        $res["messageInfo"] = Messages::getMessageInfo($params['id']);
+        $res["messageInfo"]["sender"] = Utils::getUserEmail($params['messageInfo']['sender']);
+        if ($res["messageInfo"]["recepient"] != null) {
+            $res["messageInfo"]["recepient"] = Utils::getUserEmail($params['messageInfo']['recepient']);
+        }
+        $res["success"] = true;
+        $res["message"] = "Success";
+        return $res;
+    }
 
     static function sendCancel($params) {
         $res = [
@@ -1711,7 +1736,7 @@ class AjaxCommand {
             $res['message'] = 'Message sending is cancelled';
             $res['success'] = true;
         } else {
-            $res['message'] = 'Too late to cancel';
+            $res['message'] = 'Cannot cancel';
             $res['success'] = false;
             $res['toLate'] = true;
             return $res;
@@ -1747,10 +1772,49 @@ class AjaxCommand {
             return $res;
         }
 
-        $res['messageIds'] = Messages::searchMessage($params);
-        if (count($res['messageIds']) != 0) {
+        $mesIds = [];
+        $searchKeys = explode(',', $params['searchKey']);
+        foreach($searchKeys as $key) {
+            $params['searchKey'] = trim($key, '+');
+            $mesIds = array_merge($mesIds, Messages::searchMessage($params));
+        }
+        $mesIds = array_unique($mesIds);
+        $res['ids'] = $mesIds;
+        if (count($mesIds) != 0) {
             $res['message'] = 'Found some';
             $res['founded'] = true;
+            $res['messages'] = [];
+            foreach ($mesIds as $mesId) {
+                $message = Messages::getMessageInfo($mesId);
+                $message["id"] = $mesId;
+                if ($message["sender"])
+                    $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+                if ($message["recepient"])
+                    $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+                if ($message["docs"]) {
+                    foreach ($message["docs"] as $docId) {
+                        $docName = Database::getDocumentById($docId)->getName();
+                        $docs[]  = [
+                            "id" => $docId,
+                            "name" => $docName
+                        ];
+                    }
+                    $message["docs"] = $docs;
+                }
+
+                $dateCreated = strtotime($message["time"]);
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+                $message["time"] = $dateCreated;
+
+                $res['messages'][] = $message;
+
+            }
         } else {
             $res['message'] = 'Found nothing';
             $res['noMess'] = true;
@@ -1869,6 +1933,28 @@ class AjaxCommand {
         $res["success"] = true;
 
         return $res;
+    }
+
+    public function deleteDraft($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.deleteDraft",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        } else {
+            $userId = Utils::currUserId();
+        }
+
+        $senderId = Messages::getSenderId($params['draftId']);
+        if($userId != $senderId) {
+            $res['message'] = 'Not a sender';
+            return $res;
+        }
+
+        Messages::deleteDraft($params);
     }
 
     public function getInfoDoc($params) {

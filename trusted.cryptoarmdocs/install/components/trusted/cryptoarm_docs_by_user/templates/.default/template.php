@@ -51,13 +51,13 @@ include(__DIR__ . "/upload.php");
                     <div class="trca_edo_check"></div>
                     <span>Сообщения</span>
                 </div>
-                <div class="trca_edo_inbox submenu" onclick="getMessageList('incoming', 0)">
+                <div class="trca_edo_inbox submenu" onclick="getMessageList('outgoing', 0)">
                     <span>Исходящие</span>
                 </div>
-                <div class="trca_edo_outbox submenu" onclick="getMessageList('outgoing', 0)">
+                <div class="trca_edo_outbox submenu" onclick="getMessageList('incoming', 0)">
                     <span>Входящие</span>
                 </div>
-                <div class="trca_edo_draft submenu">
+                <div class="trca_edo_draft submenu" onclick="getMessageList('drafts', 0)">
                     <span>Черновики</span>
                 </div>
             </div>
@@ -98,7 +98,7 @@ include(__DIR__ . "/upload.php");
                 </div>
                 <div class="trca_edo_header_menu_search">
                     <div class="trca_button_search"></div>
-                    <input placeholder="Поиск">
+                    <input placeholder="Поиск" id="trca_search">
                     <!-- <div class="trca_button_close"></div> -->
                 </div>
             </div>
@@ -241,6 +241,21 @@ function getChecked() {
     }
 }
 
+searchArea = document.getElementById("trca_search");
+
+searchArea.addEventListener("keyup", function(){
+    let length = this.value.length;
+    let searchKey = this.value;
+    let typeOfMessage = 'all';
+    if (length>2) {
+        searchDocument(typeOfMessage, searchKey);
+    }
+});
+
+function searchDocument(typeOfMessage, searchKey) {
+    trustedCA.ajax("searchMessage", {typeOfMessage, searchKey})
+};
+
 $('.trca_edo_info_close').click( function() {
     $(this).parent().hide();
 });
@@ -273,7 +288,7 @@ function infoItemInitialization() {
         } else {
             let message_id = $(this).parent().attr("message_id");
             $.ajax({
-                url: AJAX_CONTROLLER + '?command=getInfoMessage',
+                url: AJAX_CONTROLLER + '?command=getMessageInfo',
                 type: 'post',
                 data: {id: message_id},
                 success: function (d) {

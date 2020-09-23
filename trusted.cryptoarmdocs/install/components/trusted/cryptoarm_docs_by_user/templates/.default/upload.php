@@ -1,133 +1,209 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+<?php
+
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
-$zipName = $compTitle . "_" . date("d_m_o H_m", time());
+use Bitrix\Main\Application;
 
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = [
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+];
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+    if (file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+?>
+<?
 if ($arParams["ALLOW_ADDING"] === 'Y') {
     if ($USER->IsAuthorized()) {
         $maxSize = Docs\Utils::maxUploadFileSize();
         ?>
-        <div id="trca_upload_component">
-            <div id="trca_upload_window_steps" class="trca_upload_modal_window" style="display: none">
-            <!-- <div id="trca_upload_window_steps" class="trca_upload_modal_window"> -->
-                <div class="trca_upload_success" style="display: none" id="trca_upload_success">
-                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_POPUP_SUCCESS") ?>
-                    <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
+<!-- <div id="trca_upload_succesful_send" class="trca_upload_success">
+    <div>
+        <span>
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1") ?></span>
+        <span style="color:#67B7F7">
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2") ?></span>
+    </div>
+    <div onclick="cancel()">
+        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL_SENDING") ?>
+    </div>
+    <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
+        close
+    </div>
+</div> -->
+<div id="trca_upload_component">
+    <div class="trca_upload_button" onclick="showModal()">
+        <div style="font-size: 35px; font-weight: 100">+</div>
+        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_BUTTON") ?>
+    </div>
+    <div id="trca_upload_window_steps" class="trca_upload_modal_window" style="display: none">
+        <div class="trca_upload_save_draft" id="trca_upload_save_draft" style="display:none">
+            <div class="trca_upload_save_draft_header">
+                <div class="trca_upload_window_header_step_name">
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT") ?>
+                </div>
+                <div onclick="hideModal()" class="trca_upload_window_header_close" style="width:20px; height:20px;">
+                    <div class="material-icons"
+                        style="font-size: 20px; color: rgba(0, 0, 0, 0.158);">
                         close
                     </div>
                 </div>
-                <div id="trca_upload_window_first_n_second_step" style="display: none;">
-                    <div class="trca_upload_window" id="trca_upload_window">
-                        <div class="trca_upload_window_header_close" onclick="hideModal()">
-                            <div class="material-icons">
-                                close
-                            </div>
-                        </div>
-                        <div class="trca_upload_window_header" id="trca_upload_window_header">
-                            <div class="trca_upload_window_header_step">
-                                <div class="trca_upload_window_header_step_number" id="trca_upload_first_step">
-                                    <span class="trca_upload_window_header_step_number_text">1</span>
-                                </div>
-                                <span class="trca_upload_window_header_step_name">
-                                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_STEP_ONE") ?>
-                                </span>
-                            </div>
-                            <input type="file" onchange="handleFiles(this.files)" id="fileElem" multiple>
-                            <label for="fileElem">
-                                <div class="trca_upload_window_header_upload_more" id="trca_upload_window_header_upload_more"
-                                    style="display: none">
-                                    <span>
-                                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_MORE") ?></span>
-                                </div>
-                            </label>
-                        </div>
-                        <div id="trca_upload_window_first_step">
-                            <div id="trca_drop">
-                                <div id="trca_drop_area">
-                                    <form class="trca_upload_form" id="trca_upload_form">
-                                        <div class="trca_upload_form_icon">
-                                            <div class="material-icons">
-                                                description
-                                            </div>
-                                            <div class="material-icons">
-                                                arrow_downward
-                                            </div>
-                                        </div>
-                                        <div class="trca_upload_form_text">
-                                            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_1") ?>
-                                            <input type="file" class="trca_upload_file_input" id="fileElem" multiple
-                                                onchange="handleFiles(this.files)">
-                                            <label for="fileElem" class="trca_upload_file_label">
-                                                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_2") ?></label>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="trca_upload_window_footer">
-                                <div class="trca_upload_window_footer_cancel" onclick="hideModal()">
-                                    <span class="trca_upload_window_footer_cancel_text">
-                                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="trca_upload_window_second_step" style="display: none">
-                            <div class="trca_upload_file_list" id="trca_upload_file_list">
-                            </div>
-                            <div class="trca_upload_window_footer" style="justify-content:space-between"
-                                id="trca_upload_second_step_footer">
-                                <div class="trca_upload_window_footer_cancel" style="margin-left:25px" onclick="hideModal()">
-                                    <span class="trca_upload_window_footer_cancel_text">
-                                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
-                                    </span>
-                                </div>
-                                <div class="trca_upload_window_footer_docs_actions">
-                                    <div class="trca_upload_window_footer_save_in_docs">
-                                        <span onclick="uploadFiles()" style="cursor: pointer">
-                                            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_IN_DOCS")?>
-                                        </span>
-                                    </div>
-                                    <div class="trca_upload_window_footer_send_button" onclick="showSendForm()">
-                                        <?=  Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND")?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <div class="trca_upload_save_draft_text">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_DRAFT_TEXT") ?>
+            </div>
+            <div class="trca_upload_save_draft_footer">
+                <div style="width:276px; display: flex; justify-content: space-around; align-items: center" onclick="hideModal()">
+                    <div style="color: #868687">
+                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_DONT_SAVE") ?>
                     </div>
-                 </div>
-                <div id="trca_upload_window_download"  class="trca_upload_window_download" style="display: none;">
-                    <div class="trca_edo_info_close" onclick="hideModal()"></div>
-                    <div class="trca_upload_window_download_title">
+                    <div class="trca_upload_window_footer_send_button" onclick="send(false)">
+                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE") ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="trca_upload_succesful_send" class="trca_upload_success" style="display: none">
+            <div>
+                <span>
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1") ?></span>
+                <span style="color:#67B7F7">
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2") ?></span>
+            </div>
+            <div onclick="cancelSend()">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL_SENDING") ?>
+            </div>
+            <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
+                    close
+            </div>
+        </div>
+        <div class="trca_upload_success" style="display: none" id="trca_upload_success">
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_POPUP_SUCCESS") ?>
+            <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
+                close
+            </div>
+        </div>
+        <div id="trca_upload_window_first_n_second_step">
+            <div class="trca_upload_window" id="trca_upload_window">
+                <div class="trca_upload_window_header_close" onclick="hideModal()">
+                    <div class="material-icons">
+                        close
+                    </div>
+                </div>
+                <div class="trca_upload_window_header" id="trca_upload_window_header">
+                    <div class="trca_upload_window_header_step">
+                        <div class="trca_upload_window_header_step_number" id="trca_upload_first_step">
+                            <span class="trca_upload_window_header_step_number_text">1</span>
+                        </div>
                         <span class="trca_upload_window_header_step_name">
-                            Выгрузка документов
+                            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_STEP_ONE") ?>
                         </span>
                     </div>
-                    <div class="trca_upload_window_download_radio">
-                        <div>
-                            <input type="radio" name="download_files" value="docs">Выгрузить документы
+                    <input type="file" onchange="handleFiles(this.files)" id="fileElem" multiple>
+                    <label for="fileElem">
+                        <div class="trca_upload_window_header_upload_more" id="trca_upload_window_header_upload_more"
+                            style="display: none">
+                            <span>
+                                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_MORE") ?></span>
                         </div>
-                        <div>
-                            <input type="radio" name="download_files" value="all">Выгрузить весь документооборот
+                    </label>
+                </div>
+                <div id="trca_upload_window_first_step">
+                    <div id="trca_drop">
+                        <div id="trca_drop_area">
+                            <form class="trca_upload_form" id="trca_upload_form">
+                                <div class="trca_upload_form_icon">
+                                    <div class="material-icons">
+                                        description
+                                    </div>
+                                    <div class="material-icons">
+                                        arrow_downward
+                                    </div>
+                                </div>
+                                <div class="trca_upload_form_text">
+                                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_1") ?>
+                                    <input type="file" class="trca_upload_file_input" id="fileElem" multiple
+                                        onchange="handleFiles(this.files)">
+                                    <label for="fileElem" class="trca_upload_file_label">
+                                        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_2") ?></label>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="trca_upload_window_download_footer">
-                        <div class="trca_upload_window_download_cancel" onclick="hideModal()">
-                            <?echo Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+                    <div class="trca_upload_window_footer">
+                        <div class="trca_upload_window_footer_cancel" onclick="hideModal()">
+                            <span class="trca_upload_window_footer_cancel_text">
+                                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+                            </span>
                         </div>
-                        <div class="trca_upload_window_footer_send_button" onclick="downloadFiles('<?= $zipName ?>')">
-                            Выгрузить
+                    </div>
+                </div>
+                <div id="trca_upload_window_second_step" style="display: none">
+                    <div class="trca_upload_file_list" id="trca_upload_file_list">
+                    </div>
+                    <div class="trca_upload_window_footer" style="justify-content:space-between"
+                        id="trca_upload_second_step_footer">
+                        <div class="trca_upload_window_footer_cancel" style="margin-left:25px" onclick="cancelUpload()">
+                            <span class="trca_upload_window_footer_cancel_text">
+                                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+                            </span>
+                        </div>
+                        <div class="trca_upload_window_footer_docs_actions">
+                            <div class="trca_upload_window_footer_save_in_docs">
+                                <span onclick="uploadFiles()" style="cursor: pointer">
+                                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE_IN_DOCS")?>
+                                </span>
+                            </div>
+                            <div class="trca_upload_window_footer_send_button" onclick="showSendForm()">
+                                <?=  Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND")?>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <?
+        <div id="trca_upload_window_download"  class="trca_upload_window_download" style="display: none;">
+            <div class="trca_edo_info_close" onclick="hideModal()"></div>
+            <div class="trca_upload_window_download_title">
+                <span class="trca_upload_window_header_step_name">
+                    Выгрузка документов
+                </span>
+            </div>
+            <div class="trca_upload_window_download_radio">
+                <div>
+                    <input type="radio" name="download_files" value="docs">Выгрузить документы
+                </div>
+                <div>
+                    <input type="radio" name="download_files" value="all">Выгрузить весь документооборот
+                </div>
+            </div>
+            <div class="trca_upload_window_download_footer">
+                <div class="trca_upload_window_download_cancel" onclick="hideModal()">
+                    <?echo Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+                </div>
+                <div class="trca_upload_window_footer_send_button" onclick="downloadFiles('<?= $zipName ?>')">
+                    Выгрузить
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?
     }
 }
 ?>
-
 <script>
-
+function showModal() {
+    $("#trca_upload_window_steps").show();
+}
 // Drag-and-drop functions
 let dropArea = document.getElementById('trca_drop_area');
 
@@ -165,35 +241,87 @@ function handleDrop(e) {
     files = dt.files;
     handleFiles(files);
 }
-var docsIds = new Array;
+let docsIds = new Array;
 
 function uploadFiles() {
-    // filesToUpload.forEach((file) => {
-    //     name = 'USER';
-    //     value = "<?= Docs\Utils::currUserId() ?>"
-    //     var props = new Map([
-    //         [name, value],
-    //     ]);
-    //     trustedCA.uploadFile(file, props, (item)=>{docIds.push(item)}, null, false);
-    // })
-
     $("#trca_upload_window_first_n_second_step").hide();
     $("#trca_upload_success").show();
-    trustedCA.reloadDoc(); //!ПОТОМ УДАЛИТЬ
 }
 
-function addAndUpload(file, docarea, item) {
+function addTemporaryListItem(file, i, xhr, files) {
+    var docarea = document.getElementById('trca_upload_file_list');
+    var docDiv = document.createElement('div');
+    docDiv.id = "trca_doc_temporary_" + i;
+    docDiv.className = "trca_doc_list_item";
+    docarea.appendChild(docDiv);
+    docDiv.insertAdjacentHTML('beforeend', getProgressCircle(i));
+    var docName = document.createElement('div');
+    docName.className = "trca_doc_list_item_name onload";
+    docName.title = file.name;
+    docName.innerHTML = file.name;
+    docDiv.appendChild(docName);
+    var docSize = document.createElement('div');
+    docSize.className = "trca_doc_list_item_size";
+    docSize.innerHTML = getFileSize(file.size);
+    docDiv.appendChild(docSize);
+    var docRemove = document.createElement('div');
+    docRemove.className = "trca_doc_list_remove material-icons"
+    docRemove.innerHTML = "close";
+    docRemove.style.color = '#C4C4C4';
+    docRemove.onclick = function() {
+        xhr.abort();
+        $(docDiv).remove();
+        var listItems = $(".trca_doc_list_item");
+        if (listItems.length == 0) {
+            toFirstStep();
+        }
+    }
+    docDiv.appendChild(docRemove);
+}
+
+function cancelUpload() {
+    $(".trca_doc_list_remove").each(function(){
+        $(this).click();
+    })
+    hideModal();
+}
+
+function addAndUpload(file, docarea, i, files) {
     name = 'USER';
+    var xhr;
+    function getXHR(request) {
+        xhr = request;
+    }
     value = "<?= Docs\Utils::currUserId() ?>";
+    $("#trca_upload_window_header_upload_more").show();
+    $("#trca_upload_window_first_step").hide();
+    $("#trca_upload_window_second_step").show();
+    $("#trca_upload_second_step_footer").show();
     let currDocId;
+
     function getUploadedDocId(item) {
         docsIds.push(item);
-        addFileInList(file, docarea, item);
+        addFileInList(file, docarea, item, i);
     }
+
+    function fileOnLoad(loaded, total, i) {
+        var progress = loaded/total * 180;
+        var progressEl = document.querySelector('#progress_'+i); 
+        progressEl.style.transform = 'rotate('+progress+'deg)';
+    }
+
     var props  =new Map([
         [name, value],
     ])
-    trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true);
+    trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true, (loaded, total)=>{fileOnLoad(loaded, total, i)}, (request)=>{getXHR(request)});
+    addTemporaryListItem(file, i, xhr, files);
+}
+
+function getProgressCircle(i) {
+    return `<div class="circle-out" id=circle_`+i+`> 
+                <div class="progress" id="progress_`+i+`"></div> 
+                <div class="circle-in"> </div> 
+            </div> `;
 }
 
 function handleFiles(files) {
@@ -204,25 +332,19 @@ function handleFiles(files) {
         file = files[i];
         trustedCA.checkFileSize(file, maxsize, () => {
             trustedCA.checkName(file, () => {
-                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i))
+                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i, files))
             })
         });
     };
-    timeout = setTimeout(()=> {
-    if (filesToUpload.length != 0) {
-        $("#trca_upload_window_header_upload_more").show();
-        $("#trca_upload_window_first_step").hide();
-        $("#trca_upload_window_second_step").show();
-        $("#trca_upload_second_step_footer").show();
-    }}, 5000);
 }
 
-function addFileInList(file, docarea, currDocId) {
+function addFileInList(file, docarea, currDocId, i) {
     filesToUpload.push(file);
     var docDiv = document.createElement('div');
     docDiv.id = "trca_doc_" + currDocId;
     docDiv.className = "trca_doc_list_item";
-    docarea.appendChild(docDiv);
+    $("#trca_doc_temporary_" + i).replaceWith(docDiv);
+    $("#trca_doc_temporary_" + i).remove();
     var docName = document.createElement('div');
     docName.className = "trca_doc_list_item_name " + (file.name.substr(file.name.lastIndexOf(".") + 1));
     docName.title = file.name;
@@ -240,6 +362,8 @@ function addFileInList(file, docarea, currDocId) {
         removeFromList(docDiv.id, file);
         var ids = new Array;
         ids.push(currDocId);
+        var i = docsIds.indexOf(currDocId);
+        docsIds.splice(i, 1);
         trustedCA.ajax("remove", {ids});
     }
     docDiv.appendChild(docRemove);
@@ -248,11 +372,9 @@ function addFileInList(file, docarea, currDocId) {
 function removeFromList(divid, file) {
     var ind = filesToUpload.indexOf(file);
     filesToUpload.splice(ind, 1);
-    $('#' + divid).hide();
+    $('#' + divid).remove();
     if (filesToUpload.length == 0) {
         toFirstStep()
-        // $("#trca_upload_component").load(location.href + " #trca_upload_component");
-        // $("#trca_upload_window_steps").show();
     };
 }
 
@@ -275,26 +397,8 @@ function getFileSize(size) {
     }
 }
 
-// function uploadFiles() {
-//     filesToUpload.forEach((file) => {
-//         name = 'USER';
-//         value = "<?= Docs\Utils::currUserId() ?>"
-//         var props = new Map([
-//             [name, value],
-//         ]);
-//         trustedCA.uploadFile(file, props, (item)=>{docIds.push(item)}, null);
-//     })
-//     console.log(idsToShare);
-
-//     $("#trca_upload_window_first_n_second_step").hide();
-//     $("#trca_upload_success").show();
-// }
-
 function showSendForm() {
-    // $("#trca_upload_window_first_n_second_step").hide();
-    // $("#trca_upload_window_third_step").show();
     let uploadWindow = document.getElementById("trca_upload_window");
-    // uploadWindow.style.height = '491px';
     var docarea = document.getElementById('trca_upload_file_list');
     docarea.style = 'height: 96px; width: 434px; border-radius: 2px;';
     let firstStepLabel = document.getElementById('trca_upload_first_step');
@@ -330,12 +434,12 @@ function showSendForm() {
     </div>
     <div class="trca_upload_window_send_form_require_sign">
         <input type="checkbox" id="trca_upload_window_send_form_require_sign" class="trca_require_checkbox">
-        <label for="trca_upload_window_send_form_require_sign"><?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_REQUIRE_SIGN") ?></label>
+        <label for="trca_upload_window_send_form_require_sign"><?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SIGN_BEFORE") ?></label>
     </div>`;
     sendForm.insertAdjacentHTML('beforeend', sendFormContent);
     let sendFormFooter = `
     <div class="trca_upload_window_footer" id="trca_upload_third_step_footer" style="justify-content: space-between">
-        <div class="trca_upload_window_footer_docs_actions" style="width: 30%">
+        <div class="trca_upload_window_footer_docs_actions" style="width: 37%">
             <div class="trca_upload_window_footer_cancel" onclick="showSaveDraftPopup()">
                 <span class="trca_upload_window_footer_cancel_text">
                     <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
@@ -345,29 +449,53 @@ function showSendForm() {
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE") ?>
             </div>
         </div>
-        <div class="trca_upload_window_footer_docs_actions" style="width:55%">
-            <div class="trca_upload_window_footer_save_in_docs" onclick=send(true)>
+            <div class="trca_upload_window_footer_send_button" onclick=send(true)>
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND") ?>
             </div>
-            <div class="trca_upload_window_footer_send_button" onclick=send(true)>
-                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SIGN_SEND") ?>
-            </div>
-        </div>
     </div>`;
     uploadWindow.insertAdjacentHTML('beforeend', sendFormFooter);
 }
+
+let messId;
 
 function send(send = false) {
     var recepientEmail = document.getElementById("trca_upload_send_rec").value;
     var theme = document.getElementById("trca_upload_send_theme").value;
     var comment = document.getElementById("trca_comment").value;
+    $("#trca_upload_send_rec").val('');
+    $("#trca_upload_send_theme").val('');
+    $("#trca_comment").val('');
     console.log(docsIds);
-    trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send})
+    function writeMesId(d) {
+        messId = d.messId;
+    };
+    trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send}, (d)=>{writeMesId(d)});
+    if (send == true) {
+        $("#trca_upload_window_first_n_second_step").hide();
+        $('#trca_upload_succesful_send').show();
+    }
+}
+
+function cancelSend() {
+    trustedCA.ajax("sendCancel", {messId});
+    hideModal();
 }
 
 function showSaveDraftPopup() {
+    $("#trca_upload_window_first_n_second_step").hide();
     $("#trca_upload_save_draft").show();
 
+}
+
+function hideModal() {
+    toFirstStep();
+    filesToUpload = [];
+    $('.trca_doc_list_item').hide();
+    $("#trca_upload_window_steps").hide();
+    $("#trca_upload_save_draft").hide();
+    $("#trca_upload_succesful_send").hide();
+    $("#trca_upload_window_download").hide();
+    trustedCA.reloadDoc(); //!ПОТОМ УДАЛИТЬ
 }
 
 function toFirstStep() {
@@ -382,13 +510,5 @@ function toFirstStep() {
     $("*#trca_upload_window_first_step").show();
     $("*#trca_upload_window_second_step").hide();
     $("*#trca_upload_third_step_footer").hide();
-}
-function hideModal() {
-    toFirstStep();
-    filesToUpload = [];
-    $('.trca_doc_list_item').hide();
-    $("#trca_upload_window_steps").hide();
-    $("#trca_upload_window_first_n_second_step").hide();
-    $("#trca_upload_window_download").hide();
 }
 </script>

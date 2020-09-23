@@ -70,28 +70,30 @@ class Messages {
     }
 
     /**
-     * Returns all searched messages ids
-     * @param array $params [searchKey]: what need to find
-     *                      [typeOfMessage]: what type of message need to find
-     *                      [userId]: id of user
-     * @return array $messageIDS: array of finded message ids;
+     * @param array $params [searchKey]
+     *                      [typeOfMessage]
+     *                      [userId]
+     * @return array $messageIDS
      */
-
     static function searchMessage($params) {
         global $DB;
+        $sql = 'SELECT DISTINCT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' as TDMP  RIGHT JOIN ' . DB_TABLE_DOCUMENTS . ' as TDD ';
+        $sql .= 'ON (TDMP.DOC_ID = TDD.ID) ';
+        $sql .= 'RIGHT JOIN ' . DB_TABLE_MESSAGES . ' as TDM ON ';
+        $sql .= '(TDMP.MESSAGE_ID = TDM.ID) ';
         $messageIDS = [];
-        if ($params["typeOfMessage"] != 'all') {
-            $sql = 'SELECT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES . ' as TDM RIGHT JOIN b_user as BU ON (';
+        if ($params['typeOfMessage'] != 'all') {
+            $sql .= 'RIGHT JOIN b_user as BU ON (';
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
-                $sql .= 'TDM.RECEPIENT_ID = BU.ID';
-            } else if ($params["typeOfMessage"] == 'incoming') {
-                $sql .= 'TDM.SENDER_ID = BU.ID';
-            };
-            $sql .= ') ';
+                $sql .= 'TDM.RECEPIENT_ID = BU.ID )';
+            } else if ($params['typeOfMessage'] == 'incoming') {
+                $sql .= 'TDM.SENDER.ID = BU.ID )';
+            }
             $sql .= 'WHERE ((';
-            $sql .= "BU.EMAIL LIKE '%" . $params["searchKey"] . "%' OR ";
-            $sql .= "TDM.COMMENT LIKE '%" . $params["searchKey"] . "%' OR ";
-            $sql .= "TDM.THEME LIKE '%" . $params["searchKey"] . "%') AND (";
+            $sql .= "LOWER(BU.EMAIL) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
+            $sql .= "LOWER(TDD.NAME) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
+            $sql .= "LOWER(TDM.COMMENT) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
+            $sql .= "LOWER(TDM.COMMENT) LIKE LOWER('%" . $params['searchKey'] . "%') AND ( ";
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
                 $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
                 if ($params['typeOfMessage'] == 'draft') {
@@ -101,30 +103,88 @@ class Messages {
                 }
             } else if ($params['typeOfMessage'] == 'incoming') {
                 $sql .= 'TDM.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> "DRAFT"))';
-            }
+            };
             $rows = $DB->Query($sql);
             while ($row = $rows->Fetch()) {
                 $messageIDS[] = $row['ID'];
             }
         } else {
-            $sql = 'SELECT TDM.ID AS ID FROM ' . DB_TABLE_MESSAGES . ' AS TDM ';
             $sql .= 'RIGHT JOIN b_user AS BUS ON (TDM.SENDER_ID = BUS.ID) ';
-            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDM.RECEPIENT_ID = BUR.ID)';
+            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDM.RECEPIENT_ID = BUR.ID) ';
             $sql .= 'WHERE (( TDM.SENDER_ID=' . $params['userId'] . " AND ";
-            $sql .= '( TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
-            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
-            $sql .= 'BUR.EMAIL LIKE "%' . $params['searchKey'] . '%" )) OR ((';
+            $sql .= '(LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDD.NAME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(BUR.EMAIL) LIKE LOWER("%' . $params['searchKey'] . '%") )) OR ((';
             $sql .= 'TDM.MES_STATUS <> "DRAFT" AND TDM.RECEPIENT_ID = ' . $params['userId'] . ') AND (';
-            $sql .= 'TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
-            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
-            $sql .= 'BUS.EMAIL LIKE "%' . $params['searchKey'] . '%" )))';
+            $sql .= 'LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDD.NAME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(BUS.EMAIL) LIKE LOWER("%' . $params['searchKey'] . '%") )))';
             $rows = $DB->Query($sql);
             while ($row = $rows->Fetch()) {
                 $messageIDS[] = $row['ID'];
             }
         }
-        return $messageIDS;
+        return  $messageIDS;
     }
+
+    /**
+     * Returns all searched messages ids
+     * @param array $params [searchKey]: what need to find
+     *                      [typeOfMessage]: what type of message need to find
+     *                      [userId]: id of user
+     * @return array $messageIDS: array of finded message ids;
+     */
+
+//    static function searchMessage($params) {
+//        global $DB;
+//        $messageIDS = [];
+//        if ($params["typeOfMessage"] != 'all') {
+//            $sql = 'SELECT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES . ' as TDM RIGHT JOIN b_user as BU ON (';
+//            if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
+//                $sql .= 'TDM.RECEPIENT_ID = BU.ID';
+//            } else if ($params["typeOfMessage"] == 'incoming') {
+//                $sql .= 'TDM.SENDER_ID = BU.ID';
+//            };
+//            $sql .= ') ';
+//            $sql .= 'WHERE ((';
+//            $sql .= "BU.EMAIL LIKE '%" . $params["searchKey"] . "%' OR ";
+//            $sql .= "TDM.COMMENT LIKE '%" . $params["searchKey"] . "%' OR ";
+//            $sql .= "TDM.THEME LIKE '%" . $params["searchKey"] . "%') AND (";
+//            if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
+//                $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
+//                if ($params['typeOfMessage'] == 'draft') {
+//                    $sql .= ' AND TDM.MES_STATUS = "DRAFT"))';
+//                } else {
+//                    $sql .= ' AND TDM.MES_STATUS <> "DRAFT"))';
+//                }
+//            } else if ($params['typeOfMessage'] == 'incoming') {
+//                $sql .= 'TDM.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> "DRAFT"))';
+//            }
+//            $rows = $DB->Query($sql);
+//            while ($row = $rows->Fetch()) {
+//                $messageIDS[] = $row['ID'];
+//            }
+//        } else {
+//            $sql = 'SELECT TDM.ID AS ID FROM ' . DB_TABLE_MESSAGES . ' AS TDM ';
+//            $sql .= 'RIGHT JOIN b_user AS BUS ON (TDM.SENDER_ID = BUS.ID) ';
+//            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDM.RECEPIENT_ID = BUR.ID)';
+//            $sql .= 'WHERE (( TDM.SENDER_ID=' . $params['userId'] . " AND ";
+//            $sql .= '( TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
+//            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
+//            $sql .= 'BUR.EMAIL LIKE "%' . $params['searchKey'] . '%" )) OR ((';
+//            $sql .= 'TDM.MES_STATUS <> "DRAFT" AND TDM.RECEPIENT_ID = ' . $params['userId'] . ') AND (';
+//            $sql .= 'TDM.COMMENT LIKE "%' . $params['searchKey'] . '%" OR ';
+//            $sql .= 'TDM.THEME LIKE "%' . $params['searchKey'] . '%" OR ';
+//            $sql .= 'BUS.EMAIL LIKE "%' . $params['searchKey'] . '%" )))';
+//            $rows = $DB->Query($sql);
+//            while ($row = $rows->Fetch()) {
+//                $messageIDS[] = $row['ID'];
+//            }
+//        }
+//        return $messageIDS;
+//    }
 
    /**
     * Returns sender id
@@ -406,14 +466,28 @@ class Messages {
      */
 
     static function sendCancelInDB($params) {
+        // global $DB;
+        // $sql = 'SELECT TIMESTAMP_X as TIME FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $params['messId'];
+        // $rows = $DB->Query($sql);
+        // $row = $rows->Fetch();
+        // $time = strtotime($row['TIME']);
+        // $currTime = strtotime(date("Y-m-d H:i:s"));
+        // $interval = $currTime - $time;
+        // if ($interval > 1000) {
+        //     return false;
+        // } else {
+        //     $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "DRAFT" WHERE ID = ' . $params['messId'];
+        //     $DB->Query($sql);
+        //     $docsIds = Messages::getDocsInMessage($params['messId']);
+        //     foreach ($docsIds as $docId) {
+        //         $sql = 'DELETE FROM '  . DB_TABLE_PROPERTY . ' WHERE (DOCUMENT_ID = ' . $docId .' AND (TYPE = "SHARE_READ" OR TYPE = "SHARE_SIGN"))';
+        //         $DB->Query($sql);
+        //     }
+        //     return true;
+        // }
         global $DB;
-        $sql = 'SELECT TIMESTAMP_X as TIME FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $params['messId'];
-        $rows = $DB->Query($sql);
-        $row = $rows->Fetch();
-        $time = strtotime($row['TIME']);
-        $currTime = strtotime(date("Y-m-d H:i:s"));
-        $interval = $currTime - $time;
-        if ($interval > 1000) {
+        $status = Messages::getMessageStatus($params['messId']);
+        if ($status != 'NOT_READED') {
             return false;
         } else {
             $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "DRAFT" WHERE ID = ' . $params['messId'];
