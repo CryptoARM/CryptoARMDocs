@@ -34,7 +34,37 @@
     font-family: Roboto;
 }
 
+.circle-out { 
+    position:relative; 
+    width: 20px; 
+    height: 20px; 
+    border-radius: 50%; 
+    background: #ccc; 
+    overflow: hidden; 
+} 
+.circle-in { 
+    position: absolute; 
+    width: 16px; 
+    height: 16px; 
+    margin: 2px; 
+    border-radius: 50%; 
+    background: white; 
+}
+.progress { 
+    height: 22px;
+    width: 44px;
+    background: rgb(33, 150, 243);
+    position: absolute;
+    top:-22px;
+    left: -12px;
+    transform: rotate();
+    transform-origin: 22px 22px;
+    transition: all .3s;
+} 
+
 .trca_upload_save_draft {
+    background-color: white;
+    position: relative;
     width: 387px;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -404,7 +434,6 @@ input:focus::placeholder {
 }
 
 .php::before {
-    content: "";
     background: url(icons/formats/png/php.png)left/20px no-repeat;
 }
 
@@ -447,6 +476,11 @@ input:focus::placeholder {
 .trca_doc_list_item_name::before {
     content: " ";
     padding: 0 14px;
+}
+
+.onload:before{
+    content: " ";
+    padding: 0 5px;
 }
 
 .trca_doc_list_item_size {
