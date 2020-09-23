@@ -1585,6 +1585,7 @@ class AjaxCommand {
                     $message["recepient"] = Utils::getUserEmail($message["recepient"]);
 
                 if ($message["docs"]) {
+                    $docs = [];
                     foreach ($message["docs"] as $docId) {
                         $docName = Database::getDocumentById($docId)->getName();
                         $docs[]  = [
@@ -1794,6 +1795,7 @@ class AjaxCommand {
                     $message["recepient"] = Utils::getUserEmail($message["recepient"]);
 
                 if ($message["docs"]) {
+                    $docs = [];
                     foreach ($message["docs"] as $docId) {
                         $docName = Database::getDocumentById($docId)->getName();
                         $docs[]  = [

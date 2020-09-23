@@ -253,7 +253,17 @@ searchArea.addEventListener("keyup", function(){
 });
 
 function searchDocument(typeOfMessage, searchKey) {
-    trustedCA.ajax("searchMessage", {typeOfMessage, searchKey})
+    // trustedCA.ajax("searchMessage", {typeOfMessage, searchKey})
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=searchMessage',
+        type: 'post',
+        data: {typeOfMessage: typeOfMessage, searchKey: searchKey},
+        success: function (d) {
+            createtableMessages(d.messages);
+            infoItemInitialization();
+            chechActionInitialization();
+        }
+    })
 };
 
 $('.trca_edo_info_close').click( function() {
