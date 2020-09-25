@@ -8,6 +8,7 @@ use DateTime;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Localization\Loc;
+use google\protobuf\FieldDescriptorProto\Type;
 
 /**
  * Controllers for AJAX requests.
@@ -1687,23 +1688,61 @@ class AjaxCommand {
     static function getMessageInfo($params) {
         $res = [
             "success" => false,
-            "message" => "Unknown error in AjaxCommand.getMessageInfo",
+            "message" => "Unknown error in Ajax.getInfoMessage",
         ];
 
-        if (!Utils::checkAuthorization()) {
-            $res['message'] = 'No authorization';
-            $res['noAuth'] = true;
+        $id = $params["id"];
+
+        if (!$id) {
+            $res["message"] = "id is not find in params";
             return $res;
         }
 
-        $res["messageInfo"] = Messages::getMessageInfo($params['id']);
-        $res["messageInfo"]["sender"] = Utils::getUserEmail($params['messageInfo']['sender']);
-        if ($res["messageInfo"]["recepient"] != null) {
-            $res["messageInfo"]["recepient"] = Utils::getUserEmail($params['messageInfo']['recepient']);
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
         }
-        $res["success"] = true;
-        $res["message"] = "Success";
-        return $res;
+
+        $message = Messages::getMessageInfo($id);
+
+        if ($message) {
+            if ($message["sender"])
+                $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+            if ($message["recepient"])
+                $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+            if ($message["docs"]) {
+                foreach ($message["docs"] as $docId) {
+                    $doc = Database::getDocumentById($docId);
+                    $docName = $doc->getName();
+                    $docs[] = [
+                        "id" => $docId,
+                        "name" => $docName,
+                        "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                    ];
+                }
+                $message["docs"] = $docs;
+            }
+
+            $dateCreated = strtotime($message["time"]);
+            if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                $dateCreated = date("H:i", $dateCreated);
+            } else {
+                $dateCreated = date("d.m.o", $dateCreated);
+            }
+            $message["time"] = $dateCreated;
+
+            return [
+                "success" => true,
+                "message" => $message,
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
     }
 
     static function sendCancel($params) {
@@ -1791,9 +1830,18 @@ class AjaxCommand {
             foreach ($mesIds as $mesId) {
                 $message = Messages::getMessageInfo($mesId);
                 $message["id"] = $mesId;
-                if ($message["sender"])
+                if ($message["sender"]) {
+                    if ($message["sender"] == Utils::currUserId()) {
+                        if (Messages::getMessageStatus($mesId) == 'DRAFT') {
+                            $message["type"] = "draft";
+                        } else {
+                            $message["type"] = "outgoing";
+                        }
+                    } else {
+                        $message["type"] = 'incoming';
+                    }
                     $message["sender"] = Utils::getUserEmail($message["sender"]);
-
+                }
                 if ($message["recepient"])
                     $message["recepient"] = Utils::getUserEmail($message["recepient"]);
 
@@ -1985,29 +2033,27 @@ class AjaxCommand {
 
         if ($doc) {
 
-            $messageId = Messages::getMessagesByDocument($doc->getFirstParent()->getId());
+            $messageIds = Messages::getMessagesByDocument($doc->getFirstParent()->getId());
+            $data = [
+                "docname" => $doc->getName(),
+                "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                "docowner" =>  Utils::getUserName($doc->getOwner()),
+                "doctype" => $doc->getType(),
+            ];
+            if (count($messageIds) > 0) {
+                $data['message'] = true;
+                foreach ($messageIds as $messageId) {
 
-            if (count($messageId) > 0) {
-                $message = Messages::getMessageInfo($messageId);
+                    $message = Messages::getMessageInfo($messageId);
 
-                $data = [
-                    "docname" => $doc->getName(),
-                    "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
-                    "docowner" =>  Utils::getUserName($doc->getOwner()),
-                    "doctype" => $doc->getType(),
-                    "messageTheme" => $message["theme"],
-                    "messageContent" => $message["comment"],
-                    "messageAuthor" => Utils::getUserName($message["sender"]),
-                    "message" => true,
-                ];
+                    $data["messages"][] = [
+                        "messageTheme" => $message["theme"],
+                        "messageContent" => $message["comment"],
+                        "messageAuthor" => Utils::getUserName($message["sender"])
+                    ];
+                }
             } else {
-                $data = [
-                    "docname" => $doc->getName(),
-                    "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
-                    "docowner" =>  Utils::getUserName($doc->getOwner()),
-                    "doctype" => $doc->getType(),
-                    "message" => false,
-                ];
+                $data["message"] = false;
             }
 
             return [

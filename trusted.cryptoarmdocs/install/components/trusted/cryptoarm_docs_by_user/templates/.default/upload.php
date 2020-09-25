@@ -65,7 +65,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                     <div style="color: #868687">
                         <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_DONT_SAVE") ?>
                     </div>
-                    <div class="trca_upload_window_footer_send_button" onclick="send(false)">
+                    <div class="trca_upload_window_footer_send_button" id="trca_send_save_draft_button" onclick="send(false)">
                         <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE") ?>
                     </div>
                 </div>
@@ -99,11 +99,11 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                     </div>
                 </div>
                 <div class="trca_upload_window_header" id="trca_upload_window_header">
-                    <div class="trca_upload_window_header_step">
+                    <div class="trca_upload_window_header_step" id="trca_first_step">
                         <div class="trca_upload_window_header_step_number" id="trca_upload_first_step">
                             <span class="trca_upload_window_header_step_number_text">1</span>
                         </div>
-                        <span class="trca_upload_window_header_step_name">
+                        <span class="trca_upload_window_header_step_name" id="trca_upload_first_step_name">
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_STEP_ONE") ?>
                         </span>
                     </div>
@@ -201,9 +201,6 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
 }
 ?>
 <script>
-function showModal() {
-    $("#trca_upload_window_steps").show();
-}
 // Drag-and-drop functions
 let dropArea = document.getElementById('trca_drop_area');
 
@@ -449,7 +446,7 @@ function showSendForm() {
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SAVE") ?>
             </div>
         </div>
-            <div class="trca_upload_window_footer_send_button" onclick=send(true)>
+            <div class="trca_upload_window_footer_send_button" onclick=send(true) id = "trca_send_button">
                 <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND") ?>
             </div>
     </div>`;
@@ -458,13 +455,13 @@ function showSendForm() {
 
 let messId;
 
-function send(send = false) {
-    var recepientEmail = document.getElementById("trca_upload_send_rec").value;
-    var theme = document.getElementById("trca_upload_send_theme").value;
-    var comment = document.getElementById("trca_comment").value;
-    $("#trca_upload_send_rec").val('');
-    $("#trca_upload_send_theme").val('');
-    $("#trca_comment").val('');
+function send(send = false, ids = null) {
+    var recepientEmail = $("#trca_upload_send_rec").val();
+    var theme = $("#trca_upload_send_theme").val();
+    var comment = $("#trca_comment").val();
+    if (ids != null) {
+        docsIds = ids;
+    }
     console.log(docsIds);
     function writeMesId(d) {
         messId = d.messId;
@@ -503,12 +500,12 @@ function toFirstStep() {
     $("*#trca_upload_window_first_n_second_step").show();
     let firstStepLabel = document.getElementById('trca_upload_first_step');
     firstStepLabel.style = '';
-    $("*#trca_upload_window_header_2").hide();
-    $("*#trca_upload_window_send_form").hide();
+    $("*#trca_upload_window_header_2").remove();
+    $("*#trca_upload_window_send_form").remove();
     let uploadWindow = document.getElementById("trca_upload_window");
     $("*#trca_upload_window_header_upload_more").hide();
     $("*#trca_upload_window_first_step").show();
     $("*#trca_upload_window_second_step").hide();
-    $("*#trca_upload_third_step_footer").hide();
+    $("*#trca_upload_third_step_footer").remove();
 }
 </script>

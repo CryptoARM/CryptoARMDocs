@@ -193,6 +193,15 @@ include(__DIR__ . "/upload.php");
 function showModal() {
     $("#trca_upload_window_steps").show();
     $("#trca_upload_window_first_n_second_step").show();
+    $('#trca_upload_first_step_name').remove();
+    $("#trca_sending_first_step_name").remove();
+    let docListName = `
+        <span class="trca_upload_window_header_step_name" id="trca_sending_first_step_name">
+            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_STEP_ONE") ?>
+        </span>`;
+    let stepname = document.getElementById("trca_first_step");
+    stepname.insertAdjacentHTML('beforeend', docListName);
+    $("#trca_upload_first_step_name").show();
 }
 
 function uploadFile() {
@@ -200,6 +209,91 @@ function uploadFile() {
     $("#trca_upload_window_download").show();
     getChecked();
 }
+
+function addFilesInSendListFromUploaded(file_ids) {
+    $("#trca_upload_window_first_step").hide();
+    $("#trca_upload_window_second_step").show();
+    $("#trca_upload_second_step_footer").show();
+    file_ids.forEach(file_id => {
+        $.ajax({
+            url: AJAX_CONTROLLER + '?command=getInfoDoc',
+            type: 'post',
+            data: {id: file_id},
+            success: function (d) {
+                var docarea = document.getElementById('trca_upload_file_list');
+                var docDiv = document.createElement('div');
+                docDiv.id = "trca_doc_" + file_id;
+                docDiv.className = "trca_doc_list_item";
+                docarea.appendChild(docDiv);
+                var docName = document.createElement('div');
+                docName.className = "trca_doc_list_item_name " + (d.data.docname.substr(d.data.docname.lastIndexOf(".") + 1));
+                docName.title = d.data.docname;
+                docName.innerHTML = d.data.docname;
+                docDiv.appendChild(docName);
+                var docSize = document.createElement('div');
+                docSize.className = "trca_doc_list_item_size";
+                docSize.innerHTML = d.data.docsize;
+                docDiv.appendChild(docSize);
+                var docRemove = document.createElement('div');
+                docRemove.className = "trca_doc_list_remove material-icons"
+                docRemove.innerHTML = "close";
+                docRemove.style.color = '#C4C4C4';
+                docRemove.onclick = function() {
+                    var id = file_ids.indexOf(file_id);
+                    file_ids.splice(id, 1);
+                    $("#trca_doc_" + file_id).remove();
+                    if (file_ids.length == 0) {
+                        hideModal();
+                    }
+                }
+                docDiv.appendChild(docRemove);
+            }
+        });
+    });
+}
+
+function sendFilesForm() {
+    let file_ids = getChecked();
+    if (file_ids.length != 0) {
+        showModal();
+        addFilesInSendListFromUploaded(file_ids);
+        showSendForm();
+        $(".trca_upload_window_header_step_number").each(function() {
+            $(this).css({'opacity':'0'});
+        });
+        let docListName = `
+        <span class="trca_upload_window_header_step_name" id="trca_sending_first_step_name">
+            Список Документов
+        </span>`;
+        $('#trca_upload_first_step_name').remove();
+        $("#trca_sending_first_step_name").remove();
+        let stepname = document.getElementById("trca_first_step");
+        stepname.insertAdjacentHTML('beforeend', docListName);
+        let sendButton = document.getElementById("trca_send_button");
+        sendButton.onclick = function() {
+            send(true, file_ids);
+        }
+
+    }
+}
+
+// function sendFiles(ids, send = false) {
+//     var recepientEmail = document.getElementById("trca_upload_send_rec").value;
+//     var theme = document.getElementById("trca_upload_send_theme").value;
+//     var comment = document.getElementById("trca_comment").value;
+//     $("#trca_upload_send_rec").val('');
+//     $("#trca_upload_send_theme").val('');
+//     $("#trca_comment").val('');
+//     var docsIds = ids;
+//     function writeMesId(d) {
+//         let messId = d.messId;
+//     };
+//     trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send}, (d)=>{writeMesId(d)});
+//     if (send == true) {
+//         $("#trca_upload_window_first_n_second_step").hide();
+//         $('#trca_upload_succesful_send').show();
+//     }
+// }
 
 function downloadFiles(zipName) {
     let ids = getChecked();
@@ -378,7 +472,7 @@ function getDocList(shared, page) {
             if (shared == 0) {
                 $('.trca_edo_download').addClass("active_menu");
                 $('.trca_edo_available').removeClass("active_menu");
-                createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", null);
+                createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
                 createHeaderButton("trca_button_download", "<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>", "uploadFile()");
                 createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "remove()");
             } else {
