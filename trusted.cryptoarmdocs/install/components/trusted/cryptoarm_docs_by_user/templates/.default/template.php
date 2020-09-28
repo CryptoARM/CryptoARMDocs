@@ -273,7 +273,10 @@ function sendFilesForm() {
         sendButton.onclick = function() {
             send(true, file_ids);
         }
-
+        let saveDraftButton = document.getElementById("trca_send_save_draft_button");
+        saveDraftButton.onclick = function() {
+            send(false, file_ids);
+        }
     }
 }
 
