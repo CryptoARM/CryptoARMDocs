@@ -16,3 +16,12 @@ $MESS["TR_CA_DOCS_COMP_SIZE"] = "Размер";
 $MESS["TR_CA_DOCS_COMP_SIGN_INFO"] = "Информация о подписи";
 
 $MESS["TR_CA_DOCS_COMP_MESSAGES"] = "Сообщения";
+
+$MESS["TR_CA_DOCS_COMP_CREATE_LABEL"] = "Создание метки";
+$MESS["TR_CA_DOCS_COMP_LABEL_NAME"] = "Название метки";
+$MESS["TR_CA_DOCS_COMP_CREATE"] = "Создать";
+$MESS["TR_CA_DOCS_COMP_LABEL"] = "Метка";
+$MESS["TR_CA_DOCS_COMP_RECALL"] = "Отозвать";
+$MESS["TR_CA_DOCS_COMP_NEW_LABEL"] = "Новая метка";
+$MESS["TR_CA_DOCS_COMP_EDIT"] = "Редактировать";
+$MESS["TR_CA_DOCS_COMP_FIND_LABEL"] = "Найти метку";

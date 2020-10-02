@@ -87,13 +87,13 @@ class Messages {
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
                 $sql .= 'TDM.RECEPIENT_ID = BU.ID )';
             } else if ($params['typeOfMessage'] == 'incoming') {
-                $sql .= 'TDM.SENDER.ID = BU.ID )';
+                $sql .= 'TDM.SENDER_ID = BU.ID )';
             }
             $sql .= 'WHERE ((';
-            $sql .= "LOWER(BU.EMAIL) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
-            $sql .= "LOWER(TDD.NAME) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
-            $sql .= "LOWER(TDM.COMMENT) LIKE LOWER('%" . $params['searchKey'] . "%') OR ";
-            $sql .= "LOWER(TDM.COMMENT) LIKE LOWER('%" . $params['searchKey'] . "%') AND ( ";
+            $sql .= 'LOWER(BU.EMAIL) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDD.NAME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
+            $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%")) AND ( ';
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
                 $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
                 if ($params['typeOfMessage'] == 'draft') {
@@ -127,6 +127,28 @@ class Messages {
             }
         }
         return  $messageIDS;
+    }
+
+    /**
+     * @param array $params [searchKey]
+     *                      [userId]
+     *
+     */
+    static function searchLabel($params) {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_LABELS . ' WHERE (';
+        $sql .= ' USER_ID = ' . $params["userId"] . ' AND ';
+        $sql .= ' LOWER(TEXT) LIKE LOWER("%' . $params["searchKey"] . '%")';
+        $rows = $DB->Query($sql);
+        $labels = [];
+        while ($row = $rows-Fetch()) {
+            $labels[] = [
+                "labelId" => $row["ID"],
+                "text" => $row["TEXT"],
+                "style" => $row["STYLE"],
+            ];
+        }
+        return $labels;
     }
 
     /**
@@ -221,7 +243,7 @@ class Messages {
         $userId = Utils::currUserId();
         $sql = "
             INSERT INTO " . DB_TABLE_LABELS . " (USER_ID, TEXT, STYLE)
-                VALUES (" . $userId . " , " . $params["text"] . ' , "'  . $params["style"] . '")';
+                VALUES (" . $userId . ' , "' . $params["text"] . '" , "'  . $params["style"] . '")';
         $DB->Query($sql);
     }
 
@@ -229,7 +251,7 @@ class Messages {
         global $DB;
         $sql = "
             INSERT INTO " . DB_TABLE_LABELS_PROPERTY . " (MESSAGE_ID, LABEL_ID)
-                VALUES (" . $params["message_id"] . " , " . $params["label_id"] . ")";
+                VALUES (" . $params["messageId"] . " , " . $params["labelId"] . ")";
         $DB->Query($sql);
     }
 
@@ -247,6 +269,46 @@ class Messages {
         }
         return $labelsID;
     }
+
+    static function getLabelInfo($labelId) {
+        global $DB;
+        $sql = "SELECT * FROM " . DB_TABLE_LABELS . " WHERE ID = " . $labelId;
+        $rows = $DB->Query($sql);
+        $row = $rows->Fetch();
+        $label['id'] = $labelId;
+        $label['user'] = $row['USER_ID'];
+        $label['text'] = $row['TEXT'];
+        $label['style'] = $row['STYLE'];
+        return $label;
+    }
+
+    static function isMessageWithThisLabel($messId, $labelId) {
+        global $DB;
+        $sql = "SELECT * FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE (LABEL_ID=" . $labelId . "AND MESSAGE_ID=" . $messId;
+        $rows = $DB->Query($sql);
+        if (($rows->SelectedRowsCount())==0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+//    static function getMessageLabels($messId, $userId) {
+//        global $DB;
+//        $sql = 'SELECT TDL.ID, TDL.TEXT, TDL.STYLE FROM ' . DB_TABLE_LABELS_PROPERTY . ' as TDLP RIGHT JOIN ' . DB_TABLE_LABELS . ' as TDL';
+//        $sql .= ' ON (TDLP.LABEL_ID = TDL.ID) WHERE (TDLP.MESSAGE_ID = ' . $messId . ')';
+//        $rows = $DB->Query($sql);
+//        $labels = [];
+//
+//        while ($row = $rows->Fetch()) {
+//            $labels[] = [
+//                "id" => $row["TDL.ID"],
+//                "text" => $row["TDL.TEXT"],
+//                "style" => $row["TDL.STYLE"],
+//            ];
+//        }
+//        return $labels;
+//    }
 
     static function editLabel($params) {
         global $DB;
@@ -266,13 +328,17 @@ class Messages {
 
     static function getUserlabels($userId) {
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_LABELS . " WHERE USER_ID=" . $userId;
+        $sql = "SELECT * FROM " . DB_TABLE_LABELS . " WHERE USER_ID=" . $userId;
         $rows = $DB->Query($sql);
-        $labelsID = [];
+        $labels = [];
         while ($row = $rows->Fetch()) {
-            $lablsID[] = $row["id"];
+            $labels[] = [
+                'id' => $row["ID"],
+                'text' => $row["TEXT"],
+                'style' => $row["STYLE"],
+            ];
         }
-        return $labelsID;
+        return $labels;
     }
 
    /**
@@ -509,7 +575,7 @@ class Messages {
     */
     static function isMessageExists($messId) {
         global $DB;
-        $sql = 'SELECT count(*) FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $messId;
+        $sql = 'SELECT * FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $messId;
         $rows = $DB->Query($sql);
         if (($rows->SelectedRowsCount())==0) {
             return false;
@@ -518,7 +584,18 @@ class Messages {
         }
     }
 
-   /**
+    static function isLabelExists($labelId) {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_LABELS . ' WHERE ID=' . $labelId;
+        $rows = $DB->Query($sql);
+        if (($rows->SelectedRowsCount())==0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
     * Returns all the documents in the message
     * @param int $messId: id of message
     *
@@ -586,6 +663,14 @@ class Messages {
             $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET REJECTED_COMMENT = "' . $params['comment'] . '"';
             $DB->Query($sql);
         };
+    }
+
+    static function removeLabel($labelId) {
+        global $DB;
+        $sql = 'DELETE FROM ' . DB_TABLE_LABELS . ' WHERE ID = ' . $labelId;
+        $DB->Query($sql);
+        $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . 'WHERE LABEL_ID = ' . $labelId;
+        $DB->Query($sql);
     }
 }
 

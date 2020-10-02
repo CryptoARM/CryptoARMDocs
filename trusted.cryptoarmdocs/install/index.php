@@ -29,11 +29,11 @@ require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 Loc::loadMessages(__FILE__);
 
-/*fBs*/Class trusted_cryptoarmdocsbusiness extends CModule/*fMs*/ //tags for core name changing script
+/*fBs*/Class trusted_cryptoarmdocscrp extends CModule/*fMs*/ //tags for core name changing script
 {
     // Required by the marketplace standards
 
-    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocsbusiness";/*fMs*/ //tags for core name changing script
+    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocscrp";/*fMs*/ //tags for core name changing script
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -41,7 +41,7 @@ Loc::loadMessages(__FILE__);
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    /*fBs*/ function trusted_cryptoarmdocsbusiness()/*fMs*/ //tags for core name changing script
+    /*fBs*/ function trusted_cryptoarmdocscrp()/*fMs*/ //tags for core name changing script
     {
         self::__construct();
     }
@@ -369,8 +369,8 @@ Loc::loadMessages(__FILE__);
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_labels` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
                     `USER_ID` int(11) NOT NULL,
-                    `TEXT` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-                    `STYLE` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
+                    `TEXT` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
+                    `STYLE` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
                 PRIMARY KEY (`ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $DB->Query($sql);

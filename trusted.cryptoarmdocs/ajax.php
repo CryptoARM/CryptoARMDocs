@@ -56,6 +56,14 @@ if (isset($command)) {
         case "deleteDraft":
             $res = Docs\AjaxCommand::deleteDraft($params);
             break;
+        case "createLabel":
+            $res = Docs\AjaxCommand::createLabel($params);
+            break;
+        case "getUserLabels":
+            $res = Docs\AjaxCommand::getUserLabels();
+            break;
+        case "getMessagesByLabel":
+            $res = Docs\AjaxCommand::getMessagesByLabel($params);
         case "share":
             $res = Docs\AjaxCommand::share($params);
             break;

@@ -39,7 +39,88 @@ include(__DIR__ . "/upload.php");
 ?>
 
 <!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
+<div class="trca_label_window">
+    <div class="trca_label_window_search">
+        <div class="trca_label_window_search">
+            <div class="trca_label_window_search"></div>
+            <input placeholder="<?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?>" id="trca_search_label">
+            <!-- <div class="trca_button_close"></div> -->
+        </div>
+        <div class="trca_label_window_list">
 
+        </div>
+    </div>
+    <div class="trca_label_window_footer">
+        <div class="trca_label_window_footer_button">
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_NEW_LABEL") ?></span>
+        </div>
+        <div class="trca_label_window_footer_button">
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT") ?></span>
+        </div>
+    </div>
+</div>
+<div id="trca_create_label_window" class="trca_create_label_window">
+    <div class="trca_create_label_window_header">
+        <span><?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE_LABEL") ?></span>
+        <div class="material-icons"
+             style="font-size: 20px; color: rgba(0, 0, 0, 0.158);">
+            close
+        </div>
+    </div>
+    <div class="trca_create_label_window_name">
+        <input type="text" required id="trca_label_text">
+        <span class="bar"></span>
+        <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL_NAME") ?></label>
+    </div>
+    <div class="trca_create_label_window_colors">
+        <div class="trca_create_label_window_color">
+            <input id="first_color" type="radio" name="radio" value="trca_label_one">
+            <label class="trca_label_one" for="first_color"></label>
+        </div>
+        <div class="trca_create_label_window_color">
+            <input id="second_color" type="radio" name="radio" value="trca_label_two">
+            <label class="trca_label_two" for="second_color"></label>
+        </div>
+        <div class="trca_create_label_window_color">
+            <input id="third_color" type="radio" name="radio" value="trca_label_three">
+            <label class="trca_label_three" for="third_color"></label>
+        </div>
+        <div class="trca_create_label_window_color">
+            <input id="fourth_color" type="radio" name="radio" value="trca_label_four">
+            <label class="trca_label_four"" for="fourth_color"></label>
+        </div>
+        <div class="trca_create_label_window_color">
+            <input id="fifth_color" type="radio" name="radio" value="trca_label_five">
+            <label class="trca_label_five" for="fifth_color"></label>
+        </div>
+        <div class="trca_create_label_window_color">
+            <input id="sixth_color" type="radio" name="radio" value="trca_label_six">
+            <label class="trca_label_six" for="sixth_color"></label>
+        </div>
+        <div class="trca_create_label_window_color ">
+            <input id="seventh_color" type="radio" name="radio" value="trca_label_seven">
+            <label class="trca_label_seven" for="seventh_color"></label>
+        </div>
+        <div class="trca_create_label_window_color ">
+            <input id="eighth_color" type="radio" name="radio" value="trca_label_eight">
+            <label class="trca_label_eight" for="eighth_color"></label>
+        </div>
+        <div class="trca_create_label_window_color ">
+            <input id="ninth_color" type="radio" name="radio" value="trca_label_nine">
+            <label class='trca_label_nine' for="ninth_color"></label>
+        </div>
+    </div>
+    <div class="trca_create_label_window_footer">
+        <div style="width:50%; display:flex; flex-direction:row; justify-content: space-around; align-items=center">
+            <div id="trca_create_label_window_footer_cancel_button" style="align-items: center; display: flex">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+            </div>
+            <div class="trca_upload_window_footer_send_button" onclick="createLabel()">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE") ?>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="trca_edo" class="trca_edo">
     <div class="trca_edo_body">
         <div class="trca_edo_menu ">
@@ -78,7 +159,7 @@ include(__DIR__ . "/upload.php");
                     <div class="trca_edo_check"></div>
                     <span>Метки</span>
                 </div>
-                <div class="trca_edo_labels">
+                <div class="trca_edo_labels" id="trca_edo_labels">
                     <div class="trca_label label_orange">Важно</div>
                     <div class="trca_label label_violet">Партнер</div>
                     <div class="trca_label label_blue">Тест</div>
@@ -190,6 +271,51 @@ include(__DIR__ . "/upload.php");
 </div>
 
 <script>
+getLabelList();
+
+function getLabelList() {
+    let labelList = document.getElementById("trca_edo_labels");
+    labelList.innerHTML = "";
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getUserLabels',
+        type: 'post',
+        success: function (d) {
+            d.labels.forEach(label => {
+                var labelDiv = document.createElement('div');
+                labelDiv.className = 'trca_label ' + label.style;
+                labelDiv.innerText = label.text;
+                labelDiv.setAttribute('label_id', label.id);
+                labelDiv.onclick = function() {
+                    getMessagesByLabel(label.id);
+                }
+                labelDiv.draggable = true;
+                labelList.appendChild(labelDiv);
+            })
+        }
+    });
+}
+
+function showLabel(label) {
+
+}
+
+function getMessagesByLabel(labelId) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getMessagesByLabel',
+        type: 'post',
+        data: {labelId: labelId},
+        success: function (d) {
+            createtableMessages(d.messages);
+            infoItemInitialization();
+            chechActionInitialization();
+        }
+    })
+}
+
+function setLabelToMessages() {
+
+}
+
 function showModal() {
     $("#trca_upload_window_steps").show();
     $("#trca_upload_window_first_n_second_step").show();
@@ -208,6 +334,24 @@ function uploadFile() {
     $("#trca_upload_window_steps").show();
     $("#trca_upload_window_download").show();
     getChecked();
+}
+
+function createLabel() {
+    let style;
+    $('input[value^="trca_label_"]').each(function(){
+        if($(this).prop("checked")) {
+            style = $(this).val();
+        };
+    });
+    if(!style) {
+        console.log("not choose")
+    } else {
+        console.log(style);
+        var text = $("#trca_label_text").val();
+
+        trustedCA.ajax("createLabel", {style, text})
+    }
+    getLabelList();
 }
 
 function addFilesInSendListFromUploaded(file_ids) {
@@ -327,6 +471,9 @@ function getChecked() {
     $('.trca_edo_item').each(function(){
         if($(this).find(".trca_edo_check_item input").prop("checked")) {
             let id = $(this).attr("file_id");
+            if (!id) {
+                id = $(this).attr("message_id");
+            }
             ids.push(id);
         };
     });
@@ -493,6 +640,26 @@ function getDocList(shared, page) {
 //type - incoming,drafts,outgoing
 //page
 //count
+
+function showLabelWindow() {
+    let messIds = getChecked();
+    $
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getInfoForLabelWindow',
+        type: 'post',
+        data: {messIds: messIds},
+        success: function(d) {
+            let header = document.getElementById("trca_edo_header_menu");
+            let labelWindow = document.createElement('<div>');
+            labelWindow.className = "trca_label_window";
+            header.appendChild(labelWindow);
+            let searchBarForLabel = `
+            <input placeholder="Найти метку" id="trca_search_label" class="trca_label_window_search">`;
+
+        }
+    })
+}
+
 function getMessageList(type, page) {
     let count = 10;
     let data = {typeOfMessage: type, page: page, count: count}
@@ -502,6 +669,25 @@ function getMessageList(type, page) {
         type: 'post',
         data: data,
         success: function (d) {
+            let buttons = document.querySelectorAll(".trca_header_button");
+            buttons.forEach((element) => {
+                element.remove();
+            });
+            switch (type) {
+                case 'incoming':
+                    createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
+                    createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
+                    break;
+                case 'outgoing':
+                    createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
+                    createHeaderButton("trca_button_recall", "<?= Loc::getMessage("TR_CA_DOCS_COMP_RECALL") ?>", "sendFilesForm()");
+                    break;
+                case 'drafts':
+                    createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
+                    createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
+                    createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "sendFilesForm()");
+                    break;
+            }
             createtableMessages(d.messages);
             infoItemInitialization();
             chechActionInitialization();

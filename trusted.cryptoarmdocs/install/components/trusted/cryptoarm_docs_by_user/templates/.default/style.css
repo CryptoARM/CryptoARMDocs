@@ -762,6 +762,7 @@ input:focus::placeholder {
     padding: 3px 7px;
     font-size: 10px;
     border-radius: 20px;
+    cursor: pointer;
 }
 
 .label_orange {
@@ -812,7 +813,9 @@ input:focus::placeholder {
 .trca_button_send,
 .trca_button_download,
 .trca_button_remove,
-.trca_button_sign {
+.trca_button_sign,
+.trca_button_label,
+.trca_button_recall {
     margin-right: 5px;
     padding: 15px 10px 15px 0;
     font-size: 14px;
@@ -827,7 +830,9 @@ input:focus::placeholder {
 .trca_button_send:hover,
 .trca_button_download:hover,
 .trca_button_remove:hover,
-.trca_button_sign:hover {
+.trca_button_sign:hover,
+.trca_button_label:hover,
+.trca_button_recall:hover {
     background-color:rgba(168, 171, 186, 0.3);
     opacity: 0.8;
 }
@@ -835,7 +840,9 @@ input:focus::placeholder {
 .trca_button_send::before,
 .trca_button_download::before,
 .trca_button_remove::before,
-.trca_button_sign::before {
+.trca_button_sign::before,
+.trca_button_label::before,
+.trca_button_recall::before {
     content: "";
     padding: 20px;
 }
@@ -856,6 +863,13 @@ input:focus::placeholder {
     background: url("images/sign.png") center/20px no-repeat;
 }
 
+.trca_button_label::before {
+    background: url("images/label.png") center/20px no-repeat;
+}
+
+.trca_button_recall::before {
+    background: url("images/recall.png") center/20px no-repeat
+}
 
 .trca_edo_header_menu_search {
     position: relative;
@@ -1105,4 +1119,226 @@ input:focus::placeholder {
 
 .trca_edo_body .show {
     display: block;
+}
+
+.trca_label_window {
+    width: 184px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.trca_label_window_search input {
+    width: 184px;
+    padding: 0 30px;
+    font-size: 12px;
+    line-height: 30px;
+    color: #A8ABBA;
+}
+
+.trca_label_window_list {
+    height: 101px;
+    overflow-y: scroll;
+}
+
+.trca_label_window_list_item {
+    height: 33px;
+}
+
+.trca_label_window_footer {
+    display: flex;
+    flex-direction: column;
+}
+
+.trca_label_window_footer_button{
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 16px;
+}
+
+.trca_label_window_footer_button:hover{
+    background-color: rgba(168, 171, 186, 0.3);;
+}
+
+.trca_create_label_window {
+    width: 387px;
+    height: 267px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFFFFF;
+    justify-content: space-between;
+}
+
+.trca_create_label_window_header {
+    display: flex;
+    height: 67px;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+}
+
+.trca_create_label_window_name {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.trca_create_label_window_name input {
+    font-size: 16px;
+    padding: 10px;
+    display: block;
+    width: 339px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+}
+.trca_create_label_window_name input:focus {
+    outline: none;
+}
+/* LABEL ======================================= */
+.trca_create_label_window_name label {
+    color: #999;
+    font-size: 18px;
+    position: absolute;
+    pointer-events: none;
+    left: 10px;
+    top: 15px;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+
+.trca_label_icon {
+
+}
+
+/* active state */
+.trca_create_label_window_name input:focus ~ label, .trca_create_label_window_name input:valid ~ label {
+    top: -10px;
+    font-size: 10px;
+    color: #999;
+}
+
+/* BOTTOM BARS ================================= */
+.bar {
+    position: relative;
+    display: block;
+    width: 360px;
+}
+.bar:before, .bar:after {
+    content: "";
+    height: 1px;
+    width: 0;
+    bottom: 0;
+    position: absolute;
+    background: #67b7f7;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+.bar:before {
+    left: 50%;
+}
+.bar:after {
+    right: 50%;
+}
+
+/* active state */
+.trca_create_label_window_name input:focus ~ .bar:before,
+.trca_create_label_window_name input:focus ~ .bar:after {
+    width: 50%;
+}
+
+
+.trca_create_label_window_colors {
+    display: flex;
+    height: 50px;
+    width: 314px;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.trca_create_label_window_color input[type=radio] {
+    opacity: 0;
+}
+
+.trca_create_label_window_color label {
+    display: block;
+    cursor: pointer;
+    width: 25px;
+    height:25px;
+    border-radius: 50%;
+}
+
+.trca_create_label_window_color input[type=radio]:checked + label {
+    width: 25px;
+    height:25px;
+    border-radius: 50%;
+    border: 1px solid #869986;
+}
+
+.trca_label_one {
+    background-color: #FFE8C2;
+    color: #EE800D;
+}
+
+.trca_label_two {
+    background-color: #ECE4FA;
+    color: #6D37D7;
+}
+
+.trca_label_three {
+    background-color: #A6CDFF;
+    color: #0a3a68;
+}
+
+.trca_label_four {
+    background-color: #BBF7DE;
+    color: #09915A;
+}
+
+.trca_label_five {
+    background-color: #F8DBD2;
+    color: #bb7c63;
+}
+
+.trca_label_six {
+    background-color: #E0F0F3;
+    color: #57A0A0;
+}
+
+.trca_label_seven {
+    background-color: #FCC3A5;
+    color: #b35928
+}
+
+.trca_label_eight {
+    background-color: #AEF2F4;
+    color: #409090;
+}
+
+.trca_label_nine {
+    background-color: #D6F9A5;
+    color: #09915A;
+}
+
+.trca_create_label_window_footer {
+    width: 100%;
+    height: 74px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
 }

@@ -1876,6 +1876,95 @@ class AjaxCommand {
         return $res;
     }
 
+    static function getMessagesByLabel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getMessagesByLabel"
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        if (!$params["labelId"]) {
+            $res['message'] = "Nothing to search";
+            return $res;
+        }
+
+        if (!Messages::isLabelExists($params['labelId'])) {
+            $res['message'] = 'Label not exists';
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        $userLabels = Messages::getUserlabels($userId);
+        $userLabelsIds = [];
+        foreach ($userLabels as $userLabel) {
+            $userLabelsIds[] = $userLabel['id'];
+        }
+
+        if (!in_array($params["labelId"], $userLabelsIds)) {
+            $res['message'] = "Label of another user";
+            return $res;
+        }
+
+        $messIds = Messages::getMessagesByLabel($params["labelId"], $userId);
+
+        if (count($messIds) == 0) {
+            $res['success'] = true;
+            $res['message'] = "Found nothing";
+            return $res;
+        } else {
+            $res['success'] = true;
+            $res['message'] = 'Found some';
+            foreach ($messIds as $mesId) {
+                $message = Messages::getMessageInfo($mesId);
+                $message["id"] = $mesId;
+                if ($message["sender"]) {
+                    if ($message["sender"] == Utils::currUserId()) {
+                        if (Messages::getMessageStatus($mesId) == 'DRAFT') {
+                            $message["type"] = "draft";
+                        } else {
+                            $message["type"] = "outgoing";
+                        }
+                    } else {
+                        $message["type"] = 'incoming';
+                    }
+                    $message["sender"] = Utils::getUserEmail($message["sender"]);
+                }
+                if ($message["recepient"])
+                    $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+                if ($message["docs"]) {
+                    $docs = [];
+                    foreach ($message["docs"] as $docId) {
+                        $docName = Database::getDocumentById($docId)->getName();
+                        $docs[]  = [
+                            "id" => $docId,
+                            "name" => $docName
+                        ];
+                    }
+                    $message["docs"] = $docs;
+                }
+
+                $dateCreated = strtotime($message["time"]);
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+                $message["time"] = $dateCreated;
+
+                $res['messages'][] = $message;
+
+            }
+            return $res;
+        }
+    }
+
     /**
      * @param array $params [messId]: id of draft
      *                      [filelds]: array of changes
@@ -2130,5 +2219,301 @@ class AjaxCommand {
             return $res;
         }
 
+    }
+
+    public function createLabel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        };
+
+        if (!$params["text"]) {
+            $res["message"] = "No name for label";
+            return $res;
+        }
+
+        if (!$params["style"]) {
+            $res["message"] = "No style for label";
+            return $res;
+        }
+
+        Messages::createLabel($params);
+    }
+
+    public function getUserLabels() {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getUserLabels",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        $res["labels"] = Messages::getUserlabels($userId);
+
+        return $res;
+    }
+
+    /**
+     * @param array $params [messageId]
+     *                      [labelId]
+     *
+     */
+    public function setLabelToMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.setLabelToMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        if (!$params['messageId']) {
+            $res["message"] = "No message Id given";
+            return $res;
+        }
+
+        if (!$params['labelId']) {
+            $res['message'] = 'No label id given';
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        $recepientId = Messages::getRecepientId($params["messageId"]);
+        $senderId = Messages::getSenderId($params["messageId"]);
+
+        if (!($userId == $senderId || $userId == $recepientId)) {
+            $res['message'] = 'User have no access to message';
+            return $res;
+        }
+
+        $labelsOfMessage = Messages::getMessageLabels($params['messageId']);
+
+        if (in_array($params['labelId'], $labelsOfMessage)) {
+            $res['message'] = 'Label already set to this message';
+            return $res;
+        }
+
+        Messages::setLabelToMessage($params);
+        $res['success'] = true;
+        $res['message'] = 'Label set to message';
+        return $res;
+    }
+
+//    public function getMessagesLabels($params) {
+//        $res = [
+//            "success" => false,
+//            "message" => "Unknown error in Ajax.getMessageLabels",
+//        ];
+//
+//        if (!Utils::checkAuthorization()) {
+//            $res["message"] = "No authorization";
+//            $res["noAuth"] = true;
+//            return $res;
+//        }
+//
+//        if (!$params["messIds"]) {
+//            $res["message"] = "No message ids given";
+//            return $res;
+//        }
+//
+//        $userId = Utils::currUserId();
+//        $res["notExistingMessages"] = [];
+//        $res["notThisUserMessages"] = [];
+//        $res["messagesForSearch"] = [];
+//
+//        foreach ($params["messIds"] as $messId) {
+//            if (!Messages::isMessageExists($messId)) {
+//                $res["notExistingMessages"][] = $messId;
+//            } else {
+//                if (!($userId = Messages::getSenderId($messId) || $userId = Messages::getRecepientId($messId))) {
+//                    $res["notThisUserMessages"][] = $messId;
+//                } else {
+//                    $res["messagesForSearch"][] = $messId;
+//                }
+//            }
+//        }
+//
+//        $countOfMessages = count($res["messagesForSearch"]);
+//
+//        $res["labels"] = [];
+//
+//        if ($countOfMessages != 0) {
+//            foreach ($res["messagesForSearch"] as $messId) {
+//                $labels = Messages::getMessageLabels($messId);
+//                if (count($labels) != 0) {
+//                    foreach ($labels as $label) {
+//                        $res["labels"][] = Messages::getLabelInfo($label);
+//                    }
+//                }
+//            }
+//            array_unique($res["labels"]);
+//            foreach($res["labels"] as $label) {
+//                $countOfSelectedMessagesWithLabel = 0;
+//                foreach ($res["messagesForSearch"] as $message) {
+//                    if (Messages::isMessageWithThisLabel($message, $label)) {
+//                        $countOfSelectedMessagesWithLabel++;
+//                    }
+//                }
+//
+//            }
+//        } else {
+//            $res["message"] = "No messages for search";
+//            return $res;
+//        }
+//    }
+
+    public function getInfoForLabelWindow($params){
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoForLabelWindow",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = "No authorization";
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        if (!$params['messIds']) {
+            $res['message'] = 'No message ids given';
+            return $res;
+        }
+
+        $userLabels = Messages::getUserlabels(Utils::currUserId());
+
+        $res["labels"] = [];
+
+        foreach ($params["messIds"] as $messId) {
+            if (!Messages::isMessageExists($messId)) {
+                $res["notExistingMessages"][] = $messId;
+            } else {
+                if (!($userId = Messages::getSenderId($messId) || $userId = Messages::getRecepientId($messId))) {
+                    $res["notThisUserMessages"][] = $messId;
+                } else {
+                    $res["messagesForSearch"][] = $messId;
+                }
+            }
+        }
+
+        $res["labels"] = [];
+
+        foreach ($userLabels as $label) {
+            $countOfMessagesWithLabel = 0;
+            foreach ($res["messagesForSearch"] as $messId) {
+                $label["message"] = [];
+                if (Messages::isMessageWithThisLabel($messId, $label['id'])) {
+                    $countOfMessagesWithLabel++;
+                    $label["messages"][] = $messId;
+                }
+            }
+            if ($countOfMessagesWithLabel == 0) {
+                $label["checkbox"] = "unchecked";
+            } else {
+                if ($countOfMessagesWithLabel < count($res["messagesForSearch"])) {
+                    $label["checkbox"] = "indeterminate";
+                } else {
+                    if ($countOfMessagesWithLabel == count($res["messagesForSearch"])){
+                        $label["checkbox"] = "checked";
+                    }
+                }
+            }
+            $res["labels"][] = $label;
+        }
+        $res["message"] = "success";
+        $res['success'] = true;
+        return $res;
+    }
+
+    public function searchLabel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.searchLabel",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        if (!$params["searchKey"]) {
+            $res["message"] = "Nothing to search";
+            $res["noKey"] = true;
+            return $res;
+        }
+
+        $params['userId'] = Utils::currUserId();
+
+        $res["labels"] = Messages::searchLabel($params);
+
+        if (count($res["labels"]) == 0) {
+            $res["success"] = true;
+            $res["message"] = "Found nothing";
+            return $res;
+        } else {
+            $res["success"] = true;
+            $res["message"] = "Found some";
+            return $res;
+        }
+    }
+
+    public function removeLabel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.setLabelToMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        };
+
+        if (!$params['labelId']) {
+            $res['message'] = 'Nothing to remove';
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        if (Messages::isLabelExists($params['labelId'])) {
+            $res["message"] = "Label not exists";
+            return $res;
+        }
+
+        $labels = Messages::getUserlabels($userId);
+
+        $labelsIds = [];
+
+        foreach ($labels as $label) {
+            $labelsIds[] = $label['id'];
+        }
+
+        if (!in_array($params['labelId'], $labelsIds)) {
+            $res['message'] = 'Not owner of this label';
+            return $res;
+        }
+
+        Messages::removeLabel($params['labelId']);
+
+        $res['message'] = 'Label removed';
+        $res['success'] = true;
+        return $res;
     }
 }
