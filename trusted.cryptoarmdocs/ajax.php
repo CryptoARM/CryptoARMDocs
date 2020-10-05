@@ -64,6 +64,13 @@ if (isset($command)) {
             break;
         case "getMessagesByLabel":
             $res = Docs\AjaxCommand::getMessagesByLabel($params);
+            break;
+        case "getInfoForLabelWindow":
+            $res = Docs\AjaxCommand::getInfoForLabelWindow($params);
+            break;
+        case "setLabelToMessage":
+            $res = Docs\AjaxCommand::setLabelToMessage($params);
+            break;
         case "share":
             $res = Docs\AjaxCommand::share($params);
             break;
