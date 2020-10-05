@@ -25,3 +25,4 @@ $MESS["TR_CA_DOCS_COMP_RECALL"] = "Отозвать";
 $MESS["TR_CA_DOCS_COMP_NEW_LABEL"] = "Новая метка";
 $MESS["TR_CA_DOCS_COMP_EDIT"] = "Редактировать";
 $MESS["TR_CA_DOCS_COMP_FIND_LABEL"] = "Найти метку";
+$MESS["TR_CA_DOCS_COMP_LABEL_ASSIGN"] = "Присвоить метки";

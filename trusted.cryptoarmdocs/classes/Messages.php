@@ -138,12 +138,12 @@ class Messages {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_LABELS . ' WHERE (';
         $sql .= ' USER_ID = ' . $params["userId"] . ' AND ';
-        $sql .= ' LOWER(TEXT) LIKE LOWER("%' . $params["searchKey"] . '%")';
+        $sql .= ' LOWER(TEXT) LIKE LOWER("%' . $params["searchKey"] . '%"))';
         $rows = $DB->Query($sql);
         $labels = [];
-        while ($row = $rows-Fetch()) {
+        while ($row = $rows->Fetch()) {
             $labels[] = [
-                "labelId" => $row["ID"],
+                "id" => $row["ID"],
                 "text" => $row["TEXT"],
                 "style" => $row["STYLE"],
             ];
@@ -261,7 +261,11 @@ class Messages {
                     LABEL_ID as ids FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE MESSAGE_ID=" . $messId;
         $rows = $DB->Query($sql);
         $labelsID = [];
-        $userLabelsId = Messages::getUserlabels(Utils::currUserId());
+        $userLabels = Messages::getUserlabels(Utils::currUserId());
+        $userLabelsId = [];
+        foreach ($userLabels as $userLabel) {
+            $userLabelsId[] = $userLabel['id'];
+        }
         while ($row = $rows->Fetch()) {
             if (in_array($row["ids"], $userLabelsId)) {
                 $labelsID[] = $row["ids"];
@@ -284,7 +288,7 @@ class Messages {
 
     static function isMessageWithThisLabel($messId, $labelId) {
         global $DB;
-        $sql = "SELECT * FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE (LABEL_ID=" . $labelId . "AND MESSAGE_ID=" . $messId;
+        $sql = "SELECT * FROM " . DB_TABLE_LABELS_PROPERTY . " WHERE (LABEL_ID=" . $labelId . " AND MESSAGE_ID=" . $messId . " )";
         $rows = $DB->Query($sql);
         if (($rows->SelectedRowsCount())==0) {
             return false;
@@ -359,16 +363,28 @@ class Messages {
         return $status;
     }
 
+//    static function getMessagesByLabel($labelId, $userId) {
+//        global $DB;
+//        $sql = 'SELECT MESSAGE_ID FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID=' . $labelId;
+//        $rows = $DB->Query($sql);
+//        $messageLabels = [];
+//        $userLabels = Messages::getUserLabels($userId);
+//        while ($row = $rows->Fetch()) {
+//            if(in_array($row["MESSAGE_ID"], $userLabels)) {
+//                $messageLabels[] = $row["MESSAGE_ID"];
+//            }
+//        }
+//        return $messageLabels;
+//    }
+
     static function getMessagesByLabel($labelId, $userId) {
         global $DB;
-        $sql = 'SELECT MESSAGE_ID FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID=' . $labelId;
+        $sql = 'SELECT TDLP.MESSAGE_ID as label FROM ' . DB_TABLE_LABELS_PROPERTY . ' as TDLP RIGHT JOIN ' . DB_TABLE_LABELS . ' as TDL ON(';
+        $sql .= 'TDLP.LABEL_ID = TDL.ID) WHERE (TDLP.LABEL_ID=' . $labelId . ' AND TDL.USER_ID=' . $userId . ')';
         $rows = $DB->Query($sql);
         $messageLabels = [];
-        $userLabels = Messages::getUserLabels($userId);
         while ($row = $rows->Fetch()) {
-            if(in_array($row["MESSAGE_ID"], $userLabels)) {
-                $messageLabels[] = $row["MESSAGE_ID"];
-            }
+            $messageLabels[] = $row["label"];
         }
         return $messageLabels;
     }
@@ -397,7 +413,11 @@ class Messages {
         $mes["status"] = $row["MES_STATUS"];
         $mes["time"] = $row["TIMESTAMP_X"];
         $mes['rejectedComment'] = $row['REJECTED_COMMENT'];
-        $mes["labels"] = Messages::getMessageLabels($messId);
+        $labels = Messages::getMessageLabels($messId);
+//        $mes["labels"] = Messages::getMessageLabels($messId);
+        foreach ($labels as $label) {
+            $mes["labels"][] = Messages::getLabelInfo($label);
+        }
         $mes["sender"] = Messages::getSenderId($messId);
         $mes["recepient"] = Messages::getRecepientId($messId);
         $mes["docs"] = Messages::getDocsInMessage($messId);
@@ -657,7 +677,7 @@ class Messages {
 
     static function changeStatus($params) {
         global $DB;
-        $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_SATAUS = "' . $params["newStatus"] . '" WHERE ID = ' . $params['mess'];
+        $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "' . $params["newStatus"] . '" WHERE ID = ' . $params['mess'];
         $DB->Query($sql);
         if($params['comment']) {
             $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET REJECTED_COMMENT = "' . $params['comment'] . '"';
@@ -669,7 +689,7 @@ class Messages {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_LABELS . ' WHERE ID = ' . $labelId;
         $DB->Query($sql);
-        $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . 'WHERE LABEL_ID = ' . $labelId;
+        $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID = ' . $labelId;
         $DB->Query($sql);
     }
 }

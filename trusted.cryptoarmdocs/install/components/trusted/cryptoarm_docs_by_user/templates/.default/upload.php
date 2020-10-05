@@ -492,7 +492,6 @@ function hideModal() {
     $("#trca_upload_save_draft").hide();
     $("#trca_upload_succesful_send").hide();
     $("#trca_upload_window_download").hide();
-    trustedCA.reloadDoc(); //!ПОТОМ УДАЛИТЬ
 }
 
 function toFirstStep() {

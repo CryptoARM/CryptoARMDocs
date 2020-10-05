@@ -758,6 +758,7 @@ input:focus::placeholder {
     flex-wrap: wrap;
 }
 .trca_label {
+    height: 12px;
     margin: 5px 5px 5px 0;
     padding: 3px 7px;
     font-size: 10px;
@@ -790,6 +791,7 @@ input:focus::placeholder {
 
 .trca_edo_header_menu {
     display: flex;
+    position:relative;
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
@@ -1122,6 +1124,10 @@ input:focus::placeholder {
 }
 
 .trca_label_window {
+    position:absolute;
+    top: 35px;
+    left: 100px;
+    z-index: 2;
     width: 184px;
     display: flex;
     flex-direction: column;
@@ -1147,11 +1153,14 @@ input:focus::placeholder {
 
 .trca_label_window_list_item {
     height: 33px;
+    display:flex;
+    align-items: center;
 }
 
 .trca_label_window_footer {
     display: flex;
     flex-direction: column;
+    border-top: 1px solid #E5E5E5;
 }
 
 .trca_label_window_footer_button{
@@ -1160,6 +1169,7 @@ input:focus::placeholder {
     align-items: center;
     justify-content: flex-start;
     padding-left: 16px;
+    cursor: pointer;
 }
 
 .trca_label_window_footer_button:hover{

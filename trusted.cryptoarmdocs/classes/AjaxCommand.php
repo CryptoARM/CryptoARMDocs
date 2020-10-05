@@ -2395,9 +2395,19 @@ class AjaxCommand {
             return $res;
         }
 
-        $userLabels = Messages::getUserlabels(Utils::currUserId());
+        $params["userId"] = Utils::currUserId();
 
-        $res["labels"] = [];
+//        if (!$params["searchKey"]) {
+//            $userLabels = Messages::getUserlabels(Utils::currUserId());
+//        } else {
+//            $userLabels =
+//        }
+
+        if (!$params['searchKey']) {
+            $userLabels = Messages::getUserLabels($params["userId"]);
+        } else {
+            $userLabels = Messages::searchLabel($params);
+        }
 
         foreach ($params["messIds"] as $messId) {
             if (!Messages::isMessageExists($messId)) {
@@ -2440,38 +2450,38 @@ class AjaxCommand {
         return $res;
     }
 
-    public function searchLabel($params) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in Ajax.searchLabel",
-        ];
-
-        if (!Utils::checkAuthorization()) {
-            $res["message"] = "No authorization";
-            $res["noAuth"] = true;
-            return $res;
-        }
-
-        if (!$params["searchKey"]) {
-            $res["message"] = "Nothing to search";
-            $res["noKey"] = true;
-            return $res;
-        }
-
-        $params['userId'] = Utils::currUserId();
-
-        $res["labels"] = Messages::searchLabel($params);
-
-        if (count($res["labels"]) == 0) {
-            $res["success"] = true;
-            $res["message"] = "Found nothing";
-            return $res;
-        } else {
-            $res["success"] = true;
-            $res["message"] = "Found some";
-            return $res;
-        }
-    }
+//    public function searchLabel($params) {
+//        $res = [
+//            "success" => false,
+//            "message" => "Unknown error in Ajax.searchLabel",
+//        ];
+//
+//        if (!Utils::checkAuthorization()) {
+//            $res["message"] = "No authorization";
+//            $res["noAuth"] = true;
+//            return $res;
+//        }
+//
+//        if (!$params["searchKey"]) {
+//            $res["message"] = "Nothing to search";
+//            $res["noKey"] = true;
+//            return $res;
+//        }
+//
+//        $params['userId'] = Utils::currUserId();
+//
+//        $res["labels"] = Messages::searchLabel($params);
+//
+//        if (count($res["labels"]) == 0) {
+//            $res["success"] = true;
+//            $res["message"] = "Found nothing";
+//            return $res;
+//        } else {
+//            $res["success"] = true;
+//            $res["message"] = "Found some";
+//            return $res;
+//        }
+//    }
 
     public function removeLabel($params) {
         $res = [

@@ -5,6 +5,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
+use Trusted\CryptoARM\Docs\Messages;
+use Trusted\CryptoARM\Docs\Utils;
 
 //checks the name of currently installed core from highest possible version to lowest
 $coreIds = [
@@ -39,26 +41,6 @@ include(__DIR__ . "/upload.php");
 ?>
 
 <!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
-<div class="trca_label_window">
-    <div class="trca_label_window_search">
-        <div class="trca_label_window_search">
-            <div class="trca_label_window_search"></div>
-            <input placeholder="<?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?>" id="trca_search_label">
-            <!-- <div class="trca_button_close"></div> -->
-        </div>
-        <div class="trca_label_window_list">
-
-        </div>
-    </div>
-    <div class="trca_label_window_footer">
-        <div class="trca_label_window_footer_button">
-            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_NEW_LABEL") ?></span>
-        </div>
-        <div class="trca_label_window_footer_button">
-            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT") ?></span>
-        </div>
-    </div>
-</div>
 <div id="trca_create_label_window" class="trca_create_label_window">
     <div class="trca_create_label_window_header">
         <span><?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE_LABEL") ?></span>
@@ -172,6 +154,29 @@ include(__DIR__ . "/upload.php");
                 <div id="trca_edo_header_menu_buttons" class="trca_edo_header_menu_buttons">
                     <div class="trca_header_check">
                         <input type="checkbox">
+                    </div>
+                    <div id="trca_label_window" class="trca_label_window" style="display: none">
+                        <div class="trca_label_search">
+                            <div class="trca_create_label_window_name">
+                                <input type="text" required id="trca_label_search" style="width:184px">
+                                <span class="bar"></span>
+                                <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?></label>
+                            </div>
+                        </div>
+                        <div class="trca_label_window_list" id="trca_label_window_list">
+
+                        </div>
+                        <div class="trca_label_window_footer">
+                            <div id="trca_label_assign" class="trca_label_window_footer_button">
+                                <span><?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL_ASSIGN") ?></span>
+                            </div>
+                            <div class="trca_label_window_footer_button">
+                                <span><?= Loc::getMessage("TR_CA_DOCS_COMP_NEW_LABEL") ?></span>
+                            </div>
+                            <div class="trca_label_window_footer_button">
+                                <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT") ?></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="trca_header_button trca_button_send" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>"></div>
                     <div class="trca_header_button trca_button_download" title="<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>" onclick="uploadFile()"></div>
@@ -310,10 +315,6 @@ function getMessagesByLabel(labelId) {
             chechActionInitialization();
         }
     })
-}
-
-function setLabelToMessages() {
-
 }
 
 function showModal() {
@@ -514,6 +515,17 @@ $('.trca_edo_info_close').click( function() {
     $(this).parent().hide();
 });
 
+// let labelSearchArea = document.getElementById("trca_label_search");
+//
+// labelSearchArea.addEventListener("keyup", function(){
+//     let length = this.value.length;
+//     let searchKey = this.value;
+//     let typeOfMessage = 'all';
+//     if (length>2) {
+//         showLabelWindow(searchKey);
+//     }
+// });
+
 function infoItemInitialization() {
     $(".trca_edo_item_properties").click(function() {
         let file_id = $(this).parent().attr("file_id");
@@ -641,23 +653,89 @@ function getDocList(shared, page) {
 //page
 //count
 
+function setLabelToMessages(messIds) {
+    let labelsId = getCheckedLabels();
+    if (labelsId.lenth != 0) {
+        labelsId.forEach((labelId) => {
+            messIds.forEach((messageId) => {
+                let data = {labelId: labelId, messageId: messageId};
+                $.ajax({
+                    url: AJAX_CONTROLLER + '?command=setLabelToMessage',
+                    type: 'post',
+                    data: data,
+                })
+            })
+        })
+    }
+}
+
+function getCheckedLabels() {
+    let labelIds = new Array;
+    $('input[id^="label_"]').each(function() {
+        if ($(this).prop("checked")) {
+            let idStr = $(this).attr("id");
+            let id = idStr.replace("label_", "");
+            labelIds.push(id);
+        }
+    })
+    return labelIds;
+}
+
+
 function showLabelWindow() {
+    console.log("s");
     let messIds = getChecked();
-    $
+    if (messIds.length != 0) {
+        $("#trca_label_window").show();
+        $("#trca_label_window_list").html("");
+        getLabelListForLabelWindow(messIds, null);
+        $("#trca_label_assign").click(function() {
+            setLabelToMessages(messIds);
+        })
+        jQuery(function($){
+            $(document).mouseup(function (e){ // событие клика по веб-документу
+                var div = $("#trca_label_window"); // тут указываем ID элемента
+                if (!div.is(e.target) // если клик был не по нашему блоку
+                    && div.has(e.target).length === 0) { // и не по его дочерним элементам
+                    div.hide(); // скрываем его
+                }
+            });
+        });
+    }
+}
+
+function getLabelListForLabelWindow(messIds, searchKey) {
+    let labelsSearchParams = {messIds: messIds, searchKey: searchKey};
+    let labelList = document.getElementById("trca_label_window_list");
     $.ajax({
         url: AJAX_CONTROLLER + '?command=getInfoForLabelWindow',
         type: 'post',
-        data: {messIds: messIds},
-        success: function(d) {
-            let header = document.getElementById("trca_edo_header_menu");
-            let labelWindow = document.createElement('<div>');
-            labelWindow.className = "trca_label_window";
-            header.appendChild(labelWindow);
-            let searchBarForLabel = `
-            <input placeholder="Найти метку" id="trca_search_label" class="trca_label_window_search">`;
-
+        data: labelsSearchParams,
+        success: function (d) {
+            d.labels.forEach((label) => {
+                let labelElement = `
+                    <div class="trca_label_window_list_item">
+                        <input type="checkbox" id="label_${label.id}">
+                        <label for="label_${label.id}">${label.text}<label>
+                    </div>`
+                let checkbox = document.getElementById("label_" + label.id);
+                labelList.insertAdjacentHTML("beforeend", labelElement);
+                // $('#label_' + label.id).prop("indeterminate", true);
+                switch(label.checkbox) {
+                    case 'unchecked':
+                        break;
+                    case 'checked':
+                        break;
+                    case 'indeterminate':
+                        break;
+                }
+            });
         }
     })
+}
+
+function setThreeStateOfCheckbox(checkbox) {
+
 }
 
 function getMessageList(type, page) {
@@ -726,6 +804,7 @@ function createtableMessages(messages) {
         element.docs = message.docs;
         element.fisrt = message.sender;
         element.second = message.theme;
+        element.labels = message.labels;
         element.third = message.comment;;
         element.dateCreated = message.time;
         let itemTable = createItemTable(element);
@@ -765,7 +844,12 @@ function createItemTable(element) {
         </div>
     </div>`;
     itemTable.innerHTML = itemTableContent;
-
+    element.labels.forEach(label => {
+        let labelDiv = document.createElement("div");
+        labelDiv.className = "trca_label " + label.style;
+        labelDiv.innerText = label.text;
+        itemTable.appendChild(labelDiv);
+    })
     return itemTable;
 }
 
