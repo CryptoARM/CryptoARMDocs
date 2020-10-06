@@ -1155,6 +1155,12 @@ input:focus::placeholder {
     height: 33px;
     display:flex;
     align-items: center;
+    justify-content: flex-start;
+}
+
+.trca_label_window_list_item input {
+    margin-left: 15px;
+    margin-right:15px;
 }
 
 .trca_label_window_footer {
@@ -1170,6 +1176,10 @@ input:focus::placeholder {
     justify-content: flex-start;
     padding-left: 16px;
     cursor: pointer;
+}
+
+.trca_label_create {
+    color: #67B7F6;
 }
 
 .trca_label_window_footer_button:hover{
@@ -1351,4 +1361,70 @@ input:focus::placeholder {
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
+}
+
+.trca_edit_label_create {
+    height: 30px;
+    width: 339px;
+    display:flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #67B7F6;
+}
+
+.trca_edit_label_create:hover {
+    background-color: #b7dbfc;
+}
+
+.trca_edit_label_list {
+    width:339px;
+    height: 125px;
+    overflow-y: scroll;
+}
+
+.trca_edit_label_list_item {
+    heigth: 30px;
+    width: 339px;
+}
+
+.trca_edit_label_list_item:hover {
+    background-color: #f0f6fc;
+}
+
+.trca_edit_label_list_item_name {
+
+}
+
+.trca_edit_label_list_item_name:before {
+    content: "";
+    padding: 0 14px;
+    background: url(icons/icons/5.png)left/14px no-repeat;
+    transform: rotate(45deg);
+    width: 14px;
+    height:14px;
+}
+
+.trca_edit_label_list_item_buttons {
+
+}
+
+.trca_edit_edit_button {
+    background: url(icons/icons/7.png)left/15px no-repeat;
+}
+
+.trca_edit_remove_button {
+    background: url(icons/icons/11.png)left/15px no-repeat;
+}
+
+.trca_edit_label_list_item_button {
+    opacity: 0.4;
+}
+
+.trca_edit_label_footer{
+    width: 100%;
+    height: 84px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 40px;
 }

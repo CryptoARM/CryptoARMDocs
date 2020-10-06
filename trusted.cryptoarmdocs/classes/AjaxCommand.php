@@ -2406,7 +2406,20 @@ class AjaxCommand {
         if (!$params['searchKey']) {
             $userLabels = Messages::getUserLabels($params["userId"]);
         } else {
-            $userLabels = Messages::searchLabel($params);
+            $searchKeys = explode(' ', $params['searchKey']);
+//            $userLabels = Messages::searchLabel($params);
+            $userLabelsId = [];
+            foreach ($searchKeys as $key) {
+                if ($key != null) {
+                    $params['searchKey'] = $key;
+                    $userLabelsId  =array_merge($userLabelsId, Messages::searchLabel($params));
+                }
+            }
+            $userLabelsId = array_unique(array_column($userLabelsId, 'id'));
+            $userLabels = [];
+            foreach ($userLabelsId as $userLabelId) {
+                $userLabels[] = Messages::getLabelInfo($userLabelId);
+            }
         }
 
         foreach ($params["messIds"] as $messId) {

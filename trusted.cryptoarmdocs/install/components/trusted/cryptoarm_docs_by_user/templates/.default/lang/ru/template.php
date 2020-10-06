@@ -26,3 +26,5 @@ $MESS["TR_CA_DOCS_COMP_NEW_LABEL"] = "Новая метка";
 $MESS["TR_CA_DOCS_COMP_EDIT"] = "Редактировать";
 $MESS["TR_CA_DOCS_COMP_FIND_LABEL"] = "Найти метку";
 $MESS["TR_CA_DOCS_COMP_LABEL_ASSIGN"] = "Присвоить метки";
+$MESS["TR_CA_DOCS_COMP_EDIT_LABEL"] = "Редактирование меток";
+$MESS["TR_CA_DOCS_COMP_EDIT_LABEL_CREATE"] = "Создать метку";
