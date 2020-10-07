@@ -2515,7 +2515,7 @@ class AjaxCommand {
 
         $userId = Utils::currUserId();
 
-        if (Messages::isLabelExists($params['labelId'])) {
+        if (!Messages::isLabelExists($params['labelId'])) {
             $res["message"] = "Label not exists";
             return $res;
         }

@@ -1314,9 +1314,17 @@ input:focus::placeholder {
     color: #EE800D;
 }
 
+.png_trca_label_one {
+    filter: invert(100%) sepia(47%) saturate(3345%) hue-rotate(296deg) brightness(123%) contrast(106%);
+}
+
 .trca_label_two {
     background-color: #ECE4FA;
     color: #6D37D7;
+}
+
+.png_trca_label_two {
+    filter: invert(85%) sepia(25%) saturate(157%) hue-rotate(215deg) brightness(103%) contrast(96%);
 }
 
 .trca_label_three {
@@ -1324,9 +1332,17 @@ input:focus::placeholder {
     color: #0a3a68;
 }
 
+.png_trca_label_three {
+    filter: invert(69%) sepia(12%) saturate(1636%) hue-rotate(189deg) brightness(109%) contrast(115%);
+}
+
 .trca_label_four {
     background-color: #BBF7DE;
     color: #09915A;
+}
+
+.png_trca_label_four {
+    filter: invert(85%) sepia(31%) saturate(250%) hue-rotate(99deg) brightness(105%) contrast(94%);
 }
 
 .trca_label_five {
@@ -1334,9 +1350,17 @@ input:focus::placeholder {
     color: #bb7c63;
 }
 
+.png_trca_label_five {
+    filter: invert(85%) sepia(29%) saturate(210%) hue-rotate(323deg) brightness(102%) contrast(94%);
+}
+
 .trca_label_six {
     background-color: #E0F0F3;
     color: #57A0A0;
+}
+
+.png_trca_label_six{
+    filter: invert(96%) sepia(3%) saturate(1125%) hue-rotate(167deg) brightness(102%) contrast(91%);
 }
 
 .trca_label_seven {
@@ -1344,15 +1368,28 @@ input:focus::placeholder {
     color: #b35928
 }
 
+.png_trca_label_seven {
+    filter: invert(94%) sepia(74%) saturate(7430%) hue-rotate(296deg) brightness(110%) contrast(98%);
+}
+
 .trca_label_eight {
     background-color: #AEF2F4;
     color: #409090;
+}
+
+.png_trca_label_eight{
+    filter: invert(81%) sepia(52%) saturate(185%) hue-rotate(136deg) brightness(104%) contrast(92%);
 }
 
 .trca_label_nine {
     background-color: #D6F9A5;
     color: #09915A;
 }
+
+.png_trca_label_nine {
+    filter: invert(85%) sepia(21%) saturate(565%) hue-rotate(41deg) brightness(108%) contrast(95%);
+}
+
 
 .trca_create_label_window_footer {
     width: 100%;
@@ -1365,11 +1402,12 @@ input:focus::placeholder {
 
 .trca_edit_label_create {
     height: 30px;
-    width: 339px;
+    width: 327px;
     display:flex;
     justify-content: flex-start;
     align-items: center;
     color: #67B7F6;
+    cursor: pointer;
 }
 
 .trca_edit_label_create:hover {
@@ -1379,52 +1417,114 @@ input:focus::placeholder {
 .trca_edit_label_list {
     width:339px;
     height: 125px;
+    display: flex;
     overflow-y: scroll;
+    overflow-x: hidden;
+    flex-direction: column;
 }
 
 .trca_edit_label_list_item {
-    heigth: 30px;
-    width: 339px;
+    height: 30px;
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px
 }
 
 .trca_edit_label_list_item:hover {
     background-color: #f0f6fc;
 }
 
+.trca_edit_label_item_info_space {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 50%;
+    justify-content: flex-start;
+    align-items: center;
+}
+
 .trca_edit_label_list_item_name {
 
 }
 
-.trca_edit_label_list_item_name:before {
-    content: "";
-    padding: 0 14px;
-    background: url(icons/icons/5.png)left/14px no-repeat;
-    transform: rotate(45deg);
-    width: 14px;
-    height:14px;
+.trca_edit_label_icon_place {
+    width: 30px;
+    height:30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 6px;
+}
+
+.trca_edit_label_icon_place:hover {
+    background-color: rgba(168, 171, 186, 0.3);
+    cursor: pointer;
+}
+
+.trca_edit_label_list_item_name_png {
+    background: url(icons/icons/5.png)center/20px no-repeat;
+    transform: rotate(45deg); /*translateY(0px) translateX(4px);*/
+    height: 100%;
+    width: 30px;
 }
 
 .trca_edit_label_list_item_buttons {
+    opacity: 0;
+    display:flex;
+    height: 100%;
+    width: 21%;
+    justify-content: space-between;
+}
 
+.trca_edit_edit_button, .trca_edit_remove_button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    opacity: 40%;
+    content: "";
 }
 
 .trca_edit_edit_button {
-    background: url(icons/icons/7.png)left/15px no-repeat;
+    background: url(icons/icons/7.png)center/20px no-repeat;
 }
 
 .trca_edit_remove_button {
-    background: url(icons/icons/11.png)left/15px no-repeat;
+    background: url(icons/icons/11.png)center/20px no-repeat;
+}
+
+.trca_edit_edit_button:hover, .trca_edit_remove_button:hover {
+    cursor: pointer;
+    background-color: rgba(168, 171, 186, 0.3);
 }
 
 .trca_edit_label_list_item_button {
     opacity: 0.4;
 }
 
-.trca_edit_label_footer{
+.trca_edit_label_footer {
     width: 100%;
     height: 84px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding-right: 40px;
+}
+
+.trca_edit_label_color_table {
+    width: 81px;
+    heitgh: 81px;
+    background-color: white;
+    display: flex;
+}
+
+.trca_edit_label_color {
+
+}
+
+.trca_edit_label_color input {
+    display: none;
 }

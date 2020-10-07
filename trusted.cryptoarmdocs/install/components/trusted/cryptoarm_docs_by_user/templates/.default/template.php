@@ -49,13 +49,11 @@ include(__DIR__ . "/upload.php");
         </div>
     </div>
     <div class="trca_edit_label_create">
-        <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 20px;">close</span>
+        <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 8px;">close</span>
         <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL_CREATE") ?></span>
     </div>
-    <div class="trca_edit_label_list">
-        <div class="trca_edit_label_list_item">
-            <div class="trca_edit_label_list_item_name">label</div>
-        </div>
+    <div class="trca_edit_label_list" id="trca_edit_label_list">
+
     </div>
     <div class="trca_edit_label_footer">
         <div class="trca_upload_window_footer_cancel">
@@ -300,6 +298,69 @@ include(__DIR__ . "/upload.php");
 
 <script>
 getLabelList();
+getLabelListForEditWindow();
+
+function getLabelListForEditWindow() {
+    let labelList = document.getElementById("trca_edit_label_list");
+    labelList.innerHTML = "";
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=getUserLabels',
+        type: 'post',
+        success: function (d) {
+            d.labels.forEach(label => {
+                var listItem = document.createElement('div');
+                listItem.className = "trca_edit_label_list_item";
+                labelList.appendChild(listItem);
+                var labelInfoSpace = document.createElement('div');
+                labelInfoSpace.className = "trca_edit_label_item_info_space";
+                listItem.appendChild(labelInfoSpace);
+                var iconPlace = document.createElement('div');
+                iconPlace.className = 'trca_edit_label_icon_place';
+                labelInfoSpace.appendChild(iconPlace);
+                var icon = document.createElement('div');
+                icon.className = 'trca_edit_label_list_item_name_png png_' + label.style;
+                iconPlace.appendChild(icon);
+                var listItemName = document.createElement('div');
+                listItemName.className = 'trca_edit_label_list_item_name';
+                listItemName.innerText = label.text;
+                labelInfoSpace.appendChild(listItemName);
+                var labelItemButtons = document.createElement('div');
+                labelItemButtons.className = 'trca_edit_label_list_item_buttons';
+                listItem.appendChild(labelItemButtons);
+                var editButton = document.createElement('div');
+                editButton.className = 'trca_edit_edit_button';
+                var removeButton = document.createElement('div');
+                removeButton.className = 'trca_edit_remove_button';
+                removeButton.onclick = function() {
+                    removeLabel(label.id);
+                }
+                editButton.onclick = function() {
+
+                }
+                labelItemButtons.appendChild(editButton);
+                labelItemButtons.appendChild(removeButton);
+                listItem.onmouseover = function() {
+                    labelItemButtons.style.opacity='1';
+                };
+                listItem.onmouseout = function() {
+                    labelItemButtons.style.opacity='0';
+                };
+            })
+        }
+    });
+}
+
+function removeLabel(labelId) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=removeLabel',
+        type:'post',
+        data: {labelId: labelId},
+        success: function(d) {
+            getLabelList();
+            getLabelListForEditWindow();
+        }
+    })
+}
 
 function getLabelList() {
     let labelList = document.getElementById("trca_edo_labels");

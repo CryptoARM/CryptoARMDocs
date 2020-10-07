@@ -39,6 +39,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
         close
     </div>
 </div> -->
+<div id="trca_data" userid="<?= Docs\Utils::currUserId() ?>"></div>
 <div id="trca_upload_component">
     <div class="trca_upload_button" onclick="showModal()">
         <div style="font-size: 35px; font-weight: 100">+</div>
