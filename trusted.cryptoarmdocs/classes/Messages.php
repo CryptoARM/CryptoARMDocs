@@ -316,7 +316,7 @@ class Messages {
 
     static function editLabel($params) {
         global $DB;
-        $sql = "UPDATE " . DB_TABLE_LABELS . ' SET( ';
+        $sql = "UPDATE " . DB_TABLE_LABELS . ' SET ';
         if ($params['newText']) {
             $sql .= 'TEXT="' . $params["newText"] . '"';
             if ($params['newStyle']) {
@@ -326,7 +326,7 @@ class Messages {
         if ($params['newStyle']) {
             $sql .= 'STYLE="' . $params['newStyle'] . '"';
         }
-        $sql .= ') WHERE ID=' . $params["labelId"];
+        $sql .= ' WHERE ID=' . $params["labelId"];
         $DB->Query($sql);
     }
 
@@ -691,6 +691,17 @@ class Messages {
         $DB->Query($sql);
         $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID = ' . $labelId;
         $DB->Query($sql);
+    }
+
+    static function getTableValue($params) {
+        global $DB;
+        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE ' . $params["columnName"] . '="' . $params["value"] . '"';
+        $rows = $DB->Query($sql);
+        $ids = [];
+        while ($row = $rows->Fetch()) {
+            $ids[] = $row['ID'];
+        }
+        return $ids;
     }
 }
 

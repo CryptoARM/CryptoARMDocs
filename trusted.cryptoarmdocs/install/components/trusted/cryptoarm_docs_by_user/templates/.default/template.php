@@ -38,17 +38,18 @@ if ($USER->GetFullName()) {
 }
 
 include(__DIR__ . "/upload.php");
+;зфк
 ?>
 
 <!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
-<div id="trca_label_edit_window" class="trca_create_label_window">
+<div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
     <div class="trca_create_label_window_header">
         <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL") ?></span>
         <div class="material-icons" style="font-size: 20px; color: rgba(0, 0, 0, 0.158);" >
             close
         </div>
     </div>
-    <div class="trca_edit_label_create">
+    <div class="trca_edit_label_create" onclick="showCreateLabelWindow()">
         <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 8px;">close</span>
         <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL_CREATE") ?></span>
     </div>
@@ -300,54 +301,130 @@ include(__DIR__ . "/upload.php");
 getLabelList();
 getLabelListForEditWindow();
 
-function getLabelListForEditWindow() {
-    let labelList = document.getElementById("trca_edit_label_list");
-    labelList.innerHTML = "";
-    $.ajax({
+function getLabels(onSuccess = null) {
+    $.ajax ({
         url: AJAX_CONTROLLER + '?command=getUserLabels',
         type: 'post',
         success: function (d) {
             d.labels.forEach(label => {
-                var listItem = document.createElement('div');
-                listItem.className = "trca_edit_label_list_item";
-                labelList.appendChild(listItem);
-                var labelInfoSpace = document.createElement('div');
-                labelInfoSpace.className = "trca_edit_label_item_info_space";
-                listItem.appendChild(labelInfoSpace);
-                var iconPlace = document.createElement('div');
-                iconPlace.className = 'trca_edit_label_icon_place';
-                labelInfoSpace.appendChild(iconPlace);
-                var icon = document.createElement('div');
-                icon.className = 'trca_edit_label_list_item_name_png png_' + label.style;
-                iconPlace.appendChild(icon);
-                var listItemName = document.createElement('div');
-                listItemName.className = 'trca_edit_label_list_item_name';
-                listItemName.innerText = label.text;
-                labelInfoSpace.appendChild(listItemName);
-                var labelItemButtons = document.createElement('div');
-                labelItemButtons.className = 'trca_edit_label_list_item_buttons';
-                listItem.appendChild(labelItemButtons);
-                var editButton = document.createElement('div');
-                editButton.className = 'trca_edit_edit_button';
-                var removeButton = document.createElement('div');
-                removeButton.className = 'trca_edit_remove_button';
-                removeButton.onclick = function() {
-                    removeLabel(label.id);
+                if (typeof onSuccess == 'function') {
+                    onSuccess(label);
                 }
-                editButton.onclick = function() {
-
-                }
-                labelItemButtons.appendChild(editButton);
-                labelItemButtons.appendChild(removeButton);
-                listItem.onmouseover = function() {
-                    labelItemButtons.style.opacity='1';
-                };
-                listItem.onmouseout = function() {
-                    labelItemButtons.style.opacity='0';
-                };
             })
         }
-    });
+    })
+}
+
+function getColorTable(area, id) {
+    var labelsClasses = ['trca_label_one','trca_label_two','trca_label_three','trca_label_four','trca_label_five','trca_label_six','trca_label_seven','trca_label_eight','trca_label_nine'];
+    var colorTable = document.createElement('div');
+    colorTable.className = 'trca_edit_label_color_table';
+    area.appendChild(colorTable);
+    labelsClasses.forEach(labelClass => {
+        var colorDiv = document.createElement('div');
+        colorDiv.className = 'trca_edit_label_color';
+        colorTable.appendChild(colorDiv);
+        var radioColor = document.createElement('input');
+        radioColor.setAttribute('type', 'radio');
+        radioColor.setAttribute('name', 'radio');
+        radioColor.setAttribute('value', labelClass);
+        radioColor.id = labelClass + id;
+        colorDiv.appendChild(radioColor);
+        let radioColorLabel = document.createElement('label');
+        radioColorLabel.className = labelClass;
+        radioColorLabel.setAttribute('for', labelClass + id);
+        colorDiv.appendChild(radioColorLabel);
+        $(radioColor).change(function () {
+            if ($(radioColor).attr("checked")) {
+                editLabel(id, null, labelClass)
+            }
+        });
+    })
+    $(colorTable).hide();
+    return colorTable;
+}
+
+function getLabelListForEditWindow() {
+    let labelList = document.getElementById("trca_edit_label_list");
+    labelList.innerHTML = "";
+    let showLabelInEditWindow = (label) => {
+        var listItem = document.createElement('div');
+        listItem.className = "trca_edit_label_list_item";
+        labelList.appendChild(listItem);
+        var labelInfoSpace = document.createElement('div');
+        labelInfoSpace.className = "trca_edit_label_item_info_space";
+        listItem.appendChild(labelInfoSpace);
+        var iconPlace = document.createElement('div');
+        iconPlace.className = 'trca_edit_label_icon_place';
+        labelInfoSpace.appendChild(iconPlace);
+        var icon = document.createElement('div');
+        icon.className = 'trca_edit_label_list_item_name_png png_' + label.style;
+        iconPlace.appendChild(icon);
+        var colorTable = getColorTable(iconPlace, label.id);
+        iconPlace.appendChild(colorTable);
+        iconPlace.onclick = function() {
+            var visible = $(colorTable).is(":visible");
+            $(".trca_edit_label_color_table").each(function() {
+                $(this).hide();
+            })
+            if (!visible)
+                $(colorTable).show();
+        }
+        var listItemName = document.createElement('div');
+        listItemName.className = 'trca_edit_label_list_item_name';
+        listItemName.innerText = label.text;
+        labelInfoSpace.appendChild(listItemName);
+        var labelItemButtons = document.createElement('div');
+        labelItemButtons.className = 'trca_edit_label_list_item_buttons';
+        listItem.appendChild(labelItemButtons);
+        var editButton = document.createElement('div');
+        editButton.className = 'trca_edit_edit_button';
+        var removeButton = document.createElement('div');
+        removeButton.className = 'trca_edit_remove_button';
+        removeButton.onclick = function() {
+            removeLabel(label.id);
+        }
+        editButton.onclick = function() {
+            inputLabelNameInEdit(listItemName, label.id);
+        }
+        labelItemButtons.appendChild(editButton);
+        labelItemButtons.appendChild(removeButton);
+        listItem.onmouseover = function() {
+            labelItemButtons.style.opacity='1';
+        };
+        listItem.onmouseout = function() {
+            labelItemButtons.style.opacity='0';
+        };
+    }
+    getLabels(showLabelInEditWindow);
+}
+
+function inputLabelNameInEdit(labelName, id) {
+    var inputArea = document.createElement('div');
+    inputArea.className = 'trca_edit_label_list_item_name';
+    $(labelName).replaceWith(inputArea);
+    var input = document.createElement('input');
+    input.value = labelName.innerText;
+    inputArea.appendChild(input);
+    input.focus();
+    input.addEventListener('focusout', () => {
+        let text = input.value;
+        console.log(text);
+        editLabel(id, text);
+        $(inputArea).replaceWith(labelName);
+        labelName.innerText = text;
+    })
+}
+
+function editLabel(labelId, text = null, style = null) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=editLabel',
+        type: 'post',
+        data: {labelId: labelId, newText: text, newStyle: style},
+        success: function(d) {
+            getLabelList();
+        }
+    })
 }
 
 function removeLabel(labelId) {
@@ -365,23 +442,18 @@ function removeLabel(labelId) {
 function getLabelList() {
     let labelList = document.getElementById("trca_edo_labels");
     labelList.innerHTML = "";
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=getUserLabels',
-        type: 'post',
-        success: function (d) {
-            d.labels.forEach(label => {
-                var labelDiv = document.createElement('div');
-                labelDiv.className = 'trca_label ' + label.style;
-                labelDiv.innerText = label.text;
-                labelDiv.setAttribute('label_id', label.id);
-                labelDiv.onclick = function() {
-                    getMessagesByLabel(label.id);
-                }
-                labelDiv.draggable = true;
-                labelList.appendChild(labelDiv);
-            })
+    let showLabel = (label) => {
+        var labelDiv = document.createElement('div');
+        labelDiv.className = 'trca_label ' + label.style;
+        labelDiv.innerText = label.text;
+        labelDiv.setAttribute('label_id', label.id);
+        labelDiv.onclick = function() {
+            getMessagesByLabel(label.id);
         }
-    });
+        labelDiv.draggable = true;
+        labelList.appendChild(labelDiv);
+    }
+    getLabels(showLabel);
 }
 
 function showLabel(label) {

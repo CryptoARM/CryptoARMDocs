@@ -1401,7 +1401,7 @@ input:focus::placeholder {
 }
 
 .trca_edit_label_create {
-    height: 30px;
+    height: 40px;
     width: 327px;
     display:flex;
     justify-content: flex-start;
@@ -1419,7 +1419,6 @@ input:focus::placeholder {
     height: 125px;
     display: flex;
     overflow-y: scroll;
-    overflow-x: hidden;
     flex-direction: column;
 }
 
@@ -1450,6 +1449,12 @@ input:focus::placeholder {
 
 }
 
+.trca_edit_label_list_item_name input {
+    width: 100px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+}
+
 .trca_edit_label_icon_place {
     width: 30px;
     height:30px;
@@ -1458,6 +1463,7 @@ input:focus::placeholder {
     justify-content: center;
     align-items: center;
     margin-right: 6px;
+    position: relative;
 }
 
 .trca_edit_label_icon_place:hover {
@@ -1515,16 +1521,44 @@ input:focus::placeholder {
 }
 
 .trca_edit_label_color_table {
+    position: absolute;
     width: 81px;
-    heitgh: 81px;
+    height: 81px;
     background-color: white;
     display: flex;
+    justify-content: space-between;
+    flex-flow: row wrap;
+    z-index: 3;
+    top: 20px;
+    left: 6px;
 }
 
 .trca_edit_label_color {
-
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 33.33%;
 }
 
 .trca_edit_label_color input {
     display: none;
+}
+
+.trca_edit_label_color input[type=radio] {
+    opacity: 0;
+}
+
+.trca_edit_label_color label {
+    display: block;
+    cursor: pointer;
+    width: 15px;
+    height:15px;
+    border-radius: 50%;
+}
+
+.trca_edit_label_color input[type=radio]:checked + label {
+    width: 15px;
+    height:15px;
+    border-radius: 50%;
+    border: 1px solid #869986;
 }

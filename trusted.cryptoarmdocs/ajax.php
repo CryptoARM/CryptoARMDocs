@@ -59,6 +59,12 @@ if (isset($command)) {
         case "createLabel":
             $res = Docs\AjaxCommand::createLabel($params);
             break;
+        case "removeLabel":
+            $res = Docs\AjaxCommand::removeLabel($params);
+            break;
+        case "editLabel":
+            $res = Docs\AjaxCommand::editLabel($params);
+            break;
         case "getUserLabels":
             $res = Docs\AjaxCommand::getUserLabels();
             break;
