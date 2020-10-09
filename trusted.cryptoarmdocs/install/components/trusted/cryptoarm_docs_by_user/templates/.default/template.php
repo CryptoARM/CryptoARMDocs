@@ -38,27 +38,28 @@ if ($USER->GetFullName()) {
 }
 
 include(__DIR__ . "/upload.php");
-;зфк
 ?>
 
 <!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
-<div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
-    <div class="trca_create_label_window_header">
-        <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL") ?></span>
-        <div class="material-icons" style="font-size: 20px; color: rgba(0, 0, 0, 0.158);" >
-            close
+<div id="trca_edit_label_modal" class="trca_upload_modal_window" style="display:none">
+    <div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
+        <div class="trca_create_label_window_header">
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL") ?></span>
+            <div class="material-icons" style="font-size: 20px; color: rgba(0, 0, 0, 0.158); cursor: pointer" onclick="$('#trca_edit_label_modal').hide();" >
+                close
+            </div>
         </div>
-    </div>
-    <div class="trca_edit_label_create" onclick="showCreateLabelWindow()">
-        <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 8px;">close</span>
-        <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL_CREATE") ?></span>
-    </div>
-    <div class="trca_edit_label_list" id="trca_edit_label_list">
+        <div class="trca_edit_label_create" onclick="showCreateLabelWindow()">
+            <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 8px;">close</span>
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL_CREATE") ?></span>
+        </div>
+        <div class="trca_edit_label_list" id="trca_edit_label_list">
 
-    </div>
-    <div class="trca_edit_label_footer">
-        <div class="trca_upload_window_footer_cancel">
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+        </div>
+        <div class="trca_edit_label_footer">
+            <div class="trca_upload_window_footer_cancel" onclick="$('#trca_edit_label_modal').hide();">
+                <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
+            </div>
         </div>
     </div>
 </div>
@@ -195,7 +196,7 @@ include(__DIR__ . "/upload.php");
                             <div id="trca_label_new" class="trca_label_window_footer_button" onclick="showCreateLabelWindow()">
                                 <span><?= Loc::getMessage("TR_CA_DOCS_COMP_NEW_LABEL") ?></span>
                             </div>
-                            <div id="trca_label_edit" class="trca_label_window_footer_button">
+                            <div id="trca_label_edit" class="trca_label_window_footer_button" onclick="getLabelListForEditWindow()">
                                 <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT") ?></span>
                             </div>
                         </div>
@@ -299,7 +300,6 @@ include(__DIR__ . "/upload.php");
 
 <script>
 getLabelList();
-getLabelListForEditWindow();
 
 function getLabels(onSuccess = null) {
     $.ajax ({
@@ -315,7 +315,7 @@ function getLabels(onSuccess = null) {
     })
 }
 
-function getColorTable(area, id) {
+function getColorTable(area, id, icon) {
     var labelsClasses = ['trca_label_one','trca_label_two','trca_label_three','trca_label_four','trca_label_five','trca_label_six','trca_label_seven','trca_label_eight','trca_label_nine'];
     var colorTable = document.createElement('div');
     colorTable.className = 'trca_edit_label_color_table';
@@ -324,12 +324,14 @@ function getColorTable(area, id) {
         var colorDiv = document.createElement('div');
         colorDiv.className = 'trca_edit_label_color';
         colorTable.appendChild(colorDiv);
+
         var radioColor = document.createElement('input');
         radioColor.setAttribute('type', 'radio');
         radioColor.setAttribute('name', 'radio');
         radioColor.setAttribute('value', labelClass);
         radioColor.id = labelClass + id;
         colorDiv.appendChild(radioColor);
+
         let radioColorLabel = document.createElement('label');
         radioColorLabel.className = labelClass;
         radioColorLabel.setAttribute('for', labelClass + id);
@@ -337,6 +339,7 @@ function getColorTable(area, id) {
         $(radioColor).change(function () {
             if ($(radioColor).attr("checked")) {
                 editLabel(id, null, labelClass)
+                icon.className = 'trca_edit_label_list_item_name_png png_' + labelClass;
             }
         });
     })
@@ -345,6 +348,7 @@ function getColorTable(area, id) {
 }
 
 function getLabelListForEditWindow() {
+    $("#trca_edit_label_modal").show();
     let labelList = document.getElementById("trca_edit_label_list");
     labelList.innerHTML = "";
     let showLabelInEditWindow = (label) => {
@@ -360,7 +364,7 @@ function getLabelListForEditWindow() {
         var icon = document.createElement('div');
         icon.className = 'trca_edit_label_list_item_name_png png_' + label.style;
         iconPlace.appendChild(icon);
-        var colorTable = getColorTable(iconPlace, label.id);
+        var colorTable = getColorTable(iconPlace, label.id, icon);
         iconPlace.appendChild(colorTable);
         iconPlace.onclick = function() {
             var visible = $(colorTable).is(":visible");
@@ -812,7 +816,7 @@ function getDocList(shared, page) {
 
 function setLabelToMessages(messIds) {
     let labelsId = getCheckedLabels();
-    if (labelsId.lenth != 0) {
+    if (labelsId.length != 0) {
         labelsId.forEach((labelId) => {
             messIds.forEach((messageId) => {
                 let data = {labelId: labelId, messageId: messageId};
@@ -824,13 +828,38 @@ function setLabelToMessages(messIds) {
             })
         })
     }
+    let labelsToUnset = getLabelsToUnset();
+    if (labelsToUnset.length != 0) {
+        labelsToUnset.forEach((labelId) => {
+            messIds.forEach((messageId) => {
+                let data = {labelId: labelId, messageId: messageId};
+                $.ajax({
+                    url: AJAX_CONTROLLER + '?command=unsetLabelFromMessage',
+                    type: 'post',
+                    data: data,
+                })
+            })
+        })
+    }
 }
 
 function getCheckedLabels() {
     let labelIds = new Array;
     $('input[id^="label_"]').each(function() {
-        if ($(this).prop("checked")) {
+        if ($(this).attr("status") == 3) {
             let idStr = $(this).attr("id");
+            let id = idStr.replace("label_", "");
+            labelIds.push(id);
+        }
+    })
+    return labelIds;
+}
+
+function getLabelsToUnset() {
+    let labelIds = new Array;
+    $('input[id^="label_"]').each(function() {
+        if ($(this).attr("remove") == "true") {
+            let idStr =$(this).attr("id");
             let id = idStr.replace("label_", "");
             labelIds.push(id);
         }
@@ -857,12 +886,11 @@ function showLabelWindow() {
             getLabelListForLabelWindow(messIds, searchKey);
         })
         jQuery(function($){
-            $(document).mouseup(function (e){ // событие клика по веб-документу
-                var div = $("#trca_label_window"); // тут указываем ID элемента
-                if (!div.is(e.target) // если клик был не по нашему блоку
-                    && div.has(e.target).length === 0) { // и не по его дочерним элементам
-                    console.log(1);
-                    div.hide(); // скрываем его
+            $(document).mouseup(function (e){
+                var div = $("#trca_label_window");
+                if (!div.is(e.target)
+                    && div.has(e.target).length === 0) {
+                    div.hide();
                 }
             });
         });
@@ -913,18 +941,53 @@ function getLabelListForLabelWindow(messIds, searchKey) {
                 d.labels.forEach((label) => {
                     let labelElement = `
                     <div class="trca_label_window_list_item">
-                        <input type="checkbox" id="label_${label.id}">
+                        <input type="checkbox" id="label_${label.id}" status="2" remove=false>
                         <label for="label_${label.id}">${label.text}<label>
                     </div>`
-                    let checkbox = document.getElementById("label_" + label.id);
                     labelList.insertAdjacentHTML("beforeend", labelElement);
-                    // $('#label_' + label.id).prop("indeterminate", true);
+                    var checkbox = document.getElementById("label_" + label.id);
+                    $(checkbox).click(function() {
+                        if ($(checkbox).prop("checked")) {
+                            $(checkbox).attr("status", 3);
+                            $(checkbox).attr("remove", false);
+                        } else {
+                            $(checkbox).attr("status", 1);
+                            if (label.checkbox == "checked")
+                                $(checkbox).attr("remove", true)
+                        }
+                        console.log($(checkbox).attr("status"));
+                    })
                     switch (label.checkbox) {
                         case 'unchecked':
+                            $(checkbox).prop("checked", false);
+                            $(checkbox).attr("status", 1);
                             break;
                         case 'checked':
+                            $(checkbox).prop("checked", true);
+                            $(checkbox).attr("status", 3);
                             break;
                         case 'indeterminate':
+                            $(checkbox).prop("indeterminate", true);
+                            $(checkbox).unbind('click');
+                            $(checkbox).click(  function() {
+                                if ($(checkbox).attr("status") == 2) {
+                                    $(checkbox).prop("checked", true);
+                                    $(checkbox).attr("status", 3);
+                                    $(checkbox).attr("remove", false)
+                                } else {
+                                    if ($(checkbox).attr("status") == 3) {
+                                        $(checkbox).prop("checked", false);
+                                        $(checkbox).attr('status', 1);
+                                        $(checkbox).attr("remove", true)
+                                    } else {
+                                        if ($(checkbox).attr('status') == 1) {
+                                            $(checkbox).prop("indeterminate", true);
+                                            $(checkbox).attr('status', 2);
+                                            $(checkbox).attr("remove", false)
+                                        }
+                                    }
+                                }
+                            })
                             break;
                     }
                 });

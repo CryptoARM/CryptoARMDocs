@@ -2246,6 +2246,34 @@ class AjaxCommand {
         Messages::createLabel($params);
     }
 
+    public function editLabel($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.editLabel",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        if (!$params['labelId']) {
+            $res["message"] = "No label id were given";
+            return $res;
+        }
+
+        if (!($params['newText'] || $params['newStyle'])) {
+            $res["message"] = "No changes given";
+            return $res;
+        }
+
+        Messages::editLabel($params);
+        $res["message"] = "Success";
+        $res["success"] = true;
+        return $res;
+    }
+
     public function getUserLabels() {
         $res = [
             "success" => false,
@@ -2312,6 +2340,53 @@ class AjaxCommand {
         Messages::setLabelToMessage($params);
         $res['success'] = true;
         $res['message'] = 'Label set to message';
+        return $res;
+    }
+
+    public function unsetLabelFromMessage($params) {
+        $res = [
+            'success' => false,
+            'message' => 'Unknown error in Ajax.unsetLabelFromMessage'
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        if (!$params['messageId']) {
+            $res["message"] = "No message Id given";
+            return $res;
+        }
+
+        if (!$params['labelId']) {
+            $res['message'] = 'No label id given';
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        $recepientId = Messages::getRecepientId($params["messageId"]);
+        $senderId = Messages::getSenderId($params["messageId"]);
+
+        if (!($userId == $senderId || $userId == $recepientId)) {
+            $res['message'] = 'User have no access to message';
+            return $res;
+        }
+
+        $res['success'] = true;
+
+        if (!Messages::isMessageWithThisLabel($params["messageId"], $params['labelId'])) {
+            $res['message'] = 'Message not have this label';
+            $res['success'] = true;
+            return $res;
+        }
+
+        Messages::unsetLabelFromMessage($params);
+
+        $res['message'] = 'Labels were unset';
+        
         return $res;
     }
 

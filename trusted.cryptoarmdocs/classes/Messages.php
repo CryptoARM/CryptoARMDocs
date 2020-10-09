@@ -255,6 +255,12 @@ class Messages {
         $DB->Query($sql);
     }
 
+    static function unsetLabelFromMessage($params) {
+        global $DB;
+        $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE (LABEL_ID = ' . $params['labelId'] . ' AND MESSAGE_ID = ' . $params['messageId'] . ')';
+        $DB->Query($sql);
+    }
+
     static function getMessageLabels($messId) {
         global $DB;
         $sql = "SELECT

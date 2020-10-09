@@ -77,6 +77,9 @@ if (isset($command)) {
         case "setLabelToMessage":
             $res = Docs\AjaxCommand::setLabelToMessage($params);
             break;
+        case "unsetLabelFromMessage":
+            $res = Docs\AjaxCommand::unsetLabelFromMessage($params);
+            break;
         case "share":
             $res = Docs\AjaxCommand::share($params);
             break;

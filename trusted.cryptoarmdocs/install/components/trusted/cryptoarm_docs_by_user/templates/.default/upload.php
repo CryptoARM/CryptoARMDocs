@@ -39,7 +39,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
         close
     </div>
 </div> -->
-<div id="trca_data" userid="<?= Docs\Utils::currUserId() ?>"></div>
+<div id="trca_data" userid="<?= Docs\Utils::currUserId() ?>" maxsize="<?= Docs\Utils::maxUploadFileSize() ?>"></div>
 <div id="trca_upload_component">
     <div class="trca_upload_button" onclick="showModal()">
         <div style="font-size: 35px; font-weight: 100">+</div>
@@ -290,7 +290,7 @@ function addAndUpload(file, docarea, i, files) {
     function getXHR(request) {
         xhr = request;
     }
-    value = "<?= Docs\Utils::currUserId() ?>";
+    value = document.getElementById("trca_data").getAttribute("userid");
     $("#trca_upload_window_header_upload_more").show();
     $("#trca_upload_window_first_step").hide();
     $("#trca_upload_window_second_step").show();
@@ -324,7 +324,8 @@ function getProgressCircle(i) {
 
 function handleFiles(files) {
     console.log(files);
-    maxsize = "<?= Docs\Utils::maxUploadFileSize() ?>"
+    //maxsize = "<?//= Docs\Utils::maxUploadFileSize() ?>//"
+    maxsize = document.getElementById("trca_data").getAttribute("maxsize");
     var docarea = document.getElementById('trca_upload_file_list');
     for (let i = 0; i < files.length; i++) {
         file = files[i];
