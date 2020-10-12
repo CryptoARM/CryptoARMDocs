@@ -29,11 +29,11 @@ require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 Loc::loadMessages(__FILE__);
 
-/*fBs*/Class trusted_cryptoarmdocscrp extends CModule/*fMs*/ //tags for core name changing script
+/*fBs*/Class trusted_cryptoarmdocsbusiness extends CModule/*fMs*/ //tags for core name changing script
 {
     // Required by the marketplace standards
 
-    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocscrp";/*fMs*/ //tags for core name changing script
+    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocsbusiness";/*fMs*/ //tags for core name changing script
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -41,7 +41,7 @@ Loc::loadMessages(__FILE__);
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    /*fBs*/ function trusted_cryptoarmdocscrp()/*fMs*/ //tags for core name changing script
+    /*fBs*/ function trusted_cryptoarmdocsbusiness()/*fMs*/ //tags for core name changing script
     {
         self::__construct();
     }
@@ -348,12 +348,13 @@ Loc::loadMessages(__FILE__);
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_messages` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
                     `SENDER_ID` int(11) NOT NULL,
-                    `RECEPIENT_ID` int(11), 
+                    `RECEPIENT_ID` int(11),
                     `THEME` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `COMMENT` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `TIMESTAMP_X` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     `MES_STATUS` varchar(12) COLLATE utf8_unicode_ci DEFAULT 'NOT_READED',
                     `REJECTED_COMMENT` text COLLATE utf8_unicode_ci DEFAULT NULL,
+                    `PARENT_ID` int(11) DEFAULT NULL,
                 PRIMARY KEY (`ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $DB->Query($sql);

@@ -5,8 +5,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Application;
-use Trusted\CryptoARM\Docs\Messages;
-use Trusted\CryptoARM\Docs\Utils;
 
 //checks the name of currently installed core from highest possible version to lowest
 $coreIds = [
@@ -115,7 +113,7 @@ include(__DIR__ . "/upload.php");
             </div>
         </div>
         <div class="trca_create_label_window_footer">
-            <div style="width:50%; display:flex; flex-direction:row; justify-content: space-around; align-items=center">
+            <div style="width:50%; display:flex; flex-direction:row; justify-content: space-around; align-items:center">
                 <div id="trca_create_label_window_footer_cancel_button" style="align-items: center; display: flex" onclick="hideCreateLabelWindow()">
                     <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL") ?>
                 </div>
@@ -137,11 +135,11 @@ include(__DIR__ . "/upload.php");
                     <div class="trca_edo_check"></div>
                     <span>Сообщения</span>
                 </div>
+                <div class="trca_edo_outbox submenu active_menu" onclick="getMessageList('incoming', 0)">
+                    <span>Входящие</span>
+                </div>
                 <div class="trca_edo_inbox submenu" onclick="getMessageList('outgoing', 0)">
                     <span>Исходящие</span>
-                </div>
-                <div class="trca_edo_outbox submenu" onclick="getMessageList('incoming', 0)">
-                    <span>Входящие</span>
                 </div>
                 <div class="trca_edo_draft submenu" onclick="getMessageList('drafts', 0)">
                     <span>Черновики</span>
@@ -152,7 +150,7 @@ include(__DIR__ . "/upload.php");
                     <div class="trca_edo_check"></div>
                     <span>Документы</span>
                 </div>
-                <div class="trca_edo_download submenu active_menu" onclick="getDocList(0, 0)">
+                <div class="trca_edo_download submenu " onclick="getDocList(0, 0)">
                     <span>Загруженые</span>
                 </div>
                 <div class="trca_edo_available submenu" onclick="getDocList(1, 0)">
@@ -165,10 +163,10 @@ include(__DIR__ . "/upload.php");
                     <span>Метки</span>
                 </div>
                 <div class="trca_edo_labels" id="trca_edo_labels">
-                    <div class="trca_label label_orange">Важно</div>
+                    <!-- <div class="trca_label label_orange">Важно</div>
                     <div class="trca_label label_violet">Партнер</div>
                     <div class="trca_label label_blue">Тест</div>
-                    <div class="trca_label label_green">Тест</div>
+                    <div class="trca_label label_green">Тест</div> -->
                 </div>
             </div>
         </div>
@@ -179,7 +177,7 @@ include(__DIR__ . "/upload.php");
                         <input type="checkbox">
                     </div>
                     <div id="trca_label_window" class="trca_label_window" style="display: none">
-                        <div class="trca_label_window_search" style="height:42px">
+                        <div class="trca_label_window_search" style="height:50px">
                             <div class="trca_create_label_window_name">
                                 <input type="text"  id="trca_label_search" style="width:160px">
                                 <span class="bar" style="width:160px"></span>
@@ -207,37 +205,55 @@ include(__DIR__ . "/upload.php");
                 </div>
                 <div class="trca_edo_header_menu_search">
                     <div class="trca_button_search"></div>
-                    <input placeholder="Поиск" id="trca_search">
+                    <input id="trca_header_search" placeholder="Поиск">
                     <!-- <div class="trca_button_close"></div> -->
+                    <div class="trca_edo_header_menu_search_entity" style="display: none;">
+                        <div id="trca_entity_message" class="trca_edo_header_menu_search_entity_item trca_search_entity_active">Сообщения</div>
+                        <div id="trca_entity_doc" class="trca_edo_header_menu_search_entity_item ">Документы</div>
+                    </div>
                 </div>
             </div>
             <div class="trca_edo_items">
-                <div id="trca_edo_items_table" class="trca_edo_items_table">
-                    <div class="trca_edo_item" file_id="<?= $doc["ID"] ?>">
-                        <div class="trca_edo_check_item">
-                            <input type="checkbox">
-                        </div>
-                        <div class="trca_edo_item_properties">
-                            <div class="trca_edo_item_first_col">
-                                <div class="trca_edo_item_first_col_row first c_black f_s_16"></div>
-                                <div class="trca_edo_item_first_col_row second c_black"></div>
-                                <div class="trca_edo_item_first_col_row third c_gray"></div>
-                                <div class="trca_edo_item_first_col_row fourth c_gray"></div>
-                                <div></div>
-                            </div>
-                            <!-- <div class="<?//= $style ?>"></div>
-                            <div class="trca_edo_item_status">
-                                <?//= $status ?>
-                            </div> -->
-                            <div class="trca_edo_item_time">
-                                <?= $docCreated ?>
-                            </div>
+                <div class="trca_edo_items_table_content">
+                    <div class="trca_edo_items_table_search" style="display: none;">
+                    <!-- <div class="trca_edo_items_table_search"> -->
+                        <span>Результаты поиска</span>
+                        <div class="trca_edo_items_table_search_count"></div>
+                        <div class="trca_edo_items_table_search_items" style="display: none;">
+                            <div class="trca_edo_items_table_search_item first c_black"></div>
+                            <div class="trca_edo_items_table_search_item second"></div>
+                            <div class="trca_edo_items_table_search_item third"></div>
+                            <div class="trca_edo_items_table_search_item fourth"></div>
                         </div>
                     </div>
+                    <div id="trca_edo_items_table" class="trca_edo_items_table">
+                        <div class="trca_edo_item" file_id="<?= $doc["ID"] ?>">
+                            <div class="trca_edo_check_item">
+                                <input type="checkbox">
+                            </div>
+                            <div class="trca_edo_item_properties">
+                                <div class="trca_edo_item_first_col">
+                                    <div class="trca_edo_item_first_col_row first c_black f_s_16"></div>
+                                    <div class="trca_edo_item_first_col_row second c_black"></div>
+                                    <div class="trca_edo_item_first_col_row third c_gray"></div>
+                                    <div class="trca_edo_item_first_col_row fourth c_gray"></div>
+                                    <div></div>
+                                </div>
+                                <!-- <div class="<?//= $style ?>"></div>
+                                <div class="trca_edo_item_status">
+                                    <?//= $status ?>
+                                </div> -->
+                                <div class="trca_edo_item_time">
+                                    <?= $docCreated ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
                 </div>
                 <div class="trca_edo_info" style="display: none;">
+                <!-- <div class="trca_edo_info"> -->
                     <div class="trca_edo_info_close"></div>
-                    <div class="trca_edo_info_title">
+                    <div  id="trca_edo_info_title_doc" class="trca_edo_info_title" style="display: none;">
                         <span><?=  Loc::getMessage("TR_CA_DOCS_COMP_DOC_INFO") ?></span>
                         <div class="trca_edo_info_text">
                             <div class="trca_edo_info_doc_properties">
@@ -260,22 +276,6 @@ include(__DIR__ . "/upload.php");
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="trca_edo_info_title">
-                        <span><?//=  Loc::getMessage("TR_CA_DOCS_COMP_SIGN_INFO") ?></span>
-                        <div class="trca_edo_info_text">
-                            <div class="trca_edo_info_sign sign_green">
-                                <div class="trca_edo_info_sign_info">
-                                    Вы подписали и отправили документ partners@digt.ru
-                                    <br>
-                                    10 мая 07:58
-                                </div>
-                            </div>
-
-                            <div class="trca_edo_info_sign sign_orange">
-                                Требуется подпись 123@digt.ru
-                            </div>
-                        </div>
-                    </div> -->
                     <div id="trca_edo_info_title_message" class="trca_edo_info_title" style="display: none;">
                         <span><?=  Loc::getMessage("TR_CA_DOCS_COMP_MESSAGES") ?></span>
                         <div class="trca_edo_info_text">
@@ -290,6 +290,48 @@ include(__DIR__ . "/upload.php");
                                 </div> -->
                             </div>
                             <div class="trca_edo_info_message_open"></div>
+                        </div>
+                    </div>
+                    <div id="trca_edo_info_message" class="trca_edo_info_title" style="display: none;" info_id="">
+                        <span id="trca_edo_info_message_detail_theme">Тема</span>
+                        <div class="trca_edo_info_message_detail">
+                            <div id="trca_edo_info_message_detail_sender" class="trca_edo_info_message_detail_item">
+                                <div class="trca_edo_info_message_detail_sender_row">
+                                    От:
+                                  <div class="material-icons">account_circle</div>
+                                   <div id="trca_email_outgoing" class="trca_edo_info_message_detail_mail c_black">dgr@trusted.ru</div>
+                                </div>
+                                <div class="trca_edo_info_message_answer material-icons" onclick="initAnswer()">reply</div>
+                            </div>
+                            <div id="trca_edo_info_message_detail_date" class="trca_edo_info_message_detail_item">02 сент 2020, 07:58</div>
+                            <div id="trca_edo_info_message_detail_recepient" class="trca_edo_info_message_detail_item">
+                                Кому:
+                                <div class="d_flex">
+                                    <div class="material-icons">account_circle</div>
+                                    <div class="trca_edo_info_message_detail_mail c_black">test@test.test</div>
+                                </div>
+                            </div>
+                            <div id="trca_edo_info_message_detail_labels" class="trca_edo_info_message_detail_item d_flex">
+                                <!-- <div class="trca_label label_orange">Важно</div>
+                                <div class="trca_label label_violet">Партнер</div> -->
+                            </div>
+                            <div id="trca_edo_info_message_detail_content" class="trca_edo_info_message_detail_item">
+                                Добрый день! Прикладываем документы на подпись, просим подписать в кратчайшие сроки.
+                            </div>
+                        </div>
+                        <span></span>
+                        <div class="trca_edo_info_message_docs_list">
+                            Документы
+                            <div class="trca_edo_info_message_docs_list_items">
+                                <div class="trca_edo_info_message_detail_doc">
+                                    <div>Документ 1</div>
+                                    <div>5 Mb</div>
+                                </div>
+                                <div class="trca_edo_info_message_detail_doc">
+                                    <div>Документ 2</div>
+                                    <div></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -478,6 +520,7 @@ function getMessagesByLabel(labelId) {
 }
 
 function showModal() {
+    $("#trca_upload_component").show();
     $("#trca_upload_window_steps").show();
     $("#trca_upload_window_first_n_second_step").show();
     $('#trca_upload_first_step_name').remove();
@@ -585,25 +628,6 @@ function sendFilesForm() {
         }
     }
 }
-
-// function sendFiles(ids, send = false) {
-//     var recepientEmail = document.getElementById("trca_upload_send_rec").value;
-//     var theme = document.getElementById("trca_upload_send_theme").value;
-//     var comment = document.getElementById("trca_comment").value;
-//     $("#trca_upload_send_rec").val('');
-//     $("#trca_upload_send_theme").val('');
-//     $("#trca_comment").val('');
-//     var docsIds = ids;
-//     function writeMesId(d) {
-//         let messId = d.messId;
-//     };
-//     trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send}, (d)=>{writeMesId(d)});
-//     if (send == true) {
-//         $("#trca_upload_window_first_n_second_step").hide();
-//         $('#trca_upload_succesful_send').show();
-//     }
-// }
-
 function downloadFiles(zipName) {
     let ids = getChecked();
     let methodDownload = $('input[name="download_files"]:checked').val();
@@ -647,48 +671,16 @@ function getChecked() {
     }
 }
 
-searchArea = document.getElementById("trca_search");
-
-searchArea.addEventListener("keyup", function(){
-    let length = this.value.length;
-    let searchKey = this.value;
-    let typeOfMessage = 'all';
-    if (length>2) {
-        searchDocument(typeOfMessage, searchKey);
-    }
-});
-
-function searchDocument(typeOfMessage, searchKey) {
-    // trustedCA.ajax("searchMessage", {typeOfMessage, searchKey})
-    $.ajax({
-        url: AJAX_CONTROLLER + '?command=searchMessage',
-        type: 'post',
-        data: {typeOfMessage: typeOfMessage, searchKey: searchKey},
-        success: function (d) {
-            createtableMessages(d.messages);
-            infoItemInitialization();
-            chechActionInitialization();
-        }
-    })
-};
-
 $('.trca_edo_info_close').click( function() {
     $(this).parent().hide();
 });
 
-// let labelSearchArea = document.getElementById("trca_label_search");
-//
-// labelSearchArea.addEventListener("keyup", function(){
-//     let length = this.value.length;
-//     let searchKey = this.value;
-//     let typeOfMessage = 'all';
-//     if (length>2) {
-//         showLabelWindow(searchKey);
-//     }
-// });
-
 function infoItemInitialization() {
+    $(".trca_edo_item_properties").unbind('click');
     $(".trca_edo_item_properties").click(function() {
+        $("#trca_edo_info_title_doc").hide();
+        $("#trca_edo_info_title_message").hide();
+        $("#trca_edo_info_message").hide();
         let file_id = $(this).parent().attr("file_id");
         if (file_id) {
             $.ajax({
@@ -696,6 +688,8 @@ function infoItemInitialization() {
                 type: 'post',
                 data: {id: file_id},
                 success: function (d) {
+
+                    $("#trca_edo_info_title_doc").show();
                     if (d.data.message == true) {
                         $("#info_file_owner").text(d.data.docowner);
                         $("#info_file_size").text(d.data.docsize);
@@ -715,23 +709,44 @@ function infoItemInitialization() {
         } else {
             let message_id = $(this).parent().attr("message_id");
             $.ajax({
-                url: AJAX_CONTROLLER + '?command=getMessageInfo',
+                url: AJAX_CONTROLLER + '?command=getInfoMessage',
                 type: 'post',
                 data: {id: message_id},
                 success: function (d) {
-                    if (d.data.message == true) {
-                        $("#info_file_owner").text(d.data.docowner);
-                        $("#info_file_size").text(d.data.docsize);
-                        $(".trca_edo_info_message_email").text(d.data.messageAuthor);
-                        $(".trca_edo_info_message_topic").text(d.data.messageTheme);
-                        $(".trca_edo_info_message_text").text(d.data.messageContent);
-                        $("#trca_edo_info_title_message").show();
+
+                    $("#trca_edo_info_message_detail_theme").text(d.message.theme);
+                    $("#trca_edo_info_message_detail_sender").find(".trca_edo_info_message_detail_mail").text(d.message.sender);
+                    $("#trca_edo_info_message_detail_date").text(d.message.time);
+                    $("#trca_edo_info_message_detail_recepient").find(".trca_edo_info_message_detail_mail").text(d.message.recepient);
+                    $("#trca_edo_info_message_detail_content").text(d.message.comment);
+                    $(".trca_edo_info_message_docs_list").show();
+                    if (d.message.docs.length > 0) {
+                        var docsHtml = ``;
+                        d.message.docs.forEach(doc => {
+                            docsHtml = docsHtml + `
+                            <div class="trca_edo_info_message_detail_doc" file_id=${doc.id}>
+                                <div class="${doc.name.substr(doc.name.lastIndexOf(".") + 1)}">${doc.name}</div>
+                                <div class="trca_edo_info_message_detail_doc_size">${doc.docsize}</div>
+                                <div class="trca_edo_info_message_detail_doc_sign" style="display: none;" onclick="trustedCA.sign([${doc.id}])"></div>
+                                <div class="trca_edo_info_message_detail_doc_download" style="display: none;" onclick="trustedCA.download([${doc.id}])"></div>
+                            </div>`;
+                        });
                     } else {
-                        $("#info_file_owner").text(d.data.docowner);
-                        $("#info_file_size").text(d.data.docsize);
-                        $("#trca_edo_info_title_message").hide();
+                        $(".trca_edo_info_message_docs_list").hide();
                     }
+                    $(".trca_edo_info_message_docs_list_items").html(docsHtml);
+                    $("#trca_edo_info_message").attr("info_id", message_id);
+                    $("#trca_edo_info_message").show();
                     $(".trca_edo_info").show();
+
+                    $(".trca_edo_info_message_detail_doc").hover( function() {
+
+                        $(this).find(".trca_edo_info_message_detail_doc_sign").show();
+                        $(this).find(".trca_edo_info_message_detail_doc_download").show();
+                    }, function() {
+                        $(this).find(".trca_edo_info_message_detail_doc_sign").hide();
+                        $(this).find(".trca_edo_info_message_detail_doc_download").hide();
+                    });;
                 }
             });
         }
@@ -792,28 +807,27 @@ function getDocList(shared, page) {
             buttons.forEach((element) => {
                 element.remove();
             });
+            $(".submenu").each(function() {
+                $(this).removeClass("active_menu");
+            });
             if (shared == 0) {
                 $('.trca_edo_download').addClass("active_menu");
-                $('.trca_edo_available').removeClass("active_menu");
                 createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
                 createHeaderButton("trca_button_download", "<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>", "uploadFile()");
                 createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "remove()");
             } else {
                 $('.trca_edo_available').addClass("active_menu");
-                $('.trca_edo_download').removeClass("active_menu");
                 createHeaderButton("trca_button_download", "<?= Loc::getMessage("TR_CA_DOCS_COMP_DOWNLOAD_FILE") ?>", "uploadFile()");
                 createHeaderButton("trca_button_sign", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SIGN") ?>", "sign()");
             }
             createtableDocs(d.data);
-            infoItemInitialization();
-            chechActionInitialization();
+            $(".trca_edo_items_table_search").hide();
         }
     });
 }
 //type - incoming,drafts,outgoing
 //page
 //count
-
 function setLabelToMessages(messIds) {
     let labelsId = getCheckedLabels();
     if (labelsId.length != 0) {
@@ -999,7 +1013,6 @@ function getLabelListForLabelWindow(messIds, searchKey) {
 function setThreeStateOfCheckbox(checkbox) {
 
 }
-
 function getMessageList(type, page) {
     let count = 10;
     let data = {typeOfMessage: type, page: page, count: count}
@@ -1009,71 +1022,131 @@ function getMessageList(type, page) {
         type: 'post',
         data: data,
         success: function (d) {
+            createtableMessages(d.messages, type);
             let buttons = document.querySelectorAll(".trca_header_button");
             buttons.forEach((element) => {
                 element.remove();
             });
+            $(".submenu").each(function() {
+                $(this).removeClass("active_menu");
+            });
             switch (type) {
                 case 'incoming':
-                    createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
+                    $('.trca_edo_outbox').addClass("active_menu");
+                    createHeaderButton("trca_button_mail", "Прочитано", "");
                     createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
                     break;
                 case 'outgoing':
+                    $('.trca_edo_inbox').addClass("active_menu");
                     createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
                     createHeaderButton("trca_button_recall", "<?= Loc::getMessage("TR_CA_DOCS_COMP_RECALL") ?>", "sendFilesForm()");
                     break;
                 case 'drafts':
+                    $('.trca_edo_draft').addClass("active_menu");
                     createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
                     createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
                     createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "sendFilesForm()");
                     break;
             }
-            createtableMessages(d.messages);
+            // createtableMessages(d.messages);
             infoItemInitialization();
             chechActionInitialization();
         }
     });
 }
+getMessageList("incoming");
 
-function createtableDocs(docs) {
+function clearTable() {
     let table = document.getElementById("trca_edo_items_table");
     table.innerHTML = "";
+    return table;
+}
+
+function createtableDocs(docs) {
+    let table = clearTable();
 
     docs.forEach(doc => {
         if (doc.owner == true) {
-            doc.owner = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER_I") ?>";
+            doc.docowner = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER_I") ?>";
         }
         let element = {};
         element.file_id = doc.id;
         element.fisrt = doc.name;
         element.second = '';
-        element.third = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>" + doc.owner;
+        element.third = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>" + doc.docowner;
         element.fourth = '';
         element.dateCreated = doc.dateCreated;
         let itemTable = createItemTable(element);
         table.appendChild(itemTable);
     });
+    infoItemInitialization();
+    chechActionInitialization();
 }
 
-function createtableMessages(messages) {
-    console.log(messages);
-    let table = document.getElementById("trca_edo_items_table");
-    table.innerHTML = "";
+function createtableMessages(messages, type = null) {
+    let table = clearTable();
 
     messages.forEach(message => {
         let element = {};
-        element.message_id = message.id;
+        let id = message.id;
+        element.message_id = id;
         element.docs = message.docs;
-        element.fisrt = message.sender;
-        element.second = message.theme;
-        if (message.labels) {
-            element.labels = message.labels;
+        element.readed = true;
+        element.answer = false;
+        if (type == "incoming") {
+            element.fisrt = message.sender;
+            if (message.status == "NOT_READED")
+                element.readed = false;
+        } else {
+            if (message.recepient == null) {
+                element.fisrt = "Получатель не указан";
+            } else {
+                element.fisrt = message.recepient;
+            }
+        }
+        if (message.theme == null) {
+            element.second = "Без темы";
+        } else {
+            element.second = message.theme;
         }
         element.third = message.comment;;
         element.dateCreated = message.time;
+        if (message.labels) {
+            element.labels = message.labels;
+        }
+        if (message.childMessage)
+            if (message.childMessage.length > 0)
+                element.countChildMessage = message.childMessage.length;
+
         let itemTable = createItemTable(element);
         table.appendChild(itemTable);
+        if (message.childMessage) {
+            if (message.childMessage.length > 0) {
+                message.childMessage.forEach(message => {
+                    let element = {};
+                    element.answer = true;
+                    element.message_id = message.id;
+                    element.answer_id = id;
+                    element.docs = message.docs;
+                    element.readed = true;
+                    element.fisrt = message.sender;
+                    if (message.status == "NOT_READED")
+                        element.readed = false;
+                    element.second = message.theme;
+                    if (message.labels) {
+                        element.labels = message.labels;
+                    }
+                    element.third = message.comment;;
+                    element.dateCreated = message.time;
+                    let itemTable = createItemTable(element);
+                    table.appendChild(itemTable);
+                });
+            }
+        }
+
     });
+    infoItemInitialization();
+    chechActionInitialization();
 }
 
 
@@ -1084,23 +1157,57 @@ function createItemTable(element) {
         itemTable.setAttribute("file_id", element.file_id);
     if (element.message_id)
         itemTable.setAttribute("message_id", element.message_id);
-
-    if ( element.docs) {
-        element.fourth  = ``;
-        element.docs.forEach(doc =>{
-            element.fourth += `
-            <div class="trca_edo_item_first_col_row_file ${doc.name.substr(doc.name.lastIndexOf(".") + 1)}" file_id="${doc.id}">${doc.name}</div>`;
-        });
+    if (element.answer == true){
+        itemTable.setAttribute("answer_id", element.answer_id);
+        itemTable.classList.add("trca_edo_item_answer");
+        itemTable.style = "display: none;"
     }
+
+    let bold = '';
+    if (element.readed == false) {
+        bold = "f_w_medium";
+
+        if (element.docs) {
+            element.fourth  = ``;
+            element.docs.forEach(doc =>{
+                element.fourth += `
+                <div class="trca_edo_item_first_col_row_file ${doc.name.substr(doc.name.lastIndexOf(".") + 1)}" file_id="${doc.id}">${doc.name}</div>`;
+            });
+        }
+    } else if (element.readed == true) {
+        element.fourth = ``;
+        if (element.docs.length > 0)
+            element.fourth  = `<div class="trca_edo_item_first_col_row_file_readed">${element.docs.length} Документ</div>`;
+    }
+    console.log(element);
+    if (element.countChildMessage > 0) {
+        element.second = `
+        <div>
+            ${element.second}
+        </div>
+        <div class="trca_edo_item_count_answer" onclick="showAnswer(${element.message_id})">
+            ${element.countChildMessage}
+        </div>
+        `;
+       
+    }
+    if (element.labels) {
+            element.labels.forEach( label => {
+                element.second = element.second + `
+            <div class="trca_label ${label.style}">
+                ${label.text}
+            </div>`;
+            });
+        }
     let itemTableContent= `
     <div class="trca_edo_check_item">
         <input type="checkbox">
     </div>
     <div class="trca_edo_item_properties">
         <div class="trca_edo_item_first_col">
-            <div class="trca_edo_item_first_col_row first   c_black f_s_16">${element.fisrt}</div>
-            <div class="trca_edo_item_first_col_row second  c_black">${element.second}</div>
-            <div class="trca_edo_item_first_col_row third   c_gray">${element.third}</div>
+            <div class="trca_edo_item_first_col_row first ${bold} c_black f_s_16">${element.fisrt}</div>
+            <div class="trca_edo_item_first_col_row second ${bold} c_black d_flex" style="align-items: center;">${element.second}</div>
+            <div class="trca_edo_item_first_col_row third ${bold} c_gray">${element.third}</div>
             <div class="trca_edo_item_first_col_row fourth  c_gray ">${element.fourth}</div>
         </div>
         <div class="trca_edo_item_time">
@@ -1108,14 +1215,14 @@ function createItemTable(element) {
         </div>
     </div>`;
     itemTable.innerHTML = itemTableContent;
-    if (element.labels) {
-        element.labels.forEach(label => {
-            let labelDiv = document.createElement("div");
-            labelDiv.className = "trca_label " + label.style;
-            labelDiv.innerText = label.text;
-            itemTable.appendChild(labelDiv);
-        })
-    }
+    // if (element.labels) {
+    //     element.labels.forEach(label => {
+    //         let labelDiv = document.createElement("div");
+    //         labelDiv.className = "trca_label " + label.style;
+    //         labelDiv.innerText = label.text;
+    //         itemTable.appendChild(labelDiv);
+    //     })
+    // }
     return itemTable;
 }
 
@@ -1129,6 +1236,178 @@ function createHeaderButton(style, title, action) {
 
     let header = document.getElementById("trca_edo_header_menu_buttons");
     header.appendChild(button);
+}
+
+function showAnswer(id) {
+    $('[answer_id="'+ id +'"]').toggle();
+    event.stopPropagation();
+}
+
+$('#trca_header_search').blur(function() {
+    if ($(this).val() == "")
+        $(".trca_edo_header_menu_search_entity").hide();
+});
+$('#trca_header_search').click(function() {
+    $(".trca_edo_header_menu_search_entity").show();
+});
+$(".trca_edo_header_menu_search_entity_item").click(function() {
+    $(".trca_edo_header_menu_search_entity_item").removeClass("trca_search_entity_active");
+    let searchKey = $("#trca_header_search").val();
+    let id = $(this).attr("id");
+    if (searchKey.length > 2) {
+        if (id == "trca_entity_message") {
+            searchMessage(searchKey, "all");
+        } else {
+            searchDocuments(searchKey, "all");
+        }
+    }
+    $(this).addClass("trca_search_entity_active");
+});
+
+let searchArea = document.getElementById("trca_header_search");
+searchArea.addEventListener("keyup", function(){
+    let length = this.value.length;
+    let searchKey = this.value;
+    let type = "all";
+    let searchEntityType = $(".trca_edo_header_menu_search_entity_item.trca_search_entity_active").attr("id");
+    if (length > 2) {
+        if (searchEntityType == "trca_entity_message") {
+            searchMessage(searchKey, type);
+        } else {
+            searchDocuments(searchKey, type);
+        }
+    }
+});
+
+function searchMessage(searchKey, typeOfMessage) {
+    let data = {typeOfMessage: typeOfMessage, searchKey: searchKey}
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=searchMessage',
+        type: 'post',
+        data: data,
+        success: function (d) {
+            if (typeOfMessage == "all") {
+                clearSearchResult();
+                if (d.success == true) {
+                    createtableMessages(d.messages);
+                    createSearchResult(d, "message");
+                } else {
+                    createSearchResult(d, "message");
+                }
+            } else {
+                if (d.success == true)
+                    createSearchResult(d.docs);
+            }
+        }
+    })
+};
+
+function searchDocuments(searchKey, docsType) {
+    let data = {searchKey: searchKey, docsType: docsType}
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=searchDocuments',
+        type: 'post',
+        data: data,
+        success: function (d) {
+            if (docsType == "all") {
+                clearSearchResult();
+                if (d.success == true) {
+                    createtableDocs(d.docs);
+                    createSearchResult(d, "docs");
+                } else {
+                    createSearchResult(d, "docs");
+                }
+            } else {
+                if (d.success == true)
+                    createtableDocs(d.docs);
+            }
+        }
+    });
+}
+
+function createSearchResult(d, entity = "message") {
+    let searchKey = $("#trca_header_search").val();
+
+    if (d.success == true) {
+        let all = false;
+        if (entity == "docs") {
+            var count = d.docs.length;
+            var countSecond = d.countDocOwner;
+            var countThird = count - d.countDocOwner;
+            var countFourth = 0;
+            if (countSecond > 0 && countThird > 0)
+                all = true;
+            var countText = "Найдено " + count + " элементов";
+            var countFirstText = "Все";
+            var countSecondText = "Загруженные " + countSecond;
+            var countThirdText = "Доступные " + countThird;
+        } else {
+            var count = d.messages.length;
+            var countSecond = count - d.countOutgoing - d.countDrafts;
+            var countThird = d.countOutgoing;
+            var countFourth = d.countDrafts;
+            if ((countSecond > 0 && countThird > 0) || (countSecond > 0 && countFourth > 0) || (countFourth > 0 && countThird > 0))
+                all = true;
+            var countText = "Найдено " + count + " элементов";
+            var countFirstText = "Все";
+            var countSecondText = "Входящие " + countSecond;
+            var countThirdText = "Исходящие " + countThird;
+            var countFourthText = "Черновики " + countFourth;
+        }
+        $(".trca_edo_items_table_search_count").text(countText);
+        if (all == true) {
+            if (entity == "docs") {
+                $(".trca_edo_items_table_search_item.first").click(() => {searchDocuments(searchKey , 'all')});
+            } else {
+                $(".trca_edo_items_table_search_item.first").click(() => {searchMessage(searchKey , 'all')});
+            }
+            $(".trca_edo_items_table_search_item.first").text(countFirstText);
+            $(".trca_edo_items_table_search_item.first").show();
+        }
+        if (countSecond > 0) {
+            if (entity == "docs") {
+                $(".trca_edo_items_table_search_item.second").click(() => {searchDocuments(searchKey , 'owner')});
+            } else {
+                $(".trca_edo_items_table_search_item.second").click(() => {searchMessage(searchKey , 'incoming')});
+            }
+            $(".trca_edo_items_table_search_item.second").text(countSecondText);
+            $(".trca_edo_items_table_search_item.second").show();
+        }
+        if (countThird > 0) {
+            if (entity == "docs") {
+                $(".trca_edo_items_table_search_item.third").click(() => {searchDocuments(searchKey , 'shared')});
+            } else {
+                $(".trca_edo_items_table_search_item.third").click(() => {searchMessage(searchKey , 'outgoing')});
+            }
+            $(".trca_edo_items_table_search_item.third").text(countThirdText);
+            $(".trca_edo_items_table_search_item.third").show();
+        }
+        if (countFourth > 0) {
+            $(".trca_edo_items_table_search_item.fourth").click(() => {searchMessage(searchKey , 'drafts')});
+            $(".trca_edo_items_table_search_item.fourth").text(countFourthText);
+            $(".trca_edo_items_table_search_item.fourth").show();
+        }
+        $(".trca_edo_items_table_search").show();
+        $(".trca_edo_items_table_search_items").show();
+    } else {
+        clearTable();
+        clearSearchResult();
+    }
+    $(".trca_edo_items_table_search").show();
+}
+function clearSearchResult() {
+    $(".trca_edo_items_table_search").hide();
+    $(".trca_edo_items_table_search_count").text('');
+
+    $(".trca_edo_items_table_search_item.first").hide();
+    $(".trca_edo_items_table_search_item.second").hide();
+    $(".trca_edo_items_table_search_item.third").hide();
+    $(".trca_edo_items_table_search_item.fourth").hide();
+
+    $(".trca_edo_items_table_search_item.first").unbind('click');
+    $(".trca_edo_items_table_search_item.second").unbind('click');
+    $(".trca_edo_items_table_search_item.third").unbind('click');
+    $(".trca_edo_items_table_search_item.fourth").unbind('click');
 }
 
 </script>

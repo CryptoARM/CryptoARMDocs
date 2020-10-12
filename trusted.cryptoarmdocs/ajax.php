@@ -162,6 +162,12 @@ if (isset($command)) {
         case "getInfoDoc":
             $res = Docs\AjaxCommand::getInfoDoc($params);
             break;
+        case "getInfoMessage":
+            $res = Docs\AjaxCommand::getInfoMessage($params);
+            break;
+        case "searchDocumentsByName":
+            $res = Docs\AjaxCommand::searchDocuments($params);
+            break;
         default:
             $res = array("success" => false, "message" => "Unknown command '" . $command . "'");
     }

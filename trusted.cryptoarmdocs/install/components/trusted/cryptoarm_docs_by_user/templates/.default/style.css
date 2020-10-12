@@ -1,25 +1,27 @@
 
 @font-face {
-	font-family: 'Roboto'; 
-    src: url(fonts/Roboto-Medium.ttf); 
+	font-family: 'Roboto';
+    src: url(fonts/Roboto-Medium.ttf);
     font-weight: normal;
-    font-style: normal; 
+    font-style: normal;
 }
 
 @font-face {
-	font-family: 'Roboto'; 
-    src: url(fonts/Roboto-Medium.ttf); 
+	font-family: 'Roboto';
+    src: url(fonts/Roboto-Medium.ttf);
     font-weight: 500;
-    font-style: normal; 
+    font-style: normal;
 }
 
 @font-face {
-	font-family: 'Roboto'; 
-    src: url(fonts/Roboto-Bold.ttf); 
+	font-family: 'Roboto';
+    src: url(fonts/Roboto-Bold.ttf);
     font-weight: bold;
-    font-style: normal; 
+    font-style: normal;
 }
-
+.d_flex {
+    display: flex;
+}
 .c_black {
     color: #4B4B4B !important;
 }
@@ -30,18 +32,27 @@
     font-weight: 500 !important;
 }
 
-#trca_upload_component {
-    font-family: Roboto;
+input, textarea {
+    outline: none;
 }
 
-.circle-out { 
-    position:relative; 
-    width: 20px; 
-    height: 20px; 
-    border-radius: 50%; 
-    background: #ccc; 
-    overflow: hidden; 
-} 
+*::before,
+*::after {
+  box-sizing: content-box !important;
+}
+
+#trca_upload_component {
+    font-family: Roboto;
+    box-sizing: content-box; 
+}
+.circle-out {
+    position:relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ccc;
+    overflow: hidden;
+}
 .circle-in { 
     position: absolute; 
     width: 16px; 
@@ -562,6 +573,7 @@ input:focus::placeholder {
     box-sizing: border-box;
     border-radius: 2px;
     text-indent: 9px;
+    font-size: 14px;
 }
 
 .trca_upload_window_send_form_comment_field textarea::placeholder {
@@ -585,6 +597,9 @@ input:focus::placeholder {
     align-items: center;
 }
 
+.trca_upload_window_send_form_require_sign input {
+    margin: 0 5px 10px;
+}
 .trca_upload_window_download {
     position: relative;
     padding: 30px 30px 20px;
@@ -643,7 +658,6 @@ input:focus::placeholder {
     font-size: 16px;
     border: 1.5px solid #E5E5E5;
 }
-
 .trca_edo_menu {
     display: flex;
     flex-direction: column;
@@ -702,7 +716,7 @@ input:focus::placeholder {
     cursor: pointer;
 }
 
-.trca_edo_menu_item:hover ,
+/* .trca_edo_menu_item:hover , */
 .submenu:hover {
     background: #F0F6FC;
     cursor: pointer;
@@ -758,13 +772,13 @@ input:focus::placeholder {
     flex-wrap: wrap;
 }
 .trca_label {
-    height: 12px;
-    margin: 5px 5px 5px 0;
+    margin: 2px 5px 2px 5px;
     padding: 3px 7px;
     font-size: 10px;
     border-radius: 20px;
     cursor: pointer;
 }
+
 
 .label_orange {
     background: #FFE8C2;
@@ -812,6 +826,7 @@ input:focus::placeholder {
     display: none;
 }
 
+.trca_button_mail,
 .trca_button_send,
 .trca_button_download,
 .trca_button_remove,
@@ -829,6 +844,7 @@ input:focus::placeholder {
     opacity: 0.5;
 }
 
+.trca_button_mail:hover,
 .trca_button_send:hover,
 .trca_button_download:hover,
 .trca_button_remove:hover,
@@ -839,6 +855,7 @@ input:focus::placeholder {
     opacity: 0.8;
 }
 
+.trca_button_mail:before,
 .trca_button_send::before,
 .trca_button_download::before,
 .trca_button_remove::before,
@@ -849,6 +866,10 @@ input:focus::placeholder {
     padding: 20px;
 }
 
+
+.trca_button_mail::before {
+    background: url("images/mail.png") center/20px no-repeat;
+}
 .trca_button_send::before {
     background: url("images/outbox.png") center/20px no-repeat;
 }
@@ -865,6 +886,10 @@ input:focus::placeholder {
     background: url("images/sign.png") center/20px no-repeat;
 }
 
+.trca_button_email::before {
+    background: url("images/email.png") center/20px no-repeat;
+}
+
 .trca_button_label::before {
     background: url("images/label.png") center/20px no-repeat;
 }
@@ -872,6 +897,7 @@ input:focus::placeholder {
 .trca_button_recall::before {
     background: url("images/recall.png") center/20px no-repeat
 }
+
 
 .trca_edo_header_menu_search {
     position: relative;
@@ -881,9 +907,35 @@ input:focus::placeholder {
     padding: 0 30px;
     font-size: 12px;
     line-height: 30px;
-    color: #A8ABBA;
+    /* color: #A8ABBA;
+    color: black; */
     border: 1px solid rgba(168, 171, 186, 0.53);
     border-radius: 20px;
+}
+
+.trca_edo_header_menu_search_entity {
+    position: absolute;
+    left: 10px;
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: space-evenly;
+    padding: 12px;
+    font-size: 12px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+    z-index: 100;
+}
+.trca_edo_header_menu_search_entity_item {
+    padding: 3px 6px;
+    color: #7B7A82;
+    border: 1px solid #7B7A82;
+    border-radius: 20px;
+    cursor: pointer;
+}
+.trca_edo_header_menu_search_entity .trca_search_entity_active {
+    color: white;
+    background: #67B7F7;
+    border: 1px solid #67B7F7;
 }
 
 .trca_button_close,
@@ -927,11 +979,42 @@ input:focus::placeholder {
     border-left: 3px solid #E5E5E5;
 }
 
+.trca_edo_item_answer {
+    padding-left: 15px;
+    background: #F1F1F1;
+    border-left: 3px solid #F1F1F1;
+}
+
+.trca_edo_item_count_answer {
+    position: relative;
+    margin-left: 10px;
+    padding: 0 18px 0 6px;
+    line-height: 16px;
+    border: 0.5px solid #7B7A82;
+    border-radius: 6px;
+    opacity: 0.7;
+}
+
+.trca_edo_item_count_answer::after {
+    content: "";
+    position: absolute;
+    background: url(/bitrix/components/trusted/cryptoarm_docs_by_user/templates/.default/images/check.png) top/9px no-repeat;
+    width: 12px;
+    height: 15px;
+    transform: rotate(90deg);
+    opacity: 0.7;
+    right: 6px;
+}
+
+
 .trca_edo_item_cheched {
     background-color: #F0F6FC !important;
     border-left: 3px solid #67B7F6 !important;
 }
 
+.trca_edo_items_table_content {
+    width: 100%;
+}
 .trca_edo_items_table {
     width: 100%;
 }
@@ -987,6 +1070,13 @@ input:focus::placeholder {
     padding: 5px 14px;
 }
 
+.trca_edo_item_first_col_row_file_readed::before {
+    content: "";
+    padding: 3px 10px;
+    opacity: 0.5;
+    background: url("images/sign.png") left/16px no-repeat;
+}
+
 .trca_edo_items .red_status:before {
     content: "\25CF";
     color: #E35D32;
@@ -1009,6 +1099,7 @@ input:focus::placeholder {
 .trca_edo_info {
     position: relative;
     min-width: 270px;
+    max-width: 270px;
     border-left: 1.5px solid #E5E5E5;
     padding: 30px 10px;
     background: #F9F9F9;
@@ -1123,6 +1214,166 @@ input:focus::placeholder {
     display: block;
 }
 
+.trca_edo_info_message_detail {
+    padding: 10px;
+    font-size: 12px;
+    color: #7B7A82;
+}
+
+
+.trca_edo_info_message_docs_list {
+    padding: 10px;
+    font-size: 12px;
+    color: #1E2026;
+    font-weight: 500;
+    border: none;
+}
+
+.trca_edo_info_message_detail_mail {
+    font-weight: 500;
+    color: #1E2026;
+}
+.trca_edo_info_message_detail_item {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+#trca_edo_info_message_detail_sender {
+    justify-content: space-between;
+}
+
+.trca_edo_info_message_detail_sender_row {
+    display: flex;
+    align-items: center;
+}
+
+.trca_edo_info_message_detail_item .material-icons {
+    font-size: 16px;
+    padding: 1px 5px 1px 0;
+}
+#trca_edo_info_message_detail_sender .material-icons {
+    padding: 5px;
+}
+
+.trca_edo_info_message_answer:hover {
+    background-color: rgba(168, 171, 186, 0.3);
+    opacity: 0.6;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.trca_edo_info_message_detail_doc {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: normal;
+    color: #4B4B4B;
+    border: 1px solid #E5E5E5;
+}
+.trca_edo_info_message_detail_doc_sign,
+.trca_edo_info_message_detail_doc_download,
+.trca_edo_info_message_detail_doc_read {
+    padding: 8px;
+    opacity: 0.6;
+    cursor: pointer;
+}
+.trca_edo_info_message_detail_doc_sign{
+    background: url("images/sign.png") center/16px no-repeat;
+}
+.trca_edo_info_message_detail_doc_download {
+    background: url("images/down.png") center/16px no-repeat;
+}
+.trca_edo_info_message_detail_doc_read {
+    background: url("images/sign.png") center/16px no-repeat;
+}
+/* .trca_edo_info_message_detail_doc_sign:hover,
+.trca_edo_info_message_detail_doc_download:hover,
+.trca_edo_info_message_detail_doc_read:hover {
+    background-color: #7B7A82;
+} */
+
+.trca_edo_items_table_search {
+    padding: 15px 43px;
+    font-size: 14px;
+    border-bottom: 1.5px solid #E5E5E5;
+}
+
+.trca_edo_items_table_search span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.trca_edo_items_table_search_count {
+    padding: 10px 0;
+}
+
+.trca_edo_items_table_search_items {
+    display: flex;
+}
+
+.trca_edo_items_table_search_item {
+    margin-right: 15px;
+    color: #67B7F6;
+    cursor: pointer;
+}
+
+
+.trca_send_answer {
+    position: relative;
+    width: 604px;
+    padding: 20px;
+    justify-content: center;
+    font-family: Roboto;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+    background: #FFFFFF;
+    font-size: 16px;
+}
+
+.trca_send_answer_header_row {
+    display: flex;
+    padding: 10px 0 5px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(196, 196, 196, 0.5);
+}
+.trca_send_answer_header_row input {
+    border: none;
+}
+
+.trca_send_answer_header_row div:first-child {
+    color: #7B7A82;
+    margin-right: 10px;
+}
+
+.trca_send_answer_comment textarea {
+    margin: 20px 0;
+    padding: 10px;
+    height: 60px;
+    width: 100%;
+    border: 1px solid #E5E5E5;
+    border-radius: 2px;
+    font-size: 12px;
+}
+
+.trca_upload_window_footer_add_file {
+    padding: 8px 16px;
+    margin-right: 16px;
+    font-size: 14px;
+}
+
+.trca_upload_window_footer_add_file::before {
+    content: "";
+    background: url("images/clip.png") left/16px no-repeat;
+    padding: 0 12px;
+}
+.trca_upload_window_footer_add_file:hover {
+    background: #F9F9F9;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 3px 4px rgba(0, 0, 0, 0.12), 0px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
 .trca_label_window {
     position:absolute;
     top: 35px;
@@ -1136,6 +1387,7 @@ input:focus::placeholder {
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.14), 0px 3px 4px rgba(0, 0, 0, 0.12), 0px 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 .trca_label_window_search input {
@@ -1245,7 +1497,7 @@ input:focus::placeholder {
 
 /* active state */
 .trca_create_label_window_name input:focus ~ label, .trca_create_label_window_name input:valid ~ label {
-    top: -10px;
+    top: 0;
     font-size: 10px;
     color: #999;
 }
@@ -1313,7 +1565,6 @@ input:focus::placeholder {
     background-color: #FFE8C2;
     color: #EE800D;
 }
-
 .png_trca_label_one {
     filter: invert(100%) sepia(47%) saturate(3345%) hue-rotate(296deg) brightness(123%) contrast(106%);
 }

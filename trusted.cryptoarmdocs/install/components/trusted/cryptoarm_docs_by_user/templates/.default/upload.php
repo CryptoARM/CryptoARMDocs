@@ -26,26 +26,25 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
         $maxSize = Docs\Utils::maxUploadFileSize();
         ?>
 <!-- <div id="trca_upload_succesful_send" class="trca_upload_success">
-    <div>
+    <div>s
         <span>
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1") ?></span>
+            <?//= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_1") ?></span>
         <span style="color:#67B7F7">
-            <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2") ?></span>
+            <?//= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND_MES_2") ?></span>
     </div>
     <div onclick="cancel()">
-        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_CANCEL_SENDING") ?>
+        <?//= Loc::getMessage("trca_edo_info_message_answer") ?>
     </div>
     <div class="material-icons" style="cursor: pointer; color: rgba(0, 0, 0, 0.158);" onclick="hideModal()">
         close
     </div>
 </div> -->
-<div id="trca_data" userid="<?= Docs\Utils::currUserId() ?>" maxsize="<?= Docs\Utils::maxUploadFileSize() ?>"></div>
-<div id="trca_upload_component">
-    <div class="trca_upload_button" onclick="showModal()">
+<div id="trca_upload_component" style="display:none">
+    <!-- <div class="trca_upload_button" onclick="showModal()">
         <div style="font-size: 35px; font-weight: 100">+</div>
-        <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_BUTTON") ?>
-    </div>
-    <div id="trca_upload_window_steps" class="trca_upload_modal_window" style="display: none">
+        <?//= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_BUTTON") ?>
+    </div> -->
+    <div id="trca_upload_window_steps" class="trca_upload_modal_window" >
         <div class="trca_upload_save_draft" id="trca_upload_save_draft" style="display:none">
             <div class="trca_upload_save_draft_header">
                 <div class="trca_upload_window_header_step_name">
@@ -92,7 +91,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                 close
             </div>
         </div>
-        <div id="trca_upload_window_first_n_second_step">
+        <div id="trca_upload_window_first_n_second_step" style="display: none">
             <div class="trca_upload_window" id="trca_upload_window">
                 <div class="trca_upload_window_header_close" onclick="hideModal()">
                     <div class="material-icons">
@@ -108,7 +107,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                             <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_STEP_ONE") ?>
                         </span>
                     </div>
-                    <input type="file" onchange="handleFiles(this.files)" id="fileElem" multiple>
+                    <input type="file" onchange="handleFiles(this.files, 'trca_upload_file_list')" id="fileElem" multiple>
                     <label for="fileElem">
                         <div class="trca_upload_window_header_upload_more" id="trca_upload_window_header_upload_more"
                             style="display: none">
@@ -132,7 +131,7 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                                 <div class="trca_upload_form_text">
                                     <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_1") ?>
                                     <input type="file" class="trca_upload_file_input" id="fileElem" multiple
-                                        onchange="handleFiles(this.files)">
+                                        onchange="handleFiles(this.files , 'trca_upload_file_list')">
                                     <label for="fileElem" class="trca_upload_file_label">
                                         <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_2") ?></label>
                                 </div>
@@ -195,6 +194,39 @@ if ($arParams["ALLOW_ADDING"] === 'Y') {
                 </div>
             </div>
         </div>
+        <div id="trca_send_answer" class="trca_send_answer" style="display: none;">
+            <div class="trca_edo_info_close" onclick="hideModal()"></div>
+            <div id="trca_send_answer_theme" class="trca_send_answer_theme"></div>
+            <div class="trca_send_answer_header_row">
+                <div>Кому:</div>
+                <input id="trca_upload_send_rec" style="border:none" readonly>
+            </div>
+            <div class="trca_send_answer_header_row">
+                <div>Тема:</div>
+                <input id="trca_upload_send_theme">
+            </div>
+            <div class="trca_send_answer_comment">
+                <textarea id="trca_comment" type="text" placeholder="Комментарий для получателя "></textarea>
+            </div>
+            <div class="trca_upload_file_list" id="trca_upload_file_list_2" style="display: none; width: 100%;">
+            </div>
+            <div class="trca_upload_window_send_form_require_sign" style="display: none;">
+                <input type="checkbox" id="trca_upload_window_send_form_require_sign" class="trca_require_checkbox">
+                <label for="trca_upload_window_send_form_require_sign"><?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SIGN_BEFORE") ?></label>
+            </div>
+            <div class="trca_upload_window_footer" style="height: auto;">
+                    <input id="fileElem_2" type="file" class="trca_upload_file_input" multiple
+                        onchange='handleFiles(this.files, "trca_upload_file_list_2")' style="display: none;">
+                    <label for="fileElem_2" style="margin-bottom: 0;">
+                        <div class="trca_upload_window_footer_add_file">
+                            Добавить документы
+                        </div>
+                    </label>
+                <div class="trca_upload_window_footer_send_button" id = "trca_send_button">
+                    <?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_SEND") ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <?
@@ -237,7 +269,7 @@ dropArea.addEventListener('drop', handleDrop, false);
 function handleDrop(e) {
     let dt = e.dataTransfer;
     files = dt.files;
-    handleFiles(files);
+    handleFiles(files, 'trca_upload_file_list_2');
 }
 let docsIds = new Array;
 
@@ -246,8 +278,11 @@ function uploadFiles() {
     $("#trca_upload_success").show();
 }
 
-function addTemporaryListItem(file, i, xhr, files) {
-    var docarea = document.getElementById('trca_upload_file_list');
+function addTemporaryListItem(file, i, xhr, files, idDiv) {
+    $('#trca_upload_file_list_2').show();
+    $('.trca_upload_window_send_form_require_sign').show();
+    $('.trca_drop_area').hide();
+    var docarea = document.getElementById(idDiv);
     var docDiv = document.createElement('div');
     docDiv.id = "trca_doc_temporary_" + i;
     docDiv.className = "trca_doc_list_item";
@@ -284,13 +319,13 @@ function cancelUpload() {
     hideModal();
 }
 
-function addAndUpload(file, docarea, i, files) {
+function addAndUpload(file, docarea, i, files, idDiv) {
     name = 'USER';
     var xhr;
     function getXHR(request) {
         xhr = request;
     }
-    value = document.getElementById("trca_data").getAttribute("userid");
+    value = "<?= Docs\Utils::currUserId() ?>";
     $("#trca_upload_window_header_upload_more").show();
     $("#trca_upload_window_first_step").hide();
     $("#trca_upload_window_second_step").show();
@@ -312,7 +347,7 @@ function addAndUpload(file, docarea, i, files) {
         [name, value],
     ])
     trustedCA.uploadFile(file, props, (item)=>{getUploadedDocId(item)}, null, true, (loaded, total)=>{fileOnLoad(loaded, total, i)}, (request)=>{getXHR(request)});
-    addTemporaryListItem(file, i, xhr, files);
+    addTemporaryListItem(file, i, xhr, files, idDiv);
 }
 
 function getProgressCircle(i) {
@@ -322,16 +357,15 @@ function getProgressCircle(i) {
             </div> `;
 }
 
-function handleFiles(files) {
-    console.log(files);
-    //maxsize = "<?//= Docs\Utils::maxUploadFileSize() ?>//"
-    maxsize = document.getElementById("trca_data").getAttribute("maxsize");
-    var docarea = document.getElementById('trca_upload_file_list');
+function handleFiles(files, idDiv) {
+    console.log(idDiv);
+    maxsize = "<?= Docs\Utils::maxUploadFileSize() ?>"
+    var docarea = document.getElementById(idDiv);
     for (let i = 0; i < files.length; i++) {
         file = files[i];
         trustedCA.checkFileSize(file, maxsize, () => {
             trustedCA.checkName(file, () => {
-                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i, files))
+                trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i, files, idDiv))
             })
         });
     };
@@ -457,18 +491,18 @@ function showSendForm() {
 
 let messId;
 
-function send(send = false, ids = null) {
+function send(send = false, ids = null, parentId = null) {
+    $("#trca_send_answer").hide();
     var recepientEmail = $("#trca_upload_send_rec").val();
     var theme = $("#trca_upload_send_theme").val();
     var comment = $("#trca_comment").val();
     if (ids != null) {
         docsIds = ids;
     }
-    console.log(docsIds);
     function writeMesId(d) {
         messId = d.messId;
     };
-    trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send}, (d)=>{writeMesId(d)});
+    trustedCA.ajax("newMessage", {recepientEmail, theme, comment, docsIds, send, parentId}, (d)=>{writeMesId(d)});
     if (send == true) {
         $("#trca_upload_window_first_n_second_step").hide();
         $('#trca_upload_succesful_send').show();
@@ -508,5 +542,18 @@ function toFirstStep() {
     $("*#trca_upload_window_first_step").show();
     $("*#trca_upload_window_second_step").hide();
     $("*#trca_upload_third_step_footer").remove();
+}
+
+function initAnswer() {
+    let re = $("#trca_edo_info_message_detail_theme").text();
+    let email = $("#trca_email_outgoing").text();
+    let parentId = $('#trca_edo_info_message').attr("info_id");
+    $('#trca_send_answer_theme').text("Re: " + re)
+    $('#trca_upload_send_rec').val(email);
+    $('#trca_send_button').attr("onclick", "send(true, null," + parentId +")");
+    $("#trca_upload_window_first_n_second_step").hide();
+    $("#trca_upload_window_steps").show();
+    $("#trca_upload_component").show();
+    $("#trca_send_answer").show();
 }
 </script>

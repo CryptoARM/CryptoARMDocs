@@ -1606,6 +1606,45 @@ class AjaxCommand {
                 }
                 $message["time"] = $dateCreated;
 
+                $childMessages = [];
+                $paramsGetValue = [
+                    "columnName" => "PARENT_ID",
+                    "value" => $mesId
+                ];
+                $arChildMessage = Messages::getTableValue($paramsGetValue);
+                if (count($arChildMessage) > 0) {
+                    foreach ($arChildMessage as $mesId) {
+                        $childMessage = Messages::getMessageInfo($mesId);
+                        $childMessage["id"] = $mesId;
+                        if ($childMessage["sender"])
+                            $childMessage["sender"] = Utils::getUserEmail($childMessage["sender"]);
+
+                        if ($childMessage["recepient"])
+                            $childMessage["recepient"] = Utils::getUserEmail($childMessage["recepient"]);
+
+                        if ($childMessage["docs"]) {
+                            $docs = [];
+                            foreach ($childMessage["docs"] as $docId) {
+                                $docName = Database::getDocumentById($docId)->getName();
+                                $docs[]  = [
+                                    "id" => $docId,
+                                    "name" => $docName
+                                ];
+                            }
+                            $childMessage["docs"] = $docs;
+                        }
+
+                        $dateCreated = strtotime($childMessage["time"]);
+                        if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                            $dateCreated =  date("H:i", $dateCreated);
+                        } else {
+                            $dateCreated =  date("d.m.o", $dateCreated);
+                        }
+                        $childMessage["time"] = $dateCreated;
+                        $childMessages[] = $childMessage;
+                    }
+                }
+                $message["childMessage"] = $childMessages;
                 $res['messages'][] = $message;
             }
             $res['success'] = true;
@@ -1638,10 +1677,10 @@ class AjaxCommand {
             $res['noAith'] = 'true';
         };
 
-        if(!$params['docsIds']) {
-            $res['message'] = 'Nothing to send';
-            return $res;
-        };
+        // if(!$params['docsIds']) {
+        //     $res['message'] = 'Nothing to send';
+        //     return $res;
+        // };
 
         $params['recepientEmail'] = trim($params['recepientEmail']);
 
@@ -1680,69 +1719,6 @@ class AjaxCommand {
 
         $res['success'] = true;
         return $res;
-    }
-    /**
-     * returns information about message
-     * @param array
-     */
-    static function getMessageInfo($params) {
-        $res = [
-            "success" => false,
-            "message" => "Unknown error in Ajax.getInfoMessage",
-        ];
-
-        $id = $params["id"];
-
-        if (!$id) {
-            $res["message"] = "id is not find in params";
-            return $res;
-        }
-
-        if (!Utils::checkAuthorization()) {
-            $res["message"] = "No authorization";
-            $res["noAuth"] = true;
-            return $res;
-        }
-
-        $message = Messages::getMessageInfo($id);
-
-        if ($message) {
-            if ($message["sender"])
-                $message["sender"] = Utils::getUserEmail($message["sender"]);
-
-            if ($message["recepient"])
-                $message["recepient"] = Utils::getUserEmail($message["recepient"]);
-
-            if ($message["docs"]) {
-                foreach ($message["docs"] as $docId) {
-                    $doc = Database::getDocumentById($docId);
-                    $docName = $doc->getName();
-                    $docs[] = [
-                        "id" => $docId,
-                        "name" => $docName,
-                        "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
-                    ];
-                }
-                $message["docs"] = $docs;
-            }
-
-            $dateCreated = strtotime($message["time"]);
-            if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
-                $dateCreated = date("H:i", $dateCreated);
-            } else {
-                $dateCreated = date("d.m.o", $dateCreated);
-            }
-            $message["time"] = $dateCreated;
-
-            return [
-                "success" => true,
-                "message" => $message,
-            ];
-        } else {
-            $res["message"] = "Document is not found";
-            return $res;
-        }
-
     }
 
     static function sendCancel($params) {
@@ -1823,6 +1799,10 @@ class AjaxCommand {
         }
         $mesIds = array_unique($mesIds);
         $res['ids'] = $mesIds;
+        $currUserId = Utils::currUserId();
+        $countOutgoing = 0;
+        $countDrafts = 0;
+
         if (count($mesIds) != 0) {
             $res['message'] = 'Found some';
             $res['founded'] = true;
@@ -1830,20 +1810,20 @@ class AjaxCommand {
             foreach ($mesIds as $mesId) {
                 $message = Messages::getMessageInfo($mesId);
                 $message["id"] = $mesId;
-                if ($message["sender"]) {
-                    if ($message["sender"] == Utils::currUserId()) {
-                        if (Messages::getMessageStatus($mesId) == 'DRAFT') {
-                            $message["type"] = "draft";
-                        } else {
-                            $message["type"] = "outgoing";
-                        }
+                if ($message["sender"] == Utils::currUserId()) {
+                    if (Messages::getMessageStatus($mesId) == 'DRAFT'){
+                        $countDrafts++;
                     } else {
-                        $message["type"] = 'incoming';
+                        $countOutgoing++;
                     }
-                    $message["sender"] = Utils::getUserEmail($message["sender"]);
                 }
-                if ($message["recepient"])
+                $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+                if ($message["recepient"]) {
                     $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+                } else {
+                    $countDrafts ++;
+                }
 
                 if ($message["docs"]) {
                     $docs = [];
@@ -1868,9 +1848,13 @@ class AjaxCommand {
                 $res['messages'][] = $message;
 
             }
+            $res['countOutgoing'] = $countOutgoing;
+            $res['countDrafts'] = $countDrafts;
         } else {
+            $res['success'] = false;
             $res['message'] = 'Found nothing';
             $res['noMess'] = true;
+            return $res;
         }
         $res['success'] = true;
         return $res;
@@ -2102,7 +2086,7 @@ class AjaxCommand {
     public function getInfoDoc($params) {
         $res = [
             "success" => false,
-            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+            "message" => "Unknown error in Ajax.getInfoDoc",
         ];
 
         $id = $params["id"];
@@ -2161,7 +2145,7 @@ class AjaxCommand {
 
         $res = [
             "success" => false,
-            "message" => "Unknown error in Ajax.getInfoForModalWindow",
+            "message" => "Unknown error in Ajax.getDocList",
         ];
 
         if (!Utils::checkAuthorization()) {
@@ -2185,7 +2169,7 @@ class AjaxCommand {
 
         if ($docs) {
             foreach ($docs->getList() as $doc) {
-
+                $docProps = [];
                 if ($doc->getOwner() == $currUserId && $shared)
                     continue;
 
@@ -2194,7 +2178,7 @@ class AjaxCommand {
                 if ($doc->getOwner() == $currUserId){
                     $docProps["owner"] = true;
                 } else {
-                    $docProps["owner"] = Utils::getUserName($doc->getOwner());
+                    $docProps["docowner"] = Utils::getUserName($doc->getOwner());
                 }
 
 
@@ -2389,70 +2373,6 @@ class AjaxCommand {
         
         return $res;
     }
-
-//    public function getMessagesLabels($params) {
-//        $res = [
-//            "success" => false,
-//            "message" => "Unknown error in Ajax.getMessageLabels",
-//        ];
-//
-//        if (!Utils::checkAuthorization()) {
-//            $res["message"] = "No authorization";
-//            $res["noAuth"] = true;
-//            return $res;
-//        }
-//
-//        if (!$params["messIds"]) {
-//            $res["message"] = "No message ids given";
-//            return $res;
-//        }
-//
-//        $userId = Utils::currUserId();
-//        $res["notExistingMessages"] = [];
-//        $res["notThisUserMessages"] = [];
-//        $res["messagesForSearch"] = [];
-//
-//        foreach ($params["messIds"] as $messId) {
-//            if (!Messages::isMessageExists($messId)) {
-//                $res["notExistingMessages"][] = $messId;
-//            } else {
-//                if (!($userId = Messages::getSenderId($messId) || $userId = Messages::getRecepientId($messId))) {
-//                    $res["notThisUserMessages"][] = $messId;
-//                } else {
-//                    $res["messagesForSearch"][] = $messId;
-//                }
-//            }
-//        }
-//
-//        $countOfMessages = count($res["messagesForSearch"]);
-//
-//        $res["labels"] = [];
-//
-//        if ($countOfMessages != 0) {
-//            foreach ($res["messagesForSearch"] as $messId) {
-//                $labels = Messages::getMessageLabels($messId);
-//                if (count($labels) != 0) {
-//                    foreach ($labels as $label) {
-//                        $res["labels"][] = Messages::getLabelInfo($label);
-//                    }
-//                }
-//            }
-//            array_unique($res["labels"]);
-//            foreach($res["labels"] as $label) {
-//                $countOfSelectedMessagesWithLabel = 0;
-//                foreach ($res["messagesForSearch"] as $message) {
-//                    if (Messages::isMessageWithThisLabel($message, $label)) {
-//                        $countOfSelectedMessagesWithLabel++;
-//                    }
-//                }
-//
-//            }
-//        } else {
-//            $res["message"] = "No messages for search";
-//            return $res;
-//        }
-//    }
-
     public function getInfoForLabelWindow($params){
         $res = [
             "success" => false,
@@ -2538,38 +2458,38 @@ class AjaxCommand {
         return $res;
     }
 
-//    public function searchLabel($params) {
-//        $res = [
-//            "success" => false,
-//            "message" => "Unknown error in Ajax.searchLabel",
-//        ];
-//
-//        if (!Utils::checkAuthorization()) {
-//            $res["message"] = "No authorization";
-//            $res["noAuth"] = true;
-//            return $res;
-//        }
-//
-//        if (!$params["searchKey"]) {
-//            $res["message"] = "Nothing to search";
-//            $res["noKey"] = true;
-//            return $res;
-//        }
-//
-//        $params['userId'] = Utils::currUserId();
-//
-//        $res["labels"] = Messages::searchLabel($params);
-//
-//        if (count($res["labels"]) == 0) {
-//            $res["success"] = true;
-//            $res["message"] = "Found nothing";
-//            return $res;
-//        } else {
-//            $res["success"] = true;
-//            $res["message"] = "Found some";
-//            return $res;
-//        }
-//    }
+    // public function searchLabel($params) {
+    //     $res = [
+    //         "success" => false,
+    //         "message" => "Unknown error in Ajax.searchLabel",
+    //     ];
+
+    //     if (!Utils::checkAuthorization()) {
+    //         $res["message"] = "No authorization";
+    //         $res["noAuth"] = true;
+    //         return $res;
+    //     }
+
+    //     if (!$params["searchKey"]) {
+    //         $res["message"] = "Nothing to search";
+    //         $res["noKey"] = true;
+    //         return $res;
+    //     }
+
+    //     $params['userId'] = Utils::currUserId();
+
+    //     $res["labels"] = Messages::searchLabel($params);
+
+    //     if (count($res["labels"]) == 0) {
+    //         $res["success"] = true;
+    //         $res["message"] = "Found nothing";
+    //         return $res;
+    //     } else {
+    //         $res["success"] = true;
+    //         $res["message"] = "Found some";
+    //         return $res;
+    //     }
+    // }
 
     public function removeLabel($params) {
         $res = [
@@ -2612,6 +2532,194 @@ class AjaxCommand {
 
         $res['message'] = 'Label removed';
         $res['success'] = true;
+        return $res;
+    }
+
+    public function getInfoMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.getInfoMessage",
+        ];
+
+        $id = $params["id"];
+
+        if (!$id) {
+            $res["message"] = "id is not find in params";
+            return $res;
+        }
+
+        if (!Utils::checkAuthorization()) {
+            $res["message"] = "No authorization";
+            $res["noAuth"] = true;
+            return $res;
+        }
+
+        $message = Messages::getMessageInfo($id);
+
+        if ($message) {
+            if ($message["sender"])
+                $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+            if ($message["recepient"])
+                $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+            if ($message["docs"]) {
+                foreach ($message["docs"] as $docId) {
+                    $doc = Database::getDocumentById($docId);
+                    $docName = $doc->getName();
+                    $docs[]  = [
+                        "id" => $docId,
+                        "name" => $docName,
+                        "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                    ];
+                }
+                $message["docs"] = $docs;
+            }
+
+            $dateCreated = strtotime($message["time"]);
+            if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                $dateCreated =  date("H:i", $dateCreated);
+            } else {
+                $dateCreated =  date("d.m.o", $dateCreated);
+            }
+            $message["time"] = $dateCreated;
+
+            $paramsChangeStatus = [
+                "newStatus" => "READED",
+                "mess" => $id
+            ];
+            Messages::changeStatus($paramsChangeStatus);
+
+            return [
+                "success" => true,
+                "message" => $message,
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+
+    }
+
+    public function searchDocuments($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in Ajax.searchDocuments",
+        ];
+
+        $docName = $params["searchKey"];
+        $docsId = [];
+        $filter['FILE_NAME'] = $docName;
+        $rowDB = Database::getDocumentIdsByFilter(null, $filter);
+        while ($row = $rowDB->Fetch()) {
+            $docsId[] = $row["ID"];
+        }
+
+        $docsType = $params["docsType"];
+        $currUserId = Utils::currUserId();
+        $countDocOwner = 0;
+        if (count($docsId) > 0) {
+            foreach($docsId as $docId) {
+                $doc = Database::getDocumentById($docId);
+
+                if ($doc->getOwner() == $currUserId)
+                    $countDocOwner ++;
+
+                if ($doc->getOwner() == $currUserId && $docsType == "shared")
+                    continue;
+
+                if ($doc->getOwner() != $currUserId && $docsType =="owner")
+                    continue;
+
+                $dateCreated = strtotime(Database::getDocumentById($doc->getId())->getCreated());
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+
+                $docs[]  = [
+                    "id" => $docId,
+                    "name" => $doc->getName(),
+                    "docsize" => Utils::fileSizeConvert(filesize($doc->getFullPath())),
+                    "docowner" => Utils::getUserName($doc->getOwner()),
+                    "dateCreated" => $dateCreated,
+                    "owner" => ($doc->getOwner() == $currUserId)? true: false,
+                ];
+            }
+
+            return [
+                "success" => true,
+                "docs" => $docs,
+                "countDocOwner" => $countDocOwner
+            ];
+        } else {
+            $res["message"] = "Document is not found";
+            return $res;
+        }
+    }
+
+    static function getAnswerMessage($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.getAnswerMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if(!$params["id"]) {
+            $res['message'] = 'id is not find in params';
+            return $res;
+        }
+
+        $paramsGetValue = [
+            "columnName" => "PARENT_ID",
+            "value" => $params["id"]
+        ];
+        $mesIds = Messages::getTableValue($paramsGetValue);
+
+        if ($mesIds) {
+            $res['messages'] = [];
+            foreach ($mesIds as $mesId) {
+                $message = Messages::getMessageInfo($mesId);
+                $message["id"] = $mesId;
+                if ($message["sender"])
+                    $message["sender"] = Utils::getUserEmail($message["sender"]);
+
+                if ($message["recepient"])
+                    $message["recepient"] = Utils::getUserEmail($message["recepient"]);
+
+                if ($message["docs"]) {
+                    $docs = [];
+                    foreach ($message["docs"] as $docId) {
+                        $docName = Database::getDocumentById($docId)->getName();
+                        $docs[]  = [
+                            "id" => $docId,
+                            "name" => $docName
+                        ];
+                    }
+                    $message["docs"] = $docs;
+                }
+
+                $dateCreated = strtotime($message["time"]);
+                if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                    $dateCreated =  date("H:i", $dateCreated);
+                } else {
+                    $dateCreated =  date("d.m.o", $dateCreated);
+                }
+                $message["time"] = $dateCreated;
+
+                $res['messages'][] = $message;
+            }
+            $res['success'] = true;
+            $res['message'] = 'Success';
+        } else {
+            $res['message'] = 'No messages';
+            $res['noMess'] = true;
+        }
         return $res;
     }
 }

@@ -57,7 +57,7 @@ class Messages {
     */
     static function getIncomingMessages($params) {
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $params['userId'] . ' AND  MES_STATUS <> "DRAFT"';
+        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $params['userId'] . ' AND  MES_STATUS <> "DRAFT" AND PARENT_ID IS NULL';
         if ($params["firstElem"] && $params["count"]) {
             $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
         }
@@ -369,20 +369,6 @@ class Messages {
         return $status;
     }
 
-//    static function getMessagesByLabel($labelId, $userId) {
-//        global $DB;
-//        $sql = 'SELECT MESSAGE_ID FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE LABEL_ID=' . $labelId;
-//        $rows = $DB->Query($sql);
-//        $messageLabels = [];
-//        $userLabels = Messages::getUserLabels($userId);
-//        while ($row = $rows->Fetch()) {
-//            if(in_array($row["MESSAGE_ID"], $userLabels)) {
-//                $messageLabels[] = $row["MESSAGE_ID"];
-//            }
-//        }
-//        return $messageLabels;
-//    }
-
     static function getMessagesByLabel($labelId, $userId) {
         global $DB;
         $sql = 'SELECT TDLP.MESSAGE_ID as label FROM ' . DB_TABLE_LABELS_PROPERTY . ' as TDLP RIGHT JOIN ' . DB_TABLE_LABELS . ' as TDL ON(';
@@ -466,6 +452,8 @@ class Messages {
             $sql .= ', THEME';
         if ($params['comment'])
             $sql .= ', COMMENT';
+        if ($params['parentId'])
+            $sql .= ', PARENT_ID';
         $sql .= ', TIMESTAMP_X, MES_STATUS) ';
         $sql .= 'VALUES( "' . Utils::currUserId() . '"';
         if ($params['recepientId'])
@@ -474,6 +462,8 @@ class Messages {
             $sql .= ", '" . $params['theme'] . "'";
         if ($params['comment'])
             $sql .= ", '"  . $params['comment'] . "'";
+        if ($params['parentId'])
+            $sql .=", '" . $params['parentId'] . "'";
         $sql .= ", NOW(), 'DRAFT');";
         $DB->Query($sql);
         $mes = $DB->LastID();
