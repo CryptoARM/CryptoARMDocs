@@ -428,6 +428,14 @@ class AjaxCommand {
 
         foreach ($docsToRemove as $id) {
             if (!($wf && in_array($id, $wfs))){
+                if (Messages::isDocumentInMessage($id)) {
+                    $res['docsInMessages'][] = [
+                        'id' => $id,
+                        "name" => (Database::getDocumentById($id)->getName()),
+                    ];
+                    $res['mes'] = true;
+                    continue;
+                }
                 $doc = Database::getDocumentById($id);
                 $doc->remove();
                 Utils::log([

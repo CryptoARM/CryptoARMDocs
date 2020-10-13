@@ -25,6 +25,7 @@ $MESS["TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE"] = "Некоторые фа
 $MESS["TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST"] = "Удалить эти записи о файлах из базы данных?";
 $MESS["TR_CA_DOCS_ALERT_LOST_DOC"] = "Некоторые файлы не были обнаружены в хранилище:";
 $MESS["TR_CA_DOCS_ALERT_IN_WF"] = "Следующие документы используются в бизнесс-процессах:";
+$MESS["TR_CA_DOCS_ALERT_IN_MESSAGE"] = "Следующие документы в сообщениях:";
 
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_TO_PROMPT"] = "Укажите e-mail, на который вы хотите отправить документы:";
 $MESS["TR_CA_DOCS_ACT_SEND_MAIL_SUCCESS"] = "Письмо отправлено";

@@ -16,6 +16,7 @@ trustedCA.initVar = function () {
     LOST_DOC_REMOVE_CONFIRM_PRE = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_PRE');
     LOST_DOC_REMOVE_CONFIRM_POST = BX.message('TR_CA_DOCS_ALERT_LOST_DOC_REMOVE_CONFIRM_POST');
     IN_WF = BX.message('TR_CA_DOCS_ALERT_IN_WF');
+    IN_MESSAGE = BX.message('TR_CA_DOCS_ALERT_IN_MESSAGE');
     LOST_DOC = BX.message('TR_CA_DOCS_ALERT_LOST_DOC');
     ERROR_NO_AUTH = BX.message('TR_CA_DOCS_ERROR_NO_AUTH');
     ERROR_NO_IDS = BX.message('TR_CA_DOCS_ERROR_NO_IDS');
@@ -458,6 +459,13 @@ trustedCA.show_messages = function (response) {
     if (response.WFDocs) {
         message = IN_WF;
         response.docsInWF.forEach(function (elem) {
+            message += '\n' + elem.id + ': ' + elem.name;
+        });
+        alert(message);
+    }
+    if (response.mes) {
+        message = IN_MESSAGE;
+        response.docsInMessages.forEach(function (elem) {
             message += '\n' + elem.id + ': ' + elem.name;
         });
         alert(message);
