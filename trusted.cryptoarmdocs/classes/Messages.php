@@ -40,6 +40,7 @@ class Messages {
         if ($params["firstElem"] && $params["count"]) {
             $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
         }
+        $sql .= ' ORDER BY ID DESC';
         $rows = $DB->Query($sql);
         $messages = [];
         while ($row = $rows->Fetch()) {
@@ -61,6 +62,7 @@ class Messages {
         if ($params["firstElem"] && $params["count"]) {
             $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
         }
+        $sql .= ' ORDER BY ID DESC';
         $rows = $DB->Query($sql);
         $messages = [];
         while ($row = $rows->Fetch()) {
