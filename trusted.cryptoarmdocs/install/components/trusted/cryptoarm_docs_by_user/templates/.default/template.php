@@ -41,11 +41,13 @@ include(__DIR__ . "/upload.php");
 <!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
 <div id="trca_edit_label_modal" class="trca_upload_modal_window" style="display:none">
     <div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
-        <div class="trca_create_label_window_header">
-            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL") ?></span>
-            <div class="material-icons" style="font-size: 20px; color: rgba(0, 0, 0, 0.158); cursor: pointer" onclick="$('#trca_edit_label_modal').hide();" >
+        <div class="trca_upload_window_header_close" onclick="$('#trca_edit_label_modal').hide();">
+            <div class="material-icons">
                 close
             </div>
+        </div>
+        <div class="trca_create_label_window_header">
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT_LABEL") ?></span>
         </div>
         <div class="trca_edit_label_create" onclick="showCreateLabelWindow()">
             <span class="material-icons" style="transform: rotate(45deg); font-size: 20px; margin-right: 8px;">close</span>
@@ -63,54 +65,21 @@ include(__DIR__ . "/upload.php");
 </div>
 <div id="trca_create_label_modal" class="trca_upload_modal_window" style="display:none">
     <div id="trca_create_label_window" class="trca_create_label_window">
-        <div class="trca_create_label_window_header">
-            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE_LABEL") ?></span>
-            <div class="material-icons" style="font-size: 20px; color: rgba(0, 0, 0, 0.158);" onclick="hideCreateLabelWindow()">
+        <div class="trca_upload_window_header_close" onclick="hideCreateLabelWindow()">
+            <div class="material-icons">
                 close
             </div>
+        </div>
+        <div class="trca_create_label_window_header">
+            <span><?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE_LABEL") ?></span>
         </div>
         <div class="trca_create_label_window_name">
             <input type="text" required id="trca_label_text">
             <span class="bar"></span>
             <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL_NAME") ?></label>
         </div>
-        <div class="trca_create_label_window_colors">
-            <div class="trca_create_label_window_color">
-                <input id="first_color" type="radio" name="radio" value="trca_label_one">
-                <label class="trca_label_one" for="first_color"></label>
-            </div>
-            <div class="trca_create_label_window_color">
-                <input id="second_color" type="radio" name="radio" value="trca_label_two">
-                <label class="trca_label_two" for="second_color"></label>
-            </div>
-            <div class="trca_create_label_window_color">
-                <input id="third_color" type="radio" name="radio" value="trca_label_three">
-                <label class="trca_label_three" for="third_color"></label>
-            </div>
-            <div class="trca_create_label_window_color">
-                <input id="fourth_color" type="radio" name="radio" value="trca_label_four">
-                <label class="trca_label_four"" for="fourth_color"></label>
-            </div>
-            <div class="trca_create_label_window_color">
-                <input id="fifth_color" type="radio" name="radio" value="trca_label_five">
-                <label class="trca_label_five" for="fifth_color"></label>
-            </div>
-            <div class="trca_create_label_window_color">
-                <input id="sixth_color" type="radio" name="radio" value="trca_label_six">
-                <label class="trca_label_six" for="sixth_color"></label>
-            </div>
-            <div class="trca_create_label_window_color ">
-                <input id="seventh_color" type="radio" name="radio" value="trca_label_seven">
-                <label class="trca_label_seven" for="seventh_color"></label>
-            </div>
-            <div class="trca_create_label_window_color ">
-                <input id="eighth_color" type="radio" name="radio" value="trca_label_eight">
-                <label class="trca_label_eight" for="eighth_color"></label>
-            </div>
-            <div class="trca_create_label_window_color ">
-                <input id="ninth_color" type="radio" name="radio" value="trca_label_nine">
-                <label class='trca_label_nine' for="ninth_color"></label>
-            </div>
+        <div id="trca_create_label_window_colors" class="trca_create_label_window_colors">
+
         </div>
         <div class="trca_create_label_window_footer">
             <div style="width:50%; display:flex; flex-direction:row; justify-content: space-around; align-items:center">
@@ -179,7 +148,7 @@ include(__DIR__ . "/upload.php");
                     <div id="trca_label_window" class="trca_label_window" style="display: none">
                         <div class="trca_label_window_search" style="height:50px">
                             <div class="trca_create_label_window_name">
-                                <input type="text"  id="trca_label_search" style="width:160px">
+                                <input type="text"  id="trca_label_search" style="width:160px" placeholder = "&#xf689h">
                                 <span class="bar" style="width:160px"></span>
                                 <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?></label>
                             </div>
@@ -196,6 +165,8 @@ include(__DIR__ . "/upload.php");
                             </div>
                             <div id="trca_label_edit" class="trca_label_window_footer_button" onclick="getLabelListForEditWindow()">
                                 <span><?= Loc::getMessage("TR_CA_DOCS_COMP_EDIT") ?></span>
+                            </div>
+                            <div id="trca_label_footer_create" class="trca_label_window_footer_button trca_label_create" style="display:none">
                             </div>
                         </div>
                     </div>
@@ -343,6 +314,8 @@ include(__DIR__ . "/upload.php");
 <script>
 getLabelList();
 
+let reloadMessage;
+
 function getLabels(onSuccess = null) {
     $.ajax ({
         url: AJAX_CONTROLLER + '?command=getUserLabels',
@@ -355,6 +328,27 @@ function getLabels(onSuccess = null) {
             })
         }
     })
+}
+
+function getColorRadio() {
+    var checkColors = document.getElementById('trca_create_label_window_colors');
+    var labelsClasses = ['trca_label_one','trca_label_two','trca_label_three','trca_label_four','trca_label_five','trca_label_six','trca_label_seven','trca_label_eight','trca_label_nine'];
+    labelsClasses.forEach(labelClass => {
+        var radioDiv = document.createElement('div');
+        radioDiv.className = 'trca_create_label_window_color';
+        checkColors.appendChild(radioDiv);
+        var radio = document.createElement('input');
+        radio.setAttribute('type', 'radio');
+        radio.setAttribute('name', 'radio');
+        radio.setAttribute('value', labelClass);
+        radio.id = 'cr_' + labelClass;
+        radioDiv.appendChild(radio);
+        var labelForRadio = document.createElement('label');
+        labelForRadio.setAttribute('for','cr_' + labelClass);
+        labelForRadio.className = labelClass;
+        radioDiv.appendChild(labelForRadio);
+    })
+
 }
 
 function getColorTable(area, id, icon) {
@@ -455,7 +449,6 @@ function inputLabelNameInEdit(labelName, id) {
     input.focus();
     input.addEventListener('focusout', () => {
         let text = input.value;
-        console.log(text);
         editLabel(id, text);
         $(inputArea).replaceWith(labelName);
         labelName.innerText = text;
@@ -485,6 +478,8 @@ function removeLabel(labelId) {
     })
 }
 
+let draggedLabelId;
+
 function getLabelList() {
     let labelList = document.getElementById("trca_edo_labels");
     labelList.innerHTML = "";
@@ -497,16 +492,22 @@ function getLabelList() {
             getMessagesByLabel(label.id);
         }
         labelDiv.draggable = true;
+        labelDiv.addEventListener("dragstart", function() {
+            draggedLabelId = label.id;
+        })
+        labelDiv.addEventListener("dragend", function () {
+            draggedLabelId = null;
+        })
         labelList.appendChild(labelDiv);
     }
     getLabels(showLabel);
 }
 
-function showLabel(label) {
-
-}
 
 function getMessagesByLabel(labelId) {
+    reloadMessage = () => {
+        getMessagesByLabel(labelId);
+    }
     $.ajax({
         url: AJAX_CONTROLLER + '?command=getMessagesByLabel',
         type: 'post',
@@ -542,7 +543,7 @@ function uploadFile() {
 
 function createLabel() {
     let style;
-    $('input[value^="trca_label_"]').each(function(){
+    $('input[id^="cr_trca_label_"]').each(function(){
         if($(this).prop("checked")) {
             style = $(this).val();
         };
@@ -828,17 +829,27 @@ function getDocList(shared, page) {
 //type - incoming,drafts,outgoing
 //page
 //count
+
+function setLabelToMessage(data, onSuccess = null) {
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=setLabelToMessage',
+        type: 'post',
+        data: data,
+        success: function(d) {
+            if (typeof onSuccess == 'function') {
+                onSuccess();
+            }
+        }
+    })
+}
+
 function setLabelToMessages(messIds) {
     let labelsId = getCheckedLabels();
     if (labelsId.length != 0) {
         labelsId.forEach((labelId) => {
             messIds.forEach((messageId) => {
                 let data = {labelId: labelId, messageId: messageId};
-                $.ajax({
-                    url: AJAX_CONTROLLER + '?command=setLabelToMessage',
-                    type: 'post',
-                    data: data,
-                })
+                setLabelToMessage(data);
             })
         })
     }
@@ -883,7 +894,6 @@ function getLabelsToUnset() {
 
 
 function showLabelWindow() {
-    console.log("s");
     let messIds = getChecked();
     if (messIds.length != 0) {
         $("#trca_label_window").show();
@@ -914,6 +924,7 @@ function showLabelWindow() {
 function showCreateLabelWindow(labelName = null) {
     $("#trca_create_label_modal").show();
     $("#trca_label_text").val("");
+    getColorRadio();
     if(labelName) {
         $("#trca_label_text").val(labelName);
     }
@@ -921,6 +932,7 @@ function showCreateLabelWindow(labelName = null) {
 
 function hideCreateLabelWindow() {
     $("#trca_label_text").val("");
+    $('#trca_create_label_window_colors').html("");
     $("#trca_create_label_modal").hide();
 }
 
@@ -931,7 +943,7 @@ function getLabelListForLabelWindow(messIds, searchKey) {
     $("#trca_label_assign").show();
     $("#trca_label_edit").show();
     $("#trca_label_new").show();
-    $("#trca_label_footer_create").remove();
+    $("#trca_label_footer_create").hide();
     $.ajax({
         url: AJAX_CONTROLLER + '?command=getInfoForLabelWindow',
         type: 'post',
@@ -942,12 +954,9 @@ function getLabelListForLabelWindow(messIds, searchKey) {
                 $("#trca_label_assign").hide();
                 $("#trca_label_edit").hide();
                 $("#trca_label_new").hide();
-                let createLabelFooterButton = document.createElement('div');
-                createLabelFooterButton.id = 'trca_label_footer_create';
-                createLabelFooterButton.className = "trca_label_window_footer_button trca_label_create";
+                let createLabelFooterButton = document.getElementById('trca_label_footer_create');
+                $(createLabelFooterButton).show();
                 createLabelFooterButton.innerText = '<?= Loc::getMessage("TR_CA_DOCS_COMP_CREATE"); ?> "' + searchKey + '"';
-                let footer = document.getElementById("trca_label_window_footer");
-                footer.appendChild(createLabelFooterButton);
                 createLabelFooterButton.onclick = function() {
                     showCreateLabelWindow(searchKey);
                 }
@@ -969,7 +978,6 @@ function getLabelListForLabelWindow(messIds, searchKey) {
                             if (label.checkbox == "checked")
                                 $(checkbox).attr("remove", true)
                         }
-                        console.log($(checkbox).attr("status"));
                     })
                     switch (label.checkbox) {
                         case 'unchecked':
@@ -1010,10 +1018,10 @@ function getLabelListForLabelWindow(messIds, searchKey) {
     })
 }
 
-function setThreeStateOfCheckbox(checkbox) {
-
-}
 function getMessageList(type, page) {
+    reloadMessage = () => {
+        getMessageList(type, page);
+    }
     let count = 10;
     let data = {typeOfMessage: type, page: page, count: count}
     $(".trca_edo_info").hide();
@@ -1120,6 +1128,12 @@ function createtableMessages(messages, type = null) {
 
         let itemTable = createItemTable(element);
         table.appendChild(itemTable);
+        itemTable.addEventListener('drop', function () {
+            if (draggedLabelId != null) {
+                let data = {labelId: draggedLabelId, messageId: element.message_id};
+                setLabelToMessage(data, reloadMessage);
+            }
+        }, false)
         if (message.childMessage) {
             if (message.childMessage.length > 0) {
                 message.childMessage.forEach(message => {
@@ -1280,6 +1294,9 @@ searchArea.addEventListener("keyup", function(){
 });
 
 function searchMessage(searchKey, typeOfMessage) {
+    reloadMessage = () => {
+        searchMessage(searchKey, typeOfMessage);
+    }
     let data = {typeOfMessage: typeOfMessage, searchKey: searchKey}
     $.ajax({
         url: AJAX_CONTROLLER + '?command=searchMessage',

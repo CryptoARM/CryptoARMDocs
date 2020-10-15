@@ -477,11 +477,11 @@ input:focus::placeholder {
 }
 
 .xls::before {
-    background: url(icons/formats/png/xls.png)left/16px no-repeat;
+    background: url(icons/formats/png/xls.png)left/20px no-repeat;
 }
 
 .css::before {
-    background: url(icons/formats/png/css.png)left/16px no-repeat;
+    background: url(icons/formats/png/css.png)left/20px no-repeat;
 }
 
 .trca_doc_list_item_name::before {
@@ -1439,6 +1439,7 @@ input:focus::placeholder {
 }
 
 .trca_create_label_window {
+    position: relative;
     width: 387px;
     height: 267px;
     display: flex;
@@ -1453,8 +1454,9 @@ input:focus::placeholder {
     height: 67px;
     width: 100%;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
+    padding-left: 70px;
     font-family: Roboto;
     font-size: 16px;
     font-style: normal;
@@ -1478,6 +1480,7 @@ input:focus::placeholder {
 .trca_create_label_window_name input:focus {
     outline: none;
 }
+
 /* LABEL ======================================= */
 .trca_create_label_window_name label {
     color: #999;
