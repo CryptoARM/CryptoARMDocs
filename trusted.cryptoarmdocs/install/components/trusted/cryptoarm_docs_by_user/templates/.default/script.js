@@ -16,7 +16,6 @@ function initLangForUpload() {
 
 function initForUpload() {
     initLangForUpload();
-    console.log(UPLOAD_CANCEL);
     let dropArea = document.getElementById("trca_drop_area");
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -158,10 +157,10 @@ function addAndUpload(file, docarea, i, files) {
 function handleFiles(files) {
     // console.log(files);
     //maxsize = "<?//= Docs\Utils::maxUploadFileSize() ?>//"
-    maxsize = document.getElementById("trca_data").getAttribute("maxsize");
+    var maxsize = document.getElementById("trca_data").getAttribute("maxsize");
     var docarea = document.getElementById('trca_upload_file_list');
     for (let i = 0; i < files.length; i++) {
-        file = files[i];
+        var file = files[i];
         trustedCA.checkFileSize(file, maxsize, () => {
             trustedCA.checkName(file, () => {
                 trustedCA.checkAccessFile(file, addAndUpload(file, docarea, i, files))

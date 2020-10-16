@@ -38,7 +38,8 @@ if ($USER->GetFullName()) {
 include(__DIR__ . "/upload.php");
 ?>
 
-<!-- <a id="trca-reload-doc" href="<?//= $_SERVER["REQUEST_URI"] ?>"></a> -->
+<!-- <a id="trca-reload-doc" href="--><?//= $_SERVER["REQUEST_URI"] ?><!--"></a>-->
+<div id="trca_reload_table"></div>
 <div id="trca_edit_label_modal" class="trca_upload_modal_window" style="display:none">
     <div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
         <div class="trca_upload_window_header_close" onclick="$('#trca_edit_label_modal').hide();">
@@ -148,7 +149,7 @@ include(__DIR__ . "/upload.php");
                     <div id="trca_label_window" class="trca_label_window" style="display: none">
                         <div class="trca_label_window_search" style="height:50px">
                             <div class="trca_create_label_window_name">
-                                <input type="text"  id="trca_label_search" style="width:160px" placeholder = "&#xf689h">
+                                <input type="text"  id="trca_label_search" style="width:160px">
                                 <span class="bar" style="width:160px"></span>
                                 <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?></label>
                             </div>
@@ -314,7 +315,7 @@ include(__DIR__ . "/upload.php");
 <script>
 getLabelList();
 
-let reloadMessage;
+// let reloadMessage;
 
 function getLabels(onSuccess = null) {
     $.ajax ({
@@ -505,9 +506,12 @@ function getLabelList() {
 
 
 function getMessagesByLabel(labelId) {
-    reloadMessage = () => {
+    // reloadMessage = () => {
+    //     getMessagesByLabel(labelId);
+    // }
+    $("#trca_reload_table").click(function() {
         getMessagesByLabel(labelId);
-    }
+    })
     $.ajax({
         url: AJAX_CONTROLLER + '?command=getMessagesByLabel',
         type: 'post',
@@ -796,6 +800,9 @@ chechActionInitialization();
 // shared - boolean(0 or 1)
 // page - integer(0 => 1)
 function getDocList(shared, page) {
+    $("#trca_reload_table").click(function() {
+        getDocList(shared, page);
+    })
     let count = 2;
     let data = {shared: shared, page: page, count: count}
     $(".trca_edo_info").hide();
@@ -895,7 +902,7 @@ function getLabelsToUnset() {
 
 function showLabelWindow() {
     let messIds = getChecked();
-    if (messIds.length != 0) {
+    if (messIds) {
         $("#trca_label_window").show();
         $("#trca_label_window_list").html("");
         getLabelListForLabelWindow(messIds, null);
@@ -1019,9 +1026,12 @@ function getLabelListForLabelWindow(messIds, searchKey) {
 }
 
 function getMessageList(type, page) {
-    reloadMessage = () => {
+    // reloadMessage = () => {
+    //     getMessageList(type, page);
+    // }
+    $("#trca_reload_table").click(function() {
         getMessageList(type, page);
-    }
+    })
     let count = 10;
     let data = {typeOfMessage: type, page: page, count: count}
     $(".trca_edo_info").hide();
@@ -1072,95 +1082,102 @@ function clearTable() {
 
 function createtableDocs(docs) {
     let table = clearTable();
-
-    docs.forEach(doc => {
-        if (doc.owner == true) {
-            doc.docowner = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER_I") ?>";
-        }
-        let element = {};
-        element.file_id = doc.id;
-        element.fisrt = doc.name;
-        element.second = '';
-        element.third = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>" + doc.docowner;
-        element.fourth = '';
-        element.dateCreated = doc.dateCreated;
-        let itemTable = createItemTable(element);
-        table.appendChild(itemTable);
-    });
-    infoItemInitialization();
-    chechActionInitialization();
+    if (docs) {
+        docs.forEach(doc => {
+            if (doc.owner == true) {
+                doc.docowner = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER_I") ?>";
+            }
+            let element = {};
+            element.file_id = doc.id;
+            element.fisrt = doc.name;
+            element.second = '';
+            element.third = "<?= Loc::getMessage("TR_CA_DOCS_COMP_OWNER") ?>" + doc.docowner;
+            element.fourth = '';
+            element.dateCreated = doc.dateCreated;
+            let itemTable = createItemTable(element);
+            table.appendChild(itemTable);
+        });
+        infoItemInitialization();
+        chechActionInitialization();
+    }
 }
 
 function createtableMessages(messages, type = null) {
     let table = clearTable();
-
-    messages.forEach(message => {
-        let element = {};
-        let id = message.id;
-        element.message_id = id;
-        element.docs = message.docs;
-        element.readed = true;
-        element.answer = false;
-        if (type == "incoming") {
-            element.fisrt = message.sender;
-            if (message.status == "NOT_READED")
-                element.readed = false;
-        } else {
-            if (message.recepient == null) {
-                element.fisrt = "Получатель не указан";
+    if(messages) {
+        messages.forEach(message => {
+            let element = {};
+            let id = message.id;
+            element.message_id = id;
+            element.docs = message.docs;
+            element.readed = true;
+            element.answer = false;
+            if (type == "incoming") {
+                element.fisrt = message.sender;
+                if (message.status == "NOT_READED")
+                    element.readed = false;
             } else {
-                element.fisrt = message.recepient;
+                if (message.recepient == null) {
+                    element.fisrt = "Получатель не указан";
+                } else {
+                    element.fisrt = message.recepient;
+                }
             }
-        }
-        if (message.theme == null) {
-            element.second = "Без темы";
-        } else {
-            element.second = message.theme;
-        }
-        element.third = message.comment;;
-        element.dateCreated = message.time;
-        if (message.labels) {
-            element.labels = message.labels;
-        }
-        if (message.childMessage)
-            if (message.childMessage.length > 0)
-                element.countChildMessage = message.childMessage.length;
+            if (message.theme == null) {
+                element.second = "Без темы";
+            } else {
+                element.second = message.theme;
+            }
+            element.third = message.comment;
+            ;
+            element.dateCreated = message.time;
+            if (message.labels) {
+                element.labels = message.labels;
+            }
+            if (message.childMessage)
+                if (message.childMessage.length > 0)
+                    element.countChildMessage = message.childMessage.length;
 
-        let itemTable = createItemTable(element);
-        table.appendChild(itemTable);
-        itemTable.addEventListener('drop', function () {
-            if (draggedLabelId != null) {
-                let data = {labelId: draggedLabelId, messageId: element.message_id};
-                setLabelToMessage(data, reloadMessage);
-            }
-        }, false)
-        if (message.childMessage) {
-            if (message.childMessage.length > 0) {
-                message.childMessage.forEach(message => {
-                    let element = {};
-                    element.answer = true;
-                    element.message_id = message.id;
-                    element.answer_id = id;
-                    element.docs = message.docs;
-                    element.readed = true;
-                    element.fisrt = message.sender;
-                    if (message.status == "NOT_READED")
-                        element.readed = false;
-                    element.second = message.theme;
-                    if (message.labels) {
-                        element.labels = message.labels;
+            let itemTable = createItemTable(element);
+            table.appendChild(itemTable);
+            itemTable.addEventListener('drop', function () {
+                if (draggedLabelId != null) {
+                    let data = {labelId: draggedLabelId, messageId: element.message_id};
+                    var reloadMessage = () => {
+                        $('#trca_reload_table').trigger('click');
                     }
-                    element.third = message.comment;;
-                    element.dateCreated = message.time;
-                    let itemTable = createItemTable(element);
-                    table.appendChild(itemTable);
-                });
+                    setLabelToMessage(data, reloadMessage);
+                }
+            }, false)
+            if (message.childMessage) {
+                if (message.childMessage.length > 0) {
+                    message.childMessage.forEach(message => {
+                        let element = {};
+                        element.answer = true;
+                        element.message_id = message.id;
+                        element.answer_id = id;
+                        element.docs = message.docs;
+                        element.readed = true;
+                        element.fisrt = message.sender;
+                        if (message.status == "NOT_READED")
+                            element.readed = false;
+                        element.second = message.theme;
+                        if (message.labels) {
+                            element.labels = message.labels;
+                        }
+                        element.third = message.comment;
+                        ;
+                        element.dateCreated = message.time;
+                        let itemTable = createItemTable(element);
+                        table.appendChild(itemTable);
+                    });
+                }
             }
-        }
 
-    });
-    infoItemInitialization();
-    chechActionInitialization();
+        });
+        infoItemInitialization();
+        chechActionInitialization();
+    }
 }
 
 
@@ -1294,9 +1311,12 @@ searchArea.addEventListener("keyup", function(){
 });
 
 function searchMessage(searchKey, typeOfMessage) {
-    reloadMessage = () => {
+    // reloadMessage = () => {
+    //     searchMessage(searchKey, typeOfMessage);
+    // }
+    $("#trca_reload_table").click(function() {
         searchMessage(searchKey, typeOfMessage);
-    }
+    })
     let data = {typeOfMessage: typeOfMessage, searchKey: searchKey}
     $.ajax({
         url: AJAX_CONTROLLER + '?command=searchMessage',

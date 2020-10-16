@@ -36,9 +36,14 @@ input, textarea {
     outline: none;
 }
 
-*::before,
-*::after {
-  box-sizing: content-box !important;
+/**::before,*/
+/**::after {*/
+/*  box-sizing: content-box !important;*/
+/*}*/
+
+[class^="trca_"]::before,
+[class^="trca_"]::after {
+    box-sizing: content-box !important;
 }
 
 #trca_upload_component {
