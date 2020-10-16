@@ -148,7 +148,7 @@ include(__DIR__ . "/upload.php");
                     <div id="trca_label_window" class="trca_label_window" style="display: none">
                         <div class="trca_label_window_search" style="height:50px">
                             <div class="trca_create_label_window_name">
-                                <input type="text"  id="trca_label_search" style="width:160px" placeholder = "&#xf689h">
+                                <input type="text"  id="trca_label_search" style="width:160px">
                                 <span class="bar" style="width:160px"></span>
                                 <label for="trca_label_text"><?= Loc::getMessage("TR_CA_DOCS_COMP_FIND_LABEL") ?></label>
                             </div>
