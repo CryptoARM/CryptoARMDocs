@@ -509,6 +509,7 @@ function getMessagesByLabel(labelId) {
     // reloadMessage = () => {
     //     getMessagesByLabel(labelId);
     // }
+    $("#trca_reload_table").unbind('click');
     $("#trca_reload_table").click(function() {
         getMessagesByLabel(labelId);
     })
@@ -800,6 +801,7 @@ chechActionInitialization();
 // shared - boolean(0 or 1)
 // page - integer(0 => 1)
 function getDocList(shared, page) {
+    $("#trca_reload_table").unbind('click');
     $("#trca_reload_table").click(function() {
         getDocList(shared, page);
     })
@@ -1029,6 +1031,7 @@ function getMessageList(type, page) {
     // reloadMessage = () => {
     //     getMessageList(type, page);
     // }
+    $("#trca_reload_table").unbind('click');
     $("#trca_reload_table").click(function() {
         getMessageList(type, page);
     })
@@ -1314,6 +1317,7 @@ function searchMessage(searchKey, typeOfMessage) {
     // reloadMessage = () => {
     //     searchMessage(searchKey, typeOfMessage);
     // }
+    $("#trca_reload_table").unbind('click');
     $("#trca_reload_table").click(function() {
         searchMessage(searchKey, typeOfMessage);
     })
