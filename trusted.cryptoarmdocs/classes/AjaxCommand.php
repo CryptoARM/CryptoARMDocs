@@ -9,6 +9,7 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Localization\Loc;
 use google\protobuf\FieldDescriptorProto\Type;
+use Protobuf\Message;
 
 /**
  * Controllers for AJAX requests.
@@ -1664,6 +1665,51 @@ class AjaxCommand {
         return $res;
     }
 
+    static function newMessageNew($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.createMessage",
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        };
+
+        $messageFields = $params;
+        $messageFields['UUID'] = Utils::generateUUID();
+        if ($params['recepientEmail']) {
+            $emails = explode(',', $params['recepientEmail']);
+
+            $userIdsToSend = [];
+            $res['notExistingEmails'] = [];
+
+            foreach ($emails as $email) {
+                $trimmedEmail = trim($email);
+                $recepientId = Utils::getUserIdByEmail($trimmedEmail);
+                if ($recepientId) {
+                    $userIdsToSend[] = $recepientId;
+                } else {
+                    $res['notExistingEmails'][] = $trimmedEmail;
+                }
+            }
+
+            foreach ($userIdsToSend as $userId) {
+                $messageFields['recepientId'] = $userId;
+                $draft = Messages::createDraft($messageFields);
+                if ($params['send'] == 'true') {
+                    $par['messId'] = $draft;
+                    Messages::sendMessage($par);
+                }
+            }
+        } else {
+            $draft = Messages::createDraft($messageFields);
+        }
+        $res['UUID'] = $messageFields['UUID'];
+
+    }
+
     /**
      * Writes all the message's data into the database
      *
@@ -1682,7 +1728,8 @@ class AjaxCommand {
 
         if (!Utils::checkAuthorization()) {
             $res['message'] = 'No authorization';
-            $res['noAith'] = 'true';
+            $res['noAuth'] = 'true';
+            return $res;
         };
 
         // if(!$params['docsIds']) {
@@ -1690,7 +1737,16 @@ class AjaxCommand {
         //     return $res;
         // };
 
-        $params['recepientEmail'] = trim($params['recepientEmail']);
+        $params['UUID'] = Utils::generateUUID();
+
+        $emails = explode(',', $params['recepientEmail']);
+
+        $emailsToSend = [];
+
+        foreach ($emails as $email) {
+            $trimmedEmail = trim($email);
+            $emailsToSend[] = $trimmedEmail;
+        }
 
         if ($params['send'] == "true"){
             if ($params['recepientEmail'] == null) {
@@ -1755,8 +1811,11 @@ class AjaxCommand {
             }
         }
 
-        $messId = $params['messId'];
-        $success = Messages::sendCancelInDB($params);
+        $messIds = $params['messId'];
+        foreach ($messIds as $messId) {
+            $params['messId'] = $messId;
+            $success = Messages::sendCancelInDB($params);
+        }
         if ($success) {
             $res['message'] = 'Message sending is cancelled';
             $res['success'] = true;
@@ -1766,6 +1825,25 @@ class AjaxCommand {
             $res['toLate'] = true;
             return $res;
         }
+    }
+
+    /**
+     * @param array $params [messIds]
+     * @return array
+     */
+    static function recallMessage($params) {
+        $res = [
+            'success' => false,
+            'message' => 'Unknown error in AjaxCommand.recallMessage',
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+
     }
 
     /**
@@ -1977,6 +2055,7 @@ class AjaxCommand {
         }
 
         if($params['fields']) {
+            $args['draftId'] = $params['draftId'];
             $args['docId'] = $params['docsIds'];
             $args['recepientId'] = $params['fields']['recepientId'];
             $args['theme'] = $params['fields']['theme'];
@@ -2082,13 +2161,29 @@ class AjaxCommand {
             $userId = Utils::currUserId();
         }
 
-        $senderId = Messages::getSenderId($params['draftId']);
-        if($userId != $senderId) {
-            $res['message'] = 'Not a sender';
-            return $res;
+        $res['notThatUserDrafts'] = [];
+        $res['draftsToDelete'] = [];
+
+        foreach($params['draftIds'] as $draftId) {
+            $senderId = Messages::getSenderId($draftId);
+            if ($userId != $senderId) {
+                $res['notThatUserDrafts'][] = $draftId;
+            } else {
+                $res['draftsToDelete'][] = $draftId;
+            }
         }
 
-        Messages::deleteDraft($params);
+        if (count($res['draftsToDelete']) != 0) {
+            foreach ($res['draftsToDelete'] as $draftId) {
+                Messages::deleteDraft($draftId);
+            }
+            $res['success'] = true;
+            $res['message'] = 'Some Drafts were remove';
+            return $res;
+        } else {
+            $res['message'] = 'Nothing to remove';
+            return $res;
+        }
     }
 
     public function getInfoDoc($params) {

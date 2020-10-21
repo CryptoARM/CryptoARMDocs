@@ -147,7 +147,7 @@ include(__DIR__ . "/upload.php");
                         <input type="checkbox">
                     </div>
                     <div id="trca_label_window" class="trca_label_window" style="display: none">
-                        <div class="trca_label_window_search" style="height:50px">
+                        <div class="trca_label_window_search" style="height:50px;">
                             <div class="trca_create_label_window_name">
                                 <input type="text"  id="trca_label_search" style="width:160px">
                                 <span class="bar" style="width:160px"></span>
@@ -932,6 +932,7 @@ function showLabelWindow() {
 
 function showCreateLabelWindow(labelName = null) {
     $("#trca_create_label_modal").show();
+    ;
     $("#trca_label_text").val("");
     getColorRadio();
     if(labelName) {
@@ -1060,13 +1061,13 @@ function getMessageList(type, page) {
                 case 'outgoing':
                     $('.trca_edo_inbox').addClass("active_menu");
                     createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
-                    createHeaderButton("trca_button_recall", "<?= Loc::getMessage("TR_CA_DOCS_COMP_RECALL") ?>", "sendFilesForm()");
+                    createHeaderButton("trca_button_recall", "<?= Loc::getMessage("TR_CA_DOCS_COMP_RECALL") ?>", "recallMessages()");
                     break;
                 case 'drafts':
                     $('.trca_edo_draft').addClass("active_menu");
                     createHeaderButton("trca_button_send", "<?= Loc::getMessage("TR_CA_DOCS_COMP_SEND_FILE") ?>", "sendFilesForm()");
                     createHeaderButton("trca_button_label", "<?= Loc::getMessage("TR_CA_DOCS_COMP_LABEL") ?>", "showLabelWindow()");
-                    createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "sendFilesForm()");
+                    createHeaderButton("trca_button_remove", "<?= Loc::getMessage("TR_CA_DOCS_COMP_REMOVE_FILE") ?>", "removeDrafts()");
                     break;
             }
             // createtableMessages(d.messages);
@@ -1075,6 +1076,29 @@ function getMessageList(type, page) {
         }
     });
 }
+
+function removeDrafts() {
+    let draftIds = getChecked();
+    $.ajax({
+        url: AJAX_CONTROLLER + '?command=deleteDraft',
+        type: 'post',
+        data: {draftIds: draftIds},
+        success: function(d) {
+            if (d.success) {
+                let message = BX.message('TR_CA_DOCS_DRAFTS_WERE_REMOVED');
+                trustedCA.showPopupMessage(message, 'done', 'positive')
+            }
+        }
+    })
+}
+
+function recallMessages() {
+    let ids = getChecked();
+    ids.forEach(function (messId) {
+        cancelSend(messId);
+    })
+}
+
 getMessageList("incoming");
 
 function clearTable() {
@@ -1143,7 +1167,8 @@ function createtableMessages(messages, type = null) {
 
             let itemTable = createItemTable(element);
             table.appendChild(itemTable);
-            itemTable.addEventListener('drop', function () {
+            itemTable.addEventListener('drop', function (e) {
+                console.log(e);
                 if (draggedLabelId != null) {
                     let data = {labelId: draggedLabelId, messageId: element.message_id};
                     var reloadMessage = () => {

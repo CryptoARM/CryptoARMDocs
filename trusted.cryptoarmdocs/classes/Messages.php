@@ -49,6 +49,31 @@ class Messages {
         return $messages;
     }
 
+    static function getOutgoigMessagesUUID($params) {
+        global $DB;
+        $sql = 'SELECT DISTINCT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE SENDER_ID=' . $params['userId'] . ' AND ';
+        if($params['typeOfMessage'] == 'drafts')
+        {
+            $sql .= 'MES_STATUS = "DRAFT" ';
+        } else {
+            $sql .= 'MES_STATUS <> "DRAFT"';
+        }
+        if ($params["firstElem"] && $params["count"]) {
+            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
+        }
+        $sql .= ' ORDER BY ID DESC';
+        $rows = $DB->Query($sql);
+        $uuids = [];
+        while ($row = $rows->Fetch()) {
+            $uuids[] = $row['UUID'];
+        }
+        $data = [];
+        foreach ($uuids as $uuid) {
+            $data[] = self::getMessageGroupInfoByUUID($uuid);
+        }
+        return $data;
+    }
+
    /**
     * Returns Ids of all the incoming messages
     * @param array $params [userId]: id of user
@@ -129,6 +154,19 @@ class Messages {
             }
         }
         return  $messageIDS;
+    }
+
+    static function getMessagesUUIDsInfoByIdsArray($ids) {
+        $uuids = [];
+        foreach ($ids as $id) {
+            $uuids[] = self::getMessageUUID($id);
+        }
+        $uuids = array_unique($uuids);
+        $messagesInfo = [];
+        foreach ($uuids as $uuid) {
+            $messagesInfo[] = self::getMessageGroupInfoByUUID($uuid);
+        }
+        return $messagesInfo;
     }
 
     /**
@@ -257,10 +295,28 @@ class Messages {
         $DB->Query($sql);
     }
 
+    static function setLabelToMessagesUUID($params) {
+        $arg['labelId'] = $params['labelId'];
+        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
+        foreach ($messIds as $messId) {
+            $arg['messageId'] = $messId;
+            self::setLabelToMessage($arg);
+        }
+    }
+
     static function unsetLabelFromMessage($params) {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE (LABEL_ID = ' . $params['labelId'] . ' AND MESSAGE_ID = ' . $params['messageId'] . ')';
         $DB->Query($sql);
+    }
+
+    static function usetLabelFromMessagesUUID($params) {
+        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
+        $arg['labelId'] = $params['labelId'];
+        foreach($messIds as $messId) {
+            $arg['messageId'] = $messId;
+            self::unsetLabelFromMessage($arg);
+        }
     }
 
     static function getMessageLabels($messId) {
@@ -456,7 +512,7 @@ class Messages {
             $sql .= ', COMMENT';
         if ($params['parentId'])
             $sql .= ', PARENT_ID';
-        $sql .= ', TIMESTAMP_X, MES_STATUS) ';
+        $sql .= ', UUID, TIMESTAMP_X, MES_STATUS) ';
         $sql .= 'VALUES( "' . Utils::currUserId() . '"';
         if ($params['recepientId'])
             $sql .= ', "' . $params['recepientId'] . '"';
@@ -466,7 +522,7 @@ class Messages {
             $sql .= ", '"  . $params['comment'] . "'";
         if ($params['parentId'])
             $sql .=", '" . $params['parentId'] . "'";
-        $sql .= ", NOW(), 'DRAFT');";
+        $sql .= "," . $params['UUID'] . ", NOW(), 'DRAFT');";
         $DB->Query($sql);
         $mes = $DB->LastID();
 
@@ -474,6 +530,51 @@ class Messages {
             Messages::setMesProp($mes, $docId);
         };
         return $mes;
+    }
+
+    static function getMessageIdsByUUID($uuid) {
+        global $DB;
+        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
+        $rows = $DB->Query($sql);
+        $ids = [];
+        while($row = $rows->Fetch()) {
+            $ids[] = $row['ID'];
+        }
+        return $ids;
+    }
+
+    static function getAllRecepientsByUUID($uuid) {
+        global $DB;
+        $sql = 'SELECT RECEPIENT_ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
+        $rows = $DB->Query($sql);
+        $recepients = [];
+        while($row = $rows->Fetch()) {
+            $recepients[] = [
+                'id' => $row['RECEPIENT_ID'],
+                'email' => Utils::getUserEmail($row['RECEPIENT_ID']),
+            ];
+        }
+        return $recepients;
+    }
+
+    static function getMessageGroupInfoByUUID($uuid) {
+        global $DB;
+        $res['recepients'] = self::getAllRecepientsByUUID($uuid);
+        $res['messages']  = Messages::getMessageIdsByUUID($uuid);
+        if (count($res['messages'])!=0) {
+            foreach ($res['messages'] as $mess) {
+                $info = self::getMessageInfo($mess);
+                break;
+            }
+            $res['theme'] = $info['theme'];
+            $res['comment'] = $info['commment'];
+            $res['status'] = $info['status'];
+            $res['sender'] = $info['sender'];
+            $res['time'] = $info['time'];
+            $res['labels'] = $info['labels'];
+            $res['docs'] = $info['docs'];
+        }
+        return $res;
     }
 
    /**
@@ -503,10 +604,14 @@ class Messages {
         if ($params['theme'])
             $sql .= ', THEME="' . $params['theme'] . '"';
         if ($params['comment'])
-            $sql .= ', COMMENT' . $params['comment'] . '"';
-        $sql .= ') ';
+            $sql .= ', COMMENT=' . $params['comment'] . '"';
+        $sql .= ') WHERE (ID=' . $params['draftId'] . ')';
         $DB->Query($sql);
-        $sql = '';
+        if ($params['docId']) {
+            foreach ($params['docId'] as $docId) {
+                Messages::setMesProp($params['draftId'], $docId);
+            }
+        }
     }
 
    /**
@@ -514,12 +619,19 @@ class Messages {
     * @param array $params [draftId]: id of draft
     *
     */
-    static function deleteDraft($params) {
+    static function deleteDraft($draftId) {
         global $DB;
-        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $params['draftId'];
+        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $draftId;
         $DB->Query($sql);
-        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE MESSAGE_ID=' . $params['draftId'];
+        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE MESSAGE_ID=' . $draftId;
         $DB->Query($sql);
+    }
+
+    static function deleteDraftByUUID($uuid) {
+        $messIds = Messages::getMessageIdsByUUID($uuid);
+        foreach ($messIds as $messId) {
+            self::deleteDraft($messId);
+        }
     }
 
    /**
@@ -541,6 +653,10 @@ class Messages {
 
         $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "NOT_READED" WHERE ID=' . $params['messId'] ;
         $DB->Query($sql);
+    }
+
+    static function sendMessageUUID($params) {
+        
     }
 
     /**
@@ -602,6 +718,13 @@ class Messages {
         }
     }
 
+    static function isUUIDExists($uuid) {
+        global $DB;
+        $sql = 'SELECT * FROM ' . DB_TABLE_MESAGES . ' WHERE UUID="' . $uuid . '"';
+        $rows = $DB->Query($sql);
+        return (($rows->SelectedRowsCount()) == 0)?false:true;
+    }
+
     static function isLabelExists($labelId) {
         global $DB;
         $sql = 'SELECT * FROM ' . DB_TABLE_LABELS . ' WHERE ID=' . $labelId;
@@ -661,6 +784,15 @@ class Messages {
             $messageIDS[] = $row['MESSAGE_ID'];
         };
         return $messageIDS;
+    }
+
+    static function getMessageUUID($messId) {
+        global $DB;
+        $sql = 'SELECT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE MESS_ID=' . $messId;
+        $rows = $DB->Query($sql);
+        $row = $rows->Fetch();
+        $uuid = $row['UUID'];
+        return $uuid;
     }
 
     /**
