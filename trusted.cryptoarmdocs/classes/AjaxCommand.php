@@ -1542,6 +1542,124 @@ class AjaxCommand {
 
     }
 
+    static function getMessageListNew($params) {
+        $res = [
+            'success' => false,
+            'message' => 'Unknown error in AjaxCommand.getMessageList',
+        ];
+
+        if (!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            return $res;
+        }
+
+        if (!$params['typeOfMessage']) {
+            $res['message'] = 'Got no type';
+            return $res;
+        }
+
+        if ($params['page'] && $params['count']) {
+            $args['firstElem'] = $params['page'] * $params['count'];
+            $args['count'] = $params['count'];
+        }
+
+        $args['userId'] = Utils::currUserId();
+
+        $args['typeOfMessage'] = $params['typeOfMessage'];
+
+        switch ($args['typeOfMessage']) {
+            case 'incoming':
+                $messages = Messages::getIncomingMessages($args);
+                break;
+            case 'outgoing':
+            case 'drafts' :
+                $messages = Messages::getOutgoingMessages($args);
+                break;
+            default:
+                $res['message'] = 'Unknown type';
+                return $res;
+        }
+
+        $uuids = [];
+        if (count($messages) == 0) {
+            $res['message'] = 'No messages';
+            $res['noMess'] = true;
+            return $res;
+        }
+        foreach ($messages as $message) {
+            $uuids[] = Messages::getMessageUUID($message);
+        }
+        $uuids = array_unique($uuids);
+        foreach ($uuids as $uuid) {
+            $uuidMessInfo['id'] = $uuid;
+            $uuidMessInfo = Messages::getMessageGroupInfoByUUID($uuid);
+            if ($uuidMessInfo['sender']) {
+                $uuidMessInfo['sender'] = Utils::getUserEmail($uuidMessInfo);
+            }
+//            if ($uuidMessInfo['recepients']) {
+//                $uuidMessInfo['recepients'] = Messages::getEmailsArrayFromUserIdsArray($uuidMessInfo['recepients']);
+//            }
+            if ($uuidMessInfo['docs']) {
+                $docs = [];
+                foreach ($uuidMessInfo['info'] as $docId) {
+                    $docName = Database::getDocumentById($docId)->getName();
+                    $docs[] = [
+                        'id' => $docId,
+                        'name' => $docName,
+                    ];
+                }
+                $uuidMessInfo['docs'] = $docs;
+            }
+
+            $dateCreated = strtotime($uuidMessInfo["time"]);
+            if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                $dateCreated =  date("H:i", $dateCreated);
+            } else {
+                $dateCreated =  date("d.m.o", $dateCreated);
+            }
+            $uuidMessInfo["time"] = $dateCreated;
+            $arChildMessage = Messages::getChildByUUID($uuid);
+            $childMessages = [];
+            if (count($arChildMessage) > 0) {
+                foreach ($arChildMessage as $mesId) {
+                    $childMessage = Messages::getMessageInfo($mesId);
+                    $childMessage["id"] = $mesId;
+                    if ($childMessage["sender"])
+                        $childMessage["sender"] = Utils::getUserEmail($childMessage["sender"]);
+
+                    if ($childMessage["recepient"])
+                        $childMessage["recepient"] = Utils::getUserEmail($childMessage["recepient"]);
+
+                    if ($childMessage["docs"]) {
+                        $docs = [];
+                        foreach ($childMessage["docs"] as $docId) {
+                            $docName = Database::getDocumentById($docId)->getName();
+                            $docs[]  = [
+                                "id" => $docId,
+                                "name" => $docName
+                            ];
+                        }
+                        $childMessage["docs"] = $docs;
+                    }
+
+                    $dateCreated = strtotime($childMessage["time"]);
+                    if (date("d.m.o", $dateCreated) == date("d.m.o", time())) {
+                        $dateCreated =  date("H:i", $dateCreated);
+                    } else {
+                        $dateCreated =  date("d.m.o", $dateCreated);
+                    }
+                    $childMessage["time"] = $dateCreated;
+                    $childMessages[] = $childMessage;
+                }
+            }
+            $uuidMessInfo["childMessage"] = $childMessages;
+            $res['messages'][] = $uuidMessInfo;
+        }
+        $res['success'] = true;
+        $res['message'] = 'Success';
+        return $res;
+    }
+
     /**
      * @param array $params [typeOfMessage]
      *                      [page]
@@ -1707,7 +1825,6 @@ class AjaxCommand {
             $draft = Messages::createDraft($messageFields);
         }
         $res['UUID'] = $messageFields['UUID'];
-
     }
 
     /**
