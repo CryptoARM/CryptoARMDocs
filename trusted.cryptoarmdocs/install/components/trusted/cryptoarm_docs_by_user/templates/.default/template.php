@@ -23,7 +23,12 @@ foreach ($coreIds as $coreId) {
 $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
+//echo '<pre>';
+//print_r($arParams);
+//echo '</pre>';
 
+$addUserAllows = $arParams['ALLOW_CREATING_NEW_USERS'] == 'Y'?1:0;
+echo $addUserAllows;
 $allIds = $arResult['ALL_IDS'];
 $allIdsJs = $arResult['ALL_IDS_JS'];
 $docs = $arResult['DOCS'];
@@ -37,7 +42,7 @@ if ($USER->GetFullName()) {
 
 include(__DIR__ . "/upload.php");
 ?>
-
+<div id="trca_comp_data" allow="<?= $addUserAllows ?>"></div>
 <!-- <a id="trca-reload-doc" href="--><?//= $_SERVER["REQUEST_URI"] ?><!--"></a>-->
 <div id="trca_reload_table"></div>
 <div id="trca_edit_label_modal" class="trca_upload_modal_window" style="display:none">
@@ -1139,15 +1144,20 @@ function createtableMessages(messages, type = null) {
             element.docs = message.docs;
             element.readed = true;
             element.answer = false;
+            element.first = '';
             if (type == "incoming") {
                 element.fisrt = message.sender;
                 if (message.status == "NOT_READED")
                     element.readed = false;
             } else {
-                if (message.recepient == null) {
+                if (message.recepients == null) {
                     element.fisrt = "Получатель не указан";
                 } else {
-                    element.fisrt = message.recepient;
+                    // element.fisrt = message.recepient;
+                    message.recepients.forEach(function(rec) {
+                        console.log(rec.email);
+                        element.first += rec.email;
+                    })
                 }
             }
             if (message.theme == null) {

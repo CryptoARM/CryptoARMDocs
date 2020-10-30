@@ -1591,8 +1591,8 @@ class AjaxCommand {
         }
         $uuids = array_unique($uuids);
         foreach ($uuids as $uuid) {
-            $uuidMessInfo['id'] = $uuid;
             $uuidMessInfo = Messages::getMessageGroupInfoByUUID($uuid);
+            $uuidMessInfo['id'] = $uuid;
             if ($uuidMessInfo['sender']) {
                 $uuidMessInfo['sender'] = Utils::getUserEmail($uuidMessInfo);
             }
@@ -1620,7 +1620,7 @@ class AjaxCommand {
             $uuidMessInfo["time"] = $dateCreated;
             $arChildMessage = Messages::getChildByUUID($uuid);
             $childMessages = [];
-            if (count($arChildMessage) > 0) {
+            if (count($arChildMessage) != 0) {
                 foreach ($arChildMessage as $mesId) {
                     $childMessage = Messages::getMessageInfo($mesId);
                     $childMessage["id"] = $mesId;
@@ -1801,30 +1801,62 @@ class AjaxCommand {
             $emails = explode(',', $params['recepientEmail']);
 
             $userIdsToSend = [];
+            $res['notValidEmail'] = [];
             $res['notExistingEmails'] = [];
+            if ($params['allow'] == 1) {
+                $res['newUsers'] = [];
+            } else {
+                $res['notExistingEmails'] = [];
+            }
 
             foreach ($emails as $email) {
                 $trimmedEmail = trim($email);
-                $recepientId = Utils::getUserIdByEmail($trimmedEmail);
-                if ($recepientId) {
-                    $userIdsToSend[] = $recepientId;
-                } else {
-                    $res['notExistingEmails'][] = $trimmedEmail;
+                if (filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
+                    $recepientId = Utils::getUserIdByEmail($trimmedEmail);
+                    if ($recepientId) {
+                        $userIdsToSend[] = $recepientId;
+                    } else {
+                        if ($params['allow'] == 1) {
+                            $regParam = [
+                                'login' => $trimmedEmail,
+                                'password' => '123456',
+                                'email' => $trimmedEmail,
+                            ];
+                            $newUserId = Messages::createUserToSend($regParam);
+                            $res['newUsers'] = [
+                                'id' => $newUserId,
+                                'email' => $trimmedEmail,
+                            ];
+                            $userIdsToSend[] = $newUserId;
+                        } else {
+                            $res['notExistingEmails'][] = $trimmedEmail;
+                        }
+                    }
+                }
+                else {
+                    $res['notValidEmail'][] = $trimmedEmail;
                 }
             }
 
             foreach ($userIdsToSend as $userId) {
                 $messageFields['recepientId'] = $userId;
                 $draft = Messages::createDraft($messageFields);
+                $res['message'] = 'Draft crated';
+                $res['success'] = true;
                 if ($params['send'] == 'true') {
                     $par['messId'] = $draft;
                     Messages::sendMessage($par);
+                    $res['message'] = 'Message sent';
+                    $res['success'] = true;
                 }
             }
         } else {
             $draft = Messages::createDraft($messageFields);
+            $res['message'] = 'Draft created';
+            $res['success'] = true;
         }
         $res['UUID'] = $messageFields['UUID'];
+        return $res;
     }
 
     /**

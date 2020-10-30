@@ -30,6 +30,12 @@ $arComponentParameters = array(
             'TYPE' => 'CHECKBOX',
             'DEFAULT' => 'N',
         ),
+        'ALLOW_CREATING_NEW_USERS' => array(
+            'PARENT' => 'SETTINGS',
+            'NAME' => Loc::getMessage('TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_ALLOW_ADDING_USERS'),
+            'TYPE' => 'CHECKBOX',
+            'DEFAULT' => 'N',
+        ),
         /*'ELEMENTS_ON_PAGE' => array(
             'PARENT' => 'SETTINGS',
             'NAME' => Loc::getMessage("TR_CA_DOCS_COMP_DOCS_BY_USER_SETTINGS_PARAMETERS_NAME"),

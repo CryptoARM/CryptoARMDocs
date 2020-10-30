@@ -304,6 +304,18 @@ class Messages {
         }
     }
 
+    /**
+     * @param $params array [email]
+     *                      [password]
+     *                      [login]
+     * @return $userId
+     */
+    static function createUserToSend($params) {
+        global $USER;
+        $arResult = $USER->Register($params['login'], '', '', $params['password'], $params['password'], $params['email']);
+        return $USER->GetID();
+    }
+
     static function unsetLabelFromMessage($params) {
         global $DB;
         $sql = 'DELETE FROM ' . DB_TABLE_LABELS_PROPERTY . ' WHERE (LABEL_ID = ' . $params['labelId'] . ' AND MESSAGE_ID = ' . $params['messageId'] . ')';
@@ -479,7 +491,15 @@ class Messages {
         $childMessages = [];
         $messages = Messages::getMessageIdsByUUID($UUID);
         foreach ($messages as $id) {
-            $childMessages[] = Messages::getChildById($id);
+            $childs = Messages::getChildById($id);
+//            $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE PARENT_ID=' . $id;
+//            $rows = $DB->Query($sql);
+//            while ($row = $rows->Fetch()) {
+//                $childMessages[] = $row['ID'];
+//            }
+            foreach ($childs as $child) {
+                $childMessages[] = $child;
+            }
         }
         return $childMessages;
     }
@@ -600,7 +620,6 @@ class Messages {
 
     static function isUserExists($userId) {
         global $DB;
-//        $rows->SelectedRowsCount())==0) {
         $sql = 'SELECT * FROM b_user WHERE ID=' . $userId;
         $rows = $DB->Query($sql);
         return ($rows->SelectedRowsCount()==0)?false:true;
@@ -919,8 +938,9 @@ class Messages {
         global $DB;
         $sql = 'SELECT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $messId;
         $rows = $DB->Query($sql);
-        $row = $rows->Fetch();
-        $uuid = $row['UUID'];
+        while($row = $rows->Fetch()) {
+            $uuid = $row['UUID'];
+        }
         return $uuid;
     }
 

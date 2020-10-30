@@ -14,8 +14,9 @@ function initLangForUpload() {
     GB = BX.message("TR_CA_DOCS_COMP_UPLOAD_GB");
 }
 
+initLangForUpload();
+
 function initForUpload() {
-    initLangForUpload();
     let dropArea = document.getElementById("trca_drop_area");
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -68,18 +69,18 @@ function getProgressCircle(i) {
 
 function getFileSize(size) {
     if (size < 1024) {
-        return size + B;
+        return size + ' ' + B;
     } else {
         let sizeString = Math.floor(size / 1024);
         if (sizeString < 1024) {
-            return sizeString + KB;
+            return sizeString + ' ' + KB;
         } else {
             sizeString = Math.floor(sizeString / 1024);
             if (sizeString < 1024) {
-                return sizeString + MB;
+                return sizeString + ' ' + MB;
             } else {
                 sizeString = Math.floor(sizeString / 1024)
-                return sizeString + GB;
+                return sizeString + ' ' + GB;
             }
         }
     }
@@ -288,6 +289,7 @@ function send(send = false, ids = null) {
     var recepientEmail = $("#trca_upload_send_rec").val();
     var theme = $("#trca_upload_send_theme").val();
     var comment = $("#trca_comment").val();
+    var allow = document.getElementById("trca_comp_data").getAttribute("allow");
     let docsIds;
     if (ids != null) {
         docsIds = ids;
@@ -298,7 +300,7 @@ function send(send = false, ids = null) {
     $.ajax({
         url: AJAX_CONTROLLER + '?command=newMessage',
         type: 'post',
-        data: {recepientEmail, theme, comment, docsIds, send},
+        data: {recepientEmail, theme, comment, docsIds, send, allow},
         success: function (d) {
             messId = d.messId;
             if (send == true) {
@@ -316,7 +318,7 @@ function cancelSend(messId) {
     $.ajax({
         url: AJAX_CONTROLLER + '?command=sendCancel',
         type: 'post',
-        data: {messId},
+        data: {messId}
     })
     hideModal();
 }
@@ -349,3 +351,4 @@ function toFirstStep() {
     $("*#trca_upload_window_second_step").hide();
     $("*#trca_upload_third_step_footer").remove();
 }
+

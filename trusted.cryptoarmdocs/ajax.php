@@ -42,7 +42,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::searchMessage($params);
             break;
         case "newMessage":
-            $res = Docs\AjaxCommand::newMessage($params);
+            $res = Docs\AjaxCommand::newMessageNew($params);
             break;
         case "getMessageList":
             $res = Docs\AjaxCommand::getMessageListNew($params);
