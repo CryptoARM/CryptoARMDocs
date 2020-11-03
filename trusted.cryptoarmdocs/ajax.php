@@ -75,7 +75,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::getInfoForLabelWindow($params);
             break;
         case "setLabelToMessage":
-            $res = Docs\AjaxCommand::setLabelToMessage($params);
+            $res = Docs\AjaxCommand::setLabelToMessageUUID($params);
             break;
         case "unsetLabelFromMessage":
             $res = Docs\AjaxCommand::unsetLabelFromMessage($params);

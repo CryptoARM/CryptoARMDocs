@@ -862,7 +862,7 @@ function setLabelToMessages(messIds) {
     if (labelsId.length != 0) {
         labelsId.forEach((labelId) => {
             messIds.forEach((messageId) => {
-                let data = {labelId: labelId, messageId: messageId};
+                let data = {labelId: labelId, UUID: messageId};
                 setLabelToMessage(data);
             })
         })
@@ -871,7 +871,7 @@ function setLabelToMessages(messIds) {
     if (labelsToUnset.length != 0) {
         labelsToUnset.forEach((labelId) => {
             messIds.forEach((messageId) => {
-                let data = {labelId: labelId, messageId: messageId};
+                let data = {labelId: labelId, UUID: messageId};
                 $.ajax({
                     url: AJAX_CONTROLLER + '?command=unsetLabelFromMessage',
                     type: 'post',
@@ -1180,7 +1180,7 @@ function createtableMessages(messages, type = null) {
             itemTable.addEventListener('drop', function (e) {
                 console.log(e);
                 if (draggedLabelId != null) {
-                    let data = {labelId: draggedLabelId, messageId: element.message_id};
+                    let data = {labelId: draggedLabelId, UUID: element.message_id};
                     var reloadMessage = () => {
                         $('#trca_reload_table').trigger('click');
                     }

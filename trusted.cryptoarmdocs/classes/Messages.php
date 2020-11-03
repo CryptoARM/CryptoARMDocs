@@ -287,6 +287,16 @@ class Messages {
         $DB->Query($sql);
     }
 
+    static function getMessageIdByUUIDandRecepient($params) {
+        global $DB;
+        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID = "' . $params['UUID'] . '" AND RECEPIENT_ID=' . $params['id'];
+        $rows = $DB->Query($sql);
+        while ($row = $rows->Fetch()) {
+            $mesId = $row['ID'];
+        }
+        return $row;
+    }
+
     static function setLabelToMessage($params) {
         global $DB;
         $sql = "

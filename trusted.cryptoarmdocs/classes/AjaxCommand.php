@@ -2529,6 +2529,54 @@ class AjaxCommand {
         return $res;
     }
 
+    public function setLabelToMessageUUID($params) {
+        $res = [
+            'success' => false,
+            'message' => 'Unknown error in Ajax.setLabelToMessageUUID',
+        ];
+
+        if (!Utils::checkAuthorization()){
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        }
+
+        if (!$params['UUID']) {
+            $res['message'] = 'No UUID';
+            return $res;
+        }
+
+        if (!$params['labelId']) {
+            $res['message'] = 'No label Id';
+            return $res;
+        }
+
+        $userId = Utils::currUserId();
+
+        $uuidInfo = Messages::getMessageGroupInfoByUUID($params['UUID']);
+        $messages = Messages::getMessageIdsByUUID($params['UUID']);
+        if ($uuidInfo['sender'] == $userId) {
+            foreach ($messages as $mes) {
+                $setParams = [
+                    'messageId' => $mes,
+                    'labelId' => $params['labelId'],
+                ];
+                Messages::setLabelToMessage($setParams);
+            }
+        }
+
+        if (in_array($userId, $uuidInfo['recepients'])) {
+            $setParams = [
+                'messageId' => Messages::getMessageIdByUUIDandRecepient($par),
+                'labelId' => $params['labelId'],
+            ];
+            Messages::setLabelToMessage($setParams);
+        }
+        $res['success'] = true;
+        $res['message'] = 'successful';
+        return $res;
+    }
+
     /**
      * @param array $params [messageId]
      *                      [labelId]
