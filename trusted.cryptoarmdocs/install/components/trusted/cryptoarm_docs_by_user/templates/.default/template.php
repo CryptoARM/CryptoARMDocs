@@ -23,12 +23,8 @@ foreach ($coreIds as $coreId) {
 $app = Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
-//echo '<pre>';
-//print_r($arParams);
-//echo '</pre>';
 
 $addUserAllows = $arParams['ALLOW_CREATING_NEW_USERS'] == 'Y'?1:0;
-echo $addUserAllows;
 $allIds = $arResult['ALL_IDS'];
 $allIdsJs = $arResult['ALL_IDS_JS'];
 $docs = $arResult['DOCS'];
