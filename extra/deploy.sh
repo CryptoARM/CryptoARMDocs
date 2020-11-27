@@ -22,13 +22,13 @@ cd $path_to_module
 
 case $reduction in
      start)
-		  sed -i -e "s;cryptoarmdocsbusiness;#cryptoarmdocsstart;g" crnm.php
-		  php crmn.php
+		  sudo sed -i -e "s;cryptoarmdocsbusiness;cryptoarmdocsstart;g" crnm.php
+		  sudo php crmn.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsstart
           ;;
      biz)
-		  php crmn.php
+		  sudo php crmn.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
           ;;
