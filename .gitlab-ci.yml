@@ -43,6 +43,6 @@ deploy_magenta:
   only:
     - web
   script:
-   - chmod 755 extra/runtests.sh; extra/runtests.sh
+   - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
   when: manual
 
