@@ -43,11 +43,6 @@ deploy_magenta:
   only:
     - web
   script:
-    - sudo rm -rf /var/www/magenta/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo cp -R trusted.cryptoarmdocs/ /var/www/magenta/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo chown -R alr:www-data /var/www/magenta/bitrix/modules/trusted.cryptoarmdocscrp/
-    - sudo find /var/www/magenta/bitrix/modules/trusted.cryptoarmdocscrp/ -type f -exec chmod 0664 {} \;
-    - sudo find /var/www/magenta/bitrix/modules/trusted.cryptoarmdocscrp/ -type d -exec chmod 2775 {} \;
-
+   - chmod 755 extra/runtests.sh; extra/runtests.sh
   when: manual
 
