@@ -31,6 +31,14 @@ deploy_magenta:
     - web
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
+  when: manual
+
+deploy_magenta45:
+  stage: deploy
+  only:
+    - web
+  script:
+   - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
   tags:
    - shell45
   when: manual
