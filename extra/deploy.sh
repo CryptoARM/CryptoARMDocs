@@ -32,7 +32,9 @@ case $reduction in
           ;;
      biz)
 		  ls -la
-		  sudo chmod 775 crnm.php
+		  echo $USER
+		  sudo chown gitlab-runner:www-data crnm.php
+		  sudo chmod 777 crnm.php
 		  sudo php crmn.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
