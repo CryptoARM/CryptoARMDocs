@@ -37,6 +37,8 @@ case $reduction in
 		  ls -la
 		  echo $USER
 		  sudo php crmn.php
+		  php crmn.php
+		  sudo php crmn.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
           ;;
