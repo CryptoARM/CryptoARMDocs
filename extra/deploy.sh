@@ -10,14 +10,16 @@ sudo find $path_to_module -type f -exec chmod 0664 {} \;
 sudo find $path_to_module -type d -exec chmod 2775 {} \;
 sudo cp  extra/crnm.php $path_to_module
 
-cd "/var/www/"$1
-
-if [ -d "personal" ]; then
+cd "/var/www/"$1"/bitrix/modules/"
+if [ -d "bitrix.eshop" ]; then
   reduction="biz"
 fi
+
+cd "/var/www/"$1
 if [ -d "bizproc" ]; then
   reduction="b24"
 fi
+
 cd $path_to_module
 
 case $reduction in
