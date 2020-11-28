@@ -31,10 +31,11 @@ case $reduction in
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsstart
           ;;
      biz)
-		  ls -la
-		  echo $USER
+
 		  sudo chown gitlab-runner:www-data crnm.php
 		  sudo chmod 777 crnm.php
+		  ls -la
+		  echo $USER
 		  sudo php crmn.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
