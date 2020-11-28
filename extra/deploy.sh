@@ -31,6 +31,7 @@ case $reduction in
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsstart
           ;;
      biz)
+		  ls -la
 		  sudo chmod 755 crnm.php
 		  sudo php crmn.php
 		  cd ..
