@@ -26,19 +26,14 @@ case $reduction in
      start)
 		  sudo sed -i -e "s;cryptoarmdocsbusiness;cryptoarmdocsstart;g" crnm.php
 		  sudo chmod 775 crnm.php
-		  sudo php crmn.php
+		  sudo php crnm.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsstart
           ;;
      biz)
 
-		  sudo chown gitlab-runner:www-data crnm.php
-		  sudo chmod 777 crnm.php
-		  ls -la
-		  echo $USER
-		  sudo php crmn.php
-		  php crmn.php
-		  sudo php crmn.php
+		  sudo chmod 775 crnm.php
+		  sudo php crnm.php
 		  cd ..
 		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
           ;;
