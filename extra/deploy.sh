@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path_to_module="/var/www/"$1"/bitrix/modules/trusted.cryptoarmdocscrp/"
+path_to_module="/var/www/"$1"/bitrix/modules/trusted.cryptoarmdocsbusiness/"
 reduction="start"
 
 sudo rm -rf $path_to_module
@@ -28,14 +28,14 @@ case $reduction in
 		  sudo chmod 775 crnm.php
 		  sudo php crnm.php
 		  cd ..
-		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsstart
+		  sudo mv trusted.cryptoarmdocsbusiness trusted.cryptoarmdocsstart
           ;;
-     biz)
+     b24)
 
 		  sudo chmod 775 crnm.php
 		  sudo php crnm.php
 		  cd ..
-		  sudo mv trusted.cryptoarmdocscrp trusted.cryptoarmdocsbusiness
+		  sudo mv trusted.cryptoarmdocsbusiness trusted.cryptoarmdocscrp
           ;;
 esac
 

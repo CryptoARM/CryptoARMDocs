@@ -1,9 +1,9 @@
 <?php
 
 // "cryptoarmdocscrp" "cryptoarmdocsbusiness" "cryptoarmdocsstart"
-$currentCoreName = "cryptoarmdocscrp";
-$newCoreName = "cryptoarmdocsbusiness";
-$path = "";
+$currentCoreName = "cryptoarmdocsbusiness";
+$newCoreName = "cryptoarmdocscrp";
+$path = "/var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/";
 
 $startingTagToSearch = "fBs";
 $closingTagToSearch = "fMs";
