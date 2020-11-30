@@ -24,7 +24,7 @@ cd $path_to_module
 
 case $reduction in
      start)
-		  sudo sed -i -e "s;cryptoarmdocsbusiness;cryptoarmdocsstart;g" crnm.php
+		  sudo sed -i -e "s;cryptoarmdocscrp;cryptoarmdocsstart;g" crnm.php
 		  sudo chmod 775 crnm.php
 		  sudo php crnm.php
 		  cd ..
