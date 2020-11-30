@@ -3,7 +3,7 @@
 // "cryptoarmdocscrp" "cryptoarmdocsbusiness" "cryptoarmdocsstart"
 $currentCoreName = "cryptoarmdocsbusiness";
 $newCoreName = "cryptoarmdocscrp";
-$path = "/var/www/yellow/bitrix/modules/trusted.cryptoarmdocscrp/";
+$path = "";
 
 $startingTagToSearch = "fBs";
 $closingTagToSearch = "fMs";
