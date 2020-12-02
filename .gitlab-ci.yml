@@ -6,7 +6,7 @@ deploy_green:
   only:
     - web
   script:
-   - chmod 755 extra/deploy.sh; extra/deploy.sh yellow
+   - chmod 755 extra/deploy.sh; extra/deploy.sh green
   when: manual
 
 deploy_yellow:
