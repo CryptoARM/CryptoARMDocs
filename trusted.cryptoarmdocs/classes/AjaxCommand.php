@@ -1995,6 +1995,33 @@ class AjaxCommand {
 
     }
 
+    static function searchDocument($params) {
+        $res = [
+            "success" => false,
+            "message" => "Unknown error in AjaxCommand.searchMessage",
+        ];
+
+        if(!Utils::checkAuthorization()) {
+            $res['message'] = 'No authorization';
+            $res['noAuth'] = true;
+            return $res;
+        } else {
+            $params['userId'] = Utils::currUserId();
+        }
+
+        if (!$params['searchKey']) {
+             $res["message"] = 'Nothing to search';
+             return $res;
+        }
+        $res['docs'] = [];
+        $docs = Message::searchDocument($params);
+        foreach ($docs as $doc) {
+            $res["docs"][] = Database::getDocumentById($doc);
+        }
+        $res['success'] = true;
+        return $res;
+    }
+
     /**
      * @param array $params [searchKey]
      *                      [typeOfMessage]

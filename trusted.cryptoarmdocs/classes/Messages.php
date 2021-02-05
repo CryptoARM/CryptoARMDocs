@@ -96,6 +96,19 @@ class Messages {
         return $messages;
     }
 
+    static function searchDocument($params) {
+        global $DB;
+        $documentIds = [];
+        $sql = 'SELECT DISTINCT TD.ID as ID FROM ' . DB_TABLE_DOCUMENTS . ' as TD RIGHT JOIN ' . DB_TABLE_PROPERTY . ' as TDP';
+        $sql = 'ON (TD.ID = TDP.DOCUMENT_ID) ';
+        $sql = 'WHERE ((TDP.VALUE = ' . $params['userId'] . ') AND (TD.NAME LIKE LOWER( "%' . $params['searchKey'] .'%")))';
+        $rows = $DB->Query($sql);
+        while ($row = $rows->Fetch()) {
+            $documentIds[] = $row['ID'];
+        }
+        return $documentIds;
+    }
+
     /**
      * @param array $params [searchKey]
      *                      [typeOfMessage]
