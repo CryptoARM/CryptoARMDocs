@@ -2,6 +2,7 @@
 
 namespace Trusted\CryptoARM\Docs;
 
+use Bitrix\Iblock\ORM\Query;
 use Bitrix\Main\Loader;
 
 //checks the name of currently installed core from highest possible version to lowest
@@ -28,51 +29,145 @@ class Messages {
     *                      ["count"]: count of messages on page
     * @return array $messages: Ids of messages
     */
-    static function getOutgoingMessages($params) {
+//    static function getOutgoingMessages($params) {
+//        global $DB;
+//        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE SENDER_ID=" . $params["userId"] . ' AND ';
+//        if($params['typeOfMessage'] == 'drafts')
+//        {
+//            $sql .= 'MES_STATUS = "DRAFT" ';
+//        } else {
+//            $sql .= 'MES_STATUS <> "DRAFT"';
+//        }
+//        if ($params["firstElem"] && $params["count"]) {
+//            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
+//        }
+//        $sql .= ' ORDER BY ID DESC';
+//        $rows = $DB->Query($sql);
+//        $messages = [];
+//        while ($row = $rows->Fetch()) {
+//            $messages[] = $row["ID"];
+//        };
+//        return $messages;
+//    }
+
+    static function getMessages($params) {
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE SENDER_ID=" . $params["userId"] . ' AND ';
-        if($params['typeOfMessage'] == 'drafts')
-        {
-            $sql .= 'MES_STATUS = "DRAFT" ';
-        } else {
-            $sql .= 'MES_STATUS <> "DRAFT"';
+        $sql = 'SELECT DISTINCT cont.MESSAGE_ID as id FROM ' . DB_TABLE_CONTACTS . ' as cont RIGHT JOIN' . DB_TABLE_MESSAGES . 'as mes ON (cont.MESSAGE_ID = mes.ID) WHERE ';
+        if ($params['type'] == 'outgoing') {
+            $sql .= '(mes.MES_STATUS<>"DRAFT" AND cont.SENDER_ID = ' . $params['userId'];
         }
-        if ($params["firstElem"] && $params["count"]) {
-            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
+        if ($params['type'] == 'incoming') {
+            $sql .= 'mes.MES_STATUS<>"DRAFT" AND cont.RECEPIENT_ID = ' . $params['userId'];
         }
-        $sql .= ' ORDER BY ID DESC';
+        if ($params['type'] == 'draft') {
+            $sql .= 'mes.MES_STATUS="DRAFT" AND cont.SENDER_ID = ' . $params["userId"];
+        }
+        $sql .= ')';
         $rows = $DB->Query($sql);
         $messages = [];
-        while ($row = $rows->Fetch()) {
-            $messages[] = $row["ID"];
-        };
+        while ($row = $rows-Fetch()) {
+            $message['id'] = $row['id'];
+            $infoParams = [
+                'messageId' => $row['id'],
+                'type' => $params["type"],
+            ];
+            $info = self::getMessageInfo($infoParams);
+            $message['status'] = $info['status'];
+            $message['comment'] = $info['comment'];
+            $message['theme'] = $info['theme'];
+            $message['time'] = $info['time'];
+            $message['rejectedComment'] = $info['rejectedComment'];
+            $message['docs'] = $info['docs'];
+            $message['labels'] = $info['labels'];
+            if ($params['type'] == 'incoming')
+                $message['sender'] = $info['sender'];
+            if ($params['type'] == 'draft' || $params['type'] == 'outgoing')
+                $message['recepients'] = $info['recepient'];
+            $messages[] = $message;
+        }
         return $messages;
     }
 
-    static function getOutgoigMessagesUUID($params) {
+    static function getMessageInfo($params) {
         global $DB;
-        $sql = 'SELECT DISTINCT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE SENDER_ID=' . $params['userId'] . ' AND ';
-        if($params['typeOfMessage'] == 'drafts')
-        {
-            $sql .= 'MES_STATUS = "DRAFT" ';
-        } else {
-            $sql .= 'MES_STATUS <> "DRAFT"';
-        }
-        if ($params["firstElem"] && $params["count"]) {
-            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
-        }
-        $sql .= ' ORDER BY ID DESC';
+        $sql = 'SELECT * FROM ' . DB_TABLE_MESSAGES . 'WHERE ID=' . $params['messageId'];
         $rows = $DB->Query($sql);
-        $uuids = [];
         while ($row = $rows->Fetch()) {
-            $uuids[] = $row['UUID'];
+            $mes["theme"] = $row["THEME"];
+            $mes["comment"] = $row["COMMENT"];
+            $mes["status"] = $row["MES_STATUS"];
+            $mes["time"] = $row["TIMESTAMP_X"];
+            $mes['rejectedComment'] = $row['REJECTED_COMMENT'];
+            if ($params['type'] == 'incoming') {
+                $mes['sender'] = self::getMessageSender($params['messageId']);
+            }
+            if ($params['type'] == 'outgoing' || $params['type'] == 'draft') {
+                $mes['recepients'] = self::getMessageRecepients($params['messageId']);
+            }
+            $mes["docs"] = self::getDocsInMessage($params['messageId']);
+            $labels = self::getMessageLabels($params['messageId']);
+            foreach ($labels as $label) {
+                $mes['labels'][] = self::getLabelInfo($label);
+            }
         }
-        $data = [];
-        foreach ($uuids as $uuid) {
-            $data[] = self::getMessageGroupInfoByUUID($uuid);
-        }
-        return $data;
+        return $mes;
     }
+
+    static function getMessageSender($messageId) {
+        global $DB;
+        $sql = 'SELECT DISTINCT SENDER_ID FROM ' .DB_TABLE_CONTACTS . ' WHERE MESSAGE_ID=' . $messageId;
+        $rows = $DB->Query($sql);
+        $row = $rows->Fetch();
+        $senderId = $row['SENDER_ID'];
+        return $senderId;
+    }
+
+    static function getMessageRecepients($messageId) {
+        global $DB;
+        $sql = 'SELECT DISTINCT RECEPIENT_ID FROM ' . DB_TABLE_CONTACTS . ' WHERE MESSAGE_ID=' . $messageId;
+        $rows = $DB->Query($sql);
+        $recepientIds = [];
+        while ($row = $rows-> Fetch()) {
+            $recepientIds[] = $row['RECEPIENT_ID'];
+        }
+        return $recepientIds;
+    }
+
+//    static function getIncomingMessages($params) {
+//        global $DB;
+//        $sql = 'SELECT ID FROM ' . DB_TABLE_CONTACTS . 'WHERE RECEPIENT_ID=' . $params['userId'];
+//        $rows = $DB->Query($sql);
+//        $messages = [];
+//        while ($row = $rows->Fetch()) {
+//            $message['id'] = $row['ID'];
+//            $
+//        }
+//    }
+
+//    static function getOutgoigMessagesUUID($params) {
+//        global $DB;
+//        $sql = 'SELECT DISTINCT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE SENDER_ID=' . $params['userId'] . ' AND ';
+//        if($params['typeOfMessage'] == 'drafts')
+//        {
+//            $sql .= 'MES_STATUS = "DRAFT" ';
+//        } else {
+//            $sql .= 'MES_STATUS <> "DRAFT"';
+//        }
+//        if ($params["firstElem"] && $params["count"]) {
+//            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
+//        }
+//        $sql .= ' ORDER BY ID DESC';
+//        $rows = $DB->Query($sql);
+//        $uuids = [];
+//        while ($row = $rows->Fetch()) {
+//            $uuids[] = $row['UUID'];
+//        }
+//        $data = [];
+//        foreach ($uuids as $uuid) {
+//            $data[] = self::getMessageGroupInfoByUUID($uuid);
+//        }
+//        return $data;
+//    }
 
    /**
     * Returns Ids of all the incoming messages
@@ -81,19 +176,32 @@ class Messages {
     *                      [count]: count of messages on page
     * @return array $messages: Ids of messages
     */
-    static function getIncomingMessages($params) {
+//    static function getIncomingMessages($params) {
+//        global $DB;
+//        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $params['userId'] . ' AND  MES_STATUS <> "DRAFT" AND PARENT_ID IS NULL';
+//        if ($params["firstElem"] && $params["count"]) {
+//            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
+//        }
+//        $sql .= ' ORDER BY ID DESC';
+//        $rows = $DB->Query($sql);
+//        $messages = [];
+//        while ($row = $rows->Fetch()) {
+//            $messages[] = $row["ID"];
+//        };
+//        return $messages;
+//    }
+
+    static function searchDocument($params) {
         global $DB;
-        $sql = "SELECT ID FROM " . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID=" . $params['userId'] . ' AND  MES_STATUS <> "DRAFT" AND PARENT_ID IS NULL';
-        if ($params["firstElem"] && $params["count"]) {
-            $sql .= ' LIMIT ' . $params["firstElem"] . ', ' . $params["count"];
-        }
-        $sql .= ' ORDER BY ID DESC';
+        $documentIds = [];
+        $sql = 'SELECT DISTINCT TD.ID as ID FROM ' . DB_TABLE_DOCUMENTS . ' as TD RIGHT JOIN ' . DB_TABLE_PROPERTY . ' as TDP';
+        $sql .= 'ON (TD.ID = TDP.DOCUMENT_ID) ';
+        $sql .= 'WHERE ((TDP.VALUE = ' . $params['userId'] . ') AND (TD.NAME LIKE LOWER( "%' . $params['searchKey'] .'%")))';
         $rows = $DB->Query($sql);
-        $messages = [];
         while ($row = $rows->Fetch()) {
-            $messages[] = $row["ID"];
-        };
-        return $messages;
+            $documentIds[] = $row['ID'];
+        }
+        return $documentIds;
     }
 
     /**
@@ -104,7 +212,7 @@ class Messages {
      */
     static function searchMessage($params) {
         global $DB;
-        $sql = 'SELECT DISTINCT TDM.ID as ID FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' as TDMP  RIGHT JOIN ' . DB_TABLE_DOCUMENTS . ' as TDD ';
+        $sql = 'SELECT DISTINCT TDM.ID as ID FROM' . DB_TABLE_CONTACTS . 'as TDMC RIGHT JOIN ' . DB_TABLE_MESSAGES_PROPERTY . ' as TDMP ON (TDMC.MESSAGE_ID = TDMP.MESSAGE_ID)  RIGHT JOIN ' . DB_TABLE_DOCUMENTS . ' as TDD ';
         $sql .= 'ON (TDMP.DOC_ID = TDD.ID) ';
         $sql .= 'RIGHT JOIN ' . DB_TABLE_MESSAGES . ' as TDM ON ';
         $sql .= '(TDMP.MESSAGE_ID = TDM.ID) ';
@@ -112,9 +220,9 @@ class Messages {
         if ($params['typeOfMessage'] != 'all') {
             $sql .= 'RIGHT JOIN b_user as BU ON (';
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
-                $sql .= 'TDM.RECEPIENT_ID = BU.ID )';
+                $sql .= 'TDMC.RECEPIENT_ID = BU.ID )';
             } else if ($params['typeOfMessage'] == 'incoming') {
-                $sql .= 'TDM.SENDER_ID = BU.ID )';
+                $sql .= 'TDMC.SENDER_ID = BU.ID )';
             }
             $sql .= 'WHERE ((';
             $sql .= 'LOWER(BU.EMAIL) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
@@ -122,28 +230,28 @@ class Messages {
             $sql .= 'LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%")) AND ( ';
             if ($params["typeOfMessage"] == 'outgoing' || $params["typeOfMessage"] == 'draft') {
-                $sql .= 'TDM.SENDER_ID = ' . $params['userId'];
+                $sql .= 'TDMC.SENDER_ID = ' . $params['userId'];
                 if ($params['typeOfMessage'] == 'draft') {
                     $sql .= ' AND TDM.MES_STATUS = "DRAFT"))';
                 } else {
                     $sql .= ' AND TDM.MES_STATUS <> "DRAFT"))';
                 }
             } else if ($params['typeOfMessage'] == 'incoming') {
-                $sql .= 'TDM.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> "DRAFT"))';
+                $sql .= 'TDMC.RECEPIENT_ID = ' . $params['userId'] . ' AND TDM.MES_STATUS <> "DRAFT"))';
             };
             $rows = $DB->Query($sql);
             while ($row = $rows->Fetch()) {
                 $messageIDS[] = $row['ID'];
             }
         } else {
-            $sql .= 'RIGHT JOIN b_user AS BUS ON (TDM.SENDER_ID = BUS.ID) ';
-            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDM.RECEPIENT_ID = BUR.ID) ';
+            $sql .= 'RIGHT JOIN b_user AS BUS ON (TDMC.SENDER_ID = BUS.ID) ';
+            $sql .= 'RIGHT JOIN b_user AS BUR ON (TDMC.RECEPIENT_ID = BUR.ID) ';
             $sql .= 'WHERE (( TDM.SENDER_ID=' . $params['userId'] . " AND ";
             $sql .= '(LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(TDD.NAME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(BUR.EMAIL) LIKE LOWER("%' . $params['searchKey'] . '%") )) OR ((';
-            $sql .= 'TDM.MES_STATUS <> "DRAFT" AND TDM.RECEPIENT_ID = ' . $params['userId'] . ') AND (';
+            $sql .= 'TDM.MES_STATUS <> "DRAFT" AND TDMC.RECEPIENT_ID = ' . $params['userId'] . ') AND (';
             $sql .= 'LOWER(TDM.COMMENT) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(TDD.NAME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
             $sql .= 'LOWER(TDM.THEME) LIKE LOWER("%' . $params['searchKey'] . '%") OR ';
@@ -156,18 +264,18 @@ class Messages {
         return  $messageIDS;
     }
 
-    static function getMessagesUUIDsInfoByIdsArray($ids) {
-        $uuids = [];
-        foreach ($ids as $id) {
-            $uuids[] = self::getMessageUUID($id);
-        }
-        $uuids = array_unique($uuids);
-        $messagesInfo = [];
-        foreach ($uuids as $uuid) {
-            $messagesInfo[] = self::getMessageGroupInfoByUUID($uuid);
-        }
-        return $messagesInfo;
-    }
+//    static function getMessagesUUIDsInfoByIdsArray($ids) {
+//        $uuids = [];
+//        foreach ($ids as $id) {
+//            $uuids[] = self::getMessageUUID($id);
+//        }
+//        $uuids = array_unique($uuids);
+//        $messagesInfo = [];
+//        foreach ($uuids as $uuid) {
+//            $messagesInfo[] = self::getMessageGroupInfoByUUID($uuid);
+//        }
+//        return $messagesInfo;
+//    }
 
     /**
      * @param array $params [searchKey]
@@ -256,7 +364,7 @@ class Messages {
     */
     static function getSenderId($messId) {
         global $DB;
-        $sql = "SELECT SENDER_ID FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
+        $sql = "SELECT SENDER_ID FROM " . DB_TABLE_CONTACTS . " WHERE MESSAGE_ID=" . $messId;
         $rows = $DB->Query($sql);
         $row = $rows->Fetch();
         $senderId = $row["SENDER_ID"];
@@ -271,11 +379,13 @@ class Messages {
     */
     static function getRecepientId($messId) {
         global $DB;
-        $sql = "SELECT RECEPIENT_ID FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
+        $sql = "SELECT RECEPIENT_ID FROM " . DB_TABLE_CONTACTS . " WHERE MESSAGE_ID=" . $messId;
         $rows = $DB->Query($sql);
-        $row = $rows->Fetch();
-        $recepientId = $row["RECEPIENT_ID"];
-        return $recepientId;
+        $recepientIds = [];
+        while ($row = $rows->Fetch()) {
+            $recepientIds[] = $row['RECEPIENT_ID'];
+        };
+        return $recepientIds;
     }
 
     static function createLabel($params) {
@@ -287,15 +397,15 @@ class Messages {
         $DB->Query($sql);
     }
 
-    static function getMessageIdByUUIDandRecepient($params) {
-        global $DB;
-        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID = "' . $params['UUID'] . '" AND RECEPIENT_ID=' . $params['id'];
-        $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch()) {
-            $mesId = $row['ID'];
-        }
-        return $row;
-    }
+//    static function getMessageIdByUUIDandRecepient($params) {
+//        global $DB;
+//        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID = "' . $params['UUID'] . '" AND RECEPIENT_ID=' . $params['id'];
+//        $rows = $DB->Query($sql);
+//        while ($row = $rows->Fetch()) {
+//            $mesId = $row['ID'];
+//        }
+//        return $row;
+//    }
 
     static function setLabelToMessage($params) {
         global $DB;
@@ -305,14 +415,14 @@ class Messages {
         $DB->Query($sql);
     }
 
-    static function setLabelToMessagesUUID($params) {
-        $arg['labelId'] = $params['labelId'];
-        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
-        foreach ($messIds as $messId) {
-            $arg['messageId'] = $messId;
-            self::setLabelToMessage($arg);
-        }
-    }
+//    static function setLabelToMessagesUUID($params) {
+//        $arg['labelId'] = $params['labelId'];
+//        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
+//        foreach ($messIds as $messId) {
+//            $arg['messageId'] = $messId;
+//            self::setLabelToMessage($arg);
+//        }
+//    }
 
     /**
      * @param $params array [email]
@@ -332,14 +442,14 @@ class Messages {
         $DB->Query($sql);
     }
 
-    static function unsetLabelFromMessagesUUID($params) {
-        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
-        $arg['labelId'] = $params['labelId'];
-        foreach($messIds as $messId) {
-            $arg['messageId'] = $messId;
-            self::unsetLabelFromMessage($arg);
-        }
-    }
+//    static function unsetLabelFromMessagesUUID($params) {
+//        $messIds = Messages::getMessageIdsByUUID($params['UUID']);
+//        $arg['labelId'] = $params['labelId'];
+//        foreach($messIds as $messId) {
+//            $arg['messageId'] = $messId;
+//            self::unsetLabelFromMessage($arg);
+//        }
+//    }
 
     static function getMessageLabels($messId) {
         global $DB;
@@ -460,59 +570,59 @@ class Messages {
         }
         return $messageLabels;
     }
+//
+//   /**
+//    * @param int $messId: id of message
+//    *
+//    * @return array $mes [theme] theme of message
+//    *                    [comment] comment to message
+//    *                    [status] status of message
+//    *                    [time] time when message was created
+//    *                    [labels] ids of labels
+//    *                    [sender] id of sender
+//    *                    [recepiend] id of recepient
+//    *                    [rejectedComment] comment to message if rejected
+//    *                    [docs] ids of docs in message
+//    */
+//    static function getMessageInfo($messId) {
+//        global $DB;
+//        $sql = "SELECT * FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
+//        $rows = $DB->Query($sql);
+//        $mes = [];
+//        $row = $rows->Fetch();
+//        $mes["theme"] = $row["THEME"];
+//        $mes["comment"] = $row["COMMENT"];
+//        $mes["status"] = $row["MES_STATUS"];
+//        $mes["time"] = $row["TIMESTAMP_X"];
+//        $mes['rejectedComment'] = $row['REJECTED_COMMENT'];
+//        $labels = Messages::getMessageLabels($messId);
+////        $mes["labels"] = Messages::getMessageLabels($messId);
+//        foreach ($labels as $label) {
+//            $mes["labels"][] = Messages::getLabelInfo($label);
+//        }
+//        $mes["sender"] = Messages::getSenderId($messId);
+//        $mes["recepient"] = Messages::getRecepientId($messId);
+//        $mes["docs"] = Messages::getDocsInMessage($messId);
+//        return $mes;
+//    }
 
-   /**
-    * @param int $messId: id of message
-    *
-    * @return array $mes [theme] theme of message
-    *                    [comment] comment to message
-    *                    [status] status of message
-    *                    [time] time when message was created
-    *                    [labels] ids of labels
-    *                    [sender] id of sender
-    *                    [recepiend] id of recepient
-    *                    [rejectedComment] comment to message if rejected
-    *                    [docs] ids of docs in message
-    */
-    static function getMessageInfo($messId) {
-        global $DB;
-        $sql = "SELECT * FROM " . DB_TABLE_MESSAGES . " WHERE ID=" . $messId;
-        $rows = $DB->Query($sql);
-        $mes = [];
-        $row = $rows->Fetch();
-        $mes["theme"] = $row["THEME"];
-        $mes["comment"] = $row["COMMENT"];
-        $mes["status"] = $row["MES_STATUS"];
-        $mes["time"] = $row["TIMESTAMP_X"];
-        $mes['rejectedComment'] = $row['REJECTED_COMMENT'];
-        $labels = Messages::getMessageLabels($messId);
-//        $mes["labels"] = Messages::getMessageLabels($messId);
-        foreach ($labels as $label) {
-            $mes["labels"][] = Messages::getLabelInfo($label);
-        }
-        $mes["sender"] = Messages::getSenderId($messId);
-        $mes["recepient"] = Messages::getRecepientId($messId);
-        $mes["docs"] = Messages::getDocsInMessage($messId);
-        return $mes;
-    }
-
-    static function getChildByUUID($UUID) {
-        global $DB;
-        $childMessages = [];
-        $messages = Messages::getMessageIdsByUUID($UUID);
-        foreach ($messages as $id) {
-            $childs = Messages::getChildById($id);
-//            $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE PARENT_ID=' . $id;
-//            $rows = $DB->Query($sql);
-//            while ($row = $rows->Fetch()) {
-//                $childMessages[] = $row['ID'];
+//    static function getChildByUUID($UUID) {
+//        global $DB;
+//        $childMessages = [];
+//        $messages = Messages::getMessageIdsByUUID($UUID);
+//        foreach ($messages as $id) {
+//            $childs = Messages::getChildById($id);
+////            $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE PARENT_ID=' . $id;
+////            $rows = $DB->Query($sql);
+////            while ($row = $rows->Fetch()) {
+////                $childMessages[] = $row['ID'];
+////            }
+//            foreach ($childs as $child) {
+//                $childMessages[] = $child;
 //            }
-            foreach ($childs as $child) {
-                $childMessages[] = $child;
-            }
-        }
-        return $childMessages;
-    }
+//        }
+//        return $childMessages;
+//    }
 
     static function getChildById($messId) {
         global $DB;
@@ -533,7 +643,7 @@ class Messages {
     */
     static function getNewIncomingMessages($userId) {
         global $DB;
-        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . " WHERE RECEPIENT_ID = " . $userId . ' AND MES_STATUS="NOT_READED"';
+        $sql = 'SELECT mes.ID FROM ' . DB_TABLE_MESSAGES . " as mes RIGHT JOIN " . DB_TABLE_CONTACTS ." as cont ON (mes.ID = cont.MESSAGE_ID) WHERE cont.RECEPIENT_ID = " . $userId . ' AND mes.MES_STATUS="NOT_READED"';
         $rows = $DB->Query($sql);
         $mess = [];
         while ($row = $rows->Fetch()) {
@@ -542,91 +652,143 @@ class Messages {
         return $mess;
     }
 
-    /**
-     * Create new draft
-     * @param array $params[recepientId]: id of recepient
-     *                     [theme]: theme of message
-     *                     [comment]: comment to message
-     *
-     * @return int $mes: id of new draft
-     */
-
-    static function createDraft($params) {
+    static function createMessage($params) {
         global $DB;
         $senderId = $params['senderId']?$params['senderId']:Utils::currUserId();
-        $sql = 'INSERT INTO ' . DB_TABLE_MESSAGES . ' ( SENDER_ID';
-        if ($params['recepientId'])
-            $sql .= ', RECEPIENT_ID';
+        $sql = 'INSERT INTO ' .DB_TABLE_MESSAGES . '(';
         if ($params['theme'])
-            $sql .= ', THEME';
+            $sql .= 'THEME,';
         if ($params['comment'])
-            $sql .= ', COMMENT';
+            $sql .= 'COMMENT,';
         if ($params['parentId'])
-            $sql .= ', PARENT_ID';
-        $sql .= ', UUID, TIMESTAMP_X, MES_STATUS) ';
-        $sql .= 'VALUES( "' . $senderId . '"';
-        if ($params['recepientId'])
-            $sql .= ', "' . $params['recepientId'] . '"';
+            $sql .= 'PARENT_ID,';
+        $sql .= ' MES_STATUS, TIMESTAMP_X) VALUES (';
         if ($params['theme'])
-            $sql .= ", '" . $params['theme'] . "'";
+            $sql .= ", '" . $params['theme'] . "',";
         if ($params['comment'])
-            $sql .= ", '"  . $params['comment'] . "'";
+            $sql .= ", '"  . $params['comment'] . "',";
         if ($params['parentId'])
-            $sql .=", '" . $params['parentId'] . "'";
-        $sql .= "," . $params['UUID'] . ", NOW(), 'DRAFT');";
+            $sql .=", '" . $params['parentId'] . "',";
+        $sql .= $params["send"]?"'NOT_READED',":"'DRAFT',";
+        $sql .= 'NOW())';
         $DB->Query($sql);
-        $mes = $DB->LastID();
-
-        foreach($params["docsIds"] as $docId) {
-            Messages::setMesProp($mes, $docId);
-        };
-        return $mes;
-    }
-
-    static function getMessageIdsByUUID($uuid) {
-        global $DB;
-        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
-        $rows = $DB->Query($sql);
-        $ids = [];
-        while($row = $rows->Fetch()) {
-            $ids[] = $row['ID'];
-        }
-        return $ids;
-    }
-
-    static function getAllRecepientsByUUID($uuid) {
-        global $DB;
-        $sql = 'SELECT RECEPIENT_ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
-        $rows = $DB->Query($sql);
-        $recepients = [];
-        while($row = $rows->Fetch()) {
-            $recepients[] = [
-                'id' => $row['RECEPIENT_ID'],
-                'email' => Utils::getUserEmail($row['RECEPIENT_ID']),
+        $mesId = $DB->LastID();
+        foreach ($params['recepients'] as $recepient) {
+            $data = [
+                'messageId' => $mesId,
+                'senderId' => $senderId,
+                'recepientId' => $recepient
             ];
+            self::addRecepient($data);
+            if ($params['send']) {
+                foreach($params['docsIds'] as $docId) {
+                    $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
+                    $sql .= 'VALUES("'. $docId . '", "SHARE_READ", "' . $recepient . '")';
+                    $DB->Query($sql);
+                    $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
+                    $sql .= 'VALUES("'. $docId . '", "SHARE_SIGN", "' . $recepient . '")';
+                    $DB->Query($sql);
+                }
+            }
         }
-        return $recepients;
+        foreach ($params['docsIds'] as $docId) {
+            self::setMesProp($mesId, $docId);
+        }
+        return $mesId;
     }
 
-    static function getMessageGroupInfoByUUID($uuid) {
+    static function addRecepient($params) {
         global $DB;
-        $res['recepients'] = self::getAllRecepientsByUUID($uuid);
-        $res['messages']  = Messages::getMessageIdsByUUID($uuid);
-        if (count($res['messages'])!=0) {
-            foreach ($res['messages'] as $mess) {
-                $info = self::getMessageInfo($mess);
-                break;
-            }
-            $res['theme'] = $info['theme'];
-            $res['comment'] = $info['comment'];
-            $res['status'] = $info['status'];
-            $res['sender'] = $info['sender'];
-            $res['time'] = $info['time'];
-            $res['labels'] = $info['labels'];
-            $res['docs'] = $info['docs'];
-        }
-        return $res;
+        $sql = 'INSERT INTO ' . DB_TABLE_CONTACTS . '(MESSAGE_ID, SENDER_ID, RECEPIENT_ID) VALUES (';
+        $sql .= $params['messageId'] . ',' . $params['senderId'] . ',' . $params['recepientId'] . ')';
+        $DB -> Query($sql);
     }
+
+//    /**
+//     * Create new draft
+//     * @param array $params[recepientId]: id of recepient
+//     *                     [theme]: theme of message
+//     *                     [comment]: comment to message
+//     *
+//     * @return int $mes: id of new draft
+//     */
+//
+//    static function createDraft($params) {
+//        global $DB;
+//        $senderId = $params['senderId']?$params['senderId']:Utils::currUserId();
+//        $sql = 'INSERT INTO ' . DB_TABLE_MESSAGES . ' ( SENDER_ID';
+//        if ($params['recepientId'])
+//            $sql .= ', RECEPIENT_ID';
+//        if ($params['theme'])
+//            $sql .= ', THEME';
+//        if ($params['comment'])
+//            $sql .= ', COMMENT';
+//        if ($params['parentId'])
+//            $sql .= ', PARENT_ID';
+//        $sql .= ', UUID, TIMESTAMP_X, MES_STATUS) ';
+//        $sql .= 'VALUES( "' . $senderId . '"';
+//        if ($params['recepientId'])
+//            $sql .= ', "' . $params['recepientId'] . '"';
+//        if ($params['theme'])
+//            $sql .= ", '" . $params['theme'] . "'";
+//        if ($params['comment'])
+//            $sql .= ", '"  . $params['comment'] . "'";
+//        if ($params['parentId'])
+//            $sql .=", '" . $params['parentId'] . "'";
+//        $sql .= ",'" . $params['UUID'] . "', NOW(), 'DRAFT');";
+//        $DB->Query($sql);
+//        $mes = $DB->LastID();
+//
+//        foreach($params["docsIds"] as $docId) {
+//            Messages::setMesProp($mes, $docId);
+//        };
+//        return $mes;
+//    }
+
+//    static function getMessageIdsByUUID($uuid) {
+//        global $DB;
+//        $sql = 'SELECT ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
+//        $rows = $DB->Query($sql);
+//        $ids = [];
+//        while($row = $rows->Fetch()) {
+//            $ids[] = $row['ID'];
+//        }
+//        return $ids;
+//    }
+
+//    static function getAllRecepientsByUUID($uuid) {
+//        global $DB;
+//        $sql = 'SELECT RECEPIENT_ID FROM ' . DB_TABLE_MESSAGES . ' WHERE UUID="' . $uuid . '"';
+//        $rows = $DB->Query($sql);
+//        $recepients = [];
+//        while($row = $rows->Fetch()) {
+//            $recepients[] = [
+//                'id' => $row['RECEPIENT_ID'],
+//                'email' => Utils::getUserEmail($row['RECEPIENT_ID']),
+//            ];
+//        }
+//        return $recepients;
+//    }
+
+//    static function getMessageGroupInfoByUUID($uuid) {
+//        global $DB;
+//        $res['recepients'] = self::getAllRecepientsByUUID($uuid);
+//        $res['messages']  = Messages::getMessageIdsByUUID($uuid);
+//        if (count($res['messages'])!=0) {
+//            foreach ($res['messages'] as $mess) {
+//                $info = self::getMessageInfo($mess);
+//                break;
+//            }
+//            $res['theme'] = $info['theme'];
+//            $res['comment'] = $info['comment'];
+//            $res['status'] = $info['status'];
+//            $res['sender'] = $info['sender'];
+//            $res['time'] = $info['time'];
+//            $res['labels'] = $info['labels'];
+//            $res['docs'] = $info['docs'];
+//        }
+//        return $res;
+//    }
 
     static function isUserExists($userId) {
         global $DB;
@@ -667,14 +829,29 @@ class Messages {
     static function updateDraft($params) {
         global $DB;
         $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET (TIMESTAMP_X=NOW()';
-        if ($params['recepientId'])
-            $sql .= ', RECEPIENT_ID=' . $params['recepientId'];
         if ($params['theme'])
             $sql .= ', THEME="' . $params['theme'] . '"';
         if ($params['comment'])
             $sql .= ', COMMENT=' . $params['comment'] . '"';
         $sql .= ') WHERE (ID=' . $params['draftId'] . ')';
         $DB->Query($sql);
+        if ($params['newRecepientIds']) {
+            foreach ($params['newRecepientIds'] as $recId) {
+                self::addRecepient([
+                    'recepientId' => $recId,
+                    'messageId' => $params['draftId'],
+                    'senderId' => Utils::currUserId()
+                ]);
+            }
+        }
+        if ($params['removeRecepients']) {
+            foreach ($params['removeRecepients'] as $recId) {
+                self::removeRecepient([
+                    'mesId' => $params['draftId'],
+                    'recepientId' => $recId
+                ]);
+            }
+        }
         if ($params['docId']) {
             foreach ($params['docId'] as $docId) {
                 Messages::setMesProp($params['draftId'], $docId);
@@ -682,59 +859,60 @@ class Messages {
         }
     }
 
-    static function updateDraftByUUID($params) {
-        global $DB;
-        $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET (TIMESTAMP_X=NOW()';
-        if ($params['theme'])
-            $sql .= ', THEME="' . $params['theme'] . '"';
-        if ($params['comment'])
-            $sql .= ', COMMENT=' . $params['comment'] . '"';
-        $sql .= ') WHERE (UUID="' . $params['UUID'] . '")';
-        $DB->Query($sql);
-    }
+//    static function updateDraftByUUID($params) {
+//        global $DB;
+//        $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET (TIMESTAMP_X=NOW()';
+//        if ($params['theme'])
+//            $sql .= ', THEME="' . $params['theme'] . '"';
+//        if ($params['comment'])
+//            $sql .= ', COMMENT=' . $params['comment'] . '"';
+//        $sql .= ') WHERE (UUID="' . $params['UUID'] . '")';
+//        $DB->Query($sql);
+//    }
 
     static function removeRecepient($params) {
         global $DB;
-        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE (UUID="' . $params['UUID'] . '" AND RECEPIENT_ID=' . $params['recepientId'];
+//        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE (UUID="' . $params['UUID'] . '" AND RECEPIENT_ID=' . $params['recepientId'];
+//        $DB->Query($sql);
+        $sql = 'DELETE FROM ' . DB_TABLE_CONTACTS . 'WHERE (MESSAGE_ID = ' . $params['mesId'] . ' AND RECEPIENT_ID=' . $params['recepientId'];
         $DB->Query($sql);
     }
 
-    static function addRecepient($params) {
-        global $DB;
-        $mesParams = Messages::getMessageGroupInfoByUUID($params['UUID']);
-        $arg = [
-            'recepientId' => $params['recepientId'],
-            'UUID' => $params['UUID'],
-            'theme' => $mesParams['theme'],
-            'comment' => $mesParams['comment'],
-            'senderId' => $mesParams['sender'],
-            'docs' => $mesParams['docs']
-        ];
-        self::createDraft($arg);
-    }
+//    static function addRecepient($params) {
+//        global $DB;
+//        $mesParams = Messages::getMessageGroupInfoByUUID($params['UUID']);
+//        $arg = [
+//            'recepientId' => $params['recepientId'],
+//            'UUID' => $params['UUID'],
+//            'theme' => $mesParams['theme'],
+//            'comment' => $mesParams['comment'],
+//            'senderId' => $mesParams['sender'],
+//            'docs' => $mesParams['docs']
+//        ];
+//        self::createDraft($arg);
+//    }
 
    /**
     * remove draft from database
     * @param array $params [draftId]: id of draft
     *
     */
-    static function deleteDraft($UUID) {
+    static function deleteDraft($id) {
         global $DB;
-        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $UUID;
+        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $id;
         $DB->Query($sql);
-        $draftIds = self::getMessageIdsByUUID($UUID);
-        foreach ($draftIds as $draftId) {
-            $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE MESSAGE_ID=' . $draftId;
-            $DB->Query($sql);
-        }
+        $sql = 'DELETE FROM ' . DB_TABLE_MESSAGES_PROPERTY . ' WHERE MESSAGE_ID=' . $id;
+        $DB->Query($sql);
+        $sql = 'DELETE FROM ' . DB_TABLE_CONTACTS . ' WHERE MESSAGE_ID=' . $id;
+        $DB->Query($sql);
     }
 
-    static function deleteDraftByUUID($uuid) {
-        $messIds = Messages::getMessageIdsByUUID($uuid);
-        foreach ($messIds as $messId) {
-            self::deleteDraft($messId);
-        }
-    }
+//    static function deleteDraftByUUID($uuid) {
+//        $messIds = Messages::getMessageIdsByUUID($uuid);
+//        foreach ($messIds as $messId) {
+//            self::deleteDraft($messId);
+//        }
+//    }
 
    /**
     * Change status of message from 'DRAFT' to 'NOT_READED' and open documents in message for recepient
@@ -743,16 +921,17 @@ class Messages {
     static function sendMessage($params) {
         global $DB;
         $docsId = Messages::getDocsInMessage($params['messId']);
-        $recepientId = Messages::getRecepientId($params['messId']);
-        foreach($docsId as $docId) {
-            $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
-            $sql .= 'VALUES("'. $docId . '", "SHARE_READ", "' . $recepientId . '")';
-            $DB->Query($sql);
-            $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
-            $sql .= 'VALUES("'. $docId . '", "SHARE_SIGN", "' . $recepientId . '")';
-            $DB->Query($sql);
+        $recepientsId = Messages::getRecepientId($params['messId']);
+        foreach ($recepientsId as $recepientId) {
+            foreach ($docsId as $docId) {
+                $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
+                $sql .= 'VALUES("' . $docId . '", "SHARE_READ", "' . $recepientId . '")';
+                $DB->Query($sql);
+                $sql = 'INSERT INTO ' . DB_TABLE_PROPERTY . ' (DOCUMENT_ID, TYPE, VALUE) ';
+                $sql .= 'VALUES("' . $docId . '", "SHARE_SIGN", "' . $recepientId . '")';
+                $DB->Query($sql);
+            }
         }
-
         $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "NOT_READED" WHERE ID=' . $params['messId'] ;
         $DB->Query($sql);
     }
@@ -795,60 +974,62 @@ class Messages {
             $sql = 'UPDATE ' . DB_TABLE_MESSAGES . ' SET MES_STATUS = "DRAFT" WHERE ID = ' . $params['messId'];
             $DB->Query($sql);
             $docsIds = Messages::getDocsInMessage($params['messId']);
-            $recepientId = Messages::getRecepientId($params['messId']);
-            foreach ($docsIds as $docId) {
-                $sql = 'DELETE FROM '  . DB_TABLE_PROPERTY . ' WHERE (DOCUMENT_ID = ' . $docId .' AND (TYPE = "SHARE_READ" OR TYPE = "SHARE_SIGN") AND VALUE=' . $recepientId . ')';
-                $DB->Query($sql);
+            $recepientsId = Messages::getRecepientId($params['messId']);
+            foreach ($recepientsId as $recepientId) {
+                foreach ($docsIds as $docId) {
+                    $sql = 'DELETE FROM ' . DB_TABLE_PROPERTY . ' WHERE (DOCUMENT_ID = ' . $docId . ' AND (TYPE = "SHARE_READ" OR TYPE = "SHARE_SIGN") AND VALUE=' . $recepientId . ')';
+                    $DB->Query($sql);
+                }
             }
             return true;
         }
     }
 
-    static function sendCancelInDBByUUID($params) {
-        if (self::isCancelableUUIDGroup($params['UUID'])) {
-            $messIds = Messages::getMessageIdsByUUID($params['UUID']);
-            foreach($messIds as $messId) {
-                $arg['messId'] = $messId;
-                self::sendCancelInDB($arg);
-            }
-        }
-    }
+//    static function sendCancelInDBByUUID($params) {
+//        if (self::isCancelableUUIDGroup($params['UUID'])) {
+//            $messIds = Messages::getMessageIdsByUUID($params['UUID']);
+//            foreach($messIds as $messId) {
+//                $arg['messId'] = $messId;
+//                self::sendCancelInDB($arg);
+//            }
+//        }
+//    }
 
-    static function getGroupStatusByUUID($uuid) {
-        $messIds = Message::getMessageIdsByUUID($uuid);
-        $statuses = [];
-        foreach($messIds as $messId) {
-            $statuses[] = self::getMessageStatus($messId);
-        }
-        if (in_array('READED', $statuses)) {
-            return 'READED';
-        }
-        $statValues = array_count_values($statuses);
-        if ($statValues['NOT_READED'] == count($statuses)) {
-            return 'NOT_READED';
-        }
-        if ($statValues['DRAFT'] == count($statuses)) {
-            return 'DRAFT';
-        }
+//    static function getGroupStatusByUUID($uuid) {
+//        $messIds = Message::getMessageIdsByUUID($uuid);
+//        $statuses = [];
+//        foreach($messIds as $messId) {
+//            $statuses[] = self::getMessageStatus($messId);
+//        }
+//        if (in_array('READED', $statuses)) {
+//            return 'READED';
+//        }
+//        $statValues = array_count_values($statuses);
+//        if ($statValues['NOT_READED'] == count($statuses)) {
+//            return 'NOT_READED';
+//        }
+//        if ($statValues['DRAFT'] == count($statuses)) {
+//            return 'DRAFT';
+//        }
+//
+//    }
 
-    }
-
-    static function isCancelableUUIDGroup($UUID) {
-        $messIds = Messages::getMessageIdsByUUID($UUID);
-        $statuses = [];
-        foreach($messIds as $messId) {
-            $statuses[] = Messages::getMessageStatus($messId);
-        };
-//        if (in_array('READED', $statuses)){
+//    static function isCancelableUUIDGroup($UUID) {
+//        $messIds = Messages::getMessageIdsByUUID($UUID);
+//        $statuses = [];
+//        foreach($messIds as $messId) {
+//            $statuses[] = Messages::getMessageStatus($messId);
+//        };
+////        if (in_array('READED', $statuses)){
+////            return false;
+////        }
+//        $statValues = array_count_values($statuses);
+//        if ($statValues['NOT_READED'] == count($statuses) ){
+//            return true;
+//        } else {
 //            return false;
 //        }
-        $statValues = array_count_values($statuses);
-        if ($statValues['NOT_READED'] == count($statuses) ){
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    }
 
    /**
     * Check message existing in database
@@ -867,12 +1048,12 @@ class Messages {
         }
     }
 
-    static function isUUIDExists($uuid) {
-        global $DB;
-        $sql = 'SELECT * FROM ' . DB_TABLE_MESAGES . ' WHERE UUID="' . $uuid . '"';
-        $rows = $DB->Query($sql);
-        return (($rows->SelectedRowsCount()) == 0)?false:true;
-    }
+//    static function isUUIDExists($uuid) {
+//        global $DB;
+//        $sql = 'SELECT * FROM ' . DB_TABLE_MESAGES . ' WHERE UUID="' . $uuid . '"';
+//        $rows = $DB->Query($sql);
+//        return (($rows->SelectedRowsCount()) == 0)?false:true;
+//    }
 
     static function isLabelExists($labelId) {
         global $DB;
@@ -935,24 +1116,24 @@ class Messages {
         return $messageIDS;
     }
 
-    static function getMessagesGroupsUUIDByDocument($docId) {
-        $messIds = self::getMessagesByDocument($docId);
-        $UUIDs = [];
-        foreach ($messIds as $messId) {
-            $UUIDs[] = self::getMessageUUID($messId);
-        }
-        return $UUIDs;
-    }
-
-    static function getMessageUUID($messId) {
-        global $DB;
-        $sql = 'SELECT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $messId;
-        $rows = $DB->Query($sql);
-        while($row = $rows->Fetch()) {
-            $uuid = $row['UUID'];
-        }
-        return $uuid;
-    }
+//    static function getMessagesGroupsUUIDByDocument($docId) {
+//        $messIds = self::getMessagesByDocument($docId);
+//        $UUIDs = [];
+//        foreach ($messIds as $messId) {
+//            $UUIDs[] = self::getMessageUUID($messId);
+//        }
+//        return $UUIDs;
+//    }
+//
+//    static function getMessageUUID($messId) {
+//        global $DB;
+//        $sql = 'SELECT UUID FROM ' . DB_TABLE_MESSAGES . ' WHERE ID=' . $messId;
+//        $rows = $DB->Query($sql);
+//        while($row = $rows->Fetch()) {
+//            $uuid = $row['UUID'];
+//        }
+//        return $uuid;
+//    }
 
     /**
      * @param array $params:[messId] - message id

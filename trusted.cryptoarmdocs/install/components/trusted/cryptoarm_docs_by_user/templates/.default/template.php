@@ -39,7 +39,6 @@ if ($USER->GetFullName()) {
 include(__DIR__ . "/upload.php");
 ?>
 <div id="trca_comp_data" allow="<?= $addUserAllows ?>"></div>
-<!-- <a id="trca-reload-doc" href="--><?//= $_SERVER["REQUEST_URI"] ?><!--"></a>-->
 <div id="trca_reload_table"></div>
 <div id="trca_edit_label_modal" class="trca_upload_modal_window" style="display:none">
     <div id="trca_label_edit_window" class="trca_create_label_window" style="height: auto">
@@ -99,45 +98,41 @@ include(__DIR__ . "/upload.php");
     <div class="trca_edo_body">
         <div class="trca_edo_menu ">
             <div class="trca_edo_upload_button"  onclick="showModal()">
-                <span>Загрузить документы </span>
+                <span><?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOAD_DOCUMENTS")?> </span>
             </div>
             <div class="trca_edo_message trca_menu">
                 <div class="trca_edo_menu_item">
                     <div class="trca_edo_check"></div>
-                    <span>Сообщения</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_MESSAGES") ?></span>
                 </div>
                 <div class="trca_edo_outbox submenu active_menu" onclick="getMessageList('incoming', 0)">
-                    <span>Входящие</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_INCOMING")?></span>
                 </div>
                 <div class="trca_edo_inbox submenu" onclick="getMessageList('outgoing', 0)">
-                    <span>Исходящие</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_OUTGOING") ?></span>
                 </div>
                 <div class="trca_edo_draft submenu" onclick="getMessageList('drafts', 0)">
-                    <span>Черновики</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_DRAFTS") ?></span>
                 </div>
             </div>
             <div class="trca_edo_documents trca_menu">
                 <div class="trca_edo_menu_item">
                     <div class="trca_edo_check"></div>
-                    <span>Документы</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_DOCUMENTS") ?></span>
                 </div>
                 <div class="trca_edo_download submenu " onclick="getDocList(0, 0)">
-                    <span>Загруженые</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_UPLOADED") ?></span>
                 </div>
                 <div class="trca_edo_available submenu" onclick="getDocList(1, 0)">
-                    <span>Доступные</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_AVAILABLE") ?></span>
                 </div>
             </div>
             <div class="trca_edo_label trca_menu">
                 <div class="trca_edo_menu_item">
                     <div class="trca_edo_check"></div>
-                    <span>Метки</span>
+                    <span><?= Loc::getMessage("TR_CA_DOCS_COMP_LABELS") ?></span>
                 </div>
                 <div class="trca_edo_labels" id="trca_edo_labels">
-                    <!-- <div class="trca_label label_orange">Важно</div>
-                    <div class="trca_label label_violet">Партнер</div>
-                    <div class="trca_label label_blue">Тест</div>
-                    <div class="trca_label label_green">Тест</div> -->
                 </div>
             </div>
         </div>
@@ -1316,7 +1311,9 @@ $('#trca_header_search').click(function() {
     $(".trca_edo_header_menu_search_entity").show();
 });
 $(".trca_edo_header_menu_search_entity_item").click(function() {
-    $(".trca_edo_header_menu_search_entity_item").removeClass("trca_search_entity_active");
+    $(".trca_edo_header_menu_search_entity_item").all(() => {
+        $(this).removeClass("trca_search_entity_active")}
+    );
     let searchKey = $("#trca_header_search").val();
     let id = $(this).attr("id");
     if (searchKey.length > 2) {
