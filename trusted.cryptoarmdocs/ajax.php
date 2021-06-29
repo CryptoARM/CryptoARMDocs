@@ -35,6 +35,14 @@ $command = $_GET['command'];
 if (isset($command)) {
     $params = $_POST;
     switch ($command) {
+        case "removeFormFromDB":
+            $res = Docs\AjaxCommand::removeForm();
+        case "createForm":
+            $res = Docs\AjaxCommand::createForm($params);
+            break;
+        case "searchDocument":
+            $res = Docs\AjaxCommand::searchDocument($params);
+            break;
         case "sendCancel":
             $res = Docs\AjaxCommand::sendCancel($params);
             break;
@@ -42,7 +50,7 @@ if (isset($command)) {
             $res = Docs\AjaxCommand::searchMessage($params);
             break;
         case "newMessage":
-            $res = Docs\AjaxCommand::newMessageNew($params);
+            $res = Docs\AjaxCommand::createMessage($params);
             break;
         case "getMessageList":
             $res = Docs\AjaxCommand::getMessageListNew($params);

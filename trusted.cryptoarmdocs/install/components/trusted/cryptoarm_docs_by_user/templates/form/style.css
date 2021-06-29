@@ -1,0 +1,82 @@
+.dark_window {
+    background: rgba(0, 0, 0, 0.726);
+    height: 100vh;
+    position: fixed;
+    width: 100%;
+    z-index: 15;
+}
+
+.trn_form {
+    border: 1px;
+    border-color: #2196F3;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    box-sizing: content-box;
+    flex-direction: column;
+    z-index: 1050;
+    margin: 0;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    padding: 60px;
+    width: 884px;
+    height: 70%;
+    pointer-events: auto;
+    overflow-y: scroll;
+}
+
+.trn_form_item {
+    display:flex;
+    width: 100%;
+}
+
+.trn_form input[type="text"] {
+    width: 860px;
+    height: 29px;
+}
+
+.trn_form_button{
+    border-radius: 5px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    align-self: center;
+    width: 183px;
+    height: 51px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 24px;
+    color: white;
+    background-color: grey;
+    cursor: not-allowed;
+}
+
+.trn_able_button {
+    background-color: #2196F3 !important;
+    cursor: pointer !important;
+}
+
+.tcn_form_text_input_field {
+    display: flex;
+    height: 100px;
+    justify-content: space-around;
+    flex-direction: column;
+}
+.tcn_form_text_input_field_passport {
+    height: 157px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.trn_form_funds_radio_place {
+    display: flex;
+}
+
+.trn_form_public_radio {
+    display: flex;
+}

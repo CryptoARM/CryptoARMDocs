@@ -2,7 +2,7 @@
 
 use Bitrix\Main\Config\Option;
 
-/*fBs*/define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocscrp"); /*fMs*/ //tags for core name changing script
+/*fBs*/define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocsstart"); /*fMs*/ //tags for core name changing script
 
 define("TR_CA_HOST", preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
 
@@ -29,6 +29,8 @@ define("DB_TABLE_MESSAGES", "tr_ca_docs_messages");
 define("DB_TABLE_MESSAGES_PROPERTY", "tr_ca_docs_messages_property");
 define("DB_TABLE_LABELS", "tr_ca_docs_labels");
 define("DB_TABLE_LABELS_PROPERTY", "tr_ca_docs_labels_property");
+define("DB_TABLE_CONTACTS", "tr_ca_docs_contacts");
+
 
 // TRANSACTION STATUS
 define("DOC_TRANSACTION_NOT_COMPLETED", 0);

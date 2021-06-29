@@ -29,11 +29,11 @@ require_once $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/classes/general/upd
 
 Loc::loadMessages(__FILE__);
 
-/*fBs*/Class trusted_cryptoarmdocsbusiness extends CModule/*fMs*/ //tags for core name changing script
+/*fBs*/Class trusted_cryptoarmdocsstart extends CModule/*fMs*/ //tags for core name changing script
 {
     // Required by the marketplace standards
 
-    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocsbusiness";/*fMs*/ //tags for core name changing script
+    /*fBs*/var $MODULE_ID = "trusted.cryptoarmdocsstart";/*fMs*/ //tags for core name changing script
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
@@ -41,7 +41,7 @@ Loc::loadMessages(__FILE__);
     var $PARTNER_NAME;
     var $PARTNER_URI;
 
-    /*fBs*/ function trusted_cryptoarmdocsbusiness()/*fMs*/ //tags for core name changing script
+    /*fBs*/ function trusted_cryptoarmdocsstart()/*fMs*/ //tags for core name changing script
     {
         self::__construct();
     }
@@ -347,8 +347,6 @@ Loc::loadMessages(__FILE__);
 
         $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_messages` (
                     `ID` int(11) NOT NULL AUTO_INCREMENT,
-                    `SENDER_ID` int(11) NOT NULL,
-                    `RECEPIENT_ID` int(11),
                     `THEME` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `COMMENT` text COLLATE utf8_unicode_ci DEFAULT NULL,
                     `TIMESTAMP_X` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -381,6 +379,45 @@ Loc::loadMessages(__FILE__);
                     `MESSAGE_ID` int(11) NOT NULL,
                     `LABEL_ID` int(11) NOT NULL,
                 PRIMARY KEY (`ID`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
+        $DB->Query($sql);
+
+        $sql = "CREATE TABLE IF NOT EXISTS `tr_ca_docs_contacts`(
+                    `ID` int(11) NOT NULL AUTO_INCREMENT,
+                    `MESSAGE_ID` int(11) NOT NULL,
+                    `SENDER_ID` int(11) NOT NULL,
+                    `RECEPIENT_ID` int(11) NOT NULL,
+                PRIMARY KEY (`ID`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+        $DB->Query($sql);
+
+        $sql = "CREATE TABLE IF NOT EXISTS `tr_id_form` (
+            `ID` int(11) NOT NULL AUTO_INCREMENT,
+            `USER_ID` int(11) NOT NULL,
+            `FIO` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `birthday` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `pob` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `citizenhood` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `passport_siries` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `passport_number` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `passport_when` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `passport_who` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `int_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `int_passport` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `id_number` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `inn` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `phone` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `email` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `reg_address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `fact_address` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `income_source` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `income_value` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `sof` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+            `founds_value` int(4),
+            `is_public` int(3),
+            `agreement_id` int(11),
+            `blank_id` int(11),
+            PRIMARY KEY (`ID`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
         $DB->Query($sql);
     }

@@ -28,3 +28,12 @@ $MESS["TR_CA_DOCS_COMP_FIND_LABEL"] = "Найти метку";
 $MESS["TR_CA_DOCS_COMP_LABEL_ASSIGN"] = "Присвоить метки";
 $MESS["TR_CA_DOCS_COMP_EDIT_LABEL"] = "Редактирование меток";
 $MESS["TR_CA_DOCS_COMP_EDIT_LABEL_CREATE"] = "Создать метку";
+
+$MESS["TR_CA_DOCS_COMP_UPLOAD_DOCUMENTS"] = "Загрузить документы";
+$MESS["TR_CA_DOCS_COMP_INCOMING"] = "Входящие";
+$MESS["TR_CA_DOCS_COMP_OUTGOING"] = "Исходящие";
+$MESS["TR_CA_DOCS_COMP_DRAFTS"] = "Черновики";
+$MESS["TR_CA_DOCS_COMP_DOCUMENTS"] = "Документы";
+$MESS["TR_CA_DOCS_COMP_UPLOADED"] = "Загруженные";
+$MESS["TR_CA_DOCS_COMP_AVAILABLE"] = "Доступные";
+$MESS["TR_CA_DOCS_COMP_LABELS"] = "Метки";
