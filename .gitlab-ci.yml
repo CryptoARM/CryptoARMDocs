@@ -40,6 +40,6 @@ deploy_magenta45:
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
   tags:
-   - shell45
+   - prod236
   when: manual
 
