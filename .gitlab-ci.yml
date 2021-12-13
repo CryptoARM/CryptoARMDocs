@@ -7,6 +7,8 @@ deploy_green:
     - web
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh green
+  tags:
+   - prod236
   when: manual
 
 deploy_yellow:
@@ -15,25 +17,11 @@ deploy_yellow:
     - web
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh yellow
-  when: manual
-
-deploy_red:
-  stage: deploy
-  only:
-    - web
-  script:
-   - chmod 755 extra/deploy.sh; extra/deploy.sh red
+  tags:
+   - prod236
   when: manual
 
 deploy_magenta:
-  stage: deploy
-  only:
-    - web
-  script:
-   - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
-  when: manual
-
-deploy_magenta45:
   stage: deploy
   only:
     - web
