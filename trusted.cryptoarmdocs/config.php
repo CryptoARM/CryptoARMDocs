@@ -2,7 +2,21 @@
 
 use Bitrix\Main\Config\Option;
 
-/*fBs*/define("TR_CA_DOCS_MODULE_ID", "trusted.cryptoarmdocsbusiness"); /*fMs*/ //tags for core name changing script
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
+define("TR_CA_DOCS_MODULE_ID", $module_id);
 
 define("TR_CA_HOST", preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
 

@@ -3,6 +3,20 @@
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\Config\Option;
 
+//checks the name of currently installed core from highest possible version to lowest
+$coreIds = array(
+    'trusted.cryptoarmdocscrp',
+    'trusted.cryptoarmdocsbusiness',
+    'trusted.cryptoarmdocsstart',
+);
+foreach ($coreIds as $coreId) {
+    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
+    if(file_exists($corePathDir)) {
+        $module_id = $coreId;
+        break;
+    }
+}
+
 if (!check_bitrix_sessid()) {
     return;
 }
@@ -15,7 +29,7 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_UNINSTALL_TITLE"));
 <form action="<?= $APPLICATION->GetCurPage() ?>">
     <?= bitrix_sessid_post() ?>
     <input type="hidden" name="lang" value="<?= LANG ?>">
-    <!--fBs--><input type="hidden" name="id" value="trusted.cryptoarmdocsbusiness"><!--fMs tags for core name changing script-->
+    <input type="hidden" name="id" value="<?= $module_id ?>">
     <input type="hidden" name="uninstall" value="Y">
     <input type="hidden" name="step" value="2">
     <? echo CAdminMessage::ShowMessage(Loc::getMessage("MOD_UNINST_WARN")) ?>
