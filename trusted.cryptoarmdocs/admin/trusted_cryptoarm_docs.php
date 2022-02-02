@@ -5,27 +5,9 @@ use Bitrix\Main\Loader;
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php";
 
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-);
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$module_id = "trusted.cryptoarmdocsfree";
 Loader::includeModule($module_id);
 Loc::loadMessages(__FILE__);
-
-
-if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
-    echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
-    die();
-};
 
 // current user rights for the module
 $POST_RIGHT = $APPLICATION->GetGroupRight($module_id);

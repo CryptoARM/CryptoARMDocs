@@ -7,28 +7,13 @@ if (!check_bitrix_sessid()) {
 
 Loc::loadMessages(__FILE__);
 
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-);
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$module_id = "trusted.cryptoarmdocsfree";
 
 $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
 ?>
 
 
-<? if ($module_id === "trusted.cryptoarmdocscrp" || $module_id === "trusted.cryptoarmdocsbusiness") : ?>
-    <?= CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP")); ?>
-<? endif; ?>
-<? if ($module_id === "trusted.cryptoarmdocsstart") : ?>
+<? if ($module_id === "trusted.cryptoarmdocsfree") : ?>
     <?= (CAdminMessage::ShowNote(Loc::getMessage("TR_CA_DOCS_DROP_OR_KEEP_DB_ONLY"))); ?>
 <? endif; ?>
 
@@ -42,23 +27,11 @@ $APPLICATION->SetTitle(Loc::getMessage("TR_CA_DOCS_INSTALL_TITLE"));
         <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_KEEP") ?>">
     </form>
 
-    <? if ($module_id === "trusted.cryptoarmdocscrp" || $module_id === "trusted.cryptoarmdocsbusiness") : ?>
+    <? if ($module_id === "trusted.cryptoarmdocsfree") : ?>
         <form action="<?= $APPLICATION->GetCurPage() ?>">
         <?=bitrix_sessid_post()?>
             <input type="hidden" name="lang" value="<?= LANG ?>">
-            <input type="hidden" name="id" value="<?= $module_id ?>">
-            <input type="hidden" name="install" value="Y">
-            <input type="hidden" name="step" value="4">
-            <input type="hidden" name="dropDBandIB" value="Y">
-            <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_DROP") ?>">
-            <input type="submit" name="choice" value="<?= Loc::getMessage("TR_CA_DOCS_CANCEL") ?>">
-        </form>
-    <? endif; ?>
-    <? if ($module_id === "trusted.cryptoarmdocsstart") : ?>
-        <form action="<?= $APPLICATION->GetCurPage() ?>">
-        <?=bitrix_sessid_post()?>
-            <input type="hidden" name="lang" value="<?= LANG ?>">
-            <input type="hidden" name="id" value="trusted.cryptoarmdocsstart">
+            <input type="hidden" name="id" value="trusted.cryptoarmdocsfree">
             <input type="hidden" name="install" value="Y">
             <input type="hidden" name="step" value="4">
             <input type="hidden" name="dropDB" value="Y">

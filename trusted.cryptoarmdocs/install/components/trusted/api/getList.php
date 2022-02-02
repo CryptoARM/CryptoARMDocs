@@ -8,19 +8,13 @@ use Bitrix\Main\Loader;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
 
-$coreIds = [
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-];
+$coreId = 'trusted.cryptoarmdocsfree';
 $module_id = 'not found';
 
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
-    if (file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
+$corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+if (file_exists($corePathDir)) {
+    $module_id = $coreId;
+    break;
 }
 
 Loader::includeModule($module_id);

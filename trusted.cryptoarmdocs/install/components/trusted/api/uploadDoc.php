@@ -9,18 +9,13 @@ use Bitrix\Main\Config\Option;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Localization\Loc;
 
-$coreIds = [
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-];
+$coreId = 'trusted.cryptoarmdocsfree';
 $module_id = 'not found';
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
-    if (file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
+
+$corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+if (file_exists($corePathDir)) {
+    $module_id = $coreId;
+    break;
 }
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $module_id . "/lang/ru/classes/Utils.php";

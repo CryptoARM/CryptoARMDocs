@@ -5,23 +5,13 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Trusted\CryptoARM\Docs;
 use Bitrix\Main\Loader;
 if($USER->IsAuthorized()){
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-);
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$coreId = 'trusted.cryptoarmdocsfree';
+$module_id = 'not found';
 
-if (CModule::IncludeModuleEx($module_id) == MODULE_DEMO_EXPIRED) {
-    echo GetMessage("TR_CA_DOCS_MODULE_DEMO_EXPIRED");
-    return false;
+$corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
+if (file_exists($corePathDir)) {
+    $module_id = $coreId;
+    break;
 }
 
 if (isModuleInstalled($module_id)) {

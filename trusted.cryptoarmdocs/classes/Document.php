@@ -6,19 +6,7 @@ use Bitrix\Main\IO\File;
 use Bitrix\Main\IO\Directory;
 use Bitrix\Main\Localization\Loc;
 
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = [
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-];
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
-    if (file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$module_id = "trusted.cryptoarmdocsfree";
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/general/IEntity.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/general/ISave.php';

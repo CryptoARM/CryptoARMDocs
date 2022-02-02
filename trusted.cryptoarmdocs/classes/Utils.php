@@ -567,17 +567,7 @@ class Utils
 
     //returns the name of currently installed core
     public static function getCoreId() {
-        $coreIds = array(
-            'trusted.cryptoarmdocsstart',
-            'trusted.cryptoarmdocsbusiness',
-            'trusted.cryptoarmdocscrp',
-        );
-        foreach ($coreIds as $coreId) {
-            $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-            if(file_exists($corePathDir)) {
-                $moduleId = $coreId;
-            }
-        }
+        $module_id = "trusted.cryptoarmdocsfree";
         return $moduleId;
     }
 

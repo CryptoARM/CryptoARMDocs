@@ -5,19 +5,7 @@ use Bitrix\Main\ModuleManager;
 
 
 Loc::loadMessages(__FILE__);
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-);
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$module_id = "trusted.cryptoarmdocsfree";
 
 if (isModuleInstalled($module_id)) {
     Loader::includeModule($module_id);

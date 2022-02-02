@@ -8,19 +8,7 @@ use Bitrix\Main\EventManager;
 use Bitrix\Main\Loader;
 use Trusted\CryptoARM\Docs;
 
-//checks the name of currently installed core from highest possible version to lowest
-$coreIds = array(
-    'trusted.cryptoarmdocscrp',
-    'trusted.cryptoarmdocsbusiness',
-    'trusted.cryptoarmdocsstart',
-);
-foreach ($coreIds as $coreId) {
-    $corePathDir = $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/" . $coreId . "/";
-    if(file_exists($corePathDir)) {
-        $module_id = $coreId;
-        break;
-    }
-}
+$module_id = "trusted.cryptoarmdocsfree";
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/include.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/' . $module_id . '/classes/Database.php';
@@ -80,19 +68,15 @@ Class trusted_cryptoarmdocsfree extends CModule
             );
         }
 
-        $modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
+        /*$modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
         $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
-        $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];
+        $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];*/
+
+        $modulesFree = ["trusted.id"];
 
         switch ($this->MODULE_ID) {
-            case "trusted.cryptoarmdocsstart":
-                $modulesNeeded = $modulesStart;
-                break;
-            case "trusted.cryptoarmdocsbusiness":
-                $modulesNeeded = $modulesForSmallBusiness;
-                break;
-            case "trusted.cryptoarmdocscrp":
-                $modulesNeeded = $modulesForCorportal;
+            case "trusted.cryptoarmdocsfree":
+                $modulesNeeded = $modulesFree;
                 break;
             default:
                 $APPLICATION->IncludeAdminFile(
@@ -246,17 +230,17 @@ Class trusted_cryptoarmdocsfree extends CModule
 
         switch ($bitrixRedaction) {
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_START')) != null):
-                if ($moduleId === "trusted.cryptoarmdocsstart")
+                if ($moduleId === "trusted.cryptoarmdocsfree")
                     $success = true;
                 break;
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
-                if ($moduleId === "trusted.cryptoarmdocsbusiness")
+                if ($moduleId === "trusted.cryptoarmdocsfree")
                     $success = true;
                 break;
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
-            if ($moduleId === "trusted.cryptoarmdocscrp")
+            if ($moduleId === "trusted.cryptoarmdocsfree")
                 $success = true;
                 break;
         }
