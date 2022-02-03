@@ -21,7 +21,7 @@ Class trusted_cryptoarmdocsfree extends CModule
 {
     // Required by the marketplace standards
 
-    var $MODULE_ID = $module_id;
+    var $MODULE_ID = 'trusted.cryptoarmdocsfree';
     var $MODULE_NAME;
     var $MODULE_DESCRIPTION;
     var $MODULE_VERSION;
