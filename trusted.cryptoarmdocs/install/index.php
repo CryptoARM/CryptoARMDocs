@@ -226,7 +226,7 @@ Class trusted_cryptoarmdocsfree extends CModule
         $stableVersionsOnly = COption::GetOptionString("main", "stable_versions_only", "Y");
         $arUpdateList = CUpdateClient::GetUpdatesList($errorMessage, LANG, $stableVersionsOnly);
         $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
-        $modulesFree = ["trusted.id"];
+        $success = true;
 
         /*switch ($bitrixRedaction) {
             case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_START')) != null):
