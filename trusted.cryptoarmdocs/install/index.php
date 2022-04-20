@@ -68,10 +68,6 @@ Class trusted_cryptoarmdocsfree extends CModule
             );
         }
 
-        /*$modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
-        $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
-        $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];*/
-
         $modulesFree = $this->GetCompatibilityBitrixModules();
 
         switch ($this->MODULE_ID) {
@@ -257,15 +253,15 @@ Class trusted_cryptoarmdocsfree extends CModule
         $modules = ["trusted.id"];
 
         switch ($bitrixRedaction) {
-            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_STANDARD')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_STANDARD')) != null):
                 $modules = ["trusted.id", "trusted.cryptoarmdocsforms"];
                 break;
-            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
                 $modules = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
                 break;
-            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
-            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
-            case (stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
                 $modules = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsbp", "trusted.cryptoarmdocsorders"];
                 break;
         }
