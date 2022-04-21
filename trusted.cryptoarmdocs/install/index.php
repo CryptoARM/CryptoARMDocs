@@ -68,11 +68,7 @@ Class trusted_cryptoarmdocsfree extends CModule
             );
         }
 
-        /*$modulesStart = ["trusted.id", "trusted.cryptoarmdocsforms"];
-        $modulesForSmallBusiness = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
-        $modulesForCorportal = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders", "trusted.cryptoarmdocsbp"];*/
-
-        $modulesFree = ["trusted.id"];
+        $modulesFree = $this->GetCompatibilityBitrixModules();
 
         switch ($this->MODULE_ID) {
             case "trusted.cryptoarmdocsfree":
@@ -246,6 +242,31 @@ Class trusted_cryptoarmdocsfree extends CModule
         }*/
 
         return $success;
+    }
+
+    function GetCompatibilityBitrixModules() {
+        $moduleId = $this->MODULE_ID;
+        $errorMessage = "";
+        $stableVersionsOnly = COption::GetOptionString("main", "stable_versions_only", "Y");
+        $arUpdateList = CUpdateClient::GetUpdatesList($errorMessage, LANG, $stableVersionsOnly);
+        $bitrixRedaction = $arUpdateList["CLIENT"][0]["@"]["LICENSE"];
+        $modules = ["trusted.id"];
+
+        switch ($bitrixRedaction) {
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_STANDARD')) != null):
+                $modules = ["trusted.id", "trusted.cryptoarmdocsforms"];
+                break;
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_SMALL_BUSINESS_OR_BUSINESS_REDACTION')) != null):
+                $modules = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsorders"];
+                break;
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_ENTERPRISE_REDACTION')) != null):
+            case (mb_stristr($bitrixRedaction, Loc::GetMessage('TR_CA_DOCS_CORP_REDACTION_CRM')) != null):
+                $modules = ["trusted.id", "trusted.cryptoarmdocsforms", "trusted.cryptoarmdocsbp", "trusted.cryptoarmdocsorders"];
+                break;
+        }
+
+        return $modules;
     }
 
     function InstallModuleOptions()
