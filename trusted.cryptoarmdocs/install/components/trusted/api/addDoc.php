@@ -15,7 +15,6 @@ $module_id = 'not found';
 $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
 if (file_exists($corePathDir)) {
     $module_id = $coreId;
-    break;
 }
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $module_id . "/lang/ru/classes/Utils.php";

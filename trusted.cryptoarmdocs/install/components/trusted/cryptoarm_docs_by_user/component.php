@@ -11,7 +11,6 @@ $module_id = 'not found';
 $corePathDir = $_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/" . $coreId . "/";
 if (file_exists($corePathDir)) {
     $module_id = $coreId;
-    break;
 }
 
 if (isModuleInstalled($module_id)) {
