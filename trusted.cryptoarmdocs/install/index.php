@@ -143,9 +143,10 @@ Class trusted_cryptoarmdocsfree extends CModule
 
                 if ($moduleDownloaded) {
                     $className = str_replace(".", "_", $moduleName);
-                    if (!IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible() === "ok") {
-                        $className::DoInstall();
-                    } elseif (IsModuleInstalled($moduleName) && $className::CoreAndModuleAreCompatible() !== "ok") {
+	                $classInstance = new $className();
+                    if (!IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() === "ok") {
+                        $classInstance->DoInstall();
+                    } elseif (IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() !== "ok") {
                         $modulesOutOfDate[] = $moduleName;
                     }
                 }
