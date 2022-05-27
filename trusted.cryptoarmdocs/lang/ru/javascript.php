@@ -54,6 +54,7 @@ $MESS["TR_CA_DOCS_UNSHARE_CONFIRM"] = " Документ будет удалён
 $MESS["TR_CA_DOCS_UNSHARE_FROM_MODAL_CONFIRM"] = " Документ будет удалён из списка пользователя. Продолжить?";
 $MESS["TR_CA_DOCS_NAME_SYMBOLS"] = "/[^\dA-Za-zА-Яа-яЁё\.\ \,\-\_\(\)]/";
 $MESS["TR_CA_DOCS_ACT_ERROR_NAME"] = "В названии файла используются недопустимые символы";
+$MESS["TR_CA_DOCS_DOWNLOAD_ERROR"] = "Ошибка при загрузке файла";
 
 // $MESS["TR_CA_DOCS_SIGN_TYPE"] = TR_CA_DOCS_TYPE_SIGN;
 
