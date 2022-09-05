@@ -8,7 +8,7 @@ deploy_green:
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh green
   tags:
-   - deploy_docs_PRD_N
+   - mithril_bitrix_stand_deployment
   when: manual
 
 deploy_yellow:
@@ -18,16 +18,5 @@ deploy_yellow:
   script:
    - chmod 755 extra/deploy.sh; extra/deploy.sh yellow
   tags:
-   - deploy_docs_PRD_N
+   - mithril_bitrix_stand_deployment
   when: manual
-
-deploy_magenta:
-  stage: deploy
-  only:
-    - web
-  script:
-   - chmod 755 extra/deploy.sh; extra/deploy.sh magenta
-  tags:
-   - deploy_docs_PRD_N
-  when: manual
-

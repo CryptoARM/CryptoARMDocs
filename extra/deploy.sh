@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-path_to_module="/stages/www/"$1"/bitrix/modules/trusted.cryptoarmdocsfree/"
+path_to_module="/var/www/"$1"/bitrix/modules/trusted.cryptoarmdocsfree/"
 
 sudo rm -rf $path_to_module
 sudo cp -R trusted.cryptoarmdocs/ $path_to_module
