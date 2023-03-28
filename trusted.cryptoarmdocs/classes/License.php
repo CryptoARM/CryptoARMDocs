@@ -63,7 +63,6 @@ class License
 
     public static function getOneTimeLicense() {
         $url = LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN . LICENSE_ACCOUNT_NUMBER;
-        var_dump('getOneTimeLicense');
         global $USER;
         $userInfo = $USER->GetFullName() . " (" . $USER->GetID() . ")";
         return License::makeRequest($url, array('user' => $userInfo));
