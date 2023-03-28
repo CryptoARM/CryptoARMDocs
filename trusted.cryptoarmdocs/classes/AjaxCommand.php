@@ -8,39 +8,6 @@ use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\ModuleManager;
 use Bitrix\Main\Config\Option;
 
-function var2console($var, $name='', $now=false)
-{
-   if ($var === null)          $type = 'NULL';
-   else if (is_bool    ($var)) $type = 'BOOL';
-   else if (is_string  ($var)) $type = 'STRING['.strlen($var).']';
-   else if (is_int     ($var)) $type = 'INT';
-   else if (is_float   ($var)) $type = 'FLOAT';
-   else if (is_array   ($var)) $type = 'ARRAY['.count($var).']';
-   else if (is_object  ($var)) $type = 'OBJECT';
-   else if (is_resource($var)) $type = 'RESOURCE';
-   else                        $type = '???';
-   if (strlen($name)) {
-      str2console("$type $name = ".var_export($var, true).';', $now);
-   } else {
-      str2console("$type = "      .var_export($var, true).';', $now);
-   }
-}
-
-function str2console($str, $now=false)
-{
-   if ($now) {
-      echo "<script type='text/javascript'>\n";
-      echo "//<![CDATA[\n";
-      echo "console.log(", json_encode($str), ");\n";
-      echo "//]]>\n";
-      echo "</script>";
-   } else {
-      register_shutdown_function('str2console', $str, true);
-   }
-}
-
-var2console("++++++++++111+");
-
 /**
  * Controllers for AJAX requests.
  *
@@ -119,7 +86,6 @@ class AjaxCommand {
      *               [docsRoleSigned]: documents that were already signed by provided ROLE
      */
     static function sign($params) {
-        var2console("+++++++++++");
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.sign",
@@ -169,12 +135,9 @@ class AjaxCommand {
 
         var_dump(PROVIDE_LICENSE);
         var_dump($res['success']);
-        var2console(PROVIDE_LICENSE);
-        var2console($res['success']);
 
         if ($res['success'] && PROVIDE_LICENSE) {
             $license = License::getOneTimeLicense();
-            var2console($license);
             var_dump($license);
             if (!$license['success']) {
                 $res['message'] .= '. License fetch error';
