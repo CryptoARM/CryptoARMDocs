@@ -14,6 +14,13 @@ use Bitrix\Main\Config\Option;
  * Used for interaction of bitrix server with opened pages and signing client.
  */
 class AjaxCommand {
+    function debug_to_console($data) {
+    $output = $data;
+    if (is_array($output))
+        $output = implode(',', $output);
+
+    echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+}
 
     /**
      * Check if documents are available before acessing them.
@@ -126,8 +133,12 @@ class AjaxCommand {
             $res["message"] = "Nothing to sign";
         }
 
+        debug_to_console(PROVIDE_LICENSE);
+        debug_to_console($res['success']);
+
         if ($res['success'] && PROVIDE_LICENSE) {
             $license = License::getOneTimeLicense();
+            debug_to_console($license);
             if (!$license['success']) {
                 $res['message'] .= '. License fetch error';
                 $res['license'] = null;
