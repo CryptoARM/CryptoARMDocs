@@ -127,8 +127,8 @@ class AjaxCommand {
         }
 
         $license = License::getOneTimeLicense();
-        $res['license'] = $license['data'];
-
+        $res['license'] = 'CS3QV-VWQPC-KCMWD-WRKWD-FDCJW-WQTFA-RFAKK';
+        
         function console_log($data){ // сама функция
             if(is_array($data) || is_object($data)){
 		        echo("<script>console.log('php_array: ".json_encode($data)."');</script>");
