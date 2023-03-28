@@ -29,7 +29,7 @@ class License
         if (!curl_errno($curl)) {
             $responseList = json_decode($response, true);
             $info = curl_getinfo($curl);
-            if ($info['http_code'] == 200) {
+            if ($info['http_code'] == 200 || $info['http_code'] == 201) {
                 $res = array(
                     "success" => true,
                     "message" => $responseList['message'],

@@ -127,8 +127,7 @@ class AjaxCommand {
         }
 
         $license = License::getOneTimeLicense();
-        $res['license'] = "CS3QV-VWQPC-KCMWD-WRKWD-FDCJW-WQTFA-RFAKK";
-        
+        $res['license'] = $license['data'];
 
         return $res;
     }
