@@ -126,8 +126,21 @@ class AjaxCommand {
             $res["message"] = "Nothing to sign";
         }
 
+        function console_log($data){ // сама функция
+            if(is_array($data) || is_object($data)){
+		        echo("<script>console.log('php_array: ".json_encode($data)."');</script>");
+	        } else {
+                echo("<script>console.log('php_string: ".$data."');</script>");
+	        }
+        }
+
+
+        console_log($res['success']);
+        console_log(PROVIDE_LICENSE);
+
         if ($res['success'] && PROVIDE_LICENSE) {
             $license = License::getOneTimeLicense();
+            console_log(PROVIDE_LICENSE);
             if (!$license['success']) {
                 $res['message'] .= '. License fetch error';
                 $res['license'] = null;
