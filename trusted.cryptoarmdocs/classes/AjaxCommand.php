@@ -79,6 +79,8 @@ class AjaxCommand {
      *               [docsRoleSigned]: documents that were already signed by provided ROLE
      */
     static function sign($params) {
+        var_dump($params)
+
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.sign",
