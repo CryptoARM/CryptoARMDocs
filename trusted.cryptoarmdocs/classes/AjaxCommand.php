@@ -133,12 +133,12 @@ class AjaxCommand {
             $res["message"] = "Nothing to sign";
         }
 
-        debug_to_console(PROVIDE_LICENSE);
-        debug_to_console($res['success']);
+        var_dump(PROVIDE_LICENSE);
+        var_dump($res['success']);
 
         if ($res['success'] && PROVIDE_LICENSE) {
             $license = License::getOneTimeLicense();
-            debug_to_console($license);
+            var_dump($license);
             if (!$license['success']) {
                 $res['message'] .= '. License fetch error';
                 $res['license'] = null;
