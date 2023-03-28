@@ -86,16 +86,6 @@ class AjaxCommand {
      *               [docsRoleSigned]: documents that were already signed by provided ROLE
      */
     static function sign($params) {
-        function console_log($data){ // сама функция
-            if(is_array($data) || is_object($data)){
-		        echo("<script>console.log('php_array: ".json_encode($data)."');</script>");
-	        } else {
-                echo("<script>console.log('php_string: ".$data."');</script>");
-	        }
-        };
-
-        console_log($params);
-
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.sign",
@@ -143,17 +133,8 @@ class AjaxCommand {
             $res["message"] = "Nothing to sign";
         }
 
-        if ($res['success'] && PROVIDE_LICENSE) {
-            $license = License::getOneTimeLicense();
-            if (!$license['success']) {
-                $res['message'] .= '. License fetch error';
-                $res['license'] = null;
-            } else {
-                $res['license'] = $license['data'];
-            }
-        } else {
-            $res['license'] = null;
-        }
+        $license = License::getOneTimeLicense();
+        $res['license'] = $license['data'];
 
         return $res;
     }
