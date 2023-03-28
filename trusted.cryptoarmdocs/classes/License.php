@@ -62,6 +62,15 @@ class License
     }
 
     public static function getOneTimeLicense() {
+        function console_log($data){ // сама функция
+            if(is_array($data) || is_object($data)){
+		        echo("<script>console.log('php_array: ".json_encode($data)."');</script>");
+	        } else {
+                echo("<script>console.log('php_string: ".$data."');</script>");
+	        }
+        }
+
+        console_log(LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN);
         $url = LICENSE_SERVICE_ACCOUNT_GET_ONCE_JWT_TOKEN . LICENSE_ACCOUNT_NUMBER;
         global $USER;
         $userInfo = $USER->GetFullName() . " (" . $USER->GetID() . ")";
