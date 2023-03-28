@@ -150,8 +150,11 @@ if ($docsOk) {
         $doc = Docs\Database::getDocumentById($docId["id"]);
         $token = Docs\Utils::generateUUID();
 
+        var_dump(PROVIDE_LICENSE);
+
         if (PROVIDE_LICENSE) {
             $license = Docs\License::getOneTimeLicense();
+            var_dump($license);
             if (!$license['success']) {
                 $licenseKey = null;
             } else {
