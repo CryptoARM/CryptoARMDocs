@@ -68,7 +68,7 @@ define("DOC_SHARE_READ", "SHARE_READ");
 define("DOC_SHARE_SIGN", "SHARE_SIGN");
 
 // License request url
-define("LICENSE_SERVICE_URL" , "https://lic.trusted.ru/license/account");
+define("LICENSE_SERVICE_URL" , "https://dev.license.trusted.plus/license/account");
 define("LICENSE_SERVICE_REGISTER_NEW_ACCOUNT_NUMBER" , LICENSE_SERVICE_URL . "/new");
 define("LICENSE_SERVICE_ACTIVATE_CODE" , LICENSE_SERVICE_URL . '/activate/');
 define("LICENSE_SERVICE_ACCOUNT_CHECK_BALANCE" , LICENSE_SERVICE_URL . '/check/');
