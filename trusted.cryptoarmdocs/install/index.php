@@ -363,7 +363,7 @@ Class trusted_cryptoarmdocsfree extends CModule
 
     function InstallMailEvents()
     {
-        $obEventType = new CEventType;
+        $obEventType = new CEventType();
         $events = array(
             // by order
             array(
@@ -402,7 +402,7 @@ Class trusted_cryptoarmdocsfree extends CModule
             $obEventType->add($event);
         }
 
-        $obEventMessage = new CEventMessage;
+        $obEventMessage = new CEventMessage();
         $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
         $siteIds = array();
         while ($site = $sites->Fetch()) {
@@ -609,11 +609,11 @@ Class trusted_cryptoarmdocsfree extends CModule
                 $order = 'desc',
                 array('TYPE' => $event)
             );
-            $eventMessage = new CEventMessage;
+            $eventMessage = new CEventMessage();
             while ($template = $eventMessages->Fetch()) {
                 $eventMessage->Delete((int)$template['ID']);
             }
-            $eventType = new CEventType;
+            $eventType = new CEventType();
             $eventType->Delete($event);
         }
     }

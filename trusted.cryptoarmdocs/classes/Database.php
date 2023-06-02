@@ -624,7 +624,7 @@ class Database {
                 TDP.TYPE = '" . $type . "'
         ";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
@@ -652,7 +652,7 @@ class Database {
                 TDP.VALUE = '" . $value . "'
         ";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
@@ -906,7 +906,7 @@ class Database {
         }
         $sql .= " GROUP BY TD.ID;";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Database::getDocumentById($row["ID"]));
         }
