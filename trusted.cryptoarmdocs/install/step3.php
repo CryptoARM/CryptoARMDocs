@@ -41,6 +41,7 @@ function getLostDocs()
     <input type="hidden" name="step" value="4">
     <?php
     $lostDocs = getLostDocs();
+    $lostDocsIds = [];
     if ($lostDocs) {
         $lostDocsNames = array();
         foreach ($lostDocs as $doc) {

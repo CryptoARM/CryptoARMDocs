@@ -869,7 +869,8 @@ class Database {
             WHERE DOCS.DOCUMENT_ID = '$docId' AND
             DOCS.TYPE = 'USER'";
         $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch()){
+	    $res = '';
+        while ($row = $rows->Fetch()) {
             $res.=$row["EMAIL"];
         }
         return $res;
