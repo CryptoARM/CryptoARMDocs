@@ -1120,7 +1120,7 @@ class AjaxCommand {
      *
      * @return boolean
      */
-    public function blockCheck($params) {
+    public static function blockCheck($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.blockCheck",
@@ -1157,7 +1157,7 @@ class AjaxCommand {
     }
 
 
-    public function requireToSign($params) {
+    public static function requireToSign($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.requireToSign",
@@ -1287,7 +1287,7 @@ class AjaxCommand {
      *                ["method"] type of method
      * @return array info about created transaction
      */
-    public function createTransaction($params) {
+    public static function createTransaction($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.createTransaction",
@@ -1357,7 +1357,7 @@ class AjaxCommand {
         return $res;
     }
 
-    public function generateJson($params) {
+    public static function generateJson($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.generateJson",
@@ -1443,7 +1443,7 @@ class AjaxCommand {
         die;
     }
 
-    public function getTransactionUrlByToken($params) {
+    public static function getTransactionUrlByToken($params) {
         $url = "cryptoarm://sign/" . TR_CA_DOCS_AJAX_CONTROLLER . "?command=JSON&accessToken=" . $params["accessToken"];
 
         header("Location: " . $url);
@@ -1495,7 +1495,7 @@ class AjaxCommand {
         exit();*/
     }
 
-    public function getInfoForModalWindow($params) {
+    public static function getInfoForModalWindow($params) {
         $res = [
             "success" => false,
             "message" => "Unknown error in Ajax.getInfoForModalWindow",

@@ -258,7 +258,7 @@ class Utils
      * @author Torleif Berger, Lorenzo Stanco
      * @link http://stackoverflow.com/a/15025877/995958
      * @license http://creativecommons.org/licenses/by/3.0/
-     * @param string $path Path to the file
+     * @param string $filepath Path to the file
      * @param int $lines Number of lines to read
      * @param mixed $adaptive
      * @return string
@@ -383,7 +383,7 @@ class Utils
     /**
      * Display variable in browser and stop execution
      *
-     * @param mixed $msg
+     * @param mixed $var
      * @return void
      */
     public static function printAndDie($var)
@@ -567,7 +567,7 @@ class Utils
 
     //returns the name of currently installed core
     public static function getCoreId() {
-        $module_id = "trusted.cryptoarmdocsfree";
+	    $moduleId = "trusted.cryptoarmdocsfree";
         return $moduleId;
     }
 
@@ -600,7 +600,7 @@ class Utils
      * @param string $uuid The string to check
      * @return bool
      */
-    function isValidUuid($uuid) {
+	public static function isValidUuid($uuid) {
         if (!is_string($uuid) || (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $uuid) !== 1)) {
             return false;
         }
