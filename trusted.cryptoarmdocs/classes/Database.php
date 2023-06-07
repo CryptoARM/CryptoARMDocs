@@ -392,9 +392,10 @@ class Database {
         }
         if (Loader::includeModule('bizproc')) {
             if (isModuleInstalled("trusted.cryptoarmdocsbp")) {
+	            $errors = [];
                 \CBPDocument::OnDocumentDelete(
                     WorkflowDocument::getComplexDocumentId($doc->getId()),
-                    $errors = []
+                    $errors
                 );
             }
         }
@@ -442,7 +443,7 @@ class Database {
 
     /**
      * Get documents from DB by BLOCK_TOKEN.
-     * @param string  $blockToken string BLOCK_TOKEN
+     * @param string  $token string BLOCK_TOKEN
      * @return DocumentCollection
      * @global object $DB         Bitrix global CDatabase object
      */
