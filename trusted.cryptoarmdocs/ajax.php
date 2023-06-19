@@ -84,6 +84,11 @@ if (isset($command)) {
         case "JSON":
             $postData = file_get_contents('php://input');
             $params = json_decode($postData, true);
+			if (is_null($params)) {
+				$params = [
+					"method" => ""
+				];
+			}
             if ($params["method"] === "signAndEncrypt.parameters") {
                 $res = Docs\AjaxCommand::generateJson($_REQUEST);
             } else {
