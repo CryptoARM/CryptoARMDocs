@@ -392,9 +392,10 @@ class Database {
         }
         if (Loader::includeModule('bizproc')) {
             if (isModuleInstalled("trusted.cryptoarmdocsbp")) {
+	            $errors = [];
                 \CBPDocument::OnDocumentDelete(
                     WorkflowDocument::getComplexDocumentId($doc->getId()),
-                    $errors = []
+                    $errors
                 );
             }
         }
@@ -442,7 +443,7 @@ class Database {
 
     /**
      * Get documents from DB by BLOCK_TOKEN.
-     * @param string  $blockToken string BLOCK_TOKEN
+     * @param string  $token string BLOCK_TOKEN
      * @return DocumentCollection
      * @global object $DB         Bitrix global CDatabase object
      */
@@ -624,7 +625,7 @@ class Database {
                 TDP.TYPE = '" . $type . "'
         ";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
@@ -652,7 +653,7 @@ class Database {
                 TDP.VALUE = '" . $value . "'
         ";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Document::fromArray($row));
         }
@@ -869,7 +870,8 @@ class Database {
             WHERE DOCS.DOCUMENT_ID = '$docId' AND
             DOCS.TYPE = 'USER'";
         $rows = $DB->Query($sql);
-        while ($row = $rows->Fetch()){
+	    $res = '';
+        while ($row = $rows->Fetch()) {
             $res.=$row["EMAIL"];
         }
         return $res;
@@ -905,7 +907,7 @@ class Database {
         }
         $sql .= " GROUP BY TD.ID;";
         $rows = $DB->Query($sql);
-        $docs = new DocumentCollection;
+        $docs = new DocumentCollection();
         while ($row = $rows->Fetch()) {
             $docs->add(Database::getDocumentById($row["ID"]));
         }

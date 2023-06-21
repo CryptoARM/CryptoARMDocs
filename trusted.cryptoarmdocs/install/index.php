@@ -61,7 +61,7 @@ Class trusted_cryptoarmdocsfree extends CModule
             );
         }
 
-        if (!self::CheckCompatibilityBitrixAndModule()) {
+        if (!$this->CheckCompatibilityBitrixAndModule()) {
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("MOD_INSTALL_TITLE"),
                 $DOCUMENT_ROOT . "/bitrix/modules/" . $this->MODULE_ID . "/install/step_no_compatibility.php"
@@ -110,7 +110,8 @@ Class trusted_cryptoarmdocsfree extends CModule
             } elseif ($request["dropDBandIB"] == "Y") {
                 $this->UnInstallDB();
                 if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-                    trusted_cryptoarmdocsforms::UnInstallIb();
+	                $trusted_cryptoarmdocsforms = new trusted_cryptoarmdocsforms();
+                    $trusted_cryptoarmdocsforms->UnInstallIb();
                 }
             } elseif ($request["dropLostDocs"]) {
                 $lostDocs = unserialize($request["dropLostDocs"]);
@@ -136,20 +137,21 @@ Class trusted_cryptoarmdocsfree extends CModule
                     $strError = '';
                     $moduleDownloaded = CUpdateClientPartner::LoadModuleNoDemand($moduleName, $strError, 'N', false);
                     CModule::CreateModuleObject($moduleName);
+
                     if (!$moduleDownloaded) {
                         $modulesWereNotInstalled[] = $moduleName;
                     }
                 }
 
-                if ($moduleDownloaded) {
-                    $className = str_replace(".", "_", $moduleName);
-	                $classInstance = new $className();
-                    if (!IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() === "ok") {
-                        $classInstance->DoInstall();
-                    } elseif (IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() !== "ok") {
-                        $modulesOutOfDate[] = $moduleName;
-                    }
-                }
+	            if ($moduleDownloaded) {
+		            $className = str_replace(".", "_", $moduleName);
+		            $classInstance = new $className();
+		            if (!IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() === "ok") {
+			            $classInstance->DoInstall();
+		            } elseif (IsModuleInstalled($moduleName) && $classInstance->CoreAndModuleAreCompatible() !== "ok") {
+			            $modulesOutOfDate[] = $moduleName;
+		            }
+	            }
             }
 
             if ($modulesOutOfDate || $modulesWereNotInstalled) {
@@ -354,13 +356,14 @@ Class trusted_cryptoarmdocsfree extends CModule
 
     function InstallIb() {
         if (IsModuleInstalled("trusted.cryptoarmdocsforms")) {
-            trusted_cryptoarmdocsforms::InstallIb();
+	        $trusted_cryptoarmdocsforms = new trusted_cryptoarmdocsforms();
+	        $trusted_cryptoarmdocsforms->InstallIb();
         }
     }
 
     function InstallMailEvents()
     {
-        $obEventType = new CEventType;
+        $obEventType = new CEventType();
         $events = array(
             // by order
             array(
@@ -399,7 +402,7 @@ Class trusted_cryptoarmdocsfree extends CModule
             $obEventType->add($event);
         }
 
-        $obEventMessage = new CEventMessage;
+        $obEventMessage = new CEventMessage();
         $sites = CSite::GetList($by = "sort", $order = "asc", array("ACTIVE" => "Y"));
         $siteIds = array();
         while ($site = $sites->Fetch()) {
@@ -480,7 +483,8 @@ Class trusted_cryptoarmdocsfree extends CModule
 
             $deleteiblocks = $request["deleteiblocks"];
             if ($deleteiblocks == "Y") {
-                trusted_cryptoarmdocsforms::UnInstallIb();
+	            $trusted_cryptoarmdocsforms = new trusted_cryptoarmdocsforms();
+	            $trusted_cryptoarmdocsforms->UnInstallIb();
             }
 
             $deletedata = $request["deletedata"];
@@ -495,15 +499,18 @@ Class trusted_cryptoarmdocsfree extends CModule
             if ($deletedata == "Y") {
                 if (IsModuleInstalled('trusted.cryptoarmdocsbp')) {
                     CModule::includeModule('trusted.cryptoarmdocsbp');
-                    trusted_cryptoarmdocsbp::DoUninstall();
+	                $trusted_cryptoarmdocsbp = new trusted_cryptoarmdocsbp();
+	                $trusted_cryptoarmdocsbp->DoUninstall();
                 }
                 if (IsModuleInstalled('trusted.cryptoarmdocsforms')) {
                     CModule::includeModule('trusted.cryptoarmdocsforms');
-                    trusted_cryptoarmdocsforms::DoUninstall();
+	                $trusted_cryptoarmdocsforms = new trusted_cryptoarmdocsforms();
+                    $trusted_cryptoarmdocsforms->DoUninstall();
                 }
                 if (IsModuleInstalled('trusted.cryptoarmdocsorders')) {
                     CModule::includeModule('trusted.cryptoarmdocsorders');
-                    trusted_cryptoarmdocsorders::DoUninstall();
+	                $trusted_cryptoarmdocsorders = new trusted_cryptoarmdocsorders();
+                    $trusted_cryptoarmdocsorders->DoUninstall();
                 }
             }
 
@@ -602,11 +609,11 @@ Class trusted_cryptoarmdocsfree extends CModule
                 $order = 'desc',
                 array('TYPE' => $event)
             );
-            $eventMessage = new CEventMessage;
+            $eventMessage = new CEventMessage();
             while ($template = $eventMessages->Fetch()) {
                 $eventMessage->Delete((int)$template['ID']);
             }
-            $eventType = new CEventType;
+            $eventType = new CEventType();
             $eventType->Delete($event);
         }
     }

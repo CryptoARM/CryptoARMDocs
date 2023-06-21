@@ -280,10 +280,10 @@ Vue.component ("docs-upload-file", {
 
             let name = "USER";
             let value = this.value;
-            var props = new Map([
-                [name, value],
-            ]); 
-             
+            var props = [
+                [name, value]
+            ];
+
             trustedCA.multipleUpload(event.target.files, props, this.maxsize, onSuccess, onFailure);
         }
     }

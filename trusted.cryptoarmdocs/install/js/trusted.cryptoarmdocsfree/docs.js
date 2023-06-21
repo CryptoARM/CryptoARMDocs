@@ -598,6 +598,9 @@ trustedCA.promptEmail = function (message) {
     }
     do {
         var emailAddress = prompt(message, '');
+        if (emailAddress === null) {
+            emailAddress = '';
+        }
         var emailArr = emailAddress.split(/,|;/);
         var validatedEmail = checkEmails(emailArr);
     } while (emailAddress && validatedEmail !== true);

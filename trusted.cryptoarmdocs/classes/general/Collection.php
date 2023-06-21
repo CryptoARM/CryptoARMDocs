@@ -39,7 +39,7 @@ class Collection
      * @param Collection entry some Collections
      * @return Collection merged collections
      */
-    public function mergeCollections(){
+    public static function mergeCollections(){
         $args = func_get_args();
         $collection = new Collection();
 
